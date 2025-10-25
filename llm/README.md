@@ -12,3 +12,6 @@
     Output Sequence:  y1, y2, y3, ..., ym
     ```
 
+## Model Comparison: Maximum Input Token Lengths
+
+<table><thead><tr><th width="232.59698486328125">Model Name</th><th>Max Input Tokens</th><th>Notes</th></tr></thead><tbody><tr><td>sentence-transformers/all-mpnet-base-v2</td><td>384</td><td>Default truncation limit; can be adjusted with <code>model_max_length</code>.</td></tr><tr><td>hkunlp/instructor-large</td><td>512</td><td>Default truncation limit; can be adjusted with <code>model_max_length</code>.</td></tr><tr><td>01-ai/Yi-34B</td><td>4,096</td><td>Configured with <code>max_position_embeddings</code> set to 4,096.</td></tr><tr><td>mistralai/Mistral-7B-v0.1</td><td>8,192</td><td>Context length of 8,192 tokens.</td></tr><tr><td>mistralai/Mixtral-8x7B-Instruct-v0.1</td><td>32,768</td><td>Context length of 32,768 tokens; tokenizer may support longer.</td></tr><tr><td>mistralai/MegaBeam-Mistral-7B</td><td>512,000</td><td>Designed for efficient long-context processing.</td></tr></tbody></table>
