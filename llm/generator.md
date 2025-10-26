@@ -6,7 +6,6 @@ BART (Lewis et al., 2019) is a **sequence-to-sequence (seq2seq)** model that com
 
 **How it works in RAG:**
 
-* BART acts as the **generator**.
 * It takes the **original input (e.g. question)** plus the **retrieved documents** from DPR.
 * It then generates the final output sequence (the answer, summary, etc.).
 
