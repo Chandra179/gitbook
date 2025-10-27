@@ -11,7 +11,7 @@ description: crawling in golang
 ## Browser automation
 
 * Collect urls by web search
-* Use headless browsers or JS-engines to get the “real” content from the page and also do fallback strategies: if JS execution fails or is too expensive, fetch static HTML. using chromedp
+* Use headless browsers or JS-engines to get the “real” content from the page and also do fallback strategies: if JS execution fails or is too expensive, fetch static HTML. using [chromedp](https://github.com/chromedp/chromedp)
 
 ## Config
 
@@ -53,7 +53,7 @@ skip junk URL path or query param regex&#x20;
 
 ## Chunking & Embed
 
-* split text by sentence
+* markdown chunking, refer to: [ChunkStrategies](https://nothin.gitbook.io/computing/llm/chunking)
 * do not cut mid sentence
 * preserve the text order&#x20;
 * split text by sentence using `github.com/neurosnap/sentences` &#x20;
