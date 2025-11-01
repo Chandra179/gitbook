@@ -7,14 +7,14 @@ description: e2e RAG pipeline from collecting data to agentic system
 ## URLs Collector
 
 * Seed urls
-* Collect urls by web search (Browser Automation) use [chromedp](https://github.com/chromedp/chromedp)
+* Collect urls by web search (Browser Automation) chrome dev tools
 
 ## Config
 
-* IP rotation using Tor proxy to prevent blocked IP when visiting same site multiple times. use `zhaowde/rotating-tor-http-proxy`
+* IP rotation using Residental/Tor proxy to prevent blocked IP when visiting same site multiple times.
 * Domain whitelist
-* Url deduplication (allow\_revisit : false)
-* using colly queue for controlling resource (memory & cpu)
+* Url deduplication
+* Handle visited URL using key-value store, avoid in memory-storage IF doing unlimited crawl
 * respect robots.txt
 * rate limit per domain, 10-15 req/sec, random delay
 * Filter out non-HTML links
@@ -53,13 +53,13 @@ Cleaning text will be handled by go-trafilatura package
 ## Chunking & Embed
 
 * markdown chunking, refer to: [ChunkStrategies](https://nothin.gitbook.io/computing/llm/chunking)
-* calculate the token for each chunk using [https://github.com/daulet/tokenizers](https://github.com/daulet/tokenizers) before doing embedding to avoid chunking token exceed model max token limit
-* Embedding model will be modular, currenlty its using [http://ghcr.io/huggingface/text-embeddings-inference:cpu-latest](http://ghcr.io/huggingface/text-embeddings-inference:cpu-latest) `BAAI/bge-base-en-v1.5` , max 512 token
+* calculate the token for each chunk using [https://github.com/daulet/tokenizers](https://github.com/daulet/tokenizers) before doing embedding to avoid chunking token size exceed model max token limit
+* get the model `tokenizer.json` , ex: [https://huggingface.co/BAAI/bge-base-en-v1.5/blob/main/tokenizer.json](https://huggingface.co/BAAI/bge-base-en-v1.5/blob/main/tokenizer.json)
+* Embedding model will be modular so we can change the embed model depends on usecase and token size. ex: [http://ghcr.io/huggingface/text-embeddings-inference:cpu-latest](http://ghcr.io/huggingface/text-embeddings-inference:cpu-latest) `BAAI/bge-base-en-v1.5` , max 512 token
 
 ## Vector
 
-* adjust vector size to chunking embed size, currenlty is 768
-* metadata mandatory
+* metadata will be mandatory to further process the content after retrieval for more precise and accurate result
 
 ```json
 {
@@ -86,7 +86,7 @@ Cleaning text will be handled by go-trafilatura package
 ## Content Retrieval
 
 * Dense passage retriever
-* Reranker model: `bge-reranker-large, cross-encoder/ms-marco-MiniLM-L-6-v2` these re-score top-k retrieved chunks for final ranking.
+* Reranker model:  re-score top-k retrieved chunks for final ranking. example using model: `bge-reranker-large, cross-encoder/ms-marco-MiniLM-L-6-v2`
 * Evaluate retrieval metrics: Build a small query–answer–source eval set. Track: `Recall@k, Precision@k MRR (Mean Reciprocal Rank)`
 *   context assembly & formatting, structured context block
 
@@ -125,17 +125,4 @@ Cleaning text will be handled by go-trafilatura package
 * Extract key phrases
 
 ## \[TBD] Agentic System
-
-## Dependency
-
-* For rotation IP free use [https://github.com/zhaow-de/rotating-tor-http-proxy](https://github.com/zhaow-de/rotating-tor-http-proxy)
-* For browser automation use [https://github.com/chromedp/chromedp](https://github.com/chromedp/chromedp)
-* For crawling/scraping use [https://github.com/gocolly/colly](https://github.com/gocolly/colly)
-* For extraction use [https://github.com/go-shiori/go-readability](https://github.com/go-shiori/go-readability)
-
-## Improvement
-
-* consider using [https://github.com/unclecode/crawl4ai](https://github.com/unclecode/crawl4ai) for crawling and LLM ready data or [https://www.firecrawl.dev/](https://www.firecrawl.dev/)
-* or maybe using [https://github.com/docling-project/docling](https://github.com/docling-project/docling) if we still want to use golang as crawling and content extraction using python
-* and [https://github.com/infiniflow/ragflow](https://github.com/infiniflow/ragflow) for RAG
 
