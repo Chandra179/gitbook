@@ -124,8 +124,6 @@ The router (or NAT device) decides which rule to use for (mapping & filtering)
 | Double NAT           |                   Varies | Varies                  |   ❌ Rarely  |  ❌ Usually not |        ❌ No        |
 | CGNAT                |                ISP-level | Highly restrictive      |     ❌ No    |     ❌ Never    |       ❌ Never      |
 
-***
-
 ### Hairpinning (NAT loopback)
 
 **Scenario:** Two hosts behind the same NAT (router) want to communicate via the public IP.

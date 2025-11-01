@@ -1,33 +1,28 @@
 ---
-description: crawling in golang
+description: e2e RAG pipeline from collecting data to agentic system
 ---
 
 # RAG Pipeline
 
 ## URLs Collector
 
-* Seed urls (focused, broad)
-
-## Browser automation
-
-* Collect urls by web search
-* Use headless browsers or JS-engines to get the “real” content from the page and also do fallback strategies: if JS execution fails or is too expensive, fetch static HTML. using [chromedp](https://github.com/chromedp/chromedp)
+* Seed urls
+* Collect urls by web search (Browser Automation) use [chromedp](https://github.com/chromedp/chromedp)
 
 ## Config
 
-* IP rotation using Tor proxy to prevent blocked IP when visiting same site multiple times. using:&#x20;
+* IP rotation using Tor proxy to prevent blocked IP when visiting same site multiple times. use `zhaowde/rotating-tor-http-proxy`
 * Domain whitelist
-* gocolly url deduplication (allow\_revisit : false)
+* Url deduplication (allow\_revisit : false)
+* using colly queue for controlling resource (memory & cpu)
 * respect robots.txt
-* rate limit per domain, 1-5 req/sec max per domain
+* rate limit per domain, 10-15 req/sec, random delay
 * Filter out non-HTML links
-* politeness delay, random delay, domain delay
 * estimate if a link/page is likely relevant _before_ visit the URLs (URL pattern). This helps avoid downloading irrelevant content, i.e. `/economy.com/about` it's a junk
-* send URLs as event and will be processed at Content extraction
 
 ## PreFiltering
 
-skip junk URL path or query param regex&#x20;
+Skip junk URL path or query param regex&#x20;
 
 ```go
 (contact|privacy|terms|faq|tag|archive|about|signin|login|register|subscribe|feedback|cookies|sitemap)
@@ -51,18 +46,19 @@ skip junk URL path or query param regex&#x20;
     Returns a score in range [0–100].
     ```
 
+{% hint style="info" %}
+Cleaning text will be handled by go-trafilatura package
+{% endhint %}
+
 ## Chunking & Embed
 
 * markdown chunking, refer to: [ChunkStrategies](https://nothin.gitbook.io/computing/llm/chunking)
-* do not cut mid sentence
-* preserve the text order&#x20;
-* split text by sentence using `github.com/neurosnap/sentences` &#x20;
-* calculate the token for each sentence using [https://github.com/pkoukk/tiktoken-go](https://github.com/pkoukk/tiktoken-go). Append chunk from each sentence until reach vector token limit
-* use ghcr.io/huggingface/text-embeddings-inference, Token limit \~512 tokens, \~400-700 words depending on language and tokenization (could be \~2000–3000 characters in English, depending on punctuation/spacing)
+* calculate the token for each chunk using [https://github.com/daulet/tokenizers](https://github.com/daulet/tokenizers) before doing embedding to avoid chunking token exceed model max token limit
+* Embedding model will be modular, currenlty its using [http://ghcr.io/huggingface/text-embeddings-inference:cpu-latest](http://ghcr.io/huggingface/text-embeddings-inference:cpu-latest) `BAAI/bge-base-en-v1.5` , max 512 token
 
 ## Vector
 
-* token limits
+* adjust vector size to chunking embed size, currenlty is 768
 * metadata mandatory
 
 ```json
@@ -89,7 +85,7 @@ skip junk URL path or query param regex&#x20;
 
 ## Content Retrieval
 
-* Hybrid retrieval: embedding-based similarity + keyword-based scoring (BM25)
+* Dense passage retriever
 * Reranker model: `bge-reranker-large, cross-encoder/ms-marco-MiniLM-L-6-v2` these re-score top-k retrieved chunks for final ranking.
 * Evaluate retrieval metrics: Build a small query–answer–source eval set. Track: `Recall@k, Precision@k MRR (Mean Reciprocal Rank)`
 *   context assembly & formatting, structured context block

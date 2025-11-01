@@ -19,6 +19,7 @@
 * [Golang](golang/README.md)
   * [Strings](golang/strings.md)
   * [Goroutine](golang/goroutine.md)
+  * [Profiling](golang/profiling.md)
 * [P2P Chat](p2p-chat.md)
 * [LLM](llm/README.md)
   * [Retriever](llm/retriever.md)
