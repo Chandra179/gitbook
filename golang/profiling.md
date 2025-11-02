@@ -7,32 +7,26 @@ description: reading profiling
 ## Heap
 
 ```
-go tool pprof http://localhost:8002/debug/pprof/heap
-
-(pprof) top
-Showing nodes accounting for 29780.85kB, 86.60% of 34390.35kB total
-Showing top 10 nodes out of 136
-      flat  flat%   sum%        cum   cum%
-15206.23kB 44.22% 44.22% 15206.23kB 44.22%  regexp/syntax.(*compiler).inst (inline)
- 5140.59kB 14.95% 59.16%  5140.59kB 14.95%  github.com/markusmobius/go-dateparser/internal/data.merge
- 2575.02kB  7.49% 66.65%  2575.02kB  7.49%  regexp/syntax.cleanAlt
- 2048.22kB  5.96% 72.61%  2048.22kB  5.96%  regexp/syntax.(*parser).newRegexp (inline)
- 1723.02kB  5.01% 77.62%  1723.02kB  5.01%  github.com/forPelevin/gomoji.map.init.0
- 1024.16kB  2.98% 80.60% 21877.68kB 63.62%  regexp.compile
+heap profile: 133: 4702984 [4006: 105007600] @ heap/1048576
+0: 0 [3: 96] @ 0x99840b 0x99823a 0x99822d 0xad2dbb 0xad2e3d 0xf83deb 0xacc242 0xacc12d 0xacc0dc 0xac8e9e 0x4b2001
+#	0x99840a	github.com/nlnwa/whatwg-url/url.(*parser).BasicParser+0xca		/app/vendor/github.com/nlnwa/whatwg-url/url/parser.go:115
+#	0x998239	github.com/nlnwa/whatwg-url/url.(*parser).Parse+0x39			/app/vendor/github.com/nlnwa/whatwg-url/url/parser.go:53
+#	0x99822c	github.com/nlnwa/whatwg-url/url.(*parser).ParseRef+0x2c			/app/vendor/github.com/nlnwa/whatwg-url/url/parser.go:61
+#	0xad2dba	github.com/gocolly/colly/v2.(*Request).AbsoluteURL+0x7a			/app/vendor/github.com/gocolly/colly/v2/request.go:108
+#	0xad2e3c	github.com/gocolly/colly/v2.(*Request).Visit+0x1c			/app/vendor/github.com/gocolly/colly/v2/request.go:119
+#	0xf83dea	axora/crawler.(*Crawler).Crawl.(*Crawler).OnHTML.func1+0x8a		/app/crawler/dom_handler.go:24
+#	0xacc241	github.com/gocolly/colly/v2.(*Collector).handleOnHTML.func1+0x3a1	/app/vendor/github.com/gocolly/colly/v2/colly.go:1191
+#	0xacc12c	github.com/PuerkitoBio/goquery.(*Selection).Each+0x28c			/app/vendor/github.com/PuerkitoBio/goquery/iteration.go:12
+#	0xacc0db	github.com/gocolly/colly/v2.(*Collector).handleOnHTML+0x23b		/app/vendor/github.com/gocolly/colly/v2/colly.go:1181
+#	0xac8e9d	github.com/gocolly/colly/v2.(*Collector).fetch+0x6bd			/app/vendor/github.com/gocolly/colly/v2/colly.go:730
 ```
 
-* **flat**: Memory allocated **directly in this function**
-* **flat%:** % of total heap allocated **by this function alone**
-* **cum:** Cumulative memory for this function **and the functions it calls**
-* **cum%**: % of total memory including child calls
-
-<figure><img src="../.gitbook/assets/image (1) (1).png" alt=""><figcaption></figcaption></figure>
-
-| Concept            | Meaning                                              |
-| ------------------ | ---------------------------------------------------- |
-| **Wide block**     | High memory allocation at that function              |
-| **Tall stack**     | Lots of nested calls (deep call chain)               |
-| Each block’s width | Memory allocated _by that function and its children_ |
+| Value                          | Meaning                                                               |
+| ------------------------------ | --------------------------------------------------------------------- |
+| **133**                        | Number of currently allocated objects (live objects in heap)          |
+| **4702984 bytes (\~4.7 MB)**   | Current total live memory allocated                                   |
+| **4006**                       | Total objects allocated since start of program (including freed ones) |
+| **105007600 bytes (\~105 MB)** | Total cumulative memory allocated over time                           |
 
 ## Goroutine
 
