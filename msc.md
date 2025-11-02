@@ -8,4 +8,5 @@
 * backoff retry
 * idempotent req
 * collision risk
+* premature abstraction
 

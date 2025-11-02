@@ -64,78 +64,6 @@ using gocolly async resulting in stuck goroutine, going deeper we could see
 
 {% code lineNumbers="true" expandable="true" %}
 ```
-goroutine 158852 [running]:
-runtime/pprof.writeGoroutineStacks({0x1a66760, 0xc015bf04b0})
-	/usr/local/go/src/runtime/pprof/pprof.go:756 +0x6b
-runtime/pprof.writeGoroutine({0x1a66760?, 0xc015bf04b0?}, 0xd?)
-	/usr/local/go/src/runtime/pprof/pprof.go:745 +0x25
-runtime/pprof.(*Profile).WriteTo(0x2cb16b0?, {0x1a66760?, 0xc015bf04b0?}, 0xc?)
-	/usr/local/go/src/runtime/pprof/pprof.go:371 +0x14b
-net/http/pprof.handler.ServeHTTP({0xc03355aca1, 0x9}, {0x1a70a40, 0xc015bf04b0}, 0xc04c42f680)
-	/usr/local/go/src/net/http/pprof/pprof.go:272 +0x52a
-net/http/pprof.Index({0x1a70a40, 0xc015bf04b0}, 0xc04c42f680?)
-	/usr/local/go/src/net/http/pprof/pprof.go:389 +0xda
-net/http.HandlerFunc.ServeHTTP(0x2e7bc40?, {0x1a70a40?, 0xc015bf04b0?}, 0x73ec56?)
-	/usr/local/go/src/net/http/server.go:2322 +0x29
-net/http.(*ServeMux).ServeHTTP(0x4a6b19?, {0x1a70a40, 0xc015bf04b0}, 0xc04c42f680)
-	/usr/local/go/src/net/http/server.go:2861 +0x1c7
-net/http.serverHandler.ServeHTTP({0xc04c7cf600?}, {0x1a70a40?, 0xc015bf04b0?}, 0x6?)
-	/usr/local/go/src/net/http/server.go:3340 +0x8e
-net/http.(*conn).serve(0xc05cba8b40, {0x1a729d8, 0xc002980c30})
-	/usr/local/go/src/net/http/server.go:2109 +0x665
-created by net/http.(*Server).Serve in goroutine 1
-	/usr/local/go/src/net/http/server.go:3493 +0x485
-
-goroutine 1 [IO wait]:
-internal/poll.runtime_pollWait(0x7f1650440600, 0x72)
-	/usr/local/go/src/runtime/netpoll.go:351 +0x85
-internal/poll.(*pollDesc).wait(0xc0000a0d00?, 0x900000036?, 0x0)
-	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0x27
-internal/poll.(*pollDesc).waitRead(...)
-	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
-internal/poll.(*FD).Accept(0xc0000a0d00)
-	/usr/local/go/src/internal/poll/fd_unix.go:613 +0x28c
-net.(*netFD).accept(0xc0000a0d00)
-	/usr/local/go/src/net/fd_unix.go:161 +0x29
-net.(*TCPListener).accept(0xc00261adc0)
-	/usr/local/go/src/net/tcpsock_posix.go:159 +0x1b
-net.(*TCPListener).Accept(0xc00261adc0)
-	/usr/local/go/src/net/tcpsock.go:380 +0x30
-net/http.(*Server).Serve(0xc0027c0600, {0x1a70bf0, 0xc00261adc0})
-	/usr/local/go/src/net/http/server.go:3463 +0x30c
-net/http.(*Server).ListenAndServe(0xc0027c0600)
-	/usr/local/go/src/net/http/server.go:3389 +0x72
-net/http.ListenAndServe(...)
-	/usr/local/go/src/net/http/server.go:3704
-main.main()
-	/app/cmd/main.go:189 +0x9c5
-
-goroutine 22 [IO wait, 54 minutes]:
-internal/poll.runtime_pollWait(0x7f1650440c00, 0x72)
-	/usr/local/go/src/runtime/netpoll.go:351 +0x85
-internal/poll.(*pollDesc).wait(0xc0000a0180?, 0x380016?, 0x0)
-	/usr/local/go/src/internal/poll/fd_poll_runtime.go:84 +0x27
-internal/poll.(*pollDesc).waitRead(...)
-	/usr/local/go/src/internal/poll/fd_poll_runtime.go:89
-internal/poll.(*FD).Accept(0xc0000a0180)
-	/usr/local/go/src/internal/poll/fd_unix.go:613 +0x28c
-net.(*netFD).accept(0xc0000a0180)
-	/usr/local/go/src/net/fd_unix.go:161 +0x29
-net.(*TCPListener).accept(0xc00261a0c0)
-	/usr/local/go/src/net/tcpsock_posix.go:159 +0x1b
-net.(*TCPListener).Accept(0xc00261a0c0)
-	/usr/local/go/src/net/tcpsock.go:380 +0x30
-net/http.(*Server).Serve(0xc0027c0000, {0x1a70bf0, 0xc00261a0c0})
-	/usr/local/go/src/net/http/server.go:3463 +0x30c
-net/http.(*Server).ListenAndServe(0xc0027c0000)
-	/usr/local/go/src/net/http/server.go:3389 +0x72
-net/http.ListenAndServe(...)
-	/usr/local/go/src/net/http/server.go:3704
-main.main.func1()
-	/app/cmd/main.go:36 +0x3a
-created by main.main in goroutine 1
-	/app/cmd/main.go:35 +0x38
-
 goroutine 109686 [chan send, 15 minutes]:
 github.com/gocolly/colly/v2.(*httpBackend).Do(0xc002980210, 0xc03727ba40, 0xa00000, 0xc03b205f28)
 	/app/vendor/github.com/gocolly/colly/v2/http_backend.go:172 +0x8b
@@ -246,20 +174,15 @@ created by google.golang.org/grpc/internal/transport.NewHTTP2Client in goroutine
 * They are blocked **sending to a channel** or **waiting for HTTP request to finish**.
 * They have been running for 15–44 minutes → clearly **stuck / piled up**.
 
-## Improvement
+## Test Result 2
 
-* decouple heavy cpu operation at OnResponse, use non-blocking channel to send task operation to other goroutine
-* use context timeout
+<figure><img src="../.gitbook/assets/Screenshot from 2025-11-02 11-27-32.png" alt=""><figcaption></figcaption></figure>
+
+After some tweaking we do need to `reduce max depth` and `abort request` at OnRequest if its in blacklist URLs, resultinf in mor stable memory usage
 
 ## Dependency
 
-* For rotation IP free use [https://github.com/zhaow-de/rotating-tor-http-proxy](https://github.com/zhaow-de/rotating-tor-http-proxy)
+* For rotation IP use [https://github.com/zhaow-de/rotating-tor-http-proxy](https://github.com/zhaow-de/rotating-tor-http-proxy)
 * For browser automation use [https://github.com/chromedp/chromedp](https://github.com/chromedp/chromedp)
 * For crawling/scraping use [https://github.com/gocolly/colly](https://github.com/gocolly/colly)
 * For extraction use [http://github.com/markusmobius/go-trafilatura](http://github.com/markusmobius/go-trafilatura)
-
-## Improvement
-
-* consider using [https://github.com/unclecode/crawl4ai](https://github.com/unclecode/crawl4ai) for crawling and LLM ready data or [https://www.firecrawl.dev/](https://www.firecrawl.dev/)
-* or maybe using [https://github.com/docling-project/docling](https://github.com/docling-project/docling) if we still want to use golang as crawling and content extraction using python
-* and [https://github.com/infiniflow/ragflow](https://github.com/infiniflow/ragflow) for RAG
