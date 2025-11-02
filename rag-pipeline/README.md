@@ -14,7 +14,7 @@ description: e2e RAG pipeline from collecting data to agentic system
 * IP rotation using Residental/Tor proxy to prevent blocked IP when visiting same site multiple times.
 * Domain whitelist
 * Url deduplication
-* Handle visited URL using key-value store, avoid in memory-storage IF doing unlimited crawl
+* Handle visited URL using key-value store, avoid in memory-storage because limited memory allocation
 * respect robots.txt
 * rate limit per domain, 10-15 req/sec, random delay
 * Filter out non-HTML links
