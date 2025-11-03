@@ -4,7 +4,7 @@ Tiny initial stack (\~2 KB vs \~1 MB for an OS thread).
 
 ### GPM scheduler
 
-<figure><img src="../.gitbook/assets/image (1) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (1) (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 * **G (Goroutine):** Represents the task itself, like your cooking order. You **create** a goroutine whenever you want to run a function concurrently. In our example, `G1`, `G2`, `G3` are orders created by the developer.
 * **P (Processor):** Represents a cooking station. It **schedules goroutines** to be executed by an OS thread. Here, `P1` and `P2` decide which chef will cook which order.
