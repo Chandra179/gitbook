@@ -2,54 +2,68 @@
 
 Transport Layer Security is a encryption mechanism to encrypt message that are sent from
 
-**Application → TLS → Transport**
+Application → TLS → Transport
 
-* Your browser (HTTP request: `GET /index.html`) hands data to TLS.
-* TLS encrypts the payload (plus integrity check).
-* TLS hands the encrypted bytes to TCP (or QUIC).
+* The application (e.g., a browser sending `GET /index.html`) hands plaintext data to TLS.
+* TLS encrypts and authenticates the data (using AEAD — authenticated encryption).
+* TLS hands the ciphertext to the transport layer:
+  * **TCP** when using HTTP/1.1 or HTTP/2
+  * **QUIC** when using HTTP/3 (QUIC uses TLS keys internally, not TLS records)
 
-**Transport → TLS → Application**
+On receiving, Transport (TCP/QUIC) → TLS → Application
 
-* TCP delivers the encrypted bytes reliably.
-* TLS decrypts and verifies integrity.
-* TLS hands the clean HTTP message back to the browser’s HTTP logic
+* TCP or QUIC delivers the encrypted bytes reliably.
+* TLS decrypts them and verifies integrity.
+* TLS passes the clean HTTP message back to the application.
 
-## TLS handshake
+## TLS 1.3 handshake
 
-The client begins a TLS handshake with the server by sending a **ClientHello** message. This message contains:
+To establish a secure session, the client starts the handshake by sending a **ClientHello** message. It includes:
 
-* Supported TLS versions (e.g., up to TLS 1.3).
-* Cipher suites: a list of cryptographic options, where each suite defines a symmetric encryption algorithm and a hash function (e.g., `TLS_AES_128_GCM_SHA256 or TLS_CHACHA20_POLY1305_SHA256`).
-* A client random: a fresh 32-byte random value used later in session key derivation.
-* Key shares: one or more public parameters for an ephemeral Elliptic Curve Diffie–Hellman (ECDHE) key exchange, allowing the server to compute a shared secret without exposing private keys.
+* **Supported TLS versions** (up to TLS 1.3)
+* **Cipher suites** (each defines a symmetric cipher + hash), e.g.:
+  * `TLS_AES_128_GCM_SHA256`
+  * `TLS_CHACHA20_POLY1305_SHA256`
+* **Client random** (32 bytes of fresh randomness)
+* **Key shares** (public parameters for ephemeral ECDHE key exchange)
 
-The server receives this message, parses the fields, and replies with a **ServerHello** message, also in plaintext. This contains:
+The server receives ClientHello and replies with a **ServerHello**, also in plaintext. It includes:
 
-* The chosen cipher suite (one from the client’s list).
-* The server random, another 32-byte random value.
-* A server key share, representing its half of the ECDHE exchange.
+* The selected cipher suite
+* A 32-byte server random value
+* The server’s key share (its half of the ECDHE exchange)
 
-After this, the server also sends its **digital certificate** in X.509 format, which includes:
+{% hint style="info" %}
+In TLS 1.3, **everything after ServerHello is encrypted** with early handshake keys.
+{% endhint %}
 
-* The server’s long-term public key (RSA or ECDSA).
-* The server’s identity (e.g., CN=[www.example.com](http://www.example.com)).
-* A signature from a trusted Certificate Authority (CA), proving the certificate’s authenticity.
+Next, the server sends its **X.509 certificate**, which contains:
 
-At this point, the client knows what the server claims to be, but it still needs proof that the server actually holds the private key corresponding to the certificate. To prove this, the server sends a **CertificateVerify** message:
+* The server’s public key (RSA or ECDSA)
+* The server identity (`CN=www.example.com`)
+* A CA signature proving the certificate's authenticity
 
-* The server uses its long-term private key to create a digital signature over everything exchanged in the handshake so far.
-* The client verifies this signature using the public key inside the certificate.
+To prove that it actually owns the private key, the server sends **CertificateVerify**:
 
-If the check passes, the client can be sure that:
+* The server signs the handshake transcript using its private key.
+* The client verifies the signature using the public key in the certificate.
 
-1. The certificate is valid and signed by a trusted CA.
-2. The server truly controls the private key that matches the certificate.
-3. The handshake messages have not been altered in transit.
+If verification succeeds, the client knows:
 
-Finally, both sides complete the ECDHE computation, derive a shared secret, expand it with HKDF into session keys, and exchange **Finished** messages. From that point on, all traffic — including HTTP requests and responses — is encrypted and protected against tampering.
+* The certificate is valid and signed by a trusted CA.
+* The server controls the private key corresponding to the certificate.
+* The handshake messages have not been tampered with.
+
+Finally:
+
+1. Both sides finish the ECDHE computation to derive a shared secret.
+2. HKDF expands it into session keys.
+3. Client and server exchange **Finished** messages.
+
+At that point, **all application data (including HTTP) is encrypted and authenticated.**
 
 ### Note on Connection Reuse and Caching
 
-* On the **first request**, the client and server must perform this full handshake to establish a secure channel.
-* For **subsequent requests over the same connection**, no new handshake is needed; the established TLS session keys are reused, and the client can immediately send encrypted application data.
-* If a new TCP/TLS connection is opened later, the client and server may use **session resumption** (via session tickets or PSKs in TLS 1.3) to avoid repeating the full handshake, further reducing latency.
+* The first connection requires the full handshake.
+* For additional requests on the same connection, TLS simply reuses the established session keys.
+* If a new TCP/TLS connection is created later, TLS 1.3 can use **session resumption** (via session tickets or PSKs) to avoid the full handshake, reducing latency.
