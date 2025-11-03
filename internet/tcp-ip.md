@@ -21,13 +21,17 @@ At receiving request it do connection Establishment (**3-way handshake)**  befor
 2. Server replies **SYN-ACK** → “I acknowledge, and I’m ready too.”
 3. Client sends **ACK** → connection established.
 
-Once connected, TCP ensures that data is delivered **reliably and in order**. The application data is split - into smaller chunks called **segments**, and TCP attaches a TCP header to each segment. The header contains sequence numbers so that the receiver can reorder segments if they arrive out of sequence.&#x20;
+Once connected, TCP ensures that data is
+
+* delivered **reliably and in order**
+* split the data into smaller chunks called **segments**
+* attaches a TCP header to each segment. The header contains sequence numbers so that the receiver can reorder segments if they arrive out of sequence.&#x20;
 
 **TCP** also guarantees reliability: if a packet is lost or corrupted, TCP will retransmit it. This reliability comes with extra overhead — more control messages, more tracking, and more memory to maintain the connection state. After the data transfer is complete, TCP also includes a connection teardown sequence to properly close the session.
 
 ### UDP
 
-**UDP** is **connectionless and lightweight**. There is no handshake before sending data. When an application wants to send information — for example streaming video or sending a DNS query — it simply hands data to UDP, which wraps it into a **datagram** with a very small header. UDP then sends the datagram to the destination without checking whether the receiving host is ready or even exists. This makes UDP extremely fast and efficient because it does not wait for acknowledgments or track state.
+**UDP** is **connectionless and lightweight**. There is no handshake before sending data. When an application wants to send information. For example streaming video or sending a DNS query — it simply hands data to UDP, which wraps it into a **datagram** with a very small header. UDP then sends the datagram to the destination without checking whether the receiving host is ready or even exists. This makes UDP extremely fast and efficient because it does not wait for acknowledgments or track state.
 
 The trade-offs. UDP offers **no reliability**: packets may get lost, arrive duplicated, or come in the wrong order, and UDP itself does nothing to correct that. If reliability or ordering is needed, the **application layer** must handle it manually. Many real-time applications prefer UDP because timely delivery is more important than perfect accuracy. Examples include video calls, online gaming, and live streaming — losing a packet or two is acceptable, but delays caused by retransmissions would degrade the real-time experience. In short, UDP favors speed and low overhead, while TCP prioritizes accuracy and reliability.
 
@@ -40,7 +44,9 @@ UDP: Send data immediately → no connection, no guarantee → faster, minimal o
 
 The Internet Layer takes each TCP segment (or UDP datagram) and **wraps it inside an IP packet**. This process is called _encapsulation_. The IP packet contains an **IP header**, which includes the **source IP address** (your machine’s address) and the **destination IP address** (the remote machine/server). These addresses ensure that routers and networking devices know where the packet is coming from and where it should go. Unlike the Transport Layer, the Internet Layer doesn’t care about the connection or reliability — it simply forwards packets.
 
-Routing is the most important function of this layer. When an IP packet is created, the Internet Layer determines the **next hop** — whether the destination is in the same local network (LAN) or must be sent to a router (gateway) to reach another network. As the packet travels, each router only looks at the destination IP address and decides where to send it next; it doesn’t care about the packet’s internal contents. The Internet Layer does not guarantee that packets arrive in order or even that they arrive at all — IP is **best-effort delivery**, meaning routers do not resend dropped packets. Reliability is handled by TCP (Transport Layer), not IP.
+Routing is the most important function of this layer. When an IP packet is created, the Internet Layer determines the **next hop** — whether the destination is in the same local network (LAN) or must be sent to a router (gateway) to reach another network.&#x20;
+
+As the packet travels, each router only looks at the destination IP address and decides where to send it next; it doesn’t care about the packet’s internal contents. The Internet Layer does not guarantee that packets arrive in order or even that they arrive at all — IP is **best-effort delivery**, meaning routers do not resend dropped packets. Reliability is handled by TCP (Transport Layer), not IP.
 
 When the packet reaches its destination, the remote machine’s Internet Layer removes the IP header (decapsulation), recognizes that the packet belongs to TCP or UDP (based on a protocol field in the IP header), and passes it back up the stack to the Transport Layer.
 
