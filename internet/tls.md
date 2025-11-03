@@ -1,5 +1,7 @@
 # TLS
 
+<figure><img src="../.gitbook/assets/image (6).png" alt=""><figcaption></figcaption></figure>
+
 Transport Layer Security is a encryption mechanism to encrypt message that are sent from
 
 Application → TLS → Transport
