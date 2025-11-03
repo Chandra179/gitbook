@@ -61,3 +61,11 @@
 * Browser initiates **TCP connection** to the IP on port 80 (HTTP) or 443 (HTTPS).
 * If HTTPS → browser performs **TLS handshake** to encrypt the session.
 
+## **Real-world Example**
+
+Let’s resolve `www.example.com`:
+
+1. Browser → Recursive resolver (`8.8.8.8`)
+2. Resolver → Root server → `.com` TLD server → authoritative server for `example.com`
+3. Authoritative server → IP `93.184.216.34`
+4. Browser connects to `93.184.216.34` → HTTP/HTTPS request sent
