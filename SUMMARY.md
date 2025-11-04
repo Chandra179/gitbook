@@ -16,6 +16,7 @@
   * [Character Encoding](os/character-encoding.md)
 * [Cryptography](cryptography/README.md)
   * [ECDSA](cryptography/ecdsa.md)
+  * [Diffie–Hellman](cryptography/diffie-hellman.md)
 * [Auth](auth.md)
 * [Security](security.md)
 * [Kafka](kafka.md)

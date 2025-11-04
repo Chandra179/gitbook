@@ -1,11 +1,11 @@
 # Cryptography
 
-| Foundation (Math)                                    | Cryptography Method     | Real-world Technology             |
-| ---------------------------------------------------- | ----------------------- | --------------------------------- |
-| Prime factorization / discrete log / elliptic curves | Asymmetric + Signatures | TLS, HTTPS, OAuth, JWT            |
-| Block ciphers + authenticated encryption             | Symmetric               | VPNs, Disk encryption (AES)       |
-| Hash functions + HMAC                                | Integrity               | Password storage, JWT, Blockchain |
-| Key exchange + identity                              | Secure channels         | TLS handshake, SSH                |
+| Category                  | Example Algorithms                | Real-World Use Cases                                                                                                                                   |
+| ------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Symmetric Encryption**  | AES, ChaCha20, DES (legacy)       | <p>Encrypting files on disk (BitLocker, FileVault), </p><p>VPN traffic, bulk data encryption in HTTPS after handshake, database encryption at rest</p> |
+| **Asymmetric Encryption** | RSA, ECC (ECIES), ElGamal         | Secure key distribution, HTTPS certificates, SSH authentication, encrypted email without prior shared key                                              |
+| **Digital Signature**     | RSA Signature, ECDSA, Ed25519     | Software signing (OS binaries), document signing (PDF signature), blockchain transactions, verifying firmware updates                                  |
+| **Key Exchange**          | Diffie–Hellman (DH), ECDH, X25519 | Generate shared encryption keys in HTTPS handshake, secure messaging apps (Signal/WhatsApp), VPN key negotiation (IPSec/IKE)                           |
 
 ## **Symmetric encryption**
 
@@ -28,7 +28,7 @@ Different keys for encrypting/decrypting (e.g., RSA, ECC).
 
 One-way functions to verify integrity (e.g., SHA-256).
 
-| Generation          | Algorithms                   | How They Work                                  | Weakness → Reason replaced                       |
+| Generation          | Algorithms                   | How They Work                                  | Weakness                                         |
 | ------------------- | ---------------------------- | ---------------------------------------------- | ------------------------------------------------ |
 | **Early MD family** | MD4, MD5                     | Compress data into 128-bit hash                | **Collisions found** → unsafe                    |
 | **SHA-1**           | SHA-1                        | Produces 160-bit hash via compression function | 2017 Google collision demonstration → deprecated |
@@ -39,7 +39,7 @@ One-way functions to verify integrity (e.g., SHA-256).
 
 Digital signatures prove WHO created/approved the data.
 
-| Method         | Algorithm         | How It Works                                                 | Weakness Mitigation                                 |
+| Method         | Algorithm         | How It Works                                                 | Weakness                                            |
 | -------------- | ----------------- | ------------------------------------------------------------ | --------------------------------------------------- |
 | RSA Signatures | RSA-SHA256        | Encrypt hash using private key → verify with public key      | Slow for large messages                             |
 | DSS            | DSA, ECDSA        | Signature derived from modular arithmetic or elliptic curves | ECDSA requires secure randomness or signatures leak |
@@ -49,7 +49,7 @@ Digital signatures prove WHO created/approved the data.
 
 How two parties agree on a secret key over insecure channels (e.g., Diffie-Hellman)
 
-| Generation                | Algorithm                     | How It Works                                               | Weakness → Replacement                                  |
+| Generation                | Algorithm                     | How It Works                                               | Weakness                                                |
 | ------------------------- | ----------------------------- | ---------------------------------------------------------- | ------------------------------------------------------- |
 | Classic (no auth)         | Diffie–Hellman (DH)           | Two sides compute shared secret via modular exponentiation | MITM without authentication                             |
 | Authenticated DH          | **DH + signatures (TLS 1.2)** | Adds certs to prove identity                               | Still slow compared to ECC                              |
