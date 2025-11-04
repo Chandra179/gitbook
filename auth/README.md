@@ -1,5 +1,3 @@
 # Auth
 
-
-
-&#x20;oidc, jwt, passkey&#x20;
+webauthn, passkey, fido2, paswordless auth

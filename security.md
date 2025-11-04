@@ -63,8 +63,6 @@ Prioritize integrity and availability equally with confidentiality. In modern sy
 4. **Centralized General Security Services** — authentication, logging, key management centrally (but handle availability).
 5. **Preparing for Errors & Exceptions** — fail-safe behavior; avoid leaking sensitive info in errors.
 
-***
-
 ### Testing & assessments
 
 #### Testing types
@@ -87,8 +85,6 @@ Prioritize integrity and availability equally with confidentiality. In modern sy
 * API documentation audit (outdated docs leak vulnerabilities/business logic).
 * Parameter manipulation, mass-assignment tests, authorization logic flaws.
 
-***
-
 ### Reconnaissance & discovery
 
 * **Passive recon** — gather info without direct interaction.
@@ -102,8 +98,6 @@ Useful techniques/tools:
 * Chrome DevTools for exposed secrets.
 * Kiterunner for API resource discovery.
 
-***
-
 ### Authentication & token analysis
 
 * **Auth attacks**: password brute-force, password spraying, reset/MFA bypass, Base64 brute-force.
@@ -112,8 +106,6 @@ Useful techniques/tools:
   * Use sequencer for up to 20,000 tokens for in-depth entropy and correlation analysis.
   * Identify static vs variable token segments to optimize brute-force or prediction.
 * **Live token capture**: intercept token generation flows and analyze. Ensure token invalidation and short TTLs.
-
-***
 
 ### Fuzzing & common vulnerability patterns
 
@@ -128,15 +120,11 @@ Useful techniques/tools:
 * **Injection classes** — SQL, command, template.
 * **XSS / XAS** — cross-site scripting and related API-level XSS equivalents.
 
-***
-
 ### API security controls & detection hints
 
 * Look for secrets in headers: `Authorization`, custom middleware headers like `X-` prefixes.
 * Check tokens in: headers, query strings, POST/PUT bodies.
 * Test for missing or weak parameter validation and incorrect error messaging.
-
-***
 
 ### Tools & vulnerable targets (quick list)
 
@@ -156,8 +144,6 @@ Useful techniques/tools:
 * OWASP DevSlop’s Pixi
 * Damn Vulnerable GraphQL
 
-***
-
 ### Recon & active discovery examples (recommended checklist)
 
 * Run Amass for public asset discovery.
@@ -165,15 +151,11 @@ Useful techniques/tools:
 * Gobuster / kiterunner for URI discovery.
 * Use Chrome DevTools + local caches to find accidental leaks.
 
-***
-
 ### Quick networking & foundations
 
 * OSI model recap.
 * TCP/IP basics, common protocols, how web servers/clients exchange requests.
 * Understanding the stack helps map where controls belong (network, transport, application).
-
-***
 
 ### References & further reading
 

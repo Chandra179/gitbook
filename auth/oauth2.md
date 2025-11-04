@@ -1,6 +1,6 @@
 # Oauth2 & OIDC
 
-[**https://www.rfc-editor.org/rfc/rfc6749**](https://www.rfc-editor.org/rfc/rfc6749) **:** oauth2 core
+[https://www.rfc-editor.org/rfc/rfc6749](https://www.rfc-editor.org/rfc/rfc6749) **:** oauth2 core
 
 [https://www.rfc-editor.org/rfc/rfc6750](https://www.rfc-editor.org/rfc/rfc6750) : bearer token
 
