@@ -6,7 +6,7 @@ description: software engineer related topics
 
 #### About
 
-Software engineer 3+ years experience in Golang, distributed system, data oriented workflow
+Software engineer 3.5+ years experience in Golang, distributed system, data oriented workflow
 
 #### Experience
 
@@ -48,3 +48,6 @@ M+ Software operating as an ERP consulting
 * RAG langchain: [https://github.com/Chandra179/beacon](https://github.com/Chandra179/beacon)
 * P2P chat: [https://github.com/Chandra179/p2pchat](https://github.com/Chandra179/p2pchat)
 * Crypto outlook: [https://github.com/Chandra179/cryptopat](https://github.com/Chandra179/cryptopat)
+
+
+
