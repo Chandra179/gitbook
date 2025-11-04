@@ -68,7 +68,7 @@ x= number of sedans
 
 y= number of SUVs
 
-<img src=".gitbook/assets/unknown.png" alt="" data-size="original">
+<img src="../.gitbook/assets/unknown.png" alt="" data-size="original">
 
 #### Gaussian elimination
 
@@ -88,9 +88,9 @@ R2 = [25000  40000  ∣  230000]  −  [25000 25000 ∣ 175000]
 230000−25000⋅7=230000−175000=55000
 ```
 
-![](<.gitbook/assets/unknown (1).png>)
+![](<../.gitbook/assets/unknown (1).png>)
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (2).png" alt="" width="375"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (2).png" alt="" width="375"><figcaption></figcaption></figure></div>
 
 x+y=7⟹x=7−y=7−3.67=3.33
 
@@ -108,13 +108,13 @@ The drone flies 6 meters east, 8 meters north, and 10 meters up.
 
 A=(6,8,10)
 
-<figure><img src=".gitbook/assets/unknown (5).png" alt="" width="563"><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/unknown (5).png" alt="" width="563"><figcaption></figcaption></figure>
 
 Direction vector → The drone is about 14.14 meters from the base, in a straight line (even though it flew in 3 directions).
 
 Unit vector:
 
-![](<.gitbook/assets/unknown (6).png>)
+![](<../.gitbook/assets/unknown (6).png>)
 
 ```
 A^≈(0.424,0.566,0.707)
@@ -137,17 +137,17 @@ It must fly 2 meters east, 0 north/south, and 1 meter up to get back on track.
 A⋅X  =  B
 {% endhint %}
 
-![](<.gitbook/assets/unknown (7).png>)
+![](<../.gitbook/assets/unknown (7).png>)
 
-![](<.gitbook/assets/unknown (8).png>)
+![](<../.gitbook/assets/unknown (8).png>)
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (9).png" alt="" width="563"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (9).png" alt="" width="563"><figcaption></figcaption></figure></div>
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (10).png" alt="" width="563"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (10).png" alt="" width="563"><figcaption></figcaption></figure></div>
 
-![](<.gitbook/assets/unknown (11).png>)
+![](<../.gitbook/assets/unknown (11).png>)
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (12).png" alt="" width="257"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (12).png" alt="" width="257"><figcaption></figcaption></figure></div>
 
 ## Linear Transformation
 
@@ -161,7 +161,7 @@ Linear transformation is just a rule that moves vectors around, following two si
 A matrix is a function that transforms vectors.\
 E.g., rotating, scaling, reflecting.
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (13).png" alt="" width="563"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (13).png" alt="" width="563"><figcaption></figcaption></figure></div>
 
 It's a rule that moves or reshapes all points in space using math that keeps things straight.
 
@@ -177,7 +177,7 @@ But not bend or curve.
 
 ## Identity Matrix
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (14).png" alt=""><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (14).png" alt=""><figcaption></figcaption></figure></div>
 
 ## Matrix inverse, Identity, determinant
 
@@ -187,19 +187,19 @@ Determinant is a scalar value computed from a square matrix that tells you impor
 * The volume scaling factor of the linear transformation the matrix represents
 * Whether a system of linear equations has a unique solution (det ≠ 0)
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (16).png" alt="" width="203"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (16).png" alt="" width="203"><figcaption></figcaption></figure></div>
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (17).png" alt="" width="375"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (17).png" alt="" width="375"><figcaption></figcaption></figure></div>
 
 Since 5 ≠ 0, A is invertible.
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (18).png" alt="" width="375"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (18).png" alt="" width="375"><figcaption></figcaption></figure></div>
 
-<figure><img src=".gitbook/assets/unknown (20).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/unknown (20).png" alt=""><figcaption></figcaption></figure>
 
-<figure><img src=".gitbook/assets/unknown (19).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/unknown (19).png" alt=""><figcaption></figcaption></figure>
 
-<figure><img src=".gitbook/assets/unknown (21).png" alt="" width="147"><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/unknown (21).png" alt="" width="147"><figcaption></figcaption></figure>
 
 This is the only test that confirms:
 
@@ -209,7 +209,7 @@ This is the only test that confirms:
 
 If you multiply and don’t get identity, then your "inverse" is garbage.
 
-<figure><img src=".gitbook/assets/unknown (22).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/unknown (22).png" alt=""><figcaption></figcaption></figure>
 
 ```
 In computer graphics: to undo transformations to objects (like rotating/scaling them back).
@@ -233,31 +233,31 @@ That’s what a non-invertible matrix is
 
 Factoring if simple
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (23).png" alt="" width="139"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (23).png" alt="" width="139"><figcaption></figcaption></figure></div>
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (24).png" alt="" width="375"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (24).png" alt="" width="375"><figcaption></figcaption></figure></div>
 
 
 
 \=== OR ====\
 
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (25).png" alt="" width="563"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (25).png" alt="" width="563"><figcaption></figcaption></figure></div>
 
 **Solution**:
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (26).png" alt="" width="192"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (26).png" alt="" width="192"><figcaption></figcaption></figure></div>
 
 ## Rank
 
 Rank = number of linearly independent rows or columns in a matrix.\
 Rank tells you how much actual "new information" is in the matrix.
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (27).png" alt="" width="181"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (27).png" alt="" width="181"><figcaption></figcaption></figure></div>
 
 Do row operations (subtract 2×R1 from R2, 3×R1 from R3), you'll get:
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (28).png" alt="" width="128"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (28).png" alt="" width="128"><figcaption></figcaption></figure></div>
 
 **Only 1 nonzero row → Rank = 1**
 
@@ -272,11 +272,11 @@ Rank 1 → maps everything to a line
 
 Rank 0 → squashes everything to zero
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (29).png" alt="" width="563"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (29).png" alt="" width="563"><figcaption></figcaption></figure></div>
 
 ## Null space
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (30).png" alt="" width="95"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (30).png" alt="" width="95"><figcaption></figcaption></figure></div>
 
 Null space captures all inputs that get squashed to zero by A.
 
@@ -308,9 +308,9 @@ Eigenvector: A direction that doesn’t rotate when transformed by the matrix.
 
 Eigenvalue: How much that direction is stretched or squished.
 
-<figure><img src=".gitbook/assets/unknown (31).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/unknown (31).png" alt=""><figcaption></figcaption></figure>
 
-<figure><img src=".gitbook/assets/unknown (32).png" alt="" width="104"><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/unknown (32).png" alt="" width="104"><figcaption></figcaption></figure>
 
 This means:
 
@@ -319,21 +319,21 @@ This means:
 * The direction stays the same — just longer or shorter.\
 
 
-<figure><img src=".gitbook/assets/unknown (33).png" alt="" width="563"><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/unknown (33).png" alt="" width="563"><figcaption></figcaption></figure>
 
 
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (34).png" alt="" width="563"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (34).png" alt="" width="563"><figcaption></figcaption></figure></div>
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (35).png" alt="" width="563"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (35).png" alt="" width="563"><figcaption></figcaption></figure></div>
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (36).png" alt="" width="375"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (36).png" alt="" width="375"><figcaption></figcaption></figure></div>
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (38).png" alt="" width="563"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (38).png" alt="" width="563"><figcaption></figcaption></figure></div>
 
-<figure><img src=".gitbook/assets/unknown (39).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/unknown (39).png" alt=""><figcaption></figcaption></figure>
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (40).png" alt="" width="563"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (40).png" alt="" width="563"><figcaption></figcaption></figure></div>
 
 So in simple terms:
 
@@ -343,24 +343,24 @@ So in simple terms:
 
 ## Real-World Example: Simple 2D Population Model (Growth & Movement)
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (41).png" alt="" width="563"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (41).png" alt="" width="563"><figcaption></figcaption></figure></div>
 
 
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (42).png" alt="" width="563"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (42).png" alt="" width="563"><figcaption></figcaption></figure></div>
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (43).png" alt="" width="563"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (43).png" alt="" width="563"><figcaption></figcaption></figure></div>
 
-<figure><img src=".gitbook/assets/unknown (44).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/unknown (44).png" alt=""><figcaption></figcaption></figure>
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (45).png" alt="" width="563"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (45).png" alt="" width="563"><figcaption></figcaption></figure></div>
 
-<figure><img src=".gitbook/assets/unknown (46).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/unknown (46).png" alt=""><figcaption></figcaption></figure>
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (47).png" alt="" width="563"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (47).png" alt="" width="563"><figcaption></figcaption></figure></div>
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (48).png" alt="" width="563"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (48).png" alt="" width="563"><figcaption></figcaption></figure></div>
 
-<div align="left"><figure><img src=".gitbook/assets/unknown (49).png" alt="" width="563"><figcaption></figcaption></figure></div>
+<div align="left"><figure><img src="../.gitbook/assets/unknown (49).png" alt="" width="563"><figcaption></figcaption></figure></div>
 
 \
