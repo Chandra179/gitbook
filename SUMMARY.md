@@ -11,6 +11,7 @@
   * [WebSocket](internet/websocket.md)
   * [Browser Storage](internet/browser-storage.md)
   * [Other](internet/other.md)
+  * [Browser Security](internet/browser-security.md)
 * [OS](os/README.md)
   * [Bits & Bytes](os/bits-and-bytes.md)
   * [Character Encoding](os/character-encoding.md)
