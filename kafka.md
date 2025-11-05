@@ -48,3 +48,35 @@ A single ordered log within a topic. Each partition is immutable and append-only
 
 * **Cluster**: A set of Kafka brokers working together.
 * **Inter-broker Communication**: Brokers exchange replication data, partition metadata, and perform leader election through an inter-broker port.
+
+
+
+#### Other
+
+```
+Replication & fault tolerance
+    Leader/follower dynamics per partition
+    ISR (In-Sync Replica) mechanism
+    What happens on leader failure or unclean leader election
+
+Consumer mechanics
+    Difference between manual vs auto offset commit
+    Rebalance process (what happens when consumers join/leave)
+    Handling duplicates and ordering guarantees
+    
+Kafka internals
+    How messages are stored: log segments, compaction, retention policies
+    How offsets are managed in the __consumer_offsets topic
+    Producer acknowledgments (acks=0,1,all) and durability guarantees
+    
+Advanced features
+    Transactions for exactly-once end-to-end processing
+    Kafka Streams vs Kafka Connect (data integration patterns)
+    Partition reassignment, quotas, and throttling
+    Monitoring and metrics (lag, throughput, under-replicated partitions)
+
+Operational knowledge
+    Cluster scaling, adding/removing brokers
+    Handling disk pressure, message retention, and compaction
+    Security: ACLs, SSL, SASL
+```
