@@ -77,7 +77,4 @@ Frame → sent over the wire/air (Link Layer)
 * [RFC 791 (IP)](https://www.rfc-editor.org/rfc/rfc791)
 * [RFC 1122 (TCP/IP communication layer requirements)](https://www.rfc-editor.org/rfc/rfc1122)
 * [RFC 1180 (TCP/IP tutorial)](https://www.rfc-editor.org/rfc/rfc1180)
-* [RFC 894 (IP over Ethernet — framing)](https://www.rfc-editor.org/rfc/rfc894)
-* [RFC 826 (ARP — mapping IP to MAC)](https://www.rfc-editor.org/rfc/rfc826)
-* [IANA protocol numbers (TCP=6, UDP=17)](https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml)
 
