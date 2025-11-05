@@ -18,8 +18,6 @@ A logical stream of data identified by a name. Topics are divided into partition
 
 A single ordered log within a topic. Each partition is immutable and append-only. Data within a partition is replicated across brokers for fault tolerance.
 
-***
-
 #### **Producers**
 
 **Publisher**: Application that writes messages into Kafka topics.
@@ -32,8 +30,6 @@ A single ordered log within a topic. Each partition is immutable and append-only
 * **Round-robin** → spreads messages evenly across partitions.
 * **Custom partitioner** → application-defined placement logic.
 
-***
-
 #### **Consumers**
 
 * **Subscriber**: Application that reads messages from Kafka topics.
@@ -42,14 +38,10 @@ A single ordered log within a topic. Each partition is immutable and append-only
 * **Offset Commit**: The act of saving the last processed record’s position to ensure reliable recovery.
 * **Consumer Lag**: The difference between the latest partition offset and the consumer’s committed offset — a measure of how "behind" a consumer is.
 
-***
-
 #### **Cluster**
 
 * **Cluster**: A set of Kafka brokers working together.
 * **Inter-broker Communication**: Brokers exchange replication data, partition metadata, and perform leader election through an inter-broker port.
-
-
 
 #### Other
 

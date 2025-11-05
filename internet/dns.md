@@ -4,68 +4,17 @@
 
 <figure><img src="../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
 
-#### **Step 1: Browser Cache Check**
+When a browser needs to resolve a domain like `www.example.com`, i
 
-* Modern browsers (Chrome, Firefox, Edge) keep an **internal DNS cache**.
-* This cache stores previously resolved domains with their **IP addresses** and **TTL (Time to Live)**.
-* If the domain exists and the TTL hasn’t expired → browser immediately uses it.
-* If not → moves to the OS resolver.
+* t first checks its **internal DNS cache** for a valid IP and TTL.&#x20;
+* If not found, the query moves to the **OS resolver**, which also checks its own cache and the **hosts file** for manual overrides.&#x20;
+* If still unresolved, the query is sent to a **recursive resolver** (ISP or cloud), which checks its cache and, if necessary, performs a **recursive lookup** by contacting a **root server**, then the appropriate **TLD server**, and finally the **authoritative server** that holds the domain’s actual DNS records (A, AAAA, MX, CNAME, etc.).&#x20;
+* The recursive resolver returns the IP to the OS resolver, which passes it back to the browser. The browser then opens a **TCP connection** to the resolved IP on port 80 (HTTP) or 443 (HTTPS), performing a **TLS handshake** if HTTPS is used.&#x20;
+* For example, resolving `www.example.com` might involve a browser query to Google Public DNS (`8.8.8.8`), recursive resolution through the root and `.com` TLD servers to the authoritative server, which responds with `93.184.216.34`, after which the browser connects and sends the HTTP/HTTPS request.
 
-#### **Step 2: OS Resolver Check**
+## Reference
 
-* Operating systems (Windows, Linux, macOS) maintain their **own DNS cache**.
-* Location examples:
-  * Linux: `/etc/resolv.conf` (resolver config) and `nscd` cache
-  * Windows: `ipconfig /displaydns` shows cache
-* The OS checks if the domain is in cache.
-* It may also check **hosts file** (`/etc/hosts` on Unix, `C:\Windows\System32\drivers\etc\hosts`) for manual overrides.
-* If found → returns IP to browser.
-* If not → sends a query to a **recursive resolver**.
-
-#### **Step 3: Recursive Resolver (ISP / Cloud DNS)**
-
-* The recursive resolver is your “middleman” for DNS queries.
-* Steps inside recursive resolver:
-  1. Check its **own cache**. If IP exists → return immediately.
-  2. If not cached → start **recursive querying** process.
-* Recursive resolver can query:
-  * **Root server** → TLD server → Authoritative server.
-  * Or respond from its own cache if recently resolved.
-
-#### **Step 4: Query to Root Name Servers**
-
-* There are **13 root server clusters** globally (`A.` to `M.`).
-* Root server doesn’t know the exact IP of `example.com`.
-* It **refers the recursive resolver** to the correct **TLD server** based on domain extension `.com`.
-
-#### **Step 5: Query to TLD Name Servers**
-
-* Each TLD (like `.com`) has **many authoritative TLD servers**.
-* TLD servers **do not contain the domain IP**, but point to the **authoritative server** for the domain.
-* Example response: `ns1.exampledns.com` is authoritative for `example.com`.
-
-#### **Step 6: Query to Authoritative Name Server**
-
-* Authoritative server **contains the actual DNS records** (A, AAAA, MX, CNAME, etc.).
-* Responds with:
-  * IPv4 address (`A` record) or IPv6 (`AAAA`)
-  * TTL value → recursive resolver caches this response
-
-#### **Step 7: Return Path**
-
-* Recursive resolver sends IP back to the **OS resolver**, which stores it in its cache.
-* OS resolver returns IP to **browser**.
-
-#### **Step 8: Browser Connection**
-
-* Browser initiates **TCP connection** to the IP on port 80 (HTTP) or 443 (HTTPS).
-* If HTTPS → browser performs **TLS handshake** to encrypt the session.
-
-## **Real-world Example**
-
-Let’s resolve `www.example.com`:
-
-1. Browser → Recursive resolver (`8.8.8.8`)
-2. Resolver → Root server → `.com` TLD server → authoritative server for `example.com`
-3. Authoritative server → IP `93.184.216.34`
-4. Browser connects to `93.184.216.34` → HTTP/HTTPS request sent
+* [RFC 1034 — Domain Names – Concepts and Facilities](https://datatracker.ietf.org/doc/html/rfc1034)
+* [RFC 1035 — Domain Names – Implementation and Specification](https://datatracker.ietf.org/doc/html/rfc1035)
+* [IANA Root Name Server Operational Overview](https://www.iana.org/domains/root/servers)
+* [Google Public DNS Overview](https://developers.google.com/speed/public-dns/docs/overview)

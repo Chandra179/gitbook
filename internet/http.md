@@ -100,3 +100,21 @@ HTTP is a medium to communicate browser (client) to server (e.g, your apps). Eve
 | **Debugging**             | Easy (plain text)                           | Easy (plain text)                                 | Harder (binary)                                                           | Hardest (binary + encrypted over QUIC)                      |
 | **Adoption status**       | Obsolete                                    | Still widely supported, fallback                  | Widely deployed (major CDNs, browsers)                                    | Rapid adoption (Google, Cloudflare, Facebook, YouTube)      |
 
+## Reference
+
+* [RFC 1945 — HTTP/1.0 (1996)](https://www.rfc-editor.org/rfc/rfc1945)
+* [RFC 2616 — HTTP/1.1 (1997, now obsolete)](https://www.rfc-editor.org/rfc/rfc2616)
+  * HTTP/1.1 was later split and replaced by:
+    * [RFC 7230 — HTTP/1.1: Message Syntax and Routing](https://www.rfc-editor.org/rfc/rfc7230)
+    * [RFC 7231 — HTTP/1.1: Semantics and Content](https://www.rfc-editor.org/rfc/rfc7231)
+    * (7230–7235 as the full replacement set)
+* [RFC 7540 — HTTP/2 (2015)](https://www.rfc-editor.org/rfc/rfc7540)
+  * Header compression (HPACK):
+    * [RFC 7541 — HPACK: Header Compression](https://www.rfc-editor.org/rfc/rfc7541)
+* [RFC 9114 — HTTP/3 (2022)](https://www.rfc-editor.org/rfc/rfc9114)
+  * QUIC transport layer:
+    * [RFC 9000 — QUIC: A UDP-Based Multiplex Transport](https://www.rfc-editor.org/rfc/rfc9000)
+  * QUIC + TLS 1.3 handshake:
+    * [RFC 9001 — Using TLS with QUIC](https://www.rfc-editor.org/rfc/rfc9001)
+  * Header compression (QPACK):
+    * [RFC 9204 — QPACK: Header Compression for HTTP/3](https://www.rfc-editor.org/rfc/rfc9204)

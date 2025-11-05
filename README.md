@@ -1,5 +1,5 @@
 ---
-description: software engineer related topics
+description: personal blog + software engineer related topics
 ---
 
 # Computing Blog
@@ -14,11 +14,11 @@ Software engineer 3.5+ years experience in Golang, distributed system, data orie
 {% tab title="BFI (3.5 years)" %}
 BFI finance is multifinance company providing: **leasing, consumer financing, and working capital financing**.&#x20;
 
-1. Service integration: KYC, OCR, forgery, creditworthiness, repeat order, partnership, surveyor, dukcapil, OTP, notification
-2. Migrated loan proposal system from single to multi-collateral loan architecture, enhancing flexibility for borrowers
-3. Developed custom auth and authorize (RBAC) with privilege management
-4. Improving the loan system into a data-driven, and automated workflow-oriented design. Reducing manual intervention process
-5. Configured service logging and tracing integration for distributed monitoring stack for easier debugging
+* Integrated internal and external partner services (KYC, OCR, fraud detection, credit scoring, Dukcapil, OTP, notification services)
+* Refactored loan proposal platform **from single-collateral to multi-collateral architecture**, allowing borrowers to combine multiple assets under one financing agreement
+* Built **custom authentication + RBAC authorization system** with privilege management for users
+* Transformed loan pipeline from manual review into **automated, workflow-driven system**, reducing manual intervention
+* Implemented distributed tracing and structured logging fopr service level (Otel + Datadog) for easier debugging and monitoring
 {% endtab %}
 
 {% tab title="M+ Software (5 month)" %}

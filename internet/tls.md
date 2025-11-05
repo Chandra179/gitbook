@@ -36,7 +36,8 @@ The server receives ClientHello and replies with a **ServerHello**, also in plai
 * The server’s key share (its half of the ECDHE exchange)
 
 {% hint style="info" %}
-In TLS 1.3, **everything after ServerHello is encrypted** with early handshake keys.
+In TLS 1.3, handshake messages after `ServerHello` are encrypted with **handshake keys** derived from ECDHE.\
+Once the handshake completes, all **application data** is encrypted with the session keys.
 {% endhint %}
 
 Next, the server sends its **X.509 certificate**, which contains:
@@ -69,3 +70,10 @@ At that point, **all application data (including HTTP) is encrypted and authenti
 * The first connection requires the full handshake.
 * For additional requests on the same connection, TLS simply reuses the established session keys.
 * If a new TCP/TLS connection is created later, TLS 1.3 can use **session resumption** (via session tickets or PSKs) to avoid the full handshake, reducing latency.
+
+## Reference
+
+* [RFC 8446 — The Transport Layer Security (TLS) Protocol Version 1.3](https://www.rfc-editor.org/rfc/rfc8446)
+* [RFC 5246 — TLS 1.2 for comparison](https://www.rfc-editor.org/rfc/rfc5246)
+* [RFC 9001 — QUIC: A UDP-Based Multiplexed and Secure Transport](https://www.rfc-editor.org/rfc/rfc9001)
+* [RFC 9114 — HTTP/3 (uses QUIC + TLS)](https://www.rfc-editor.org/rfc/rfc9114)

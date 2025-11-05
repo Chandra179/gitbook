@@ -219,3 +219,11 @@ ICE tries each path until one succeeds.
 * Quick local checks: `upnpc -l` (UPnP client)
 * NAT type test tools: `punch-check` (GitHub: delthas/punch-check)
 
+## Reference
+
+* [RFC 1918 — Address Allocation for Private Internets](https://datatracker.ietf.org/doc/html/rfc1918)
+* [RFC 4787 — NAT Behavioral Requirements for Unicast UDP](https://datatracker.ietf.org/doc/html/rfc4787)
+* [RFC 5128 — Common Requirements for NAT Traversal in Peer-to-Peer Applications](https://datatracker.ietf.org/doc/html/rfc5128)
+* [STUN RFC 5389 — Session Traversal Utilities for NAT](https://datatracker.ietf.org/doc/html/rfc5389)
+* [TURN RFC 8656 — Traversal Using Relays around NAT](https://datatracker.ietf.org/doc/html/rfc8656)
+* [ICE RFC 8445 — Interactive Connectivity Establishment](https://datatracker.ietf.org/doc/html/rfc8445)

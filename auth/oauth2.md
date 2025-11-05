@@ -183,7 +183,7 @@ When a refresh token is revoked:
 
 ## OIDC
 
-[**https://openid.net/specs/openid-connect-core-1\_0.html**](https://openid.net/specs/openid-connect-core-1_0.html) **:** core
+[https://openid.net/specs/openid-connect-core-1\_0.html](https://openid.net/specs/openid-connect-core-1_0.html) **:** core
 
 [https://openid.net/specs/openid-connect-discovery-1\_0.html](https://openid.net/specs/openid-connect-discovery-1_0.html) : discovery
 
