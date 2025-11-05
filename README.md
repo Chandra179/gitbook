@@ -2,7 +2,7 @@
 description: personal blog + software engineer related topics
 ---
 
-# Computing Blog
+# My Blog
 
 #### About
 
@@ -36,11 +36,9 @@ M+ Software operating as an ERP consulting
 
 #### Domain knowledge
 
-* Crypto&#x20;
 * Security
 * Fintech
 * AI
-* Crawling
 
 #### Project
 

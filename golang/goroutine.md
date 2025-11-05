@@ -62,7 +62,7 @@ ch <- "banana"
 ch <- "cherry" // waits until receiver drains a slot
 ```
 
-### What happens to blocking channel operation? <a href="#id-6ffe" id="id-6ffe"></a>
+## What happens to blocking channel operation? <a href="#id-6ffe" id="id-6ffe"></a>
 
 * The goroutine is **suspended** — removed from the run queue.
 * It is placed in the channel’s **send queue (`sendq`)** or **receive queue (`recvq`)**.
@@ -88,7 +88,7 @@ Summar&#x79;**:**
 * **Buffered channels:** store values in `buf` until full; blocked senders go into `sendq`
 * **Unbuffered channels:** no buffer; every send waits for a receive (and vice versa)
 
-### Closures in goroutine <a href="#fec9" id="fec9"></a>
+## Closures in goroutine <a href="#fec9" id="fec9"></a>
 
 Common pitfall: goroutines inside loops capturing the loop variable
 
@@ -114,3 +114,5 @@ for _, n := range numbers {
 ```
 
 Since each goroutine has its own unique copy of the value, it doesn’t matter when the goroutine actually runs. It will always use the value that was passed to it, not the final value of the loop variable.
+
+## Select Statement

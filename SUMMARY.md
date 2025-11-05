@@ -1,6 +1,6 @@
 # Table of contents
 
-* [Computing Blog](README.md)
+* [My Blog](README.md)
 * [Internet](internet/README.md)
   * [TCP/IP](internet/tcp-ip.md)
   * [HTTP](internet/http.md)
