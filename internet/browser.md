@@ -1,4 +1,10 @@
-# Browser Storage
+---
+description: browser related features and properties
+---
+
+# Browser
+
+## Browser Storage
 
 | Feature                | Cookie                                | Local Storage                | Session Storage              |
 | ---------------------- | ------------------------------------- | ---------------------------- | ---------------------------- |
@@ -8,7 +14,7 @@
 | Access via JS          | ✅ Unless HttpOnly                     | ✅                            | ✅                            |
 | Stores sensitive data? | ✅ Safest (with HttpOnly + Secure)     | ❌ Never store sensitive data | ❌ Never store sensitive data |
 
-## **Cookie**
+### **Cookie**
 
 **Cookie** is a small piece of data that a website stores on your device (computer, phone, tablet) via the web browser. Cookies are primarily used to:
 
@@ -32,7 +38,7 @@
   * `HttpOnly` prevents JavaScript access.
   * `Secure` enforces HTTPS.
 
-## **Local Storage**
+### **Local Storage**
 
 Local Storage is a built-in browser storage that allows a website to store data **on your device**, and this data is **not automatically sent to the server**. Local Storage is primarily used to:
 
@@ -53,7 +59,7 @@ Local Storage is a built-in browser storage that allows a website to store data 
 * Should **never store passwords, tokens, or sensitive data**.
 * Data is not encrypted by default.
 
-## **Session Storage**
+### **Session Storage**
 
 Session Storage is similar to Local Storage but **only lasts for the duration of a browser tab**. Session Storage is primarily used to:
 
@@ -73,3 +79,6 @@ Session Storage is similar to Local Storage but **only lasts for the duration of
 * Same as Local Storage, vulnerable to **XSS** (JavaScript can read it).
 * Mildly safer than Local Storage (shorter lifetime), but **still not for sensitive data**.
 
+## Browser Security
+
+<table data-full-width="true"><thead><tr><th>Mechanism</th><th width="209.41552734375">Enforced by</th><th width="206.6500244140625">Protects against</th><th>Summary</th></tr></thead><tbody><tr><td><strong>Same-Origin Policy (SOP)</strong> <em>(foundation)</em></td><td>Browser</td><td>Unauthorized cross-site access</td><td>Core rule: scripts from origin A can't access resources of origin B. EVERYTHING ELSE builds on this.</td></tr><tr><td><strong>CORS (Cross-Origin Resource Sharing)</strong></td><td>Browser (server opt-in)</td><td>Unauthorized cross-site <strong>reads</strong> (AJAX)</td><td>Relaxation mechanism of SOP, server decides allowed origins.</td></tr><tr><td><strong>SameSite Cookies</strong></td><td>Browser (server opt-in)</td><td>CSRF</td><td>Prevents cookies from being sent on cross-site requests.</td></tr><tr><td><strong>Content Security Policy (CSP)</strong></td><td>Browser (server opt-in)</td><td>XSS &#x26; data exfiltration</td><td>Tells browser where scripts/styles can load from (whitelists).</td></tr><tr><td><strong>X-Frame-Options / <code>frame-ancestors</code> (CSP)</strong></td><td>Browser</td><td>Clickjacking</td><td>Prevents your site from being embedded in <code>&#x3C;iframe></code>.</td></tr><tr><td><strong>CORB (Cross-Origin Read Blocking)</strong></td><td>Browser</td><td>Side-channel data leaks</td><td>Extra layer to prevent reading of sensitive MIME types cross-origin.</td></tr><tr><td><strong>Fetch Metadata Request Headers</strong> (<code>Sec-Fetch-Site</code>, <code>Sec-Fetch-Mode</code>)</td><td>Browser</td><td>CSRF, cross-site probing</td><td>Browser tells server context of request (same-site, cross-site). Useful for CSRF mitigation.</td></tr><tr><td><strong>Referrer-Policy</strong></td><td>Browser</td><td>Leaking sensitive URLs</td><td>Controls what referrer data is shared cross-origin.</td></tr><tr><td><strong>Permissions-Policy</strong> (formerly Feature-Policy)</td><td>Browser</td><td>Abuse of powerful APIs</td><td>Controls access to camera/mic/geolocation/etc, per-origin.</td></tr></tbody></table>
