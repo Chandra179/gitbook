@@ -6,7 +6,7 @@ description: personal blog + software engineer related topics
 
 #### About
 
-Software engineer 3.5+ years experience in Golang, distributed system, data oriented workflow
+Software engineer 3.5+ years experience in Fintech, distributed system, workflow automation
 
 #### Experience
 

@@ -116,3 +116,108 @@ for _, n := range numbers {
 Since each goroutine has its own unique copy of the value, it doesn’t matter when the goroutine actually runs. It will always use the value that was passed to it, not the final value of the loop variable.
 
 ## Select Statement
+
+`select` is a control structure that allows a goroutine to wait on **multiple channel operations** (send or receive) at the same time.
+
+```go
+select {
+case msg := <-ch1:
+    fmt.Println("Received from ch1:", msg)
+case ch2 <- "ping":
+    fmt.Println("Sent ping to ch2")
+default:
+    fmt.Println("No channel ready")
+}
+```
+
+### Common Usecases
+
+```go
+// Wait on multiple channels
+select {
+case msg := <-ch1:
+    fmt.Println("ch1 said", msg)
+case msg := <-ch2:
+    fmt.Println("ch2 said", msg)
+}
+
+// Using timeout
+select {
+case result := <-dbResponse:
+    fmt.Println("Got data:", result)
+case <-time.After(3 * time.Second):
+    fmt.Println("Timeout waiting for DB")
+}
+
+// Graceful shutdown
+func worker(ctx context.Context, ch <-chan int) {
+    for {
+        select {
+        case val := <-ch:
+            fmt.Println("got", val)
+        case <-ctx.Done():
+            fmt.Println("worker stopped")
+            return
+        }
+    }
+}
+
+// Non blocking send
+select {
+case ch <- 1:
+    fmt.Println("sent")
+default:
+    fmt.Println("channel is full, skipping")
+}
+```
+
+Without `select`, you’d need manual checks, polling, or additional goroutines. But with `select`, Go gives you a built-in language feature that:
+
+* waits on multiple channels **in a single place**
+* picks whichever channel is ready
+* prevents your goroutine from blocking forever
+
+```go
+// Without select
+for {
+    if len(ch1) > 0 {
+        msg := <-ch1
+        fmt.Println("Got from ch1:", msg)
+    }
+
+    if len(ch2) > 0 {
+        msg := <-ch2
+        fmt.Println("Got from ch2:", msg)
+    }
+
+    time.Sleep(1 * time.Millisecond) // avoid CPU burn
+}
+
+// With select
+select {
+case msg := <-ch1:
+    fmt.Println("Got from ch1:", msg)
+
+case msg := <-ch2:
+    fmt.Println("Got from ch2:", msg)
+}
+
+```
+
+### Tradeoffs & Common mistakes
+
+| Benefit                             | Trade-off / cost                                    |
+| ----------------------------------- | --------------------------------------------------- |
+| Avoids blocking, prevents deadlocks | Logic becomes more complex as channels grow         |
+| Handles multiple channels elegantly | Hard to test + debug because timing/race conditions |
+| Enables timeouts + cancellation     | `default` can accidentally create busy loops        |
+| Non-blocking I/O                    | Can hide back-pressure problems if misused          |
+
+❌ Putting heavy logic inside `select`\
+❌ Using `default` without `time.Sleep()` → creates hot loops\
+❌ Overusing `select` instead of restructuring goroutines
+
+### When to use it?
+
+<table><thead><tr><th width="362.6219482421875">Use it when…</th><th>Don't use it when…</th></tr></thead><tbody><tr><td>Multiple channels might be ready</td><td>You only have 1 channel</td></tr><tr><td>You need timeouts / cancellation</td><td>You’re doing sequential processing</td></tr><tr><td>You're multiplexing goroutines</td><td>You can avoid concurrency entirely</td></tr></tbody></table>
+
