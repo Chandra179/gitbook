@@ -221,3 +221,71 @@ case msg := <-ch2:
 
 <table><thead><tr><th width="362.6219482421875">Use it when…</th><th>Don't use it when…</th></tr></thead><tbody><tr><td>Multiple channels might be ready</td><td>You only have 1 channel</td></tr><tr><td>You need timeouts / cancellation</td><td>You’re doing sequential processing</td></tr><tr><td>You're multiplexing goroutines</td><td>You can avoid concurrency entirely</td></tr></tbody></table>
 
+## Goroutine Leak
+
+Real world goroutine leak
+
+* [https://github.com/kubernetes/kubernetes/pull/135078](https://github.com/kubernetes/kubernetes/pull/135078)
+* [https://github.com/kubernetes/kubernetes/issues/134939](https://github.com/kubernetes/kubernetes/issues/134939)
+
+Leaked goroutines cause:
+
+* Increased memory consumption (each goroutine has its own stack)
+* Increased scheduling overhead (scheduler now handles more runnable goroutines)
+* Potential exhaustion of system resources
+
+```go
+// Goroutine waiting forever on a channel (blocked read/write)
+// If ch stops receiving values or is never closed, worker() blocks forever.
+func worker(ch <-chan int) {
+    for {
+        v := <-ch   // blocked forever if no one sends to ch
+        fmt.Println(v)
+    }
+}
+
+// Forgetting to stop goroutines when using select + channels
+func doWork(ch chan int) {
+    go func() {
+        for {
+            select {
+            case <-ch:
+                // do something
+            }
+            // BUG: no default / no cancel path
+        }
+    }()
+}
+
+// Lost goroutine due to async operations not tied to context
+func handler(w http.ResponseWriter, r *http.Request) {
+    go func() {
+        // do db operation / send notification
+        // BUG: ignores r.Context()
+    }()
+}
+
+// Unbounded goroutine creation
+for {
+    go handleConnection(conn) // unlimited spawn
+}
+
+// Deadlock inside goroutine due to mutual channel dependency
+func main() {
+    ch1 := make(chan int)
+    ch2 := make(chan int)
+
+    go func() {
+        <-ch1
+        ch2 <- 1 // waits forever if main never reads ch2
+    }()
+
+    <-ch2 // waits forever if goroutine never writes to ch2
+}
+
+
+```
+
+### Detect Goroutine Leak with
+
+* [https://github.com/uber-go/goleak](https://github.com/uber-go/goleak)
