@@ -30,4 +30,5 @@
   * [Chunking](ai/chunking.md)
   * [Tokenization](ai/tokenization.md)
 * [CNCF](cncf.md)
-* [Domain](domain.md)
+* [Domain](domain/README.md)
+  * [Fintech](domain/fintech.md)
