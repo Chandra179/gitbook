@@ -30,17 +30,3 @@ q · v2 = (3*4) + (1*0) = 12
 q · v3 = (3*2) + (1*1) = 7
 Pick the item with the largest score. -> 12
 ```
-
-## Comparison
-
-| Aspect            | **Traditional Passage Retrieval (Sparse)**                        | **Dense Passage Retrieval (DPR / Dense)**                                 |
-| ----------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Examples          | **BM25**, TF-IDF, keyword search                                  | **DPR (bi-encoder)**, Sentence Transformers, embedding-based              |
-| Representation    | Bag-of-words, counts frequencies                                  | Converts text into **vectors** (numerical embeddings)                     |
-| Matching method   | Overlap of **words** (exact lexical match)\*\*                    | **Semantic similarity** (dot product / cosine similarity in vector space) |
-| Query & documents | Uses same token space (words)                                     | Query encoder and passage encoder can be **different models**             |
-| Good at           | Short precise queries, keyword-heavy text                         | Paraphrased questions, fuzzy meaning, synonyms                            |
-| Struggles with    | Synonyms, rephrasing ("price of crude oil" vs "oil market price") | Exact keyword match when specific terms are needed                        |
-| Storage/querying  | Inverted index (lightweight)                                      | Vector DB (Qdrant, Pinecone, Weaviate, FAISS)                             |
-| Scalability       | Very scalable for text search                                     | Requires GPU to train; indexing costs more                                |
-| Used in           | Search engines (Elasticsearch, Solr), older NLP                   | RAG systems, modern LLM retrieval (OpenAI, Meta)                          |

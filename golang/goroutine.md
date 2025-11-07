@@ -201,7 +201,6 @@ case msg := <-ch1:
 case msg := <-ch2:
     fmt.Println("Got from ch2:", msg)
 }
-
 ```
 
 ### Tradeoffs & Common mistakes
@@ -235,15 +234,29 @@ Leaked goroutines cause:
 * Potential exhaustion of system resources
 
 ```go
-// Goroutine waiting forever on a channel (blocked read/write)
-// If ch stops receiving values or is never closed, worker() blocks forever.
-func worker(ch <-chan int) {
-    for {
-        v := <-ch   // blocked forever if no one sends to ch
-        fmt.Println(v)
-    }
+// Lost goroutine due to async operations not tied to context
+func handler(w http.ResponseWriter, r *http.Request) {
+    go func() {
+        // do db operation / send notification
+        // BUG: ignores r.Context()
+    }()
 }
+// Fix ✅
+func handler(w http.ResponseWriter, r *http.Request) {
+    ctx := r.Context()
 
+    go func() {
+        select {
+        case <-time.After(time.Second):
+            // finish work
+        case <-ctx.Done():    // client disconnected → abort
+            return
+        }
+    }()
+}
+```
+
+```go
 // Forgetting to stop goroutines when using select + channels
 func doWork(ch chan int) {
     go func() {
@@ -256,19 +269,47 @@ func doWork(ch chan int) {
         }
     }()
 }
-
-// Lost goroutine due to async operations not tied to context
-func handler(w http.ResponseWriter, r *http.Request) {
+// Fix ✅
+func doWork(ctx context.Context, ch chan int) {
     go func() {
-        // do db operation / send notification
-        // BUG: ignores r.Context()
+        for {
+            select {
+            case <-ch:
+                // do something
+            case <-ctx.Done():  // required exit
+                return
+            }
+        }
     }()
 }
+```
 
-// Unbounded goroutine creation
-for {
-    go handleConnection(conn) // unlimited spawn
+```go
+// Goroutine waiting forever on a channel (blocked read/write)
+// If ch stops receiving values or is never closed, worker() blocks forever.
+func worker(ch <-chan int) {
+    for {
+        v := <-ch   // blocked forever if no one sends to ch
+        fmt.Println(v)
+    }
 }
+// Fix ✅
+func worker(ctx context.Context, ch <-chan int) {
+    for {
+        select {
+        case v, ok := <-ch:
+            if !ok {           // channel closed → exit goroutine
+                return
+            }
+            fmt.Println(v)
+        case <-ctx.Done():     // cancellation → exit goroutine
+            return
+        }
+    }
+}
+```
+
+```go
 
 // Deadlock inside goroutine due to mutual channel dependency
 func main() {
@@ -282,8 +323,19 @@ func main() {
 
     <-ch2 // waits forever if goroutine never writes to ch2
 }
+// Fix ✅
+func main() {
+    ch1 := make(chan int)
+    ch2 := make(chan int, 1) // buffered channel prevents deadlock
 
+    go func() {
+        <-ch1
+        ch2 <- 1
+    }()
 
+    ch1 <- 1
+    fmt.Println(<-ch2)
+}
 ```
 
 ### Detect Goroutine Leak with
