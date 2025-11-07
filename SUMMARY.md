@@ -17,7 +17,6 @@
 * [Golang](golang/README.md)
   * [Strings](golang/strings.md)
   * [Goroutine](golang/goroutine.md)
-  * [Profiling](golang/profiling.md)
   * [Context](golang/context.md)
 * [Auth](auth/README.md)
   * [Oauth2 & OIDC](auth/oauth2.md)
