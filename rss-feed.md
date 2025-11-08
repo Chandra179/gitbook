@@ -5,7 +5,7 @@
 #### Goals
 
 * Load & display feeds correctly in the UI.
-* Add feed via URL or import OPML.
+* Add feed via URL or import OPML file.
 * Mark items as read/unread.
 * Support up to 10k items with smooth infinite/virtual scrolling.
 
@@ -20,13 +20,16 @@
 * Only fetch `https://` feeds; skip or warn on `http://`.
 * CORS handling: Try to fetch, if CORS blocks skip and log error.
 * Use virtualized rendering for lists (svelte-virtual-list).
-* Manual refresh button for updating feeds.
+* Manual refresh button for updating feeds, per feed not all of them.
 * RSS Parser: Use `rss-parser` library (fallback: create custom parser if needed).
 * Duplicate detection: Use content hash.
 * Feed dies (404/timeout): Skip and log error with feed status.
-* Storage quota exceeded: Show warning when approaching browser storage limit (80%+).
+* Storage quota exceeded: Show warning when approaching browser storage limit (80%+).  for  Storage Warning UI use persistent banner
 * Malformed XML: Return error and log it.
 * Feed metadata updates: If feed title/description changes, update it.
+* UI layout:  sidebar for feed list
+* Feed URL Input: "Add Feed" button
+* Error Handling UI use  status indicator
 
 ### Tools to use
 
