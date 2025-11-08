@@ -34,7 +34,7 @@
 ### Tools to use
 
 * **Frontend**: React
-* **Storage**: IndexedDB (via Dexie.js)
+* **Storage**: IndexedDB
 * **RSS Parsing**: rss-parser
 * **HTML Sanitization**: DOMPurify
 * **Virtual Scrolling**: svelte-virtual-list
