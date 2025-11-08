@@ -12,7 +12,7 @@
 #### Requirements (concise)
 
 * Add feeds by URL or OPML import.
-* Storage: **IndexedDB** (use Dexie.js).
+* Storage: **IndexedDB**.
 * Separate stores: `feeds` + `items`.
 * Enforce per-feed storage limit: **≤ 7 MB per feed** (soft cap enforced by app).
 * Sanitize all HTML content (use DOMPurify) to prevent XSS.
@@ -33,7 +33,7 @@
 
 ### Tools to use
 
-* **Frontend**: Svelte
+* **Frontend**: React
 * **Storage**: IndexedDB (via Dexie.js)
 * **RSS Parsing**: rss-parser
 * **HTML Sanitization**: DOMPurify
