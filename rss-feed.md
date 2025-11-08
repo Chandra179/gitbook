@@ -12,19 +12,34 @@
 #### Requirements (concise)
 
 * Add feeds by URL or OPML import.
-* Storage: **IndexedDB** (use Dexie.js recommended).
+* Storage: **IndexedDB** (use Dexie.js).
 * Separate stores: `feeds` + `items`.
-* Enforce per-feed storage limit: **≤ 7 MB per feed**.
+* Enforce per-feed storage limit: **≤ 7 MB per feed** (soft cap enforced by app).
 * Sanitize all HTML content (use DOMPurify) to prevent XSS.
 * Let user opt into fetching images/media (toggle).
 * Only fetch `https://` feeds; skip or warn on `http://`.
-* If CORS blocks a feed, skip (or show an error / suggest proxy in future).
-* Use virtualized rendering for lists (react-window analogs for Svelte, e.g. svelte-virtual-list).
+* CORS handling: Try to fetch, if CORS blocks skip and log error.
+* Use virtualized rendering for lists (svelte-virtual-list).
+* Manual refresh button for updating feeds.
+* RSS Parser: Use `rss-parser` library (fallback: create custom parser if needed).
+* Duplicate detection: Use content hash.
+* Feed dies (404/timeout): Skip and log error with feed status.
+* Storage quota exceeded: Show warning when approaching browser storage limit (80%+).
+* Malformed XML: Return error and log it.
+* Feed metadata updates: If feed title/description changes, update it.
 
 ### Tools to use
 
-* svelte for client
-* we use browser storage indexedDB
+* **Frontend**: Svelte
+* **Storage**: IndexedDB (via Dexie.js)
+* **RSS Parsing**: rss-parser
+* **HTML Sanitization**: DOMPurify
+* **Virtual Scrolling**: svelte-virtual-list
+
+### **Storage Notes**
+
+* **IndexedDB total limit**: Usually 10-60% of available disk space (can be GBs, browser-dependent)
+* **Per-feed 7MB limit**: Soft cap enforced by application code to prevent one feed from dominating storage
 
 ### Schema
 
@@ -37,10 +52,12 @@
   "title": "Example RSS Feed",
   "description": "Tech news and articles",
   "lastFetchedAt": 1736323200000,
-  "totalSizeBytes": 3456789,    // bytes used by items of this feed
+  "lastFetchStatus": "success",  // success | cors_error | not_found | malformed_xml | timeout
+  "lastFetchError": null,        // error message if failed
+  "totalSizeBytes": 3456789,     // bytes used by items of this feed
   "settings": {
     "fetchImages": false,
-    "maxSizeBytes": 7340032      // default 7 * 1024 * 1024
+    "maxSizeBytes": 7340032      // 7 * 1024 * 1024
   }
 }
 ```
@@ -54,15 +71,11 @@
   "title": "AI Breakthrough in 2025",
   "link": "https://example.com/ai-2025",
   "publishedAt": 1736323200000,
-  "content": "<p>Sanitized HTML...</p>",
-  "state": {
-    "read": false,
-  },
-  "metadata": {
-    "contentHash": "3f8bc1...",  // 64-byte hash
-    "author": "John Doe",
-    "sizeBytes": 5234            // bytes for this item (approx serialized size)
-  }
+  "content": "Sanitized HTML...",
+  "read": false,                 // flattened for easier indexing
+  "contentHash": "3f8bc1...",    // 64-byte hash for deduplication
+  "author": "John Doe",
+  "sizeBytes": 5234              // bytes for this item (approx serialized size)
 }
 
 ```
