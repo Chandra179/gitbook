@@ -23,6 +23,7 @@
 * [Kafka](kafka.md)
 * [RAG Pipeline](rag-pipeline/README.md)
   * [Golang impl](rag-pipeline/golang-impl.md)
+* [RSS Feed](rss-feed.md)
 * [P2P Chat](p2p-chat.md)
 * [AI](ai/README.md)
   * [Retriever](ai/retriever.md)
