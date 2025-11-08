@@ -19,7 +19,7 @@
 * Let user opt into fetching images/media (toggle).
 * Only fetch `https://` feeds; skip or warn on `http://`.
 * CORS handling: Try to fetch, if CORS blocks skip and log error.
-* Use virtualized rendering for lists (svelte-virtual-list).
+* Use virtualized rendering for lists
 * Manual refresh button for updating feeds, per feed not all of them.
 * RSS Parser: Use `rss-parser` library (fallback: create custom parser if needed).
 * Duplicate detection: Use content hash.
@@ -37,7 +37,7 @@
 * **Storage**: IndexedDB
 * **RSS Parsing**: rss-parser
 * **HTML Sanitization**: DOMPurify
-* **Virtual Scrolling**: svelte-virtual-list
+* **Virtual Scrolling**
 
 ### **Storage Notes**
 
