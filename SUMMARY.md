@@ -7,7 +7,6 @@
   * [TLS](internet/tls.md)
   * [NAT](internet/nat.md)
   * [DNS](internet/dns.md)
-  * [Browser](internet/browser.md)
 * [General](general/README.md)
   * [Bits & Bytes](general/bits-and-bytes.md)
   * [Character Encoding](general/character-encoding.md)
