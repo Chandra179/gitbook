@@ -1,5 +1,7 @@
 # Chunking
 
+## Question to ask when choosing chunking strategies
+
 * long or short document?
 * embed model to use general or specialized domain (finance, medical, legal)
 * length complexity of user queries
@@ -27,7 +29,7 @@ When you hit a new _top-level header_ (e.g. `#`), you start a **new chunk**, eve
 
 Why? Top-level headers usually represent **independent topics** — “Installation” and “Usage” don’t share much semantic overlap. Merging them would hurt retrieval precision, because a search for “How to install” might retrieve part of the “Usage” section instead.
 
-**Example behavior**
+**Example**
 
 ```
 Chunk 1 → "# Introduction" (80 tokens)
@@ -53,3 +55,4 @@ Even if total < 512 per chunk, that’s okay — each chunk is coherent.
 
 * [https://www.pinecone.io/learn/chunking-strategies/](https://www.pinecone.io/learn/chunking-strategies/)
 * [https://community.openai.com/t/embedding-tokens-vs-embedding-strings/463213](https://community.openai.com/t/embedding-tokens-vs-embedding-strings/463213)
+
