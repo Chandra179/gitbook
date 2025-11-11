@@ -26,7 +26,5 @@
   * [Retriever](ai/retriever.md)
   * [Chunking](ai/chunking.md)
   * [Tokenization](ai/tokenization.md)
-* [CNCF](cncf.md)
-* [Domain](domain/README.md)
-  * [Fintech](domain/fintech.md)
 * [React](react.md)
+* [Fintech](fintech.md)
