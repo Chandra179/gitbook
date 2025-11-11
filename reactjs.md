@@ -1,6 +1,4 @@
-# React
-
-**Props** similar args in a function
+# ReactJS
 
 #### Virtual DOM
 

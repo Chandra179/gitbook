@@ -1,5 +1,7 @@
 # RSS Feed
 
+<figure><img src=".gitbook/assets/image (9).png" alt=""><figcaption></figcaption></figure>
+
 ## **Phase 1 (MVP)**
 
 #### Goals
@@ -30,6 +32,11 @@
 * UI layout:  sidebar for feed list
 * Feed URL Input: "Add Feed" button
 * Error Handling UI use  status indicator
+
+#### Issues
+
+* fetching script got fetch:blocked on iframe
+* same origin cors disallow
 
 ### Tools to use
 
