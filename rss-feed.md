@@ -9,7 +9,7 @@
 * Mark items as read/unread.
 * Support up to 10k items with smooth infinite/virtual scrolling.
 
-#### Requirements (concise)
+#### Requirements
 
 * Add feeds by URL or OPML import.
 * Storage: **IndexedDB**

@@ -11,8 +11,7 @@
 | Space           | 32      | 00100000 | 0x20 |
 | Enter (newline) | 10      | 00001010 | 0x0A |
 
-ASCII only defines **128 characters**, which works for English,\
-but fails for other languages — no ñ, é, ü, 中, or 😄.
+ASCII only defines **128 characters**, which works for English, but fails for other languages — no ñ, é, ü, 中, or 😄.
 
 ## **Unicode**
 
