@@ -1,12 +1,10 @@
 # Table of contents
 
 * [My Blog](README.md)
-* [Internet](internet/README.md)
-  * [NAT](internet/nat.md)
-  * [DNS](internet/dns.md)
 * [General](general/README.md)
   * [Bits & Bytes](general/bits-and-bytes.md)
   * [Character Encoding](general/character-encoding.md)
+  * [NAT](general/nat.md)
 * [Cryptography](cryptography/README.md)
   * [ECDSA](cryptography/ecdsa.md)
   * [Diffie–Hellman](cryptography/diffie-hellman.md)

@@ -1,5 +1,5 @@
 ---
-description: networking related concepts.
+description: networking address translation
 ---
 
 # NAT
