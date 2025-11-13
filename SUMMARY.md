@@ -6,6 +6,7 @@
   * [Character Encoding](general/character-encoding.md)
   * [NAT](general/nat.md)
   * [Oauth2 & OIDC](general/oauth2-and-oidc.md)
+  * [API Design](general/api-design.md)
 * [Cryptography](cryptography/README.md)
   * [ECDSA](cryptography/ecdsa.md)
   * [Diffie–Hellman](cryptography/diffie-hellman.md)
@@ -22,4 +23,3 @@
 * [P2P Chat](p2p-chat.md)
 * [ReactJS](reactjs.md)
 * [Fintech](fintech.md)
-* [API Design](api-design.md)
