@@ -1,19 +1,5 @@
 # Oauth2 & OIDC
 
-[https://www.rfc-editor.org/rfc/rfc6749](https://www.rfc-editor.org/rfc/rfc6749) **:** oauth2 core
-
-[https://www.rfc-editor.org/rfc/rfc6750](https://www.rfc-editor.org/rfc/rfc6750) : bearer token
-
-[https://www.rfc-editor.org/rfc/rfc6819](https://www.rfc-editor.org/rfc/rfc6819) : threat model
-
-[https://www.rfc-editor.org/rfc/rfc7009](https://www.rfc-editor.org/rfc/rfc7009) : token revocation
-
-[https://www.rfc-editor.org/rfc/rfc7662](https://www.rfc-editor.org/rfc/rfc7662) : token introspection
-
-[https://www.rfc-editor.org/rfc/rfc7636](https://www.rfc-editor.org/rfc/rfc7636) : pkce
-
-[https://www.rfc-editor.org/rfc/rfc7523](https://www.rfc-editor.org/rfc/rfc7523) : jwt profile
-
 ## **Actor**
 
 * **Resource Owner** – The user
@@ -183,12 +169,6 @@ When a refresh token is revoked:
 
 ## OIDC
 
-[https://openid.net/specs/openid-connect-core-1\_0.html](https://openid.net/specs/openid-connect-core-1_0.html) **:** core
-
-[https://openid.net/specs/openid-connect-discovery-1\_0.html](https://openid.net/specs/openid-connect-discovery-1_0.html) : discovery
-
-[https://openid.net/specs/openid-connect-registration-1\_0.html](https://openid.net/specs/openid-connect-registration-1_0.html) : registration
-
 **OIDC (OpenID Connect)** is an **authentication protocol** built on top of **OAuth 2.0**, designed to verify a user's identity and provide **basic profile information** about them.
 
 * Think of OAuth 2.0 as a **way to authorize access** to resources (like letting an app read your Google Drive files).
@@ -259,3 +239,25 @@ OIDC mostly reuses the OAuth2 Authorization Code Flow, but adds these steps:
 | New params                         | ❌                              | `nonce`, `prompt`, `max_age`, `login_hint`, `id_token_hint`, `response_mode` |
 | Verification                       | Optional                       | ✅ ID token must be verified (signature & claims)                             |
 | PKCE / Refresh Tokens / Revocation | ✅                              | ✅ reused from OAuth2                                                         |
+
+## Reference
+
+[https://www.rfc-editor.org/rfc/rfc6749](https://www.rfc-editor.org/rfc/rfc6749) **:** oauth2 core
+
+[https://www.rfc-editor.org/rfc/rfc6750](https://www.rfc-editor.org/rfc/rfc6750) : bearer token
+
+[https://www.rfc-editor.org/rfc/rfc6819](https://www.rfc-editor.org/rfc/rfc6819) : threat model
+
+[https://www.rfc-editor.org/rfc/rfc7009](https://www.rfc-editor.org/rfc/rfc7009) : token revocation
+
+[https://www.rfc-editor.org/rfc/rfc7662](https://www.rfc-editor.org/rfc/rfc7662) : token introspection
+
+[https://www.rfc-editor.org/rfc/rfc7636](https://www.rfc-editor.org/rfc/rfc7636) : pkce
+
+[https://www.rfc-editor.org/rfc/rfc7523](https://www.rfc-editor.org/rfc/rfc7523) : jwt profile
+
+[https://openid.net/specs/openid-connect-core-1\_0.html](https://openid.net/specs/openid-connect-core-1_0.html) **:** core
+
+[https://openid.net/specs/openid-connect-discovery-1\_0.html](https://openid.net/specs/openid-connect-discovery-1_0.html) : discovery
+
+[https://openid.net/specs/openid-connect-registration-1\_0.html](https://openid.net/specs/openid-connect-registration-1_0.html) : registration
