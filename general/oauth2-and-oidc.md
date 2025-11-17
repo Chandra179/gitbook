@@ -1,3 +1,7 @@
+---
+description: https://github.com/Chandra179/go-sdk/tree/main/pkg/oauth2
+---
+
 # Oauth2 & OIDC
 
 ## **Actor**
