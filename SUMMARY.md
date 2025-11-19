@@ -22,5 +22,5 @@
 * [RSS Feed](rss-feed.md)
 * [P2P Chat](p2p-chat.md)
 * [ReactJS](reactjs.md)
-* [Kubernetes](kubernetes.md)
 * [Open Telemetry](open-telemetry.md)
+* [Knowledge Graph](knowledge-graph.md)
