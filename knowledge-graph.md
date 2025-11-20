@@ -10,23 +10,30 @@ Extract node from the text using NER then define the relationship
 
 #### Dependency Parsing (base syntactic relations)
 
-Use this when you want fast, explainable relations based purely on grammar, such as subject–verb–object patterns in relatively clean text.&#x20;
+Use this when you want fast, explainable relations based purely on grammar, such as `subject–verb–object` . It does NOT understand business meaning, only grammar.
 
 ```
-"Apple acquired Beats for $3 billion in 2014."
+this --[alarm]--> governments  
+they --[control]--> twothirds  
+India --[have]--> culture  
 
-Extracted idea: Apple → acquired → Beats
+They are:
+👉 grammatical dependencies
+👉 not factual relations
+👉 not business logic
+👉 not ontology-level meaning
 
-Subject = Apple
-Verb = acquired
-Object = Beats
+the word "India" is grammatically connected to "culture" through the verb "have"
 
-It does NOT understand business meaning, only grammar.
+It does NOT mean:
+✅ India owns culture
+✅ India defines culture
+✅ India creates culture
 ```
 
 #### ML Relation Extraction (OpenNRE / Transformer-based)
 
-Use this when you need semantic accuracy and defined relationship types (e.g., “uses”, “belongs\_to”, “causes”). It works best when you already have a schema and want higher precision, especially for enterprise or production knowledge graphs. This approach understands context better than dependency rules but requires more setup and compute.
+Use this when you need semantic accuracy and defined relationship types (e.g., “uses”, “belongs\_to”, “causes”). It works best when you already have a schema and want higher precision.
 
 ```
 "Apple acquired Beats for $3 billion in 2014."
@@ -41,9 +48,42 @@ Apple — ACQUIRED_COMPANY — Beats
 This is useful when your knowledge graph needs consistent relationship types, not raw verbs.
 ```
 
+But how do we know that the model doesn't hallucinate and ambiguous, this problem is called
+
+* Semantic drift
+* Relation hallucination
+* Over-generalization
+
+we can reduce wrong predictions by using
+
+* thresholding, eg: If confidence < 0.8 → discard.
+* define allowed relations: approves, rejects, mentions. Only map using the defined relations
+*   Pattern + ML Hybrid: Use verb → relation mapping rules first:
+
+    ```
+    endorse → APPROVES
+    criticize → OPPOSES
+    implement → EXECUTES
+    ML only refines, not decides fully.
+    ```
+
 #### Hybrid Approach (Dependency + ML)
 
-This is the most common industry choice for unstructured data. Dependency parsing identifies possible relation candidates, and ML then validates or classifies them. Use this when you want both scalability and reliability, especially for large corpora like technical markdown, research papers, or documentation.
+This is the most common industry choice for unstructured data. Dependency parsing identifies possible relation candidates, and ML then validates or classifies them.&#x20;
+
+**Without dependency parsing (pure ML)**&#x20;
+
+The model looks at raw text like: "The government heralded liberalisation policies." It must guess everything from scratch: What are entities? What might be a relationship? Where does it start and end? This creates more noise, more false relation, slower processing
+
+**With dependency parsing (hybrid)**
+
+You already give the ML model a narrowed candidate. ML does NOT invent the relation. It only answers: Is this a meaningful knowledge relation or just grammar? so instead of guessing everything, it validates and classifies:
+
+| Dependency relation                  | ML semantic result    |
+| ------------------------------------ | --------------------- |
+| Government — herald → liberalisation | promotes\_policy      |
+| India — have → culture               | has\_cultural\_aspect |
+| they — control → twothirds           | NA (discarded)        |
 
 ```
 "Google partnered with NASA to develop quantum computing tools."

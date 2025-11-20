@@ -20,7 +20,7 @@ https://grafana.com/docs/grafana/latest/datasources/loki/
 https://grafana.com/docs/grafana/latest/datasources/jaeger/
 ```
 
-to access the tools locally we need to exposed the service in local using ingress, i sum up the process here the detailed can be see at the Makefile here: [https://github.com/Chandra179/go-sdk/blob/main/k8s/Makefile](https://github.com/Chandra179/go-sdk/blob/main/k8s/Makefile)
+to access the tools locally we need to exposed the service in local using ingress, i sum up the process below, see detailed process here: [https://github.com/Chandra179/go-sdk/blob/main/k8s/Makefile](https://github.com/Chandra179/go-sdk/blob/main/k8s/Makefile)
 
 1. download and start minikube
 2. apply secrets first using .sh : [https://github.com/Chandra179/go-sdk/blob/main/add-secrets.sh](https://github.com/Chandra179/go-sdk/blob/main/add-secrets.sh)
