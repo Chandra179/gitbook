@@ -11,7 +11,7 @@ description: https://github.com/Chandra179/go-sdk/tree/main/pkg/oauth2
 * Authorization Server (AS) – Authenticates the user and issues tokens (Identity Provider).
 * Resource Server (RS) – The API hosting protected resources (accepts Access Tokens).
 
-### Flow
+### Token Flow
 
 Client redirect users to authorization server
 
@@ -26,7 +26,7 @@ GET /authorize?
   code_challenge_method=S256
 ```
 
-**Key parameters:**
+**Parameters:**
 
 * `response_type=code` → asks for an authorization code
 * `client_id` → identifies your app
@@ -36,7 +36,7 @@ GET /authorize?
 * `code_challenge` → PKCE (Base64Url encoded SHA256 hash of the verifier).
 * `code_challenge_method` → usually `S256`
 
-After the  user authorizes → the server redirects back with a `code`. The client exchanges this code for tokens.
+After the  user authorizes the server redirects back with a `code`. The client exchanges this code for tokens.
 
 ```
 POST /token
@@ -88,31 +88,23 @@ What can happen without PKCE:
 4. The malicious app now has the authorization code and can exchange it for an access token at the OAuth server.
 ```
 
-**Steps:**
-
-1. Client generates a `code_verifier` (random string)
-2. Client Creates a `code_challenge = base64url(SHA256(code_verifier))`
-3. Client Sends `code_challenge` in the authorization request
-4. When exchanging code for token, Client sends `code_verifier`
-5. Server validates: `SHA256(code_verifier)` matches `code_challenge`
-
-### **Refresh Token Rotation**
+### **Refresh Token**
 
 Every time you use a refresh token to get a new access token, the server issues a **new refresh token**. The old refresh token becomes invalid.
 
 **Replay Detection**: If an attacker steals a refresh token and uses it, the valid client will fail when it tries to use the same (now invalid) token later. The server detects this "double use" and should revoke all tokens for that user immediately.
 
-### Refresh Token Revocation
-
 Refresh tokens are long-lived and must be revocable. When a Refresh Token is revoked (manually or via rotation detection), the server must invalidate the entire grant chain (all related Access/Refresh tokens).
 
 ### Where do I store the token?
 
-For browser-based applications (SPAs), developers often default to LocalStorage because of its ease of implementation, but this exposes the application to Cross-Site Scripting (XSS) attacks; if any malicious JavaScript runs on your page, it can scrape your tokens and impersonate the user. HttpOnly Cookies offer a more secure alternative by making the token inaccessible to client-side JavaScript, effectively neutralizing XSS token theft, though this reintroduces the risk of Cross-Site Request Forgery (CSRF) which must be mitigated with strict `SameSite` policies.
+For browser-based applications (SPAs), developers often default to **LocalStorage** because of its ease of implementation, but this exposes the application to Cross-Site Scripting (XSS) attacks; if any malicious JavaScript runs on your page, it can scrape your tokens and impersonate the user.&#x20;
 
-The modern "Gold Standard" for web security is the Backend for Frontend (BFF) pattern. Instead of the browser handling access tokens directly, a lightweight server-side proxy (the BFF) handles the token exchange and storage. The BFF issues a secure, encrypted session cookie to the browser. When the browser makes an API request, it sends the cookie to the BFF, which attaches the actual Access Token to the request before forwarding it to the Resource Server.&#x20;
+**HttpOnly Cookies** offer a more secure alternative by making the token inaccessible to client-side JavaScript, effectively neutralizing XSS token theft, though this reintroduces the risk of Cross-Site Request Forgery (CSRF) which must be mitigated with strict `SameSite` policies.
 
-For Mobile applications, the answer is more straightforward: tokens should always be stored in the operating system’s secure hardware-backed storage, such as the iOS Keychain or Android Keystore.
+The modern "Gold Standard" for web security is the Backend for Frontend (BFF) pattern. Instead of the browser handling access tokens directly, a lightweight server-side proxy (the BFF) handles the token exchange and storage. The BFF issues a secure, encrypted **session cookie** to the browser. When the browser makes an API request, it sends the cookie to the BFF, which attaches the actual Access Token to the request before forwarding it to the Resource Server.&#x20;
+
+For Mobile applications tokens should always be stored in the operating system’s secure hardware-backed storage, such as the iOS Keychain or Android Keystore.
 
 ### Unhappy Path
 
@@ -126,7 +118,7 @@ For Mobile applications, the answer is more straightforward: tokens should alway
 * `read` and `write` are common examples, production environments use granular scopes like `files:read_only` or `billing:manage` to limit the blast radius if a token is compromised.
 * A important scope is `offline_access`; in many implementations, this is the specific trigger required for the server to issue a Refresh Token, allowing the app to maintain a session after the user closes their browser.
 
-## Reference
+### Reference
 
 [https://www.rfc-editor.org/rfc/rfc6749](https://www.rfc-editor.org/rfc/rfc6749) **:** oauth2 core
 

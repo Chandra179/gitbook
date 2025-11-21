@@ -149,17 +149,7 @@ Peers exchange these addresses and send UDP packets directly:
 203.0.113.5:62000 ⇄ 198.51.100.7:53000
 ```
 
-Both peers **must send packets from the same local port** used for STUN discovery.\
-Why?\
-Because the NAT mapping is tied to a specific `(internal IP:port)` → `(external IP:port)` pair.\
-If the app opens a new local port when talking to the peer, the NAT creates a _new_ mapping — the other peer’s stored address becomes invalid, and packets are dropped.
-
-That’s why many P2P systems (like **WebRTC**) **bind a single UDP socket** and reuse it for both STUN and peer traffic — to guarantee same-port usage and stable mappings. Works when
-
-* NAT mapping is **Endpoint-Independent (EIM)** (stable across destinations).
-* Sometimes works under **Address-Dependent Mapping (ADM)**, if both peers send to the exact remote IP discovered via STUN.
-
-Fails under **Symmetric NAT** or **Carrier-Grade NAT (CGNAT)** because mappings change per destination or inbound packets are blocked.
+Both peers **must send packets from the same local port** used for STUN discovery. Why? Because the NAT mapping is tied to a specific `(internal IP:port)` → `(external IP:port)` pair. If the app opens a new local port when talking to the peer, the NAT creates a _new_ mapping the other peer’s stored address becomes invalid, and packets are dropped.
 
 #### **TURN (relay)**&#x20;
 

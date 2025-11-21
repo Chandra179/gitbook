@@ -7,7 +7,7 @@ A **bit** is the smallest unit of information — it can be **0 or 1**.
 * 3 bits → 2³ = 8 possibilities
 * 8 bits → 2⁸ = 256 possibilities → **1 byte**
 
-So if you have **n bits**, you can represent **2ⁿ unique values**.
+if you have **n bits**, you can represent **2ⁿ unique values**.
 
 | Encoding         | Alphabet size | Bits per symbol      | Example characters  |
 | ---------------- | ------------- | -------------------- | ------------------- |

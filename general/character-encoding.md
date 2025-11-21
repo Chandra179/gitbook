@@ -15,8 +15,7 @@ ASCII only defines **128 characters**, which works for English, but fails for ot
 
 ## **Unicode**
 
-**Unicode** is a universal standard:\
-it assigns a unique **code point** (a number) to every character in every writing system.
+**Unicode** assigns a unique **code point** (a number) to every character in every writing system.
 
 | Character | Unicode Code Point | Hex Notation |
 | --------- | ------------------ | ------------ |
@@ -25,11 +24,7 @@ it assigns a unique **code point** (a number) to every character in every writin
 | 中         | U+4E2D             | 0x4E2D       |
 | 😄        | U+1F604            | 0x1F604      |
 
-A **code point** is _not_ a byte — it’s just a number (like an ID).
-
-## UTF Encodings — turning code points into bytes
-
-Unicode defines several **encoding forms** to represent those code points as bytes.
+A **code point** is _not_ a byte — it’s just a number (like an ID). Unicode defines several **encoding forms** to represent those code points as bytes.
 
 ### UTF-8 (most common)
 
