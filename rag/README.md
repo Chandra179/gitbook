@@ -2,17 +2,17 @@
 description: e2e RAG pipeline from collecting data to agentic system
 ---
 
-# RAG Pipeline
+# RAG
 
 ## URLs Collector
 
-we need some urls to be crawled so i was thinking to use **seed urls** where the url is curated so its a trusted url, and we also can use **browser automation** where we collect the urls from browser search like  google, brave, etc..
+we need some urls to be crawled so i was thinking to use **seed urls** and **browser automation** where we collect the urls from browser search like  google, brave, etc..
 
 ## Crawl Config
 
 * If we crawling on the same site (domain) multiple times in short time range we can get blocked so we need IP rotation we can use Residental/Tor proxy&#x20;
 * Domain whitelist
-* handle URL visits deduplication avaoid visiting same URL can cause a loop
+* handle URL visits deduplication avoid visiting same URL can cause a loop
 * respect robots.txt
 * rate limit request per domain, 10-15 req/sec, random delay
 
@@ -44,20 +44,15 @@ For HTML content we need to do:
     Returns a score in range [0–100].
     ```
 
-{% hint style="info" %}
-Cleaning text will be handled by trafilatura package
-{% endhint %}
-
 ## Chunking & Embed
 
 * markdown chunking, refer to: [ChunkStrategies](https://nothin.gitbook.io/computing/llm/chunking)
-* calculate the token for each chunk using [https://github.com/daulet/tokenizers](https://github.com/daulet/tokenizers) before doing embedding to avoid chunking token size exceed model max token limit
-* get the model tokenizer `tokenizer.json` , ex: [https://huggingface.co/BAAI/bge-base-en-v1.5/blob/main/tokenizer.json](https://huggingface.co/BAAI/bge-base-en-v1.5/blob/main/tokenizer.json)
+* calculate the token for each chunk using model  `tokenizer.json` , ex: [https://huggingface.co/BAAI/bge-base-en-v1.5/blob/main/tokenizer.json](https://huggingface.co/BAAI/bge-base-en-v1.5/blob/main/tokenizer.json)
 * Embedding model will be modular so we can change the embed model depends on usecase and token size. ex: [http://ghcr.io/huggingface/text-embeddings-inference:cpu-latest](http://ghcr.io/huggingface/text-embeddings-inference:cpu-latest) `BAAI/bge-base-en-v1.5` , max 512 token
 
 ## Vector
 
-* metadata will be mandatory to further process the content after retrieval for more precise and accurate result
+metadata will be mandatory to further process the content after retrieval for more precise and accurate result
 
 ```json
 {
@@ -83,7 +78,6 @@ Cleaning text will be handled by trafilatura package
 
 ## Content Retrieval
 
-* Dense passage retriever
 * Reranker model:  re-score top-k retrieved chunks for final ranking. example using model: `bge-reranker-large, cross-encoder/ms-marco-MiniLM-L-6-v2`
 * Evaluate retrieval metrics: Build a small query–answer–source eval set. Track: `Recall@k, Precision@k MRR (Mean Reciprocal Rank)`
 *   context assembly & formatting, structured context block

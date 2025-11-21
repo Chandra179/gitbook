@@ -2,7 +2,7 @@
 description: collecting data for RAG
 ---
 
-# Crawling
+# Crawling Result
 
 ## Test result
 
@@ -20,10 +20,3 @@ simulating unlimited crawl visits with&#x20;
 2. max depth 2 , 3 concurrent req, 2 seeds url still stable
 
 <figure><img src="../.gitbook/assets/Screenshot from 2025-11-02 11-27-32.png" alt=""><figcaption></figcaption></figure>
-
-## Dependency
-
-* For rotation IP use [https://github.com/zhaow-de/rotating-tor-http-proxy](https://github.com/zhaow-de/rotating-tor-http-proxy)
-* For browser automation use [https://github.com/chromedp/chromedp](https://github.com/chromedp/chromedp)
-* For crawling/scraping use [https://github.com/gocolly/colly](https://github.com/gocolly/colly)
-* For extraction use [http://github.com/markusmobius/go-trafilatura](http://github.com/markusmobius/go-trafilatura)
