@@ -6,6 +6,30 @@ PDFs, web page, etc. We use docling to extract PDFs data because it can extract 
 
 ### Entity
 
+#### Normalization
+
+Basic pipelines often leave pronouns or nominal mentions unresolved, leading to fragmented or duplicate entities in downstream tasks. Traditional spaCy pipelines do not natively handle coreference. To improve this, plugins like `coreferee` or older tools like `neuralcoref` are used. These systems _identify when pronouns or generic phrases refer to the same entity_, allowing the text to be normalized before further processing. Modern approaches like AllenNLP’s coreference models provide **higher accuracy**, resolving more complex reference chains and ensuring that subsequent entity extraction and linking operate on consistent, fully resolved mentions.
+
+```
+Text:
+"Apple released a new iPhone. It is expected to boost the company’s revenue. Tim Cook said it will be available next month."
+
+Before (no coreference):
+    Entities: "Apple", "iPhone", "Tim Cook"
+    Pronouns like "It" and "the company" remain unresolved → downstream tasks cannot link them correctly.
+
+After (with coreference resolution):
+    Resolved references:
+    "It" → "iPhone"
+    "the company" → "Apple"
+
+Result:
+All mentions of "Apple" and "iPhone" are linked correctly, improving entity consistency and allowing proper relation extraction like:
+
+("Apple", "releases", "iPhone")
+("Tim Cook", "announces", "iPhone availability")
+```
+
 #### Extraction
 
 For **entity extraction**, traditional models like spaCy’s `en_core_web_sm` are lightweight and fast, its suitable for general-purpose named entity recognition (NER) on standard text. They work well for common entities such as `person names, organizations, or locations` but often struggle with complex sentences, nested entities, or less common domain-specific terms.&#x20;
@@ -52,52 +76,9 @@ Downstream tasks like entity linking, normalization, and graph building are much
 
 In domain-specific scenarios, general-purpose models may misclassify specialized entities like medical terms or financial instruments. To overcome this, fine-tuned `BERT or RoBERTa` models are employed. These models are pre-trained on large corpora and can be further fine-tuned on domain-specific datasets, improving **precision and recall** for specialized entities that general models would miss
 
-#### Normalization
-
-In **entity normalization and coreference resolution**, basic pipelines often leave pronouns or nominal mentions unresolved, leading to fragmented or duplicate entities in downstream tasks. Traditional spaCy pipelines do not natively handle coreference. To improve this, plugins like `coreferee` or older tools like `neuralcoref` are used. These systems identify when pronouns or generic phrases refer to the same entity, allowing the text to be normalized before further processing. Modern approaches like AllenNLP’s coreference models provide **higher accuracy**, resolving more complex reference chains and ensuring that subsequent entity extraction and linking operate on consistent, fully resolved mentions.
-
-```
-Text:
-"Apple released a new iPhone. It is expected to boost the company’s revenue. Tim Cook said it will be available next month."
-
-Before (no coreference):
-    Entities: "Apple", "iPhone", "Tim Cook"
-    Pronouns like "It" and "the company" remain unresolved → downstream tasks cannot link them correctly.
-
-After (with coreference resolution):
-    Resolved references:
-    "It" → "iPhone"
-    "the company" → "Apple"
-
-Result:
-All mentions of "Apple" and "iPhone" are linked correctly, improving entity consistency and allowing proper relation extraction like:
-
-("Apple", "releases", "iPhone")
-("Tim Cook", "announces", "iPhone availability")
-```
-
-#### **Disambiguation**
-
-For **entity disambiguation and linking**, initial NER may recognize an entity like “Apple” but cannot determine whether it refers to the fruit or the technology company. Simple string matching fails in many cases. To improve accuracy, linking approaches such as spaCy’s `EntityLinker` connect recognized entities to knowledge bases like Wikidata or Wikipedia, providing **contextual disambiguation**.   Complementary methods include string similarity techniques (using `fuzzywuzzy` or `rapidfuzz`) to merge variants of the same entity, and embedding-based methods (using `sentence-transformers`) to match semantically similar entities. These methods reduce ambiguity, increase consistency, and enable more reliable connections to external knowledge graphs.
-
-```
-"Apple is seeing strong sales this quarter. Apple is also a popular fruit in the US."
-
-Before (basic NER):
-Both mentions of "Apple" are tagged as ORG or ENTITY, without distinguishing context.
-
-After (Entity Linking / Disambiguation):
-    "Apple" → ORG → linked to Apple Inc. in Wikidata
-    "Apple" → FRUIT → linked to Apple (fruit) in Wikidata
-
-Improvement:
-    Resolves ambiguity based on context.
-    Downstream analytics (e.g., revenue reports vs food trends) become accurate.
-```
-
 #### **Canonicalization**
 
-Finally, **entity canonicalization** addresses the issue of multiple representations of the same entity, such as “IBM” versus “International Business Machines.” Simple lowercase and trimming are insufficient for robust normalization. Improvements include abbreviation expansion using dictionaries and rules, alias resolution via knowledge bases, and lemmatization to handle plural forms or morphological variants. These enhancements ensure that all references to the same real-world entity are unified, improving the quality of analysis, reducing duplication, and making downstream tasks like relation extraction or graph construction more reliable.<br>
+Finally, **entity canonicalization** addresses the issue of multiple representations of the same entity, such as “IBM” versus “International Business Machines.” Simple lowercase and trimming are insufficient for robust normalization. Improvements include abbreviation expansion using dictionaries and rules, alias resolution via knowledge bases, and lemmatization to handle plural forms or morphological variants. These enhancements ensure that all references to the same real-world entity are unified, improving the quality of analysis, reducing duplication, and making downstream tasks like relation extraction or graph construction more reliable.
 
 <pre><code>"IBM is expanding its cloud services. International Business Machines continues to innovate in AI. IBM’s research division announced a new project."
 
@@ -119,6 +100,25 @@ Improvement:
 Reduces duplication.
 Makes downstream analysis like relation extraction, entity frequency counting, and knowledge graph construction much more reliable.
 </code></pre>
+
+#### **Disambiguation**
+
+For **entity disambiguation and linking**, initial NER may recognize an entity like “Apple” but cannot determine whether it refers to the fruit or the technology company. Simple string matching fails in many cases. To improve accuracy, linking approaches such as spaCy’s `EntityLinker` connect recognized entities to knowledge bases like Wikidata or Wikipedia, providing **contextual disambiguation**.   Complementary methods include string similarity techniques (using `fuzzywuzzy` or `rapidfuzz`) to merge variants of the same entity, and embedding-based methods (using `sentence-transformers`) to match semantically similar entities. These methods reduce ambiguity, increase consistency, and enable more reliable connections to external knowledge graphs.
+
+```
+"Apple is seeing strong sales this quarter. Apple is also a popular fruit in the US."
+
+Before (basic NER):
+Both mentions of "Apple" are tagged as ORG or ENTITY, without distinguishing context.
+
+After (Entity Linking / Disambiguation):
+    "Apple" → ORG → linked to Apple Inc. in Wikidata
+    "Apple" → FRUIT → linked to Apple (fruit) in Wikidata
+
+Improvement:
+    Resolves ambiguity based on context.
+    Downstream analytics (e.g., revenue reports vs food trends) become accurate.
+```
 
 #### **Papers**
 
