@@ -4,9 +4,63 @@
 
 PDFs, web page, etc. We use docling to extract PDFs data because it can extract image, graph, etc..
 
-### Node & Relationship Extraction
+### Node&#x20;
 
-Extract node from the text using NER then define the relationship
+#### Entity extraction
+
+| Improvement             | Method/Package                              | When to Use                                        | Where in Code         |
+| ----------------------- | ------------------------------------------- | -------------------------------------------------- | --------------------- |
+| **Larger Model**        | spaCy `en_core_web_trf` (transformer-based) | More accurate NER needed                           | Replace model loading |
+| **Domain-Specific NER** | Fine-tuned BERT/RoBERTa models              | Domain-specific entities (medical, legal, finance) | Custom NER pipeline   |
+| **Multi-lingual NER**   | spaCy multilingual models, mBERT            | Non-English text                                   | Model selection       |
+
+**Papers:**
+
+* "Named Entity Recognition with Bidirectional LSTM-CNNs" (Chiu & Nichols, 2016)
+* "BERT: Pre-training of Deep Bidirectional Transformers" (Devlin et al., 2018)
+
+#### Entity Normalization & Linking
+
+**Coreference Resolution**
+
+| Improvement        | Method/Package                    | When to Use                           | Where in Code       |
+| ------------------ | --------------------------------- | ------------------------------------- | ------------------- |
+| **Neural Coref**   | `coreferee` (spaCy plugin)        | Resolve "he", "she", "it" to entities | Pre-processing step |
+| **Neuralcoref**    | `neuralcoref` (older, deprecated) | Legacy option                         | Pre-processing      |
+| **AllenNLP Coref** | `allennlp-models`                 | High accuracy needed                  | Separate pipeline   |
+
+**Papers:**
+
+* "End-to-end Neural Coreference Resolution" (Lee et al., 2017)
+* "Higher-order Coreference Resolution" (Lee et al., 2018)
+
+Entity Disambiguation & Linking
+
+**Current:** "Apple" could be fruit or company - not resolved
+
+| Improvement           | Method/Package                             | When to Use                      | Where in Code          |
+| --------------------- | ------------------------------------------ | -------------------------------- | ---------------------- |
+| **Entity Linking**    | spaCy `EntityLinker` to Wikidata/Wikipedia | Link entities to knowledge bases | After NER extraction   |
+| **String Similarity** | `fuzzywuzzy`, `rapidfuzz`                  | Merge similar entity names       | EntityNormalizer class |
+| **Embedding-based**   | `sentence-transformers`                    | Semantic similarity matching     | EntityNormalizer class |
+| **DBpedia Spotlight** | `pyspotlight`                              | Link to DBpedia/Wikipedia        | Entity post-processing |
+
+**Papers:**
+
+* "Entity Linking with a Knowledge Base: Issues, Techniques, and Solutions" (Shen et al., 2015)
+* "Neural Cross-Lingual Entity Linking" (Zhou et al., 2020)
+
+**Entity Canonicalization**
+
+**Current:** Basic lowercase + trim
+
+| Improvement                | Method/Package            | When to Use                                      | Where in Code        |
+| -------------------------- | ------------------------- | ------------------------------------------------ | -------------------- |
+| **Abbreviation Expansion** | Custom dictionary + rules | Handle "IBM" → "International Business Machines" | EntityNormalizer     |
+| **Alias Resolution**       | Knowledge base lookups    | "NYC" → "New York City"                          | EntityNormalizer     |
+| **Lemmatization**          | spaCy lemmatizer          | Plural handling                                  | Entity normalization |
+
+### Relationship Extraction
 
 #### Dependency Parsing (base syntactic relations)
 
