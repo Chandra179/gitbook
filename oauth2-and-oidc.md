@@ -47,7 +47,7 @@ code=AUTH_CODE&
 redirect_uri=REDIRECT_URI&
 client_id=CLIENT_ID&
 code_verifier=CODE_VERIFIER&
-client_secret=CLIENT_SECRET
+# client_secret=CLIENT_SECRET  <-- ONLY for Confidential Clients (Web Servers). SPAs/Mobile omit this.
 ```
 
 **Key parameters:**
@@ -56,13 +56,14 @@ client_secret=CLIENT_SECRET
 * `code` → authorization code received
 * `redirect_uri` → must match original request
 * `client_id` → identifies app
-* `code_verifier` → PKCE verification
+* `code_verifier` → The original random string used to create the challenge (PKCE verification).
 
 then server return token
 
 ```
 {
   "access_token": "ACCESS_TOKEN",
+  "id_token": "eyJhbGci...",       // Returned because scope included 'openid'
   "token_type": "Bearer",
   "expires_in": 3600,
   "refresh_token": "REFRESH_TOKEN"
@@ -87,29 +88,9 @@ Every time you use a refresh token to get a new access token, the server issues 
 
 **Replay Detection**: If an attacker steals a refresh token and uses it, the valid client will fail when it tries to use the same (now invalid) token later. The server detects this "double use" and should revoke all tokens for that user immediately.
 
-Its Ideal for Public Clients (SPAs/Mobile) where secrets cannot be stored securely.
-
 ## Refresh Token Revocation
 
 Refresh tokens are long-lived and must be revocable. When a Refresh Token is revoked (manually or via rotation detection), the server must invalidate the entire grant chain (all related Access/Refresh tokens).
-
-## OIDC
-
-**OIDC (OpenID Connect)** is an authentication layer built on top of **OAuth 2.0**, designed to verify a user's identity.&#x20;
-
-```
-// ID Token Structure (JWT)
-{
-  "iss": "https://accounts.example-idp.com",
-  "sub": "248289761001",
-  "aud": "myapp123",
-  "exp": 1699127056,
-  "iat": 1699123456,
-  "nonce": "n-0S6_WzA2Mj",
-  "name": "Alice",
-  "email": "alice@example.com"
-}
-```
 
 ## Reference
 
