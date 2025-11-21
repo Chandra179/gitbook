@@ -4,13 +4,6 @@ description: digital signature
 
 # ECDSA
 
-| Situation                  | Why signing matters                                 |
-| -------------------------- | --------------------------------------------------- |
-| Online banking transaction | Proves YOU approved it.                             |
-| Blockchain transaction     | Proves the wallet owner signed the transaction.     |
-| Software updates           | Verify it came from the real vendor (not tampered). |
-| JWT tokens / OAuth tokens  | Issuer signs tokens so clients can verify them.     |
-
 #### **1. Client requests key pair creation**
 
 ```

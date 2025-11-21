@@ -4,14 +4,14 @@ description: https://github.com/Chandra179/go-sdk/tree/main/pkg/oauth2
 
 # Oauth2 & OIDC
 
-## Actors
+### Actors
 
 * Resource Owner – The user.
 * Client – The application requesting access (e.g., Mobile App, SPA, Web Server).
 * Authorization Server (AS) – Authenticates the user and issues tokens (Identity Provider).
 * Resource Server (RS) – The API hosting protected resources (accepts Access Tokens).
 
-## Flow
+### Flow
 
 Client redirect users to authorization server
 
@@ -32,7 +32,7 @@ GET /authorize?
 * `client_id` → identifies your app
 * `redirect_uri` → where to send the code (Must strictly match the registered URI).
 * `scope` → requested permissions
-* `state` → random string to prevent CSRF attacks
+* `state` → random string to prevent CSRF attacks. Without it, an attacker could trick a user into clicking a link that silently links the user's account to the attacker's identity provider account.
 * `code_challenge` → PKCE (Base64Url encoded SHA256 hash of the verifier).
 * `code_challenge_method` → usually `S256`
 
@@ -70,9 +70,23 @@ then server return token
 }
 ```
 
-## **PKCE (Proof Key for Code Exchange)**
+### **PKCE (Proof Key for Code Exchange)**
 
-PKCE prevents **authorization code interception** attacks, It cryptographically binds the authorization request to the token exchange request.
+PKCE prevents **authorization code interception** attacks, It cryptographically binds the authorization request to the token exchange request.&#x20;
+
+PKCE was introduced to solve the Authorization Code Interception attack, primarily on mobile devices. On mobile, malicious apps can register the same custom URL scheme (e.g., `myapp://`) as your legitimate app.&#x20;
+
+Without PKCE, a mobile device could accidentally deliver the login code to a malicious app instead of your app. That app could then use the code to get access to the user’s account.
+
+PKCE prevents this by adding a secret (`code_verifier`) that only your app knows. Even if someone intercepts the login code, they **cannot use it** without that secret. Only the app that started the login process can complete it safely.
+
+```
+What can happen without PKCE:
+1. User logs in via your app’s login screen.
+2. OAuth server redirects to myapp://callback?code=AUTH_CODE.
+3. The OS sees two apps claiming the same URL scheme. If the malicious app is chosen (or it “wins” registration somehow), it receives the code instead of your legitimate app.
+4. The malicious app now has the authorization code and can exchange it for an access token at the OAuth server.
+```
 
 **Steps:**
 
@@ -82,15 +96,35 @@ PKCE prevents **authorization code interception** attacks, It cryptographically 
 4. When exchanging code for token, Client sends `code_verifier`
 5. Server validates: `SHA256(code_verifier)` matches `code_challenge`
 
-## **Refresh Token Rotation**
+### **Refresh Token Rotation**
 
 Every time you use a refresh token to get a new access token, the server issues a **new refresh token**. The old refresh token becomes invalid.
 
 **Replay Detection**: If an attacker steals a refresh token and uses it, the valid client will fail when it tries to use the same (now invalid) token later. The server detects this "double use" and should revoke all tokens for that user immediately.
 
-## Refresh Token Revocation
+### Refresh Token Revocation
 
 Refresh tokens are long-lived and must be revocable. When a Refresh Token is revoked (manually or via rotation detection), the server must invalidate the entire grant chain (all related Access/Refresh tokens).
+
+### Where do I store the token?
+
+For browser-based applications (SPAs), developers often default to LocalStorage because of its ease of implementation, but this exposes the application to Cross-Site Scripting (XSS) attacks; if any malicious JavaScript runs on your page, it can scrape your tokens and impersonate the user. HttpOnly Cookies offer a more secure alternative by making the token inaccessible to client-side JavaScript, effectively neutralizing XSS token theft, though this reintroduces the risk of Cross-Site Request Forgery (CSRF) which must be mitigated with strict `SameSite` policies.
+
+The modern "Gold Standard" for web security is the Backend for Frontend (BFF) pattern. Instead of the browser handling access tokens directly, a lightweight server-side proxy (the BFF) handles the token exchange and storage. The BFF issues a secure, encrypted session cookie to the browser. When the browser makes an API request, it sends the cookie to the BFF, which attaches the actual Access Token to the request before forwarding it to the Resource Server.&#x20;
+
+For Mobile applications, the answer is more straightforward: tokens should always be stored in the operating system’s secure hardware-backed storage, such as the iOS Keychain or Android Keystore.
+
+### Unhappy Path
+
+* if the user clicks "Cancel" on the consent screen, the Authorization Server will redirect back to your `redirect_uri` with an `error` parameter instead of a `code`&#x20;
+* Common error codes include `access_denied` (user rejected the request), `unauthorized_client` (app is not allowed to use this flow), or `invalid_scope`. Your client application must parse these parameters to display helpful feedback to the user rather than crashing or hanging in an infinite loading state.
+* network failures during the token exchange or expired authorization codes (which are often valid for only 30-60 seconds) require retry logic or prompting the user to restart the flow.
+
+### Scopes and Granularity
+
+* Scopes are the mechanism used to enforce the Principle of Least Privilege, ensuring that a client application only has access to the specific resources it needs and nothing more
+* `read` and `write` are common examples, production environments use granular scopes like `files:read_only` or `billing:manage` to limit the blast radius if a token is compromised.
+* A important scope is `offline_access`; in many implementations, this is the specific trigger required for the server to issue a Refresh Token, allowing the app to maintain a session after the user closes their browser.
 
 ## Reference
 
