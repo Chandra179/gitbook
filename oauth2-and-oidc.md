@@ -225,8 +225,7 @@ OIDC mostly reuses the OAuth2 Authorization Code Flow, but adds these steps:
    * Check **signature** (against IdP public key).
    * Validate **claims**: `iss`, `aud`, `exp`, `nonce`.
    * Extract identity info (`sub`, `name`, `email`).
-4.  **Optional UserInfo request**:\
-
+4.  **Optional UserInfo request**:<br>
 
     ```
     GET /userinfo

@@ -5,7 +5,6 @@
   * [Bits & Bytes](general/bits-and-bytes.md)
   * [Character Encoding](general/character-encoding.md)
   * [NAT](general/nat.md)
-  * [Oauth2 & OIDC](general/oauth2-and-oidc.md)
   * [API Design](general/api-design.md)
 * [Cryptography](cryptography/README.md)
   * [ECDSA](cryptography/ecdsa.md)
@@ -23,3 +22,4 @@
 * [ReactJS](reactjs.md)
 * [Open Telemetry](open-telemetry.md)
 * [Knowledge Graph](knowledge-graph.md)
+* [Oauth2 & OIDC](oauth2-and-oidc.md)

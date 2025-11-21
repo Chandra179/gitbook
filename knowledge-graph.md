@@ -8,7 +8,7 @@ PDFs, web page, etc. We use docling to extract PDFs data because it can extract 
 
 #### Normalization
 
-Basic pipelines often leave pronouns or nominal mentions unresolved, leading to fragmented or duplicate entities in downstream tasks. Traditional spaCy pipelines do not natively handle coreference. To improve this, plugins like `coreferee` or older tools like `neuralcoref` are used. These systems _identify when pronouns or generic phrases refer to the same entity_, allowing the text to be normalized before further processing. Modern approaches like AllenNLP’s coreference models provide **higher accuracy**, resolving more complex reference chains and ensuring that subsequent entity extraction and linking operate on consistent, fully resolved mentions.
+identify when pronouns or generic phrases refer to the same entity, allowing the text to be normalized before further processing. Modern approaches like AllenNLP’s coreference models provide **higher accuracy**, resolving more complex reference chains and ensuring that subsequent entity extraction and linking operate on consistent, fully resolved mentions.
 
 ```
 Text:
@@ -78,7 +78,7 @@ In domain-specific scenarios, general-purpose models may misclassify specialized
 
 #### **Canonicalization**
 
-Finally, **entity canonicalization** addresses the issue of multiple representations of the same entity, such as “IBM” versus “International Business Machines.” Simple lowercase and trimming are insufficient for robust normalization. Improvements include abbreviation expansion using dictionaries and rules, alias resolution via knowledge bases, and lemmatization to handle plural forms or morphological variants. These enhancements ensure that all references to the same real-world entity are unified, improving the quality of analysis, reducing duplication, and making downstream tasks like relation extraction or graph construction more reliable.
+**Entity canonicalization** addresses the issue of multiple representations of the same entity, such as “IBM” versus “International Business Machines.” Simple lowercase and trimming are insufficient for robust normalization. Improvements include abbreviation expansion using dictionaries and rules, alias resolution via knowledge bases, and lemmatization to handle plural forms or morphological variants. These enhancements ensure that all references to the same real-world entity are unified, improving the quality of analysis, reducing duplication, and making downstream tasks like relation extraction or graph construction more reliable.
 
 <pre><code>"IBM is expanding its cloud services. International Business Machines continues to innovate in AI. IBM’s research division announced a new project."
 
@@ -133,7 +133,9 @@ Improvement:
 
 Traditionally, simple methods like checking for verbs between two entities were used, but these approaches often miss complex or implicit relationships and cannot generalize well across different sentence structures.
 
-To address these limitations, **neural relation extraction** models have become the state-of-the-art approach. Tools like **OpenNRE** offer pre-trained models for a fixed set of relations, allowing rapid extraction with minimal training. More advanced models such as **REBEL** or **SpERT** perform end-to-end relation extraction, with SpERT jointly modeling entities and relations, which improves both accuracy and efficiency by reducing error propagation between separate entity and relation modules. **LUKE**, an entity-aware transformer, further enhances performance for long sentences and complex dependencies. These neural methods excel at capturing implicit, context-dependent, or long-range relations that rule-based systems often fail to identify.
+To address these limitations, **neural relation extraction** models have become the state-of-the-art approach. Tools like **OpenNRE** offer pre-trained models for a fixed set of relations, allowing rapid extraction with minimal training.&#x20;
+
+More advanced models such as **REBEL** or **SpERT** perform end-to-end relation extraction (from extraction to relationship) , with SpERT jointly modeling entities and relations, which improves both accuracy and efficiency by reducing error propagation between separate entity and relation modules. **LUKE**, an entity-aware transformer, further enhances performance for long sentences and complex dependencies. These neural methods excel at capturing implicit, context-dependent, or long-range relations that rule-based systems often fail to identify.
 
 In scenarios where computational resources are limited or interpretability is important, **dependency-based methods** provide a robust alternative. Basic verb connection checks can be replaced with **Shortest Dependency Path (SDP)** analysis using spaCy and NetworkX, or with **typed dependency patterns** defined via spaCy Matcher. These approaches use syntactic structures to infer relationships, offering **greater precision and consistency** than naive methods. For deeper semantic understanding, **Semantic Role Labeling (SRL)** with AllenNLP analyzes the predicate-argument structure, capturing who did what to whom, even in complex sentences.
 
