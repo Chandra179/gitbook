@@ -4,184 +4,140 @@
 
 PDFs, web page, etc. We use docling to extract PDFs data because it can extract image, graph, etc..
 
-### Node&#x20;
+### Entity
 
-#### Entity extraction
+#### Extraction
 
-| Improvement             | Method/Package                              | When to Use                                        | Where in Code         |
-| ----------------------- | ------------------------------------------- | -------------------------------------------------- | --------------------- |
-| **Larger Model**        | spaCy `en_core_web_trf` (transformer-based) | More accurate NER needed                           | Replace model loading |
-| **Domain-Specific NER** | Fine-tuned BERT/RoBERTa models              | Domain-specific entities (medical, legal, finance) | Custom NER pipeline   |
-| **Multi-lingual NER**   | spaCy multilingual models, mBERT            | Non-English text                                   | Model selection       |
+For **entity extraction**, traditional models like spaCy’s `en_core_web_sm` are lightweight and fast, its suitable for general-purpose named entity recognition (NER) on standard text. They work well for common entities such as `person names, organizations, or locations` but often struggle with complex sentences, nested entities, or less common domain-specific terms.&#x20;
 
-**Papers:**
+```
+"Dr. Lisa Su from AMD announced a new high-performance processor at CES 2025 in Las Vegas."
+
+(en_core_web_sm) Recognized entities:
+
+"AMD" → ORG
+"CES 2025" → DATE (sometimes missed)
+"Las Vegas" → GPE
+
+Missed / Incorrect:
+"Dr. Lisa Su" → might not be recognized as a PERSON (small model often fails on titles or uncommon names)
+"high-performance processor" → PRODUCT not recognized at all
+
+Impact:
+Relations like (“Dr. Lisa Su”, “announced”, “high-performance processor”) cannot be reliably extracted.
+Downstream knowledge graphs are incomplete.
+```
+
+To address these limitations, transformer-based models like spaCy’s `en_core_web_trf` are used. These models leverage contextual embeddings from deep transformer networks, allowing them to capture nuanced meaning from surrounding words. The main improvement is **higher accuracy**, especially for ambiguous or context-dependent entities, while also better handling longer sentences and nested structures
+
+```
+(en_core_web_trf)
+
+Recognized entities:
+    "Dr. Lisa Su" → PERSON
+    "AMD" → ORG
+    "high-performance processor" → PRODUCT
+    "CES 2025" → EVENT
+    "Las Vegas" → GPE
+
+Improvements:
+More entities recognized – transformer model captures less common names, titles, and product names.
+Better accuracy on entity types – “high-performance processor” is now correctly labeled as PRODUCT instead of ignored or misclassified.
+Context-aware detection – even ambiguous phrases like “CES 2025” are recognized correctly because the transformer model considers surrounding words.
+
+Impact:
+Enables full relation extraction: (“Dr. Lisa Su”, “announced”, “high-performance processor”) at (“CES 2025”, “Las Vegas”).
+Downstream tasks like entity linking, normalization, and graph building are much more accurate.
+```
+
+In domain-specific scenarios, general-purpose models may misclassify specialized entities like medical terms or financial instruments. To overcome this, fine-tuned `BERT or RoBERTa` models are employed. These models are pre-trained on large corpora and can be further fine-tuned on domain-specific datasets, improving **precision and recall** for specialized entities that general models would miss
+
+#### Normalization
+
+In **entity normalization and coreference resolution**, basic pipelines often leave pronouns or nominal mentions unresolved, leading to fragmented or duplicate entities in downstream tasks. Traditional spaCy pipelines do not natively handle coreference. To improve this, plugins like `coreferee` or older tools like `neuralcoref` are used. These systems identify when pronouns or generic phrases refer to the same entity, allowing the text to be normalized before further processing. Modern approaches like AllenNLP’s coreference models provide **higher accuracy**, resolving more complex reference chains and ensuring that subsequent entity extraction and linking operate on consistent, fully resolved mentions.
+
+```
+Text:
+"Apple released a new iPhone. It is expected to boost the company’s revenue. Tim Cook said it will be available next month."
+
+Before (no coreference):
+    Entities: "Apple", "iPhone", "Tim Cook"
+    Pronouns like "It" and "the company" remain unresolved → downstream tasks cannot link them correctly.
+
+After (with coreference resolution):
+    Resolved references:
+    "It" → "iPhone"
+    "the company" → "Apple"
+
+Result:
+All mentions of "Apple" and "iPhone" are linked correctly, improving entity consistency and allowing proper relation extraction like:
+
+("Apple", "releases", "iPhone")
+("Tim Cook", "announces", "iPhone availability")
+```
+
+#### **Disambiguation**
+
+For **entity disambiguation and linking**, initial NER may recognize an entity like “Apple” but cannot determine whether it refers to the fruit or the technology company. Simple string matching fails in many cases. To improve accuracy, linking approaches such as spaCy’s `EntityLinker` connect recognized entities to knowledge bases like Wikidata or Wikipedia, providing **contextual disambiguation**.   Complementary methods include string similarity techniques (using `fuzzywuzzy` or `rapidfuzz`) to merge variants of the same entity, and embedding-based methods (using `sentence-transformers`) to match semantically similar entities. These methods reduce ambiguity, increase consistency, and enable more reliable connections to external knowledge graphs.
+
+```
+"Apple is seeing strong sales this quarter. Apple is also a popular fruit in the US."
+
+Before (basic NER):
+Both mentions of "Apple" are tagged as ORG or ENTITY, without distinguishing context.
+
+After (Entity Linking / Disambiguation):
+    "Apple" → ORG → linked to Apple Inc. in Wikidata
+    "Apple" → FRUIT → linked to Apple (fruit) in Wikidata
+
+Improvement:
+    Resolves ambiguity based on context.
+    Downstream analytics (e.g., revenue reports vs food trends) become accurate.
+```
+
+#### **Canonicalization**
+
+Finally, **entity canonicalization** addresses the issue of multiple representations of the same entity, such as “IBM” versus “International Business Machines.” Simple lowercase and trimming are insufficient for robust normalization. Improvements include abbreviation expansion using dictionaries and rules, alias resolution via knowledge bases, and lemmatization to handle plural forms or morphological variants. These enhancements ensure that all references to the same real-world entity are unified, improving the quality of analysis, reducing duplication, and making downstream tasks like relation extraction or graph construction more reliable.<br>
+
+<pre><code>"IBM is expanding its cloud services. International Business Machines continues to innovate in AI. IBM’s research division announced a new project."
+
+Before (basic lowercase/trim):
+    Entities recognized: 
+<strong>    "IBM", "International Business Machines", "IBM’s" → treated as separate entities
+</strong>
+After (with canonicalization):
+    All references unified as "IBM"
+    Optionally, normalized possessives handled → "IBM’s" → "IBM"
+
+Result:
+    Consolidated entity mentions → better statistics, relations, and knowledge graph nodes:
+    ("IBM", "expanding", "cloud services")
+<strong>    ("IBM", "innovates", "AI")
+</strong>    ("IBM", "announces", "new project")
+
+Improvement:
+Reduces duplication.
+Makes downstream analysis like relation extraction, entity frequency counting, and knowledge graph construction much more reliable.
+</code></pre>
+
+#### **Papers**
 
 * "Named Entity Recognition with Bidirectional LSTM-CNNs" (Chiu & Nichols, 2016)
 * "BERT: Pre-training of Deep Bidirectional Transformers" (Devlin et al., 2018)
-
-#### Entity Normalization & Linking
-
-**Coreference Resolution**
-
-| Improvement        | Method/Package                    | When to Use                           | Where in Code       |
-| ------------------ | --------------------------------- | ------------------------------------- | ------------------- |
-| **Neural Coref**   | `coreferee` (spaCy plugin)        | Resolve "he", "she", "it" to entities | Pre-processing step |
-| **Neuralcoref**    | `neuralcoref` (older, deprecated) | Legacy option                         | Pre-processing      |
-| **AllenNLP Coref** | `allennlp-models`                 | High accuracy needed                  | Separate pipeline   |
-
-**Papers:**
-
 * "End-to-end Neural Coreference Resolution" (Lee et al., 2017)
 * "Higher-order Coreference Resolution" (Lee et al., 2018)
-
-Entity Disambiguation & Linking
-
-**Current:** "Apple" could be fruit or company - not resolved
-
-| Improvement           | Method/Package                             | When to Use                      | Where in Code          |
-| --------------------- | ------------------------------------------ | -------------------------------- | ---------------------- |
-| **Entity Linking**    | spaCy `EntityLinker` to Wikidata/Wikipedia | Link entities to knowledge bases | After NER extraction   |
-| **String Similarity** | `fuzzywuzzy`, `rapidfuzz`                  | Merge similar entity names       | EntityNormalizer class |
-| **Embedding-based**   | `sentence-transformers`                    | Semantic similarity matching     | EntityNormalizer class |
-| **DBpedia Spotlight** | `pyspotlight`                              | Link to DBpedia/Wikipedia        | Entity post-processing |
-
-**Papers:**
-
 * "Entity Linking with a Knowledge Base: Issues, Techniques, and Solutions" (Shen et al., 2015)
 * "Neural Cross-Lingual Entity Linking" (Zhou et al., 2020)
 
-**Entity Canonicalization**
-
-**Current:** Basic lowercase + trim
-
-| Improvement                | Method/Package            | When to Use                                      | Where in Code        |
-| -------------------------- | ------------------------- | ------------------------------------------------ | -------------------- |
-| **Abbreviation Expansion** | Custom dictionary + rules | Handle "IBM" → "International Business Machines" | EntityNormalizer     |
-| **Alias Resolution**       | Knowledge base lookups    | "NYC" → "New York City"                          | EntityNormalizer     |
-| **Lemmatization**          | spaCy lemmatizer          | Plural handling                                  | Entity normalization |
-
 ### Relationship Extraction
 
-#### Dependency Parsing (base syntactic relations)
+Traditionally, simple methods like checking for verbs between two entities were used, but these approaches often miss complex or implicit relationships and cannot generalize well across different sentence structures.
 
-Use this when you want fast, explainable relations based purely on grammar, such as `subject–verb–object` . It does NOT understand business meaning, only grammar.
+To address these limitations, **neural relation extraction** models have become the state-of-the-art approach. Tools like **OpenNRE** offer pre-trained models for a fixed set of relations, allowing rapid extraction with minimal training. More advanced models such as **REBEL** or **SpERT** perform end-to-end relation extraction, with SpERT jointly modeling entities and relations, which improves both accuracy and efficiency by reducing error propagation between separate entity and relation modules. **LUKE**, an entity-aware transformer, further enhances performance for long sentences and complex dependencies. These neural methods excel at capturing implicit, context-dependent, or long-range relations that rule-based systems often fail to identify.
 
-```
-this --[alarm]--> governments  
-they --[control]--> twothirds  
-India --[have]--> culture  
+In scenarios where computational resources are limited or interpretability is important, **dependency-based methods** provide a robust alternative. Basic verb connection checks can be replaced with **Shortest Dependency Path (SDP)** analysis using spaCy and NetworkX, or with **typed dependency patterns** defined via spaCy Matcher. These approaches use syntactic structures to infer relationships, offering **greater precision and consistency** than naive methods. For deeper semantic understanding, **Semantic Role Labeling (SRL)** with AllenNLP analyzes the predicate-argument structure, capturing who did what to whom, even in complex sentences.
 
-They are:
-👉 grammatical dependencies
-👉 not factual relations
-👉 not business logic
-👉 not ontology-level meaning
-
-the word "India" is grammatically connected to "culture" through the verb "have"
-
-It does NOT mean:
-✅ India owns culture
-✅ India defines culture
-✅ India creates culture
-```
-
-#### ML Relation Extraction (OpenNRE / Transformer-based)
-
-Use this when you need semantic accuracy and defined relationship types (e.g., “uses”, “belongs\_to”, “causes”). It works best when you already have a schema and want higher precision.
-
-```
-"Apple acquired Beats for $3 billion in 2014."
-
-Extracted idea:
-
-Apple → ACQUISITION → Beats
-
-Instead of using the verb "acquired", it maps the relationship to a predefined semantic type like:
-Apple — ACQUIRED_COMPANY — Beats
-
-This is useful when your knowledge graph needs consistent relationship types, not raw verbs.
-```
-
-But how do we know that the model doesn't hallucinate and ambiguous, this problem is called
-
-* Semantic drift
-* Relation hallucination
-* Over-generalization
-
-we can reduce wrong predictions by using
-
-* thresholding, eg: If confidence < 0.8 → discard.
-* define allowed relations: approves, rejects, mentions. Only map using the defined relations
-*   Pattern + ML Hybrid: Use verb → relation mapping rules first:
-
-    ```
-    endorse → APPROVES
-    criticize → OPPOSES
-    implement → EXECUTES
-    ML only refines, not decides fully.
-    ```
-
-#### Hybrid Approach (Dependency + ML)
-
-This is the most common industry choice for unstructured data. Dependency parsing identifies possible relation candidates, and ML then validates or classifies them.&#x20;
-
-**Without dependency parsing (pure ML)**&#x20;
-
-The model looks at raw text like: "The government heralded liberalisation policies." It must guess everything from scratch: What are entities? What might be a relationship? Where does it start and end? This creates more noise, more false relation, slower processing
-
-**With dependency parsing (hybrid)**
-
-You already give the ML model a narrowed candidate. ML does NOT invent the relation. It only answers: Is this a meaningful knowledge relation or just grammar? so instead of guessing everything, it validates and classifies:
-
-| Dependency relation                  | ML semantic result    |
-| ------------------------------------ | --------------------- |
-| Government — herald → liberalisation | promotes\_policy      |
-| India — have → culture               | has\_cultural\_aspect |
-| they — control → twothirds           | NA (discarded)        |
-
-```
-"Google partnered with NASA to develop quantum computing tools."
-
-Step 1 (Dependency):
-Finds candidate:
-Google — partnered — NASA
-
-Step 2 (ML):
-Classifies relation as:
-Google — COLLABORATES_WITH — NASA
-
-So grammar finds the connection, ML gives it meaning.
-```
-
-#### Open Information Extraction (OpenIE)
-
-Use this when you don’t know your schema yet and want to explore what kinds of relationships exist in your data. It is good for early discovery or bootstrapping a knowledge graph, but not ideal for production due to inconsistency.
-
-```
-"Tesla designs electric vehicles in California."
-
-Extracted relations:
-    Tesla → designs → electric vehicles
-    Tesla → operates_in → California
-
-No predefined schema. It just outputs what it thinks is a relation in natural language form.
-This is good for discovering unknown patterns.
-```
-
-#### LLM-based Extraction
-
-Use this for rapid experimentation or low-volume extraction where human review is expected. It’s good when data is highly unstructured or ambiguous and you want reasoning over strict structure.
-
-```
-"Dr. Smith from Johns Hopkins discovered a new treatment for Alzheimer’s disease."
-
-LLM might extract:
-    Dr. Smith → WORKS_AT → Johns Hopkins
-    Dr. Smith → DISCOVERED → Treatment
-    Treatment → TREATS → Alzheimer’s disease
-
-This goes beyond grammar and uses understanding + inference.
-```
+**Pattern-based extraction** remains effective when relationships follow predictable, domain-specific structures. Manual verb lists can be replaced with **spaCy Matcher or DependencyMatcher** to define precise patterns, or with **regular expressions** integrated with NER for fast, deterministic extraction. Classic systems like **Stanford OpenIE** can also produce structured triples in an open-domain setting. These methods are highly interpretable and computationally light, though they generally require careful rule design and may not generalize as broadly as neural models.
 
 ### Entity Resolution
 
