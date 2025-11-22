@@ -100,7 +100,7 @@ For browser-based applications (SPAs), developers often default to **LocalStorag
 
 **HttpOnly Cookies** offer a more secure alternative by making the token inaccessible to client-side JavaScript, effectively neutralizing XSS token theft, though this reintroduces the risk of Cross-Site Request Forgery (CSRF) which must be mitigated with strict `SameSite` policies.
 
-The modern "Gold Standard" for web security is the Backend for Frontend (BFF) pattern. Instead of the browser handling access tokens directly, a lightweight server-side proxy (the BFF) handles the token exchange and storage. The BFF issues a secure, encrypted **session cookie** to the browser. When the browser makes an API request, it sends the cookie to the BFF.
+Or lightweight server-side proxy (the BFF) handles the token exchange and storage. The BFF issues a secure, encrypted **session cookie** to the browser. When the browser makes an API request, it sends the cookie to the BFF.
 
 For Mobile applications tokens should always be stored in the operating systemâ€™s secure hardware-backed storage, such as the iOS Keychain or Android Keystore.
 
@@ -118,22 +118,6 @@ For Mobile applications tokens should always be stored in the operating systemâ€
 
 ### Reference
 
-[https://www.rfc-editor.org/rfc/rfc6749](https://www.rfc-editor.org/rfc/rfc6749) **:** oauth2 core
+[https://www.rfc-editor.org/rfc](https://www.rfc-editor.org/rfc/rfc6749)
 
-[https://www.rfc-editor.org/rfc/rfc6750](https://www.rfc-editor.org/rfc/rfc6750) : bearer token
-
-[https://www.rfc-editor.org/rfc/rfc6819](https://www.rfc-editor.org/rfc/rfc6819) : threat model
-
-[https://www.rfc-editor.org/rfc/rfc7009](https://www.rfc-editor.org/rfc/rfc7009) : token revocation
-
-[https://www.rfc-editor.org/rfc/rfc7662](https://www.rfc-editor.org/rfc/rfc7662) : token introspection
-
-[https://www.rfc-editor.org/rfc/rfc7636](https://www.rfc-editor.org/rfc/rfc7636) : pkce
-
-[https://www.rfc-editor.org/rfc/rfc7523](https://www.rfc-editor.org/rfc/rfc7523) : jwt profile
-
-[https://openid.net/specs/openid-connect-core-1\_0.html](https://openid.net/specs/openid-connect-core-1_0.html) **:** core
-
-[https://openid.net/specs/openid-connect-discovery-1\_0.html](https://openid.net/specs/openid-connect-discovery-1_0.html) : discovery
-
-[https://openid.net/specs/openid-connect-registration-1\_0.html](https://openid.net/specs/openid-connect-registration-1_0.html) : registration
+[https://openid.net/specs](https://openid.net/specs/openid-connect-core-1_0.html)
