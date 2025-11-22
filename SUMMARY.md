@@ -17,4 +17,4 @@
 * [P2P Chat](p2p-chat.md)
 * [ReactJS](reactjs.md)
 * [Information Extraction](knowledge-graph.md)
-* [Oauth2](oauth2.md)
+* [Oauth2 & Oidc](oauth2-and-oidc.md)

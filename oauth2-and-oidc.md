@@ -2,7 +2,7 @@
 description: https://github.com/Chandra179/go-sdk/tree/main/pkg/oauth2
 ---
 
-# Oauth2
+# Oauth2 & Oidc
 
 ### Actors
 
@@ -114,6 +114,10 @@ For Mobile applications tokens should always be stored in the operating systemâ€
 * Scopes are the mechanism used to enforce the Principle of Least Privilege, ensuring that a client application only has access to the specific resources it needs and nothing more
 * `read` and `write` are common examples, production environments use granular scopes like `files:read_only` or `billing:manage` to limit the blast radius if a token is compromised.
 * A important scope is `offline_access`; in many implementations, this is the specific trigger required for the server to issue a Refresh Token, allowing the app to maintain a session after the user closes their browser.
+
+### OIDC
+
+OIDC using same flow as Oauth2  there is just some additions in `/authorize` we add nonce, extract and verify `id_token` and some option like access type offline, approval force (force user to see consent dialog)
 
 ### Reference
 
