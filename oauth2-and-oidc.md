@@ -13,14 +13,14 @@ description: https://github.com/Chandra179/go-sdk/tree/main/pkg/oauth2
 
 ### Token Flow
 
-Client redirect users to authorization server
+Client redirected to authorization server
 
 ```
 GET /authorize?
   response_type=code&
   client_id=CLIENT_ID&
   redirect_uri=REDIRECT_URI&
-  scope=read write&
+  scope=read+write+idtoken&
   state=STATE&
   code_challenge=CODE_CHALLENGE&
   code_challenge_method=S256
@@ -31,12 +31,12 @@ GET /authorize?
 * `response_type=code` → asks for an authorization code
 * `client_id` → identifies your app
 * `redirect_uri` → where to send the code (Must strictly match the registered URI).
-* `scope` → requested permissions
+* `scope` → requested permissions, add openid for oidc
 * `state` → random string to prevent CSRF attacks. Without it, an attacker could trick a user into clicking a link that silently links the user's account to the attacker's identity provider account.
 * `code_challenge` → PKCE (Base64Url encoded SHA256 hash of the verifier).
 * `code_challenge_method` → usually `S256`
 
-After the  user authorizes the server redirects back with a `code`. The client exchanges this code for tokens.
+After authorizes the server redirects back with a `code`  which is to callback endpoint. then The client exchanges this code for tokens
 
 ```
 POST /token
@@ -72,9 +72,7 @@ then server return token
 
 ### **PKCE (Proof Key for Code Exchange)**
 
-PKCE prevents **authorization code interception** attacks, It cryptographically binds the authorization request to the token exchange request.&#x20;
-
-PKCE was introduced to solve the Authorization Code Interception attack, primarily on mobile devices. On mobile, malicious apps can register the same custom URL scheme (e.g., `myapp://`) as your legitimate app.&#x20;
+PKCE was originally designed to secure **public clients** (e.g., mobile apps, single-page web apps) that **cannot safely store a client secret**
 
 Without PKCE, a mobile device could accidentally deliver the login code to a malicious app instead of your app. That app could then use the code to get access to the user’s account.
 
