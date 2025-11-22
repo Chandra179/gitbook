@@ -2,7 +2,7 @@
 description: https://github.com/Chandra179/go-sdk/tree/main/pkg/oauth2
 ---
 
-# Oauth2 & OIDC
+# Oauth2
 
 ### Actors
 
@@ -20,7 +20,7 @@ GET /authorize?
   response_type=code&
   client_id=CLIENT_ID&
   redirect_uri=REDIRECT_URI&
-  scope=read+write+idtoken&
+  scope=read+write&
   state=STATE&
   code_challenge=CODE_CHALLENGE&
   code_challenge_method=S256
@@ -31,7 +31,7 @@ GET /authorize?
 * `response_type=code` → asks for an authorization code
 * `client_id` → identifies your app
 * `redirect_uri` → where to send the code (Must strictly match the registered URI).
-* `scope` → requested permissions, add openid for oidc
+* `scope` → requested permissions,
 * `state` → random string to prevent CSRF attacks. Without it, an attacker could trick a user into clicking a link that silently links the user's account to the attacker's identity provider account.
 * `code_challenge` → PKCE (Base64Url encoded SHA256 hash of the verifier).
 * `code_challenge_method` → usually `S256`
@@ -63,7 +63,6 @@ then server return token
 ```
 {
   "access_token": "ACCESS_TOKEN",
-  "id_token": "eyJhbGci...",       // Returned because scope included 'openid'
   "token_type": "Bearer",
   "expires_in": 3600,
   "refresh_token": "REFRESH_TOKEN"
