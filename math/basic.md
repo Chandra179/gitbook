@@ -223,3 +223,19 @@ $$[ \Delta C = 2 \pi \text{ ft} \approx 6.283 \text{ ft} ]$$
 
 **Remark:** The extra length does **not depend on the size of the Earth**.
 
+***
+
+### Ending Up Where You Started
+
+A woman starts at a point (P) on the Earth's surface and walks:
+
+1. 1 mile south
+2. 1 mile east
+3. 1 mile north
+
+She ends up **back at her starting point** (P).
+
+* Start **just a tiny distance north of the South Pole**, on a small circle of latitude.
+* Walk 1 mile south → reach the small circle near the South Pole.
+* Walk 1 mile east → the circle is so small that walking 1 mile completes **a full loop**, returning to the same longitude.
+* Walk 1 mile north → back to the starting point.
