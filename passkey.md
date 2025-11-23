@@ -4,6 +4,8 @@ description: https://github.com/Chandra179/go-sdk/blob/main/pkg/passkey/passkey.
 
 # Passkey
 
+<div><figure><img src=".gitbook/assets/Screenshot_2025-11-23-18-44-40-747_com.brave.browser.jpg" alt=""><figcaption></figcaption></figure> <figure><img src=".gitbook/assets/Screenshot_2025-11-23-18-43-54-870_com.brave.browser.jpg" alt=""><figcaption></figcaption></figure> <figure><img src=".gitbook/assets/Screenshot_2025-11-23-18-43-52-927_com.google.android.gms.jpg" alt=""><figcaption></figcaption></figure></div>
+
 ## Context
 
 * **WebAuthn** is a web standard for secure authentication that allows users to log in to websites or applications without using passwords. It leverages public-key cryptography to authenticate users.
