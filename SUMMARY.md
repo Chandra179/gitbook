@@ -16,6 +16,6 @@
 * [RSS Feed](rss-feed.md)
 * [P2P Chat](p2p-chat.md)
 * [ReactJS](reactjs.md)
-* [Information Extraction](knowledge-graph.md)
 * [Oauth2 & Oidc](oauth2.md)
 * [Passkey](passkey.md)
+* [Math](math.md)

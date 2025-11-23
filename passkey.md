@@ -1,7 +1,5 @@
 ---
-description: >-
-  webauthn & fido.
-  https://github.com/Chandra179/go-sdk/blob/main/pkg/passkey/passkey.go
+description: https://github.com/Chandra179/go-sdk/blob/main/pkg/passkey/passkey.go
 ---
 
 # Passkey
