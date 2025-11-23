@@ -1,13 +1,53 @@
 # Basic
 
-## Fraction
+### Diameter, Circumference, Pi
+
+* Every circle, no matter how big or small, has a special property. If you divide the distance around the circle (circumference) by the distance across the circle (diameter), you always get the same number, which is π 3.14.
 
 $$
-\frac{\text{numerator}}{\text{denominator}}
+\pi = \frac{\text{Circumference}}{\text{Diameter}}
 $$
 
-* Denominator (bottom number): tells how many equal pieces the whole is divided into.
-* Numerator (top number): tells how many pieces you have.
+* **Radius**: distance from center to edge
+* **Diameter**: Distance straight across the circle through the center.
+
+<p align="center"><span class="math">D = 2r</span></p>
+
+* **Circumference**: distance around the circle (using radius & diameter)
+
+<p align="center"><span class="math">C = 2 \pi r</span></p>
+
+<p align="center"><span class="math">C = \pi D</span></p>
+
+### Law of Exponents
+
+$$
+a^m \cdot a^n = a^{m+n}
+$$
+
+$$
+2^3 \cdot 2^4 = 2^{3+4} = 2^7 = 128
+$$
+
+***
+
+$$
+\frac{a^m}{a^n} = a^{m-n}
+$$
+
+$$
+\frac{2^5}{2^2} = 2^{5-2} = 2^3 = 8
+$$
+
+***
+
+$$
+(a^m)^n = a^{m \cdot n}
+$$
+
+$$
+(2^3)^4 = 2^{3 \cdot 4} = 2^{12}
+$$
 
 ### Distance, Time, and Speed Problem
 
@@ -106,3 +146,48 @@ For example, 142 parallel cuts produce:
 $$
 \text{Pieces} = 3 \cdot 142 + 1 = 427
 $$
+
+### Amoeba Propagation
+
+An amoeba doubles every 3 minutes. A container is full in 60 minutes starting with 1 amoeba.
+
+If the number of amoebas doubles every 3 minutes:
+
+$$
+N(t) = N_0 \cdot 2^{t/3}
+$$
+
+* (N\_0) = initial number of amoebas
+* (t) = time in minutes
+* (N(t)) = number of amoebas at time (t)
+
+Starting with 2 amoebas instead of 1, the growth formula becomes:
+
+$$
+2 \cdot 2^{t/3} = 2^1 \cdot 2^{t/3} = 2^{t/3 + 1}
+$$
+
+$$
+2 \cdot 2^{t/3} = 2^{20}
+$$
+
+* (2) = starting amoebas
+* (t/3) = number of doublings in (t) minutes
+* (2^{20}) = total amoebas to fill the container (20 doublings for 1 amoeba in 60 minutes)
+
+Compare exponents:
+
+$$
+t/3 + 1 = 20
+$$
+
+$$
+t/3 = 19
+$$
+
+$$
+t = 57 \text{ minutes}
+$$
+
+**Conclusion:** Starting with 2 amoebas, the container is full in **57 minutes**, 3 minutes faster than starting with 1 amoeba.
+
