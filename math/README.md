@@ -9,3 +9,8 @@ Calculus: Early Transcendentals (James Stewart)
 Introduction to Linear Algebra (Gilbert Strang)
 
 Introduction to Probability (Blitzstein or Ross)
+
+####
+
+
+

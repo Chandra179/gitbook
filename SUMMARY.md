@@ -18,4 +18,5 @@
 * [ReactJS](reactjs.md)
 * [Oauth2 & Oidc](oauth2.md)
 * [Passkey](passkey.md)
-* [Math](math.md)
+* [Math](math/README.md)
+  * [Basic](math/basic.md)
