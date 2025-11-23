@@ -191,3 +191,35 @@ $$
 
 **Conclusion:** Starting with 2 amoebas, the container is full in **57 minutes**, 3 minutes faster than starting with 1 amoeba.
 
+### Wrapping the World
+
+A ribbon is tied tightly around the Earth at the equator. How much more ribbon would you need if you raised it 1 ft above the surface everywhere?
+
+$$
+C = 2 \pi r
+$$
+
+Original ribbon
+
+$$
+C_\text{original} = 2 \pi r
+$$
+
+Ribbon raised 1 ft
+
+$$
+C_\text{new} = 2 \pi (r + 1)
+$$
+
+Extra ribbon needed
+
+$$
+\Delta C = C_\text{new} - C_\text{original} = 2 \pi (r + 1) - 2 \pi r = 2 \pi
+$$
+
+#### Answer
+
+$$[ \Delta C = 2 \pi \text{ ft} \approx 6.283 \text{ ft} ]$$
+
+**Remark:** The extra length does **not depend on the size of the Earth**.
+
