@@ -13,7 +13,6 @@
 * [RAG](rag/README.md)
   * [Crawling Result](rag/crawling-result.md)
   * [Chunking](rag/chunking.md)
-* [RSS Feed](rss-feed.md)
 * [P2P Chat](p2p-chat.md)
 * [ReactJS](reactjs.md)
 * [Oauth2 & Oidc](oauth2.md)
