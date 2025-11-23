@@ -19,5 +19,3 @@
 * [Information Extraction](knowledge-graph.md)
 * [Oauth2 & Oidc](oauth2.md)
 * [Passkey](passkey.md)
-* [Business Map](business-map/README.md)
-  * [Finance & Accounting](business-map/finance-and-accounting.md)
