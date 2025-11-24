@@ -38,3 +38,88 @@ The degree ($$n$$) determines the maximum number of real roots (or zeros) the po
 The degree also determines the end behavior, which is what happens to the function's value ($$P(x)$$) as $$x$$ gets extremely large (approaching $$\infty$$) or extremely small (approaching $$-\infty$$). The sign of the leading coefficient ($$a_n$$) also plays a role.
 
 <table><thead><tr><th>Degree Type</th><th width="169.4000244140625">Leading Coefficient (an​)</th><th>Graph Behavior</th><th>Analogy</th></tr></thead><tbody><tr><td>Even (e.g., 2, 4)</td><td>Positive</td><td>Both ends go up (<span class="math">\uparrow \dots \uparrow</span>)</td><td>A parabola opening up (<span class="math">y=x^2</span>).</td></tr><tr><td>Even (e.g., 2, 4)</td><td>Negative</td><td>Both ends go down (<span class="math">\downarrow \dots \downarrow</span>)</td><td>A parabola opening down (<span class="math">y=-x^2</span>).</td></tr><tr><td>Odd (e.g., 1, 3)</td><td>Positive</td><td>Starts down, ends up (<span class="math">\downarrow \dots \uparrow</span>)</td><td>A line going up (<span class="math">y=x</span>).</td></tr><tr><td>Odd (e.g., 1, 3)</td><td>Negative</td><td>Starts up, ends down (<span class="math">\uparrow \dots \downarrow</span>)</td><td>A line going down (<span class="math">y=-x</span>).</td></tr></tbody></table>
+
+#### Example in Economics: Profit Maximization
+
+A mobile phone manufacturer has the following functions, where $$x$$ is the number of phones manufactured:
+
+* Cost Function ($$C$$): $$C(x) = 2000x + 750,000$$
+* Revenue Function ($$R$$): $$R(x) = -0.09x^2 + 7000x$$
+
+The Profit Function ($$P$$) is defined as $$P(x) = R(x) - C(x)$$. Find the polynomial function for profit and determine the profit when $$25,000$$ phones are produced.
+
+Find the Profit Function $$P(x)$$: The profit function is calculated by subtracting the cost function from the revenue function:
+
+$$
+P(x) = R(x) - C(x)
+$$
+
+$$
+P(x) = (-0.09x^2 + 7000x) - (2000x + 750,000)
+$$
+
+$$
+P(x) = -0.09x^2 + 7000x - 2000x - 750,000
+$$
+
+$$
+P(x) = -0.09x^2 + 5000x - 750,000
+$$
+
+The resulting profit function is a **quadratic polynomial**. Calculate Profit for $$x = 25,000$$ phones:
+
+Substitute the value $$x = 25,000$$ into the profit function $$P(x)$$:
+
+$$
+P(25,000) = -0.09(25,000)^2 + 5000(25,000) - 750,000
+$$
+
+$$
+P(25,000) = -0.09(625,000,000) + 125,000,000 - 750,000
+$$
+
+$$
+P(25,000) = -56,250,000 + 125,000,000 - 750,000
+$$
+
+$$
+P(25,000) = 68,000,000
+$$
+
+**Conclusion:** Producing $$25,000$$ phones yields a profit of **$68,000,000**.
+
+***
+
+#### Example in Software Engineering: Performance Modeling
+
+A software team uses a **cubic polynomial** (degree 3) to model the **load time** ($$y$$, in seconds) of their application based on the **number of concurrent users** ($$x$$, in hundreds). The regression analysis resulted in the following model:
+
+$$
+y = 0.00001x^3 - 0.005x^2 + 0.8x + 5
+$$
+
+Determine the predicted load time when the application has 300 concurrent users.
+
+Identify the input value $$x$$:
+
+Since $$x$$ is the number of concurrent users in hundreds, 300 users corresponds to $$x=3$$. Substitute $$x=3$$ into the Polynomial Function:
+
+Substitute the value $$x=3$$ into the load time polynomial function $$y(x)$$:
+
+$$
+y(3) = 0.00001(3)^3 - 0.005(3)^2 + 0.8(3) + 5
+$$
+
+$$
+y(3) = 0.00001(27) - 0.005(9) + 2.4 + 5
+$$
+
+$$
+y(3) = 0.00027 - 0.045 + 2.4 + 5
+$$
+
+$$
+y(3) = 7.35527
+$$
+
+**Conclusion:** The predicted load time for the application with 300 concurrent users is approximately **7.36 seconds**.
