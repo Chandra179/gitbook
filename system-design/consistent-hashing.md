@@ -101,7 +101,7 @@ This can cause:
 
 #### Virtual Nodes (VNodes)
 
-To fix this, we use virtual nodes. Instead of placing each server once, we place each server multiple times on the ring using fake identities.
+To fix this, we use virtual nodes. Instead of placing each server once, we place each server multiple times on the ring using slightly modified names.
 
 Example for Server A:
 
