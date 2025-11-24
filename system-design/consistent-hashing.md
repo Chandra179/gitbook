@@ -139,34 +139,42 @@ Results:
 
 #### What happens if a server dies?
 
-If Server B crashes:
+If we only stored data on one server, a crash would mean permanent data loss. You can't "move" data from a dead hard drive! To solve this, real-world systems (like Cassandra or DynamoDB) use a Replication Factor.
 
-* All its virtual nodes disappear
-* The data previously mapped to them moves to the next clockwise server
-* The rest of the system is unaffected
+**Pre-Replication (The Safety Net)**
 
-Before:
+Instead of storing data on just _one_ node, the system stores the data on the first server encountered PLUS the next $$N$$ neighbors on the ring. This is called storing replicas. If Server `A` is the primary for a piece of data, Server `B` and Server `C` hold identical replica copies.
+
+**Handling the Crash**
+
+If a server, like Server `B`, crashes, the data previously mapped to its virtual nodes is not lost.
+
+* The system detects `B` is down.
+* Requests are immediately routed to the next clockwise server (Server `C` in many cases, or the next available virtual node).
+* Since the data was pre-replicated to that successor node, the system remains stable and data access continues without interruption. Only the responsibility (the traffic) shifts.
 
 ```
-12 → Server A  
-18 → Server B  
-28 → Server A  
-35 → Server C  
-63 → Server A  
-70 → Server B  
-88 → Server A  
+Before: (The original mapping remains illustrative, showing where the data was going)
+​
+12 → Server A​
+18 → Server B​
+28 → Server A​
+35 → Server C​
+63 → Server A​
+70 → Server B​
+88 → Server A​
+92 → Server C
+
+After Server B dies: (The mapping shows where the traffic shifts to)
+​​
+12 → Server A​
+18 → Server C (The data previously on B is now accessed via C)​
+28 → Server A​
+35 → Server C​
+63 → Server A​
+70 → Server C (The data previously on B is now accessed via C)​
+88 → Server A​
 92 → Server C
 ```
 
-After Server B dies:
-
-```
-12 → Server A  
-28 → Server A  
-35 → Server C  
-63 → Server A  
-88 → Server A  
-92 → Server C
-```
-
-Only the affected ranges are redistributed.
+Only the affected ranges are redistributed, and because of replication, the data is instantly accessible.
