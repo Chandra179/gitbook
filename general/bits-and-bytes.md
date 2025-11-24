@@ -22,13 +22,16 @@ if you have **n bits**, you can represent **2ⁿ unique values**.
 
 generate unique code 10.000/day using base64 with max length code 8
 
-```
-64^8 = if its represented to bits become (2^6)^8 = 2^48 
-combinations = 281 474 976 710 656
-
-10 000 codes/day = 10^4
+<pre><code><strong>// Base64
+</strong><strong>64^8 = if its represented to bits become (2^6)^8 = 2^48 
+</strong>combinations = 281 474 976 710 656
 
 281,474,976,710,656 / 10,000 = 28,147,497,671.0656 (days till it maxed out)
 28,147,497,671.0656 / 365 = 77,127,390 years (approx.)
-```
+
+// Base62
+62⁸ = 218,340,105,584,896
+218,340,105,584,896 / 10,000 = 21,834,010,558.49 days
+21,834,010,558.49 / 365 ≈ 59,834,276 year
+</code></pre>
 
