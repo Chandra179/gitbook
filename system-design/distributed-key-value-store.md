@@ -1,2 +1,0 @@
-# Distributed key value store
-

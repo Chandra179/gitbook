@@ -23,5 +23,4 @@
   * [Quadratic Equation](math/quadratic-equation.md)
   * [Polynomial](math/polynomial.md)
 * [System Design](system-design/README.md)
-  * [Distributed key value store](system-design/distributed-key-value-store.md)
   * [Consistent Hashing](system-design/consistent-hashing.md)
