@@ -79,6 +79,12 @@ Total Cost = $$\$50 + \$30 + \$10 + \$6 = \mathbf{\$96}$$
 
 <figure><img src="../.gitbook/assets/image (16).png" alt=""><figcaption></figcaption></figure>
 
+***
+
+**Least Common Denominator (LCD)**
+
+***
+
 **Greatest Common Factor (GCF)**
 
 * GCF of $$10x^4 - 15x^3 + 5x^2$$.
