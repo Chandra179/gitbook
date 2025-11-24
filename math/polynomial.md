@@ -123,3 +123,7 @@ y(3) = 7.35527
 $$
 
 **Conclusion:** The predicted load time for the application with 300 concurrent users is approximately **7.36 seconds**.
+
+### Polynomial Division
+
+We use polynomial division (both long and synthetic) because it's a powerful tool that allows us to do things we cannot do easily (or at all) with basic factoring or substitution, especially when dealing with polynomials of degree three or higher.
