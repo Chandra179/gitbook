@@ -40,10 +40,44 @@ Since there is no way to multiply a real number by itself and get a negative res
 
 **Constant** Term (the term with no variable, like 7)
 
+***
+
 **Distributive Property**
 
-* &#x20;$$2x(x - 5) = 2x^2 - 10x$$
-* &#x20;$$(x+3)(x-2) = x^2 + x - 6$$
+* $$a(b + c) = ab + ac$$
+* $$a(b - c) = ab - ac$$
+* $$(a + b)(x + y) = \underbrace{a(x + y)}_{\text{Distribute } a} + \underbrace{b(x + y)}_{\text{Distribute } b}$$
+
+Imagine you are buying items for a school trip:
+
+* First Group ($$\mathbf{a+b}$$): The number of people going.
+  * $$a = 10$$ students.
+  * $$b = 2$$ teachers.
+  * $$\mathbf{a+b = 12}$$ people.
+* Second Group ($$\mathbf{x+y}$$): The cost per person.
+  * $$x = \$5$$ for lunch.
+  * $$y = \$3$$ for a drink/snack.
+  * $$\mathbf{x+y = \$8}$$ total cost per person.
+
+The total cost is the product of the two: $$(10 + 2)(5 + 3)$$
+
+|                   | Lunch ($5)                      | Snack ($3)                      |
+| ----------------- | ------------------------------- | ------------------------------- |
+| Students ($$10$$) | $$10 \times 5 = \mathbf{\$50}$$ | $$10 \times 3 = \mathbf{\$30}$$ |
+| Teachers ($$2$$)  | $$2 \times 5 = \mathbf{\$10}$$  | $$2 \times 3 = \mathbf{\$6}$$   |
+
+Total Cost = $$\$50 + \$30 + \$10 + \$6 = \mathbf{\$96}$$
+
+***
+
+**Associative Property**
+
+* $$(a + b) + c = a + (b + c)$$
+* $$(ab) c = a (bc)$$
+
+***
+
+<figure><img src="../.gitbook/assets/image (16).png" alt=""><figcaption></figcaption></figure>
 
 **Greatest Common Factor (GCF)**
 
