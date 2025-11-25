@@ -6,6 +6,7 @@
   * [Character Encoding](general/character-encoding.md)
   * [NAT](general/nat.md)
   * [API Design](general/api-design.md)
+  * [BigInt](general/bigint.md)
 * [Golang](golang/README.md)
   * [Strings](golang/strings.md)
   * [Goroutine](golang/goroutine.md)
@@ -24,3 +25,4 @@
   * [Polynomial](math/polynomial.md)
 * [System Design](system-design/README.md)
   * [Consistent Hashing](system-design/consistent-hashing.md)
+  * [Distributed Transaction](system-design/distributed-transaction.md)
