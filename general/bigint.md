@@ -1,14 +1,8 @@
 # BigInt
 
-While `BigDecimal` is mathematically precise _internally_, it is operationally fragile in distributed systems. When building high-volume payment infrastructure  the "Textbook" solution often introduces subtle bugs that crash production or corrupt ledgers.
-
-Here is why we are choosing BigInt (Integers storing Minor Units) over `BigDecimal`, and why giants like Stripe and Uber do the same.
-
-***
+While `BigDecimal` is mathematically precise _internally_, it is operationally fragile in distributed systems. Here is why we are choosing BigInt (Integers storing Minor Units) over `BigDecimal`, and why giants like Stripe and Uber do the same.
 
 ### Money is Discrete, Not Continuous
-
-The first argument is conceptual.
 
 * `BigDecimal` treats money as a continuous value. It allows you to store `$10.5000001`.
 * `BigInt` treats money as discrete particles. If you store values in "cents" (or the smallest currency unit), it is physically impossible to store half a cent.
@@ -79,11 +73,7 @@ The Bug: You run `amount.divide(3)`. The system tries to calculate `33.3333333..
 
 **The BigInt Fix**: Integer division (`10000 / 3`) results in `3333` with a remainder of 1. The use of Integers _forces_ the developer to write code to handle that remainder (the "extra penny"). You cannot accidentally crash the server; you are forced to handle the money correctly.
 
-***
-
-### Real-World Evidence
-
-This isn't just theoretical optimization; it is the standard for high-scale fintech.
+### Evidence
 
 #### The Rails Incident (Issue #6033)
 
@@ -93,13 +83,7 @@ The Ruby on Rails team famously had to force `BigDecimal` to serialize as String
 
 Stripe processes billions of dollars and strictly uses Integers. [https://stripe.com/docs/api/charges/create](https://stripe.com/docs/api/charges/create)
 
-> From the Stripe API Docs: Field: `amount` Type: `integer` Quote: _"A positive integer representing how much to charge in the \[smallest currency unit] (e.g., 100 cents to charge $1.00)."_
-
-#### Uber (The Immutable Ledger)
-
-When Uber re-architected their payment system from a monolithic Postgres DB to a high-scale Ledger, they adopted a strict Double-Entry system. They rely on integer-based logic to ensure that `Credits + Debits = 0`. You cannot build a high-speed, verifiable ledger if you are constantly fighting floating-point rounding dust (e.g., sums resulting in `0.00000001`).
-
-***
+> From the Stripe API Docs: Field: `amount` Type: `integer` Quote: _"A positive integer representing how much to charge in the \[smallest currency unit] (e.g., 100 cents to charge $1.00)._
 
 ### Summary
 
