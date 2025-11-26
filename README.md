@@ -43,10 +43,7 @@ M+ Software operating as an ERP consulting
 #### Project
 
 * Web crawler in Go: [https://github.com/Chandra179/axora](https://github.com/Chandra179/axora)
-* RAG langchain: [https://github.com/Chandra179/beacon](https://github.com/Chandra179/beacon)
 * P2P chat: [https://github.com/Chandra179/p2pchat](https://github.com/Chandra179/p2pchat)
-* Crypto outlook: [https://github.com/Chandra179/cryptopat](https://github.com/Chandra179/cryptopat)
-* RSSfeed : [https://github.com/Chandra179/rssfeed](https://github.com/Chandra179/rssfeed)
 
 
 
