@@ -1,9 +1,5 @@
 # BigInt
 
-## Stop Using Decimals: Why Financial Systems Prefer Integers (BigInt)
-
-We've all been there. You're designing a new payment service, and the database schema discussion comes up. Someone inevitably says, 'Just use `DECIMAL(19,4)` and be done with it.
-
 While `BigDecimal` is mathematically precise _internally_, it is operationally fragile in distributed systems. When building high-volume payment infrastructure  the "Textbook" solution often introduces subtle bugs that crash production or corrupt ledgers.
 
 Here is why we are choosing BigInt (Integers storing Minor Units) over `BigDecimal`, and why giants like Stripe and Uber do the same.
