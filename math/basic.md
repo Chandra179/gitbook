@@ -40,6 +40,11 @@ Since there is no way to multiply a real number by itself and get a negative res
 
 **Constant** Term (the term with no variable, like 7)
 
+**Modulus** $$a = (n \times q) + r$$
+
+* $$1 = (10 \times 0) + r$$, r =1
+* $$99 = (100 \times 0) + r$$, r=99
+
 ***
 
 **Distributive Property**
