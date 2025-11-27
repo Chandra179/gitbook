@@ -57,16 +57,6 @@ _This diagram shows how the system interacts with external entities and internal
 >
 > Show:  $$Web App \leftrightarrow API Gateway \leftrightarrow [Service A] \leftrightarrow Database$$&#x20;
 
-#### Technology Stack
-
-| Layer     | Technology        | Reason for Choice (ADR Ref)           |
-| --------- | ----------------- | ------------------------------------- |
-| Frontend  | React, TypeScript | Standard team competency              |
-| Backend   | Go (Golang)       | High concurrency support              |
-| Database  | PostgreSQL        | ACID compliance required for payments |
-| Caching   | Redis             | Session storage                       |
-| Messaging | Kafka             | Asynchronous event processing         |
-
 ***
 
 ### 4. Data Design
@@ -161,3 +151,13 @@ _module implementation detail_
 
 1. Inventory Check: An order cannot be created if `Stock < Quantity`.
 2. Minimum Order: Cart value must be > $10.00.
+
+### 7. Technology Stack
+
+| Layer     | Technology        | Reason for Choice (ADR Ref)           |
+| --------- | ----------------- | ------------------------------------- |
+| Frontend  | React, TypeScript | Standard team competency              |
+| Backend   | Go (Golang)       | High concurrency support              |
+| Database  | PostgreSQL        | ACID compliance required for payments |
+| Caching   | Redis             | Session storage                       |
+| Messaging | Kafka             | Asynchronous event processing         |
