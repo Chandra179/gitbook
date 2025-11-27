@@ -4,10 +4,6 @@ description: software design document
 
 # SDD: \[Project Name]
 
-{% include "../.gitbook/includes/status-draft-or-author-n....md" %}
-
-***
-
 ### 1. Introduction
 
 _High-level context for the team. Keep this brief._
@@ -157,41 +153,11 @@ interface IOrderService {
 
 ***
 
-### 6. Processing Detail
+### 6. Module Detail
 
-_Complex logic, algorithms, and business rules._
+_module implementation detail_
 
-#### Business Logic & Constraints
+#### IOrderService
 
 1. Inventory Check: An order cannot be created if `Stock < Quantity`.
 2. Minimum Order: Cart value must be > $10.00.
-3. Idempotency: Implement idempotency keys on Payment APIs to prevent double-charging.
-
-#### Critical Flows (Sequence Diagram)
-
-_Scenario: User places an order._
-
-> \[Insert Image: Sequence Diagram]
->
-> Flow:
->
-> 1. User `POST /order`
-> 2. API Service checks Inventory (DB Read)
-> 3. API Service calculates Tax (External Service)
-> 4. API Service creates Record (DB Write)
-> 5. API Service publishes event `OrderCreated` (Kafka)
-
-#### Edge Cases & Failure Scenarios
-
-* DB Failure: If the database write fails, return `500 Internal Server Error` and do not publish Kafka event.
-* Inventory Race Condition: Use Database Row Locking (`SELECT FOR UPDATE`) during stock check.
-
-***
-
-### 7. Operations & Deployment
-
-_How we run this in production._
-
-* CI/CD Pipeline: Github Actions $$\to$$ Docker Build $$\to$$ AWS ECR $$\to$$ ECS.
-* Configuration: All secrets managed via AWS Parameter Store.
-* Observability: Logs shipped to Datadog; Alerts on `Error Rate > 1%`.
