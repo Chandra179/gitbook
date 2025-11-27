@@ -70,7 +70,7 @@ CREATE TABLE accounts (
     balance        BIGINT NOT NULL DEFAULT 0, -- Available to spend (in minor units, e.g., cents)
     hold_balance   BIGINT NOT NULL DEFAULT 0;
     
-    -- CONCURRENCY CONTROL (Pessimistic Locking)
+    -- CONCURRENCY CONTROL
     version        INT NOT NULL DEFAULT 1,    -- Increments on every update
     
     -- AUDIT
@@ -152,7 +152,7 @@ Reconciliation records
 
 ```sql
 CREATE TABLE reconciliation_records (
-    id                  BIGSERIAL PRIMARY KEY,
+    id                  BIGINT PRIMARY KEY,
     reconciliation_date DATE NOT NULL,
     
     -- EXTERNAL PROVIDER DATA
@@ -186,8 +186,6 @@ CREATE INDEX idx_recon_status ON reconciliation_records(match_status);
 ## Component Design (API & Modules)
 
 #### **API Specification**
-
-_Standard: RESTful JSON over HTTP._
 
 **`POST /api/v1/transactions`**
 
@@ -275,47 +273,46 @@ Response (200 OK):
 
 ```go
 type TransactionService interface {
-    // Creates a new transaction with idempotency protection
-    // Validates balance, step-up auth, and rate limits
+    // TODO: detailed explanation
     CreateTransaction(ctx context.Context, req CreateTransactionRequest) (*Transaction, error)
     
-    // Retrieves transaction by ID
+    // TODO: detailed explanation
     GetTransaction(ctx context.Context, txnID int64) (*Transaction, error)
     
-    // Updates transaction status via FSM
+    // TODO: detailed explanation
     UpdateTransactionStatus(ctx context.Context, txnID int64, newStatus TransactionStatus) error
     
-    // Processes refund (creates offsetting transaction)
+    // TODO: detailed explanation
     ProcessRefund(ctx context.Context, originalTxnID int64, reason string) (*Transaction, error)
 }
 
 type AccountService interface {
-    // Retrieves account balance with pessimistic locking support
+    // TODO: detailed explanation
     GetAccount(ctx context.Context, accountID int64) (*Account, error)
     
-    // whats the strategy?
+    // TODO: detailed explanation
     UpdateBalance(ctx context.Context, accountID int64, amount int64, version int) error
     
-    // Retrieves transaction history (reads from replica/ES)
+    // TODO: detailed explanation
     GetTransactionHistory(ctx context.Context, accountID int64, filters HistoryFilters) ([]Transaction, error)
 }
 
 type PaymentGatewayService interface {
-    // Processes payment through external gateway (Stripe)
+    // TODO: detailed explanation
     ProcessPayment(ctx context.Context, req PaymentRequest) (*PaymentResponse, error)
     
-    // Handles webhook callbacks from payment provider
+    // TODO: detailed explanation
     HandleWebhook(ctx context.Context, payload []byte, signature string) error
     
-    // Retrieves settlement report for reconciliation
+    // TODO: detailed explanation
     GetSettlementReport(ctx context.Context, date time.Time) ([]SettlementRecord, error)
 }
 
 type ReconciliationService interface {
-    // whats the strategy?
+    // TODO: detailed explanation
     ReconcileTransactions(ctx context.Context, date time.Time) (*ReconciliationReport, error)
     
-    // Identifies and flags discrepancies
+    // TODO: detailed explanation
     FlagDiscrepancy(ctx context.Context, externalRefID string, reason string) error
 }
 ```
@@ -326,6 +323,8 @@ type ReconciliationService interface {
 CREATED → PENDING → PAID → SETTLED
    ↓         ↓        ↓
  FAILED   FAILED   REFUNDED
+
+CREATED → PENDING → EXPIRED
 ```
 
 **State Definitions:**
@@ -346,5 +345,5 @@ CREATED → PENDING → PAID → SETTLED
 
 ## FAQ
 
-* Optimistic locking works great for _personal_ wallets. It fails catastrophically for _Merchant_ wallets. If McDonald's tries to receive 1,000 payments per second, 999 of them will fail with a `Version Mismatch Error` because they are all trying to read Version 100 and write Version 101 simultaneously. For hot accounts, you must move away from "locking" and towards "append-only deltas" or "in-memory batching." flagged via config, implement a Buffered Write strategy:
+* Optimistic locking works great for _personal_ wallets. It fails for _Merchant_ wallets. If McDonald's tries to receive 1,000 payments per second, 999 of them will fail with a `Version Mismatch Error` because they are all trying to read Version 100 and write Version 101 simultaneously. For hot accounts, you must move away from "locking" and towards "append-only deltas" or "in-memory batching." flagged via config, implement a Buffered Write strategy.
 
