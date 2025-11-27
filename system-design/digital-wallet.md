@@ -43,42 +43,7 @@ We are following a `Monolithic with Clear Module Boundaries` architecture. The s
 
 **Component View (Container Diagram)**
 
-```
-┌─────────────┐
-│   Web App   │
-│  (Client)   │
-└──────┬──────┘
-       │
-       ↓
-┌─────────────────────────────────────────┐
-│         API Gateway / Load Balancer     │
-└──────────────────┬──────────────────────┘
-                   │
-                   ↓
-┌────────────────────────────────────────────────┐
-│         Digital Wallet Application             │
-│  ┌─────────────┐  ┌──────────────┐             │
-│  │   Account   │  │ Transaction  │             │
-│  │   Module    │  │    Module    │             │
-│  └─────────────┘  └──────────────┘             │
-│  ┌─────────────┐  ┌──────────────┐             │
-│  │   Payment   │  │Reconciliation│             │
-│  │   Module    │  │    Module    │             │
-│  └─────────────┘  └──────────────┘             │
-└────────┬─────────────────────┬─────────────────┘
-         │                     │
-         ↓                     ↓
-┌─────────────────┐   ┌─────────────────┐
-│   PostgreSQL    │   │  Stripe Gateway │
-│   (Master + RR) │   │  (External API) │
-└─────────────────┘   └─────────────────┘
-         │
-         ↓
-┌─────────────────┐
-│  Elasticsearch  │
-│ (Read Queries)  │
-└─────────────────┘
-```
+<figure><img src="../.gitbook/assets/image (20).png" alt=""><figcaption></figcaption></figure>
 
 **Technology Stack**
 
@@ -103,8 +68,9 @@ CREATE TABLE accounts (
     
     -- FINANCIAL STATE
     balance        BIGINT NOT NULL DEFAULT 0, -- Available to spend (in minor units, e.g., cents)
+    hold_balance   BIGINT NOT NULL DEFAULT 0;
     
-    -- CONCURRENCY CONTROL (Optimistic Locking)
+    -- CONCURRENCY CONTROL (Pessimistic Locking)
     version        INT NOT NULL DEFAULT 1,    -- Increments on every update
     
     -- AUDIT
@@ -170,9 +136,6 @@ CREATE TABLE transaction_ledger (
     -- DOUBLE-ENTRY
     entry_type      VARCHAR(15) NOT NULL,    -- 'DEBIT' or 'CREDIT'
     amount          BIGINT NOT NULL,         -- Always positive, direction determined by entry_type
-    
-    -- RUNNING BALANCE (denormalized for query efficiency)
-    balance_after   BIGINT NOT NULL,
     
     -- AUDIT
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -328,10 +291,10 @@ type TransactionService interface {
 }
 
 type AccountService interface {
-    // Retrieves account balance with optimistic locking support
+    // Retrieves account balance with pessimistic locking support
     GetAccount(ctx context.Context, accountID int64) (*Account, error)
     
-    // Updates balance with version check (optimistic locking)
+    // Updates balance with version check (pessimistic locking)
     UpdateBalance(ctx context.Context, accountID int64, amount int64, version int) error
     
     // Retrieves transaction history (reads from replica/ES)
@@ -419,5 +382,11 @@ Layer 4: Pattern Detection (ML-based)
 ## **References**
 
 * Stripe API Documentation: [https://stripe.com/docs/api](https://stripe.com/docs/api)
-* PostgreSQL Optimistic Locking: [https://www.postgresql.org/docs/current/mvcc.html](https://www.postgresql.org/docs/current/mvcc.html)
 * PCI DSS Compliance: [https://www.pcisecuritystandards.org/](https://www.pcisecuritystandards.org/)
+
+***
+
+## FAQ
+
+* Optimistic locking works great for _personal_ wallets. It fails catastrophically for _Merchant_ wallets. If McDonald's tries to receive 1,000 payments per second, 999 of them will fail with a `Version Mismatch Error` because they are all trying to read Version 100 and write Version 101 simultaneously.
+
