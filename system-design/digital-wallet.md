@@ -82,7 +82,7 @@ CREATE TABLE accounts (
     CONSTRAINT check_positive_hold CHECK (hold_balance >= 0)
 );
 
-CREATE INDEX idx_accounts_user_id ON accounts(user_id);
+UNIQUE (user_id, currency)
 ```
 
 Transactions Table
@@ -90,7 +90,6 @@ Transactions Table
 ```sql
 CREATE TABLE transactions (
     id                BIGINT PRIMARY KEY,           -- Snowflake ID (time-sortable)
-    idempotency_key   VARCHAR(255) NOT NULL UNIQUE, -- Prevent duplicate transactions
     
     -- ACCOUNT REFERENCES
     from_account_id   BIGINT NOT NULL,
@@ -294,7 +293,7 @@ type AccountService interface {
     // Retrieves account balance with pessimistic locking support
     GetAccount(ctx context.Context, accountID int64) (*Account, error)
     
-    // Updates balance with version check (pessimistic locking)
+    // whats the strategy?
     UpdateBalance(ctx context.Context, accountID int64, amount int64, version int) error
     
     // Retrieves transaction history (reads from replica/ES)
@@ -313,7 +312,7 @@ type PaymentGatewayService interface {
 }
 
 type ReconciliationService interface {
-    // Runs daily reconciliation against external provider
+    // whats the strategy?
     ReconcileTransactions(ctx context.Context, date time.Time) (*ReconciliationReport, error)
     
     // Identifies and flags discrepancies
@@ -337,6 +336,7 @@ CREATED → PENDING → PAID → SETTLED
 * `SETTLED`: Funds fully settled (after settlement period)
 * `FAILED`: Transaction failed at any stage
 * `REFUNDED`: Transaction has been refunded (creates offsetting entry)
+* `EXPIRED` : state for PENDING transactions that never got a callback from the gateway.
 
 **Invalid Transitions:**
 
@@ -344,18 +344,7 @@ CREATED → PENDING → PAID → SETTLED
 * Cannot go from `SETTLED` back to `PENDING`
 * Cannot skip states (e.g., `CREATED` → `SETTLED`)
 
-***
-
-***
-
-## **References**
-
-* Stripe API Documentation: [https://stripe.com/docs/api](https://stripe.com/docs/api)
-* PCI DSS Compliance: [https://www.pcisecuritystandards.org/](https://www.pcisecuritystandards.org/)
-
-***
-
 ## FAQ
 
-* Optimistic locking works great for _personal_ wallets. It fails catastrophically for _Merchant_ wallets. If McDonald's tries to receive 1,000 payments per second, 999 of them will fail with a `Version Mismatch Error` because they are all trying to read Version 100 and write Version 101 simultaneously.
+* Optimistic locking works great for _personal_ wallets. It fails catastrophically for _Merchant_ wallets. If McDonald's tries to receive 1,000 payments per second, 999 of them will fail with a `Version Mismatch Error` because they are all trying to read Version 100 and write Version 101 simultaneously. For hot accounts, you must move away from "locking" and towards "append-only deltas" or "in-memory batching." flagged via config, implement a Buffered Write strategy:
 
