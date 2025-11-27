@@ -2,7 +2,7 @@
 
 ## GPM scheduler
 
-<figure><img src="../.gitbook/assets/image (1) (1) (1) (1) (1) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (1) (1) (1) (1) (1) (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 * **G (Goroutine)** → the task itself (like a cooking order). You create a goroutine whenever you want to run a function concurrently. Example: `G1`, `G2`, `G3`.
 * **P (Processor)** → the scheduler’s “cooking station.” It decides which goroutine should run on which OS thread. Example: `P1`, `P2`.

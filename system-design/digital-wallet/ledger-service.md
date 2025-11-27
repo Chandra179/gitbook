@@ -85,7 +85,7 @@ Table: `transactions` (The Journal Header)
 ```sql
 CREATE TABLE transactions (
     id             BIGINT PRIMARY KEY,
-    reference_id   VARCHAR(100) NOT NULL, -- External ID (e.g., Stripe Charge ID)
+    reference_id   VARCHAR(200) NOT NULL, -- External ID (e.g., Stripe Charge ID, transfer)
     idempotent_key VARCHAR(100) UNIQUE NOT NULL, -- Idempotency Key
     status         VARCHAR(20) DEFAULT 'POSTED',
     metadata       JSONB,
@@ -127,38 +127,41 @@ CREATE INDEX idx_postings_account_time ON postings(account_id, created_at DESC);
 
 * In many modern financial platforms (fintechs, marketplaces, e-commerce platforms), not every account is owned by a single human user. Using the term `entity_id` provides the necessary flexibility for growth
 * `postings.account_id` should link directly to `accounts.id`.  A single user might have multiple ledger accounts (e.g., a "USD Wallet," a "EUR Wallet," an "Investment Account"). The `postings` table needs to know _which_ specific financial instrument the money moved in/out of, not just who the ultimate owner is. Its should not linked to `accounts.entity_id` because a user can have multiple ledger accounts
+* For every Ledger transaction, the `reference_id` must be the primary key from the first domain service that processed the financial event. ex: payout service (payout\_C38F7)
 
 ### 5. Component Design (API & Modules)
 
-_Interfaces for developers._
-
-**API Specification**
-
-_Standard: RESTful JSON over HTTP._
+#### **API Specification**
 
 `POST /api/v1/transactions`
 
 ```json
 // Context: Records a double-entry transaction.
 // Constraint: Sum of Debits must equal Sum of Credits.
+Content-Type: application/json
+Idempotency-Key: txn_12345_retry_1  <-- Moved here
+Authorization: Bearer <token>
 
 Request:
 {
   "reference_id": "ord_550e8400",
-  "idempotency_key": "txn_12345_retry_1",
+  // Enforce one currency for the whole transaction
+  "currency": "USD", 
   "description": "Payment for Order #99",
+  "metadata": {
+    "merchant_id": "merch_01",
+    "location": "SG"
+  },
   "postings": [
     {
-      "account_id": "acc_user_123",
+      "account_id": "1829384756", // String format to protect Snowflake precision
       "direction": "DEBIT",
-      "amount": 1000,
-      "currency": "USD"
+      "amount": "1000"            // String format to protect Money precision
     },
     {
-      "account_id": "acc_platform_revenue",
+      "account_id": "9988776655",
       "direction": "CREDIT",
-      "amount": 1000,
-      "currency": "USD"
+      "amount": "1000"
     }
   ]
 }
@@ -171,20 +174,27 @@ Response (200 OK):
 }
 ```
 
-**Module Abstraction**
+#### **Module Abstraction**
 
 _Key interfaces for the backend logic._
 
-`ILedgerManager` Interface:
-
 ```go
-type ILedgerManager interface {
-    // Core Atomic Operation
-    PostTransaction(ctx Context, cmd CreateTransactionCommand) (Transaction, error)
+type ILedgerService interface {
+    // CreateAccount provisions a new ledger account (Asset/Liability).
+    // It returns the generated AccountID (Snowflake).
+    CreateAccount(ctx context.Context, cmd CreateAccountCmd) (Account, error)
 
-    // Read Operations
-    GetBalance(ctx Context, accountID uuid.UUID) (Money, error)
-    GetAccountHistory(ctx Context, accountID uuid.UUID, filter DateRange) ([]Posting, error)
+    // PostTransaction executes the Double-Entry logic.
+    // Ideally, returns the full Transaction struct including the generated ID.
+    PostTransaction(ctx context.Context, cmd CreateTransactionCmd) (Transaction, error)
+
+    // GetBalance returns the current cached balance.
+    // It should also return the 'version' for optimistic locking checks by clients.
+    GetBalance(ctx context.Context, accountID AccountID) (Money, int, error)
+
+    // GetAccountHistory retrieves postings with Pagination.
+    // NEVER return a slice without a limit/cursor in a financial system.
+    GetAccountHistory(ctx context.Context, query HistoryQuery) (HistoryResponse, error)
 }
 ```
 
@@ -192,9 +202,7 @@ type ILedgerManager interface {
 
 ### 6. Module Detail
 
-_Implementation detail for `ILedgerManager.PostTransaction`_
-
-**Logic Flow (Atomic Transaction)**
+<figure><img src="../../.gitbook/assets/image (2).png" alt=""><figcaption></figcaption></figure>
 
 1. Idempotency Check: Query `transactions` table by `idempotency_key`. If exists, return saved result.
 2. Validation:
@@ -204,11 +212,10 @@ _Implementation detail for `ILedgerManager.PostTransaction`_
 3. Database Transaction (Begin):
    * Insert row into `transactions`.
    * Insert rows into `postings`.
+   * Before the `UPDATE`, your application code should perform a quick check: Does the current balance (read during locking) minus the debit amount result in a violation? If yes, `Rollback` immediately _before_ attempting the update, logging the `INSUFFICIENT_FUNDS` error. This avoids unnecessary database lock acquisition.
    *   Lock & Update: For every account involved:
 
-       SQL
-
-       ```
+       ```sql
        UPDATE accounts 
        SET balance = balance + (direction == 'CREDIT' ? amount : -amount), 
            version = version + 1

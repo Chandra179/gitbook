@@ -12,7 +12,7 @@ simulating unlimited crawl visits with&#x20;
 2. max depth 3 and 3 concurrent request per domain also resulting in growing memory & goroutine
 3. max depth 2 and 10 conccurent requst per domain
 
-<figure><img src="../.gitbook/assets/image (1) (1) (1) (1) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (1) (1) (1) (1) (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 ## Test Result 2
 
