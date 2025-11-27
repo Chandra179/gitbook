@@ -23,6 +23,7 @@
   * [Problem](math/problem.md)
   * [Quadratic Equation](math/quadratic-equation.md)
   * [Polynomial](math/polynomial.md)
+* [Digital Wallet](digital-wallet.md)
 * [System Design](system-design/README.md)
   * [Consistent Hashing](system-design/consistent-hashing.md)
-  * [Distributed Transaction](system-design/distributed-transaction.md)
+  * [SDD: \[Project Name\]](system-design/sdd-project-name.md)
