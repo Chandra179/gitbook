@@ -145,7 +145,7 @@ interface IOrderService {
 
 ### 6. Module Detail
 
-_module implementation detail_
+_module implementation detail from module abstraction_
 
 #### IOrderService
 
