@@ -4,9 +4,7 @@ description: software design document
 
 # SDD: \[Project Name]
 
-> &#x20;Status: DRAFT | Author: \[Name] | Last Updated: YYYY-MM-DD
->
-> Reviewers: \[Name 1], \[Name 2]
+{% include "../.gitbook/includes/status-draft-or-author-n....md" %}
 
 ***
 
