@@ -1,6 +1,6 @@
 # Ledger Service
 
-#### 1. Introduction
+### 1. Introduction
 
 _The backbone of our financial infrastructure, providing immutable double-entry accounting._
 
@@ -15,9 +15,7 @@ The purpose of this document is to define the architecture, data structures, and
 
 ***
 
-#### 2. Non-Functional Requirements (NFRs)
-
-_The constraints and quality attributes the system must meet._
+### 2. Non-Functional Requirements (NFRs)
 
 **Scalability & Performance**
 
@@ -38,9 +36,7 @@ _The constraints and quality attributes the system must meet._
 
 ***
 
-#### 3. High-Level Design (Architecture)
-
-_The "Big Picture" view of the system._
+### 3. High-Level Design (Architecture)
 
 **Architecture Style**
 
@@ -54,19 +50,21 @@ _This diagram shows how the ledger interacts with upstream Payment services and 
 
 ***
 
-#### 4. Data Design
+### 4. Data Design
 
 _How we store and manage state. Schema optimized for Double-Entry._
 
-**Data Model (Schema)**
+#### **Data Model (Schema)**
+
+We using snowflake id generator&#x20;
 
 Table: `accounts` (The Balance Sheet)
 
-```sql
-CREATE TABLE accounts (
-    id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+<pre class="language-sql"><code class="lang-sql">CREATE TABLE accounts (
+    id             BIGINT PRIMARY KEY,
+    entity_id      BIGINT NOT NULL,
     code           VARCHAR(50) UNIQUE NOT NULL, -- e.g., '1001-USER-WALLET'
-    type           VARCHAR(20) NOT NULL,        -- 'ASSET', 'LIABILITY'
+    type           VARCHAR(35) NOT NULL,        -- 'ASSET', 'LIABILITY'
     currency       CHAR(3) NOT NULL,            -- 'USD'
     
     -- FINANCIAL STATE (Denormalized for read performance)
@@ -74,46 +72,63 @@ CREATE TABLE accounts (
     
     -- CONCURRENCY CONTROL
     version        INT NOT NULL DEFAULT 1,      -- For Optimistic Locking
-    updated_at     TIMESTAMPTZ DEFAULT NOW()
+<strong>    created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+</strong>    updated_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    
+    -- Constraint: Prevent balances from going negative (unless overdraft is allowed)
+    CONSTRAINT check_non_negative_balance CHECK (balance >= 0)   
 );
-```
+</code></pre>
 
 Table: `transactions` (The Journal Header)
 
 ```sql
 CREATE TABLE transactions (
-    id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id             BIGINT PRIMARY KEY,
     reference_id   VARCHAR(100) NOT NULL, -- External ID (e.g., Stripe Charge ID)
-    idem_key       VARCHAR(100) UNIQUE NOT NULL, -- Idempotency Key
+    idempotent_key VARCHAR(100) UNIQUE NOT NULL, -- Idempotency Key
     status         VARCHAR(20) DEFAULT 'POSTED',
     metadata       JSONB,
-    created_at     TIMESTAMPTZ DEFAULT NOW()
+    created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    
+    -- CRITICAL ADDITION: Who/what service created this transaction
+    created_by     VARCHAR(50) NOT NULL
 );
+-- CRITICAL PERFORMANCE INDEX
+-- You will query by reference_id constantly for support/debugging.
+CREATE INDEX idx_transactions_ref ON transactions(reference_id);
 ```
 
 Table: `postings` (The Ledger Lines - The Source of Truth)
 
 ```sql
 CREATE TABLE postings (
-    id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    transaction_id UUID NOT NULL REFERENCES transactions(id),
-    account_id     UUID NOT NULL REFERENCES accounts(id),
-    direction      VARCHAR(10) NOT NULL, -- 'DEBIT' or 'CREDIT'
+    id             BIGINT PRIMARY KEY,
+    -- CRITICAL: Ensure data is not accidentally deleted
+    transaction_id BIGINT NOT NULL REFERENCES transactions(id) ON DELETE RESTRICT,
+    account_id     BIGINT NOT NULL REFERENCES accounts(id) ON DELETE RESTRICT,
+    direction      VARCHAR(10) NOT NULL, 
     amount         BIGINT NOT NULL CHECK (amount > 0),
+    created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     
-    INDEX idx_account_created (account_id, created_at) -- For fast history lookup
+    -- Foreign Key Constraints (Named explicitly for better error logs)
+    CONSTRAINT fk_postings_txn FOREIGN KEY (transaction_id) 
+        REFERENCES transactions(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_postings_acc FOREIGN KEY (account_id) 
+        REFERENCES accounts(id) ON DELETE RESTRICT
 );
+-- CRITICAL PERFORMANCE INDEXES
+-- 1. Essential for "Get Transaction Details" (Join)
+CREATE INDEX idx_postings_txn ON postings(transaction_id);
+
+-- 2. Essential for "Get Account History" (Timeline)
+CREATE INDEX idx_postings_account_time ON postings(account_id, created_at DESC);
 ```
 
-**Caching Strategy**
+* In many modern financial platforms (fintechs, marketplaces, e-commerce platforms), not every account is owned by a single human user. Using the term `entity_id` provides the necessary flexibility for growth
+* `postings.account_id` should link directly to `accounts.id`.  A single user might have multiple ledger accounts (e.g., a "USD Wallet," a "EUR Wallet," an "Investment Account"). The `postings` table needs to know _which_ specific financial instrument the money moved in/out of, not just who the ultimate owner is. Its should not linked to `accounts.entity_id` because a user can have multiple ledger accounts
 
-* Strategy: Write-Through not recommended for balances due to high concurrency.
-* Read Cache: Redis used for `GET /accounts/{id}/balance`.
-* Invalidation: Cache key `ledger:account:{id}` is deleted immediately upon successful transaction commit.
-
-***
-
-#### 5. Component Design (API & Modules)
+### 5. Component Design (API & Modules)
 
 _Interfaces for developers._
 
@@ -175,7 +190,7 @@ type ILedgerManager interface {
 
 ***
 
-#### 6. Module Detail
+### 6. Module Detail
 
 _Implementation detail for `ILedgerManager.PostTransaction`_
 
@@ -206,7 +221,7 @@ _Implementation detail for `ILedgerManager.PostTransaction`_
 
 ***
 
-#### 7. Technology Stack
+### 7. Technology Stack
 
 | **Layer**        | **Technology** | **Reason for Choice (ADR Ref)**                                                 |
 | ---------------- | -------------- | ------------------------------------------------------------------------------- |
