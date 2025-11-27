@@ -43,7 +43,7 @@ We are following a `Monolithic with Clear Module Boundaries` architecture. The s
 
 **Component View (Container Diagram)**
 
-<figure><img src="../.gitbook/assets/image (20).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (21).png" alt=""><figcaption></figcaption></figure>
 
 **Technology Stack**
 
@@ -345,37 +345,6 @@ CREATED → PENDING → PAID → SETTLED
 * Cannot skip states (e.g., `CREATED` → `SETTLED`)
 
 ***
-
-## Security Considerations
-
-**Step-Up Authentication Flow**
-
-1. User initiates financial transaction
-2. System requires fresh authentication (< 5 minutes old)
-3. User provides PIN or Biometric signature
-4. Verification payload sent to isolated Auth Service or HSM
-5. Auth Service returns signed `step_up_token` (JWT)
-6. Token included in transaction request
-7. API validates token signature and expiry
-8. Only then is transaction processed
-
-**Rate Limiting Strategy**
-
-**Multi-Layer Defense:**
-
-```
-Layer 1: IP-based (CloudFlare/CDN level)
-  └─ 1000 req/minute per IP
-
-Layer 2: User-based (Application level)
-  └─ 50 transactions/hour per user_id
-
-Layer 3: Device-based (Application level)
-  └─ 30 transactions/hour per device_signature
-
-Layer 4: Pattern Detection (ML-based)
-  └─ Flag suspicious patterns (card testing)
-```
 
 ***
 
