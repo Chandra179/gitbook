@@ -1,10 +1,6 @@
 # Digital Wallet
 
-> Status: DRAFT | Author: \[Your Name] | Last Updated: 2025-11-27
->
-> Reviewers: \[Name 1], \[Name 2]
-
-***
+> Status: DRAFT | Author: \[Chandra] | Last Updated: 2025-11-27
 
 ## 1. Introduction
 
@@ -106,21 +102,11 @@ To satisfy requirements for high throughput and partition tolerance:
 
 ## 4. Data Design
 
-**Data Model (Schema)**
-
-> \[Insert Image: ER Diagram]
->
-> Diagram Logic:
->
-> * `accounts` (Mutable state, Optimistic Locking)
-> * `ledger_entries` (Immutable, Double-Entry)
-> * `transactions` (The parent event, FSM State)
-
 1\. Accounts Table (Snapshot State)
 
 ```sql
 CREATE TABLE accounts (
-    id             BIGINT PRIMARY KEY,        -- Snowflake ID
+    id             UUID PRIMARY KEY,         
     user_id        UUID NOT NULL UNIQUE,      -- Mapped from internal Identity Service
     currency       CHAR(3) NOT NULL,          -- 'USD', 'IDR', etc.
     
@@ -151,8 +137,8 @@ CREATE TABLE transactions (
     idempotency_key   VARCHAR(255) NOT NULL UNIQUE, -- Prevent duplicate transactions
     
     -- ACCOUNT REFERENCES
-    from_account_id   BIGINT NOT NULL,
-    to_account_id     BIGINT NOT NULL,
+    from_account_id   UUID NOT NULL,
+    to_account_id     UUID NOT NULL,
     
     -- TRANSACTION DETAILS
     amount            BIGINT NOT NULL,              -- In minor units (cents)
@@ -160,7 +146,7 @@ CREATE TABLE transactions (
     transaction_type  VARCHAR(50) NOT NULL,         -- 'PAYMENT', 'REFUND', 'TRANSFER'
     
     -- STATE MACHINE
-    status            VARCHAR(20) NOT NULL,         -- FSM: CREATED, PENDING, PAID, SETTLED, FAILED, REFUNDED
+    status            VARCHAR(30) NOT NULL,         -- FSM: CREATED, PENDING, PAID, SETTLED, FAILED, REFUNDED
     
     -- EXTERNAL REFERENCE
     external_ref_id   VARCHAR(255),                 -- Stripe payment ID or similar
@@ -193,7 +179,7 @@ CREATE TABLE transaction_ledger (
     account_id      BIGINT NOT NULL,
     
     -- DOUBLE-ENTRY
-    entry_type      VARCHAR(10) NOT NULL,    -- 'DEBIT' or 'CREDIT'
+    entry_type      VARCHAR(15) NOT NULL,    -- 'DEBIT' or 'CREDIT'
     amount          BIGINT NOT NULL,         -- Always positive, direction determined by entry_type
     
     -- RUNNING BALANCE (denormalized for query efficiency)
@@ -230,7 +216,7 @@ CREATE TABLE reconciliation_records (
     internal_status     VARCHAR(20),
     
     -- RECONCILIATION RESULT
-    match_status        VARCHAR(20) NOT NULL,        -- 'MATCHED', 'DISCREPANCY', 'MISSING_INTERNAL', 'MISSING_EXTERNAL'
+    match_status        VARCHAR(30) NOT NULL,        -- 'MATCHED', 'DISCREPANCY', 'MISSING_INTERNAL', 'MISSING_EXTERNAL'
     discrepancy_reason  TEXT,
     
     -- AUDIT
@@ -243,30 +229,6 @@ CREATE TABLE reconciliation_records (
 CREATE INDEX idx_recon_date ON reconciliation_records(reconciliation_date);
 CREATE INDEX idx_recon_status ON reconciliation_records(match_status);
 ```
-
-**Storage Strategy**
-
-* Numeric Precision: All monetary values stored as Integers (Minor Units, e.g., $10.50 = 1050 cents) to eliminate floating-point rounding errors.
-* Immutability: `transaction` are Append-Only. Corrections are made by inserting new offsetting entries, never by updating existing rows.
-
-**Append-Only Principle**
-
-* Transaction rows are NEVER updated after creation
-* Corrections/refunds create new offsetting transaction rows
-* This ensures complete audit trail and immutability
-
-**Double-Entry Bookkeeping**
-
-* Every financial event records a debit from one account and credit to another
-* System-wide sum of all transactions must always equal zero
-* Provides mathematical proof of correctness
-
-**Optimistic Locking:**
-
-* Account balance updates check version number
-* Query: `UPDATE accounts SET balance = ?, version = version + 1 WHERE id = ? AND version = ?`
-* If version mismatch, transaction fails and retries
-* Prevents race conditions without expensive table locks
 
 ***
 
@@ -420,8 +382,16 @@ type ReconciliationService interface {
    * Per IP: 100 requests/hour
    * Per User: 50 transactions/hour
    * Per Device: 30 transactions/hour
-5. **Monetary Storage**: All amounts stored as integers in minor units (cents) - NEVER use FLOAT/DOUBLE.
-6. **Immutability**: Transaction records are never updated; corrections create new offsetting entries.
+5. **Monetary Storage**: All amounts stored as integers in minor units (cents) - NEVER use FLOAT/DOUBLE to eliminate floating-point rounding errors..
+6. **Corrections/refunds** create new offsetting transaction rows. This ensures complete audit trail and immutability
+7. **Double-Entry Bookkeeping**
+   1. Every financial event records a debit from one account and credit to another
+   2. System-wide sum of all transactions must always equal zero
+   3. Provides mathematical proof of correctness
+8. **Optimistic Locking**
+   1. Account balance updates check version number. If version mismatch, transaction fails and retries
+   2. Query: `UPDATE accounts SET balance = ?, version = version + 1 WHERE id = ? AND version = ?`
+   3. Prevents race conditions without expensive table locks
 
 ***
 
@@ -454,120 +424,57 @@ CREATED → PENDING → PAID → SETTLED
 
 _Scenario: User initiates a payment transaction._
 
-```
-User → API: POST /api/v1/transactions
-                 (with step_up_token)
+***
 
-API → Rate Limiter: Check rate limits
-                    (IP/User/Device)
-Rate Limiter → API: OK
+<figure><img src=".gitbook/assets/image (19).png" alt=""><figcaption></figcaption></figure>
 
-API → Auth Service: Verify step_up_token
-Auth Service → API: Token valid
+### **Edge Cases & Failure Scenarios**
 
-API → AccountService: GetAccount(from_account_id)
-                      (Read with version)
-AccountService → PostgreSQL: SELECT ... WHERE id = ?
-PostgreSQL → AccountService: Account data + version
-AccountService → API: Account{balance, version}
+**Database Write Failure**:
 
-API → Business Logic: Validate balance >= amount
-Business Logic → API: Validation passed
+* Return `500 Internal Server Error`
+* Transaction rolled back, no state change
+* Client can retry with same idempotency key
 
-API → TransactionService: CreateTransaction()
-TransactionService → PostgreSQL: BEGIN TRANSACTION
+**Optimistic Locking Conflict**:
 
--- Check idempotency
-TransactionService → PostgreSQL: SELECT ... WHERE idempotency_key = ?
-PostgreSQL → TransactionService: No existing transaction
+* Concurrent balance update detected via version mismatch
+* Transaction rolled back automatically
+* Retry with exponential backoff (max 3 attempts)
 
--- Create transaction record
-TransactionService → PostgreSQL: INSERT INTO transactions
-                                 (status = CREATED)
+**Payment Gateway Timeout**:
 
--- Update account balance (optimistic locking)
-TransactionService → PostgreSQL: UPDATE accounts 
-                                 SET balance = balance - amount,
-                                     version = version + 1
-                                 WHERE id = ? AND version = ?
+* Transaction remains in `PENDING` state
+* Background job polls gateway for status
+* After timeout (5 minutes), mark as `FAILED`
 
--- If version mismatch (concurrent update)
-PostgreSQL → TransactionService: 0 rows affected
-TransactionService → PostgreSQL: ROLLBACK
-TransactionService → API: Retry required
+**Duplicate Idempotency Key**:
 
--- If successful
-PostgreSQL → TransactionService: 1 row affected
+* Check for existing transaction at start
+* Return existing transaction with HTTP 409 Conflict
+* No new database writes performed
 
--- Create ledger entries (double-entry)
-TransactionService → PostgreSQL: INSERT INTO transaction_ledger
-                                 (account_id=from, entry_type=DEBIT)
-                                 INSERT INTO transaction_ledger
-                                 (account_id=to, entry_type=CREDIT)
+**Insufficient Balance During Concurrent Transactions**:
 
-TransactionService → PostgreSQL: COMMIT
-PostgreSQL → TransactionService: Transaction committed
+* Use row-level locking: `SELECT ... FOR UPDATE` on account
+* First transaction succeeds, second fails with insufficient balance
+* Ensures no overdraft
 
--- Update transaction status to PENDING
-TransactionService → PostgreSQL: INSERT new transaction
-                                 (status = PENDING, refs original)
+**Network Failure After Payment Gateway Success**:
 
--- Process with external gateway
-TransactionService → PaymentGateway: ProcessPayment()
-PaymentGateway → Stripe: Create payment intent
-Stripe → PaymentGateway: Payment intent created
-PaymentGateway → TransactionService: external_ref_id
+* Webhook from gateway will update status to PAID
+* If webhook fails, reconciliation process catches discrepancy
+* Manual or automated resolution via reconciliation service
 
-TransactionService → API: Transaction created (PENDING)
-API → User: 201 Created {transaction_id, status}
+**Reconciliation Discrepancies**:
 
--- Async: Webhook from Stripe
-Stripe → API: POST /webhooks/stripe
-                 (payment confirmed)
-API → PaymentGateway: HandleWebhook()
-PaymentGateway → TransactionService: UpdateStatus(PAID)
-TransactionService → PostgreSQL: INSERT new transaction
-                                 (status = PAID, refs original)
-```
+* Daily batch job compares internal ledger vs. Stripe settlement
+* Mismatches flagged in `reconciliation_records` table
+* Alert sent to operations team for investigation
 
 ***
 
-**Edge Cases & Failure Scenarios**
-
-1. **Database Write Failure**:
-   * Return `500 Internal Server Error`
-   * Transaction rolled back, no state change
-   * Client can retry with same idempotency key
-2. **Optimistic Locking Conflict**:
-   * Concurrent balance update detected via version mismatch
-   * Transaction rolled back automatically
-   * Retry with exponential backoff (max 3 attempts)
-3. **Payment Gateway Timeout**:
-   * Transaction remains in `PENDING` state
-   * Background job polls gateway for status
-   * After timeout (5 minutes), mark as `FAILED`
-4. **Duplicate Idempotency Key**:
-   * Check for existing transaction at start
-   * Return existing transaction with HTTP 409 Conflict
-   * No new database writes performed
-5. **Insufficient Balance During Concurrent Transactions**:
-   * Use row-level locking: `SELECT ... FOR UPDATE` on account
-   * First transaction succeeds, second fails with insufficient balance
-   * Ensures no overdraft
-6. **Network Failure After Payment Gateway Success**:
-   * Webhook from gateway will update status to PAID
-   * If webhook fails, reconciliation process catches discrepancy
-   * Manual or automated resolution via reconciliation service
-7. **Reconciliation Discrepancies**:
-   * Daily batch job compares internal ledger vs. Stripe settlement
-   * Mismatches flagged in `reconciliation_records` table
-   * Alert sent to operations team for investigation
-
-***
-
-**Reconciliation Process**
-
-**Daily Batch Job (Scheduled at 02:00 UTC):**
+**Reconciliation Process: Daily Batch Job (Scheduled at 02:00 UTC):**
 
 1. Fetch settlement report from Stripe for previous day
 2. Query internal transactions for same date range
@@ -582,7 +489,7 @@ TransactionService → PostgreSQL: INSERT new transaction
 
 ***
 
-#### 7. Security Considerations
+## 7. Security Considerations
 
 **Step-Up Authentication Flow**
 
@@ -622,7 +529,7 @@ Layer 4: Pattern Detection (ML-based)
 
 ***
 
-#### 8. Monitoring & Observability
+## 8. Monitoring & Observability
 
 **Key Metrics**
 
@@ -642,7 +549,7 @@ Layer 4: Pattern Detection (ML-based)
 
 ***
 
-#### 9. Future Considerations
+## 9. Future Considerations
 
 * Migration to microservices architecture as scale increases
 * Support for additional payment gateways (PayPal, Square)
@@ -653,18 +560,7 @@ Layer 4: Pattern Detection (ML-based)
 
 ***
 
-#### 10. Appendix
-
-**Glossary**
-
-* **Minor Units**: Smallest currency unit (cents for USD, sen for IDR)
-* **Optimistic Locking**: Concurrency control that assumes conflicts are rare
-* **Idempotency Key**: Unique identifier to prevent duplicate operations
-* **FSM**: Finite State Machine - formal model for transaction lifecycle
-* **CQRS**: Command Query Responsibility Segregation - separate read/write models
-* **Double-Entry Bookkeeping**: Accounting system where every debit has corresponding credit
-
-**References**
+## **References**
 
 * Stripe API Documentation: [https://stripe.com/docs/api](https://stripe.com/docs/api)
 * PostgreSQL Optimistic Locking: [https://www.postgresql.org/docs/current/mvcc.html](https://www.postgresql.org/docs/current/mvcc.html)
