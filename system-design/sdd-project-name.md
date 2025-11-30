@@ -4,119 +4,213 @@ description: software design document
 
 # SDD: \[Project Name]
 
+> **Status:** Draft\
+> **Project:** \[Project Name]\
+> **Author:** \[Author Name]\
+> **Last Updated:** \[YYYY-MM-DD]
+
+***
+
+### Table of Contents
+
+1. [Introduction](https://chatgpt.com/c/692c63e4-d594-8332-b45c-ecf5b510ed06#introduction)
+2. [High-Level Architecture](https://chatgpt.com/c/692c63e4-d594-8332-b45c-ecf5b510ed06#high-level-architecture)
+3. [Data Design](https://chatgpt.com/c/692c63e4-d594-8332-b45c-ecf5b510ed06#data-design)
+4. [Building Blocks (Components)](https://chatgpt.com/c/692c63e4-d594-8332-b45c-ecf5b510ed06#building-blocks-components)
+5. [API Design](https://chatgpt.com/c/692c63e4-d594-8332-b45c-ecf5b510ed06#api-design)
+6. [Operational Concerns](https://chatgpt.com/c/692c63e4-d594-8332-b45c-ecf5b510ed06#operational-concerns)
+7. [Decision Logs (ADRs)](https://chatgpt.com/c/692c63e4-d594-8332-b45c-ecf5b510ed06#decision-logs-adrs)
+8. [Risks & Mitigations](https://chatgpt.com/c/692c63e4-d594-8332-b45c-ecf5b510ed06#risks--mitigations)
+
+***
+
 ### 1. Introduction
 
-_High-level context for the team. Keep this brief._
+#### 1.1 Context
 
-#### Purpose
+High-level problem statement and background. and the goals
 
-The purpose of this document is to define the architecture, data structures, and interfaces for the \[Project Name]. It serves as the primary reference for backend and frontend implementation.
+#### 1.2 Constraints
 
-#### Scope
+Time, for mvp only, prototype only, etc...
 
-* In Scope: \[e.g., User Authentication, Payment Processing, Report Generation]
-* Out of Scope: \[e.g., Mobile App development, Legacy data migration]
+#### 1.3 Functional Requirements (summary)
 
-***
+* FR-1: \[Short description]
+* FR-2: \[Short description]
 
-### 2. Non-Functional Requirements (NFRs)
+#### 1.4 Non-Functional Requirements (NFRs)
 
-_The constraints and quality attributes the system must meet._
-
-#### Scalability & Performance
-
-* Throughput: Must handle `[X]` requests per second (RPS) at peak.
-* Latency: API response time must be under `[X]ms` for the 95th percentile (p95).
-* Data Volume: System expects `[X]` GB of new data per day.
-
-#### Availability & Reliability
-
-* Uptime Goal: `99.9%` (Allowing \~8 hours downtime/year).
-* Disaster Recovery: RPO (Data loss limit) = `1 hour`; RTO (Recovery time) = `4 hours`.
-
-#### Security
-
-* Authentication: All internal APIs must be secured via `[e.g., OAuth2 / JWT]`.
-* Encryption: Data at rest must be encrypted (AES-256). Data in transit via TLS 1.3.
+* Performance (throughput, latency targets)
+* Availability (SLA / SLO targets)
+* Scalability
+* Durability / consistency
+* Security
+* Observability
 
 ***
 
-### 3. High-Level Design (Architecture)
+### 2. High-Level Architecture
 
-_The "Big Picture" view of the system._
+#### 2.1 Architecture Style
 
-#### Architecture Style
+Chosen style (Microservices / Monolith / Event-driven / Serverless) and short justification.
 
-We are following a `[Microservices / Monolithic / Event-Driven]` architecture.
+#### 2.2 Component Diagram
 
-#### Component View (Container Diagram)
+Insert component/container diagram here (link or embedded image). Brief descriptions of each component and responsibilities.
 
-_This diagram shows how the system interacts with external entities and internal services._
+#### 2.3 Communication Patterns
 
-> \[Insert Image: Component Diagram]
->
-> Show:  $$Web App \leftrightarrow API Gateway \leftrightarrow [Service A] \leftrightarrow Database$$&#x20;
+* Synchronous (HTTP/REST, gRPC) — where and why
+* Asynchronous (message broker, event streams) — topics/queues and semantics
 
-#### Design Considerations & Tradeoffs
+#### 2.4 Sequence Diagrams (Key Flows)
 
-_architecture design tradeoffs, why this and not that_
+* Flow A: \[e.g., Order creation] — steps
+* Flow B: \[e.g., Payment processing] — steps
 
-***
+#### 2.5 Design Considerations & Tradeoffs
 
-### 4. Data Design
-
-_How we store and manage state._
-
-#### Data Model (Schema)
-
-> \[Insert Image: ER Diagram]
->
-> Show relationships between Users, Orders, and Payments.
-
-**Table: `users`**
-
-```sql
-CREATE TABLE table123 ();
-CREATE TABLE table456 ();
-```
+* Decision: \[example] Microservices vs monolith — Rationale
+* Decision: \[example] SQL vs NoSQL — Rationale
+* For each major decision include pros, cons, and consequences.
 
 ***
 
-### 5. Component Design (API & Modules)
+### 3. Data Design
 
-_Interfaces for developers._
+#### 3.1 Storage Technologies & Justification
 
-#### REST API Specification
+* Primary store(s): PostgreSQL / MySQL / MongoDB / Cassandra / DynamoDB / etc.
+* Rationale for each choice (consistency, query patterns, scale)
 
-_Standard: RESTful JSON over HTTP._
+#### 3.3 Logical Schema and ERD
 
-**`POST /api/v1/orders`**
+* Link to ER diagram or include an image
+*   Sample tables/entities with key attributes and types in SQL format, for example:<br>
 
-```json
-// Context: this is for ...
-request:
-response:
-```
+    ```sql
+    CREATE table user()
+    ```
 
-#### Module Abstraction
+#### 3.4 Indexing Strategy
 
-_Key interfaces for the backend logic._
+* Which fields are indexed and why
 
-<pre class="language-go"><code class="lang-go">// Context: this is for ...
-<strong>type ModuleAbstraction1 interface {}
-</strong>type ModuleAbstraction2 interface {}
+***
+
+### 4. Building Blocks (Components)
+
+_For each major component/service provide the following sub-sections (use copy for each):_
+
+#### Component: `[Component Name]`
+
+**Purpose:**
+
+* Short description of what it does and owns.
+
+**Responsibilities:**
+
+* Responsibility A
+* Responsibility B
+
+**APIs / Interfaces:**
+
+* Public endpoints, message topics, or SDKs
+
+**Data Owned:**
+
+* Entities persisted by this component
+
+**Failure Modes & Mitigations:**
+
+* What happens on partial failure and how to recover
+
+_Repeat for all components (Auth, API Gateway, Order Service, Payment Service, Ledger, Reporting, etc.)_
+
+***
+
+### 5. API Design
+
+#### 5.1 API Principles
+
+* Versioning policy
+* Idempotency rules
+* Error handling and status codes
+* Pagination and filtering conventions
+
+#### 5.2 Public API (Client-facing)
+
+_Example endpoint:_ `POST /api/v1/orders`
+
+<pre class="language-json"><code class="lang-json">Description: Create an order
+
+<strong>Request:
+</strong>{
+  "customer_id": "uuid",
+  "items": [ { "sku": "string", "qty": 1 } ],
+  "metadata": {}
+}
+
+Response:
+{
+  "order_id": "uuid",
+  "status": "created"
+}
+
+Errors:
+  400 Bad Request — validation
+  401 Unauthorized — auth
+  409 Conflict — idempotency violation
 </code></pre>
 
+#### 5.3 Internal APIs / RPC
+
+Notes on gRPC or internal REST calls, payload size expectations
+
+#### 5.4 Authentication & Authorization
+
+* JWT / OAuth2 / mTLS usage
+* Role-based access rules for sensitive endpoints
+
 ***
 
-### 6. Module Detail
+### 6. Operational Concerns
 
-_module implementation detail from module abstraction_
+#### 6.1 Observability
 
-#### ModuleAbstraction1
+**Logging**
 
-this is doing ...
+* Structured JSON logs, correlation id, request id, fields to include
 
-#### ModuleAbstraction2
+**Metrics**
 
-this is doing ...
+* Key metrics per service (requests/sec, error rate, latency p50/p95/p99)
+* Exporters (Prometheus, OpenTelemetry)
+
+**Tracing**
+
+* Distributed tracing (OpenTelemetry, Jaeger)
+* Trace sampling policy
+
+***
+
+### 7. Decision Logs (Architectural Decision Records - ADRs)
+
+* \[context] then the decision \[decision] and the consequences \[consequences]
+* \[context2] then the decision \[decision2] and the consequences \[consequences2]
+
+***
+
+### 8. Risks & Mitigations
+
+#### \[Title: Single DB bottleneck]
+
+* impact: high
+* mitigation: read replicas, partitioning
+
+#### \[Title: abc]
+
+* impact: high
+* mitigation: the mitigations
