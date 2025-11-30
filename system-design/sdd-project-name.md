@@ -57,6 +57,10 @@ _This diagram shows how the system interacts with external entities and internal
 >
 > Show:  $$Web App \leftrightarrow API Gateway \leftrightarrow [Service A] \leftrightarrow Database$$&#x20;
 
+#### Design Considerations & Tradeoffs
+
+_architecture design tradeoffs, why this and not that_
+
 ***
 
 ### 4. Data Design
@@ -72,28 +76,9 @@ _How we store and manage state._
 **Table: `users`**
 
 ```sql
-CREATE TABLE accounts (
-    id             BIGINT PRIMARY KEY, -- Snowflake ID
-    user_id        UUID NOT NULL,      -- Mapped from internal Identity Service
-    currency       CHAR(3) NOT NULL,   -- 'USD', 'IDR', etc.
-    
-    -- FINANCIAL STATE
-    balance        BIGINT NOT NULL DEFAULT 0, -- Available to spend (in cents)
-    hold_balance   BIGINT NOT NULL DEFAULT 0, -- Locked for pending txns
-    
-    -- CONCURRENCY CONTROL (Optimistic Locking)
-    version        INT NOT NULL DEFAULT 1,    -- Increments on every update
-    last_updated   TIMESTAMPTZ DEFAULT NOW(),
-    
-    -- CONSTRAINT: Balance can never be negative (unless overdraft allowed)
-    CONSTRAINT check_positive_balance CHECK (balance >= 0)
-);
+CREATE TABLE table123 ();
+CREATE TABLE table456 ();
 ```
-
-#### Caching Strategy
-
-* Cache Invalidation: We will use `[Write-Through / TTL of 5 minutes]` for user profile data.
-* Keys: Pattern will be `user_profile:{user_id}`.
 
 ***
 
@@ -101,45 +86,26 @@ CREATE TABLE accounts (
 
 _Interfaces for developers._
 
-#### API Specification
+#### REST API Specification
 
 _Standard: RESTful JSON over HTTP._
 
 **`POST /api/v1/orders`**
 
 ```json
-// Context: Creates a new order.
-
-Request:
-JSON
-{
-  "items": [{"id": "123", "qty": 1}],
-  "currency": "USD"
-}
-
-Response (201 Created):
-JSON
-{
-  "order_id": "550e8400-e29b...",
-  "status": "PENDING"
-}
+// Context: this is for ...
+request:
+response:
 ```
 
 #### Module Abstraction
 
 _Key interfaces for the backend logic._
 
-OrderService Interface:
-
-```go
-interface IOrderService {
-  // Validates stock and calculates total
-  createOrder(user: User, items: Item[]): Promise<Order>;
-
-  // Handles payment gateway callback
-  confirmPayment(orderId: string): Promise<boolean>;
-}
-```
+<pre class="language-go"><code class="lang-go">// Context: this is for ...
+<strong>type ModuleAbstraction1 interface {}
+</strong>type ModuleAbstraction2 interface {}
+</code></pre>
 
 ***
 
@@ -147,17 +113,10 @@ interface IOrderService {
 
 _module implementation detail from module abstraction_
 
-#### IOrderService
+#### ModuleAbstraction1
 
-1. Inventory Check: An order cannot be created if `Stock < Quantity`.
-2. Minimum Order: Cart value must be > $10.00.
+this is doing ...
 
-### 7. Technology Stack
+#### ModuleAbstraction2
 
-| Layer     | Technology        | Reason for Choice (ADR Ref)           |
-| --------- | ----------------- | ------------------------------------- |
-| Frontend  | React, TypeScript | Standard team competency              |
-| Backend   | Go (Golang)       | High concurrency support              |
-| Database  | PostgreSQL        | ACID compliance required for payments |
-| Caching   | Redis             | Session storage                       |
-| Messaging | Kafka             | Asynchronous event processing         |
+this is doing ...
