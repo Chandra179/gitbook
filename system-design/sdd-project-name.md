@@ -4,13 +4,6 @@ description: software design document
 
 # SDD: \[Project Name]
 
-> **Status:** Draft\
-> **Project:** \[Project Name]\
-> **Author:** \[Author Name]\
-> **Last Updated:** \[YYYY-MM-DD]
-
-***
-
 ### Table of Contents
 
 1. [Introduction](https://chatgpt.com/c/692c63e4-d594-8332-b45c-ecf5b510ed06#introduction)
