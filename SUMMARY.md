@@ -17,7 +17,6 @@
   * [Chunking](rag/chunking.md)
 * [P2P Chat](p2p-chat.md)
 * [ReactJS](reactjs.md)
-* [Oauth2 & Oidc](oauth2.md)
 * [Passkey](passkey.md)
 * [Math](math/README.md)
   * [Basic](math/basic.md)
@@ -31,3 +30,4 @@
   * [Consistent Hashing](system-design/consistent-hashing.md)
   * [ID Generator](system-design/id-generator.md)
   * [Clock Skew & Time Sync](system-design/clock-skew-and-time-sync.md)
+* [Auth Gateway](auth-gateway.md)

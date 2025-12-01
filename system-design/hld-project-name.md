@@ -66,6 +66,8 @@ For each major decision include pros, cons, and consequences.
 
 ### 3. Data Design
 
+data design must be align with functional and non function requirements
+
 #### 3.1 Storage Technologies & Justification
 
 * Primary store(s): PostgreSQL / MySQL / MongoDB / Cassandra / DynamoDB / etc.
