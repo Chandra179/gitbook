@@ -6,14 +6,14 @@ description: software design document
 
 ### Table of Contents
 
-1. [Introduction](https://chatgpt.com/c/692c63e4-d594-8332-b45c-ecf5b510ed06#introduction)
-2. [High-Level Architecture](https://chatgpt.com/c/692c63e4-d594-8332-b45c-ecf5b510ed06#high-level-architecture)
-3. [Data Design](https://chatgpt.com/c/692c63e4-d594-8332-b45c-ecf5b510ed06#data-design)
-4. [Building Blocks (Components)](https://chatgpt.com/c/692c63e4-d594-8332-b45c-ecf5b510ed06#building-blocks-components)
-5. [API Design](https://chatgpt.com/c/692c63e4-d594-8332-b45c-ecf5b510ed06#api-design)
-6. [Operational Concerns](https://chatgpt.com/c/692c63e4-d594-8332-b45c-ecf5b510ed06#operational-concerns)
-7. [Decision Logs (ADRs)](https://chatgpt.com/c/692c63e4-d594-8332-b45c-ecf5b510ed06#decision-logs-adrs)
-8. [Risks & Mitigations](https://chatgpt.com/c/692c63e4-d594-8332-b45c-ecf5b510ed06#risks--mitigations)
+1. [Introduction](https://nothin.gitbook.io/computing/system-design/sdd-project-name#introduction)
+2. [High-Level Architecture](https://nothin.gitbook.io/computing/system-design/sdd-project-name#high-level-architecture)
+3. [Data Design](https://nothin.gitbook.io/computing/system-design/sdd-project-name#data-design)
+4. [Building Blocks (Components)](https://nothin.gitbook.io/computing/system-design/sdd-project-name#building-blocks-components)
+5. [API Design](https://nothin.gitbook.io/computing/system-design/sdd-project-name#api-design)
+6. [Operational Concerns](https://nothin.gitbook.io/computing/system-design/sdd-project-name#operational-concerns)
+7. [Decision Logs (Architectural Decision Records - ADRs)](https://nothin.gitbook.io/computing/system-design/sdd-project-name#decision-logs-architectural-decision-records---adrs)
+8. [Risks & Mitigations](https://nothin.gitbook.io/computing/system-design/sdd-project-name#risks-mitigations)
 
 ***
 
