@@ -36,7 +36,6 @@ Time, for mvp only, prototype only, etc...
 * Scalability
 * Durability / consistency
 * Security
-* Observability
 
 ***
 
@@ -53,13 +52,15 @@ Insert component/container diagram here (plantuml or embedded image). Brief desc
 #### 2.3 Communication Patterns
 
 * Synchronous (HTTP/REST, gRPC) — where and why
-* Asynchronous (message broker, event streams) — topics/queues and semantics
+* Asynchronous (message broker, event streams) if needed — where and why
 
 #### 2.4 Design Considerations & Tradeoffs
 
-* Decision: \[example] Microservices vs monolith — Rationale
-* Decision: \[example] SQL vs NoSQL — Rationale
-* For each major decision include pros, cons, and consequences.
+For each major decision include pros, cons, and consequences.
+
+* Decision2: \[example] SQL vs NoSQL — Rationale
+* Decision3: \[example] ...
+* Decision4: \[example] ...
 
 ***
 
