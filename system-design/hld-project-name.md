@@ -2,7 +2,7 @@
 description: software design document
 ---
 
-# SDD: \[Project Name]
+# HLD: \[Project Name]
 
 ### Table of Contents
 
@@ -11,9 +11,6 @@ description: software design document
 3. [Data Design](https://nothin.gitbook.io/computing/system-design/sdd-project-name#data-design)
 4. [Building Blocks (Components)](https://nothin.gitbook.io/computing/system-design/sdd-project-name#building-blocks-components)
 5. [API Design](https://nothin.gitbook.io/computing/system-design/sdd-project-name#api-design)
-6. [Operational Concerns](https://nothin.gitbook.io/computing/system-design/sdd-project-name#operational-concerns)
-7. [Decision Logs (Architectural Decision Records - ADRs)](https://nothin.gitbook.io/computing/system-design/sdd-project-name#decision-logs-architectural-decision-records---adrs)
-8. [Risks & Mitigations](https://nothin.gitbook.io/computing/system-design/sdd-project-name#risks-mitigations)
 
 ***
 
@@ -27,12 +24,12 @@ High-level problem statement and background. and the goals
 
 Time, for mvp only, prototype only, etc...
 
-#### 1.3 Functional Requirements (summary)
+#### 1.3 Functional Requirements
 
 * FR-1: \[Short description]
 * FR-2: \[Short description]
 
-#### 1.4 Non-Functional Requirements (NFRs)
+#### 1.4 Non-Functional Requirements
 
 * Performance (throughput, latency targets)
 * Availability (SLA / SLO targets)
@@ -51,19 +48,14 @@ Chosen style (Microservices / Monolith / Event-driven / Serverless) and short ju
 
 #### 2.2 Component Diagram
 
-Insert component/container diagram here (link or embedded image). Brief descriptions of each component and responsibilities.
+Insert component/container diagram here (plantuml or embedded image). Brief descriptions of each component and responsibilities.
 
 #### 2.3 Communication Patterns
 
 * Synchronous (HTTP/REST, gRPC) — where and why
 * Asynchronous (message broker, event streams) — topics/queues and semantics
 
-#### 2.4 Sequence Diagrams (Key Flows)
-
-* Flow A: \[e.g., Order creation] — steps
-* Flow B: \[e.g., Payment processing] — steps
-
-#### 2.5 Design Considerations & Tradeoffs
+#### 2.4 Design Considerations & Tradeoffs
 
 * Decision: \[example] Microservices vs monolith — Rationale
 * Decision: \[example] SQL vs NoSQL — Rationale
@@ -80,16 +72,11 @@ Insert component/container diagram here (link or embedded image). Brief descript
 
 #### 3.3 Logical Schema and ERD
 
-* Link to ER diagram or include an image
-*   Sample tables/entities with key attributes and types in SQL format, for example:<br>
+Link to ER diagram or include an image. Sample tables/entities with key attributes and types in SQL format
 
-    ```sql
-    CREATE table user()
-    ```
+#### 3.4 Caching Strategy
 
-#### 3.4 Indexing Strategy
-
-* Which fields are indexed and why
+caching strategy if any
 
 ***
 
@@ -110,11 +97,15 @@ _For each major component/service provide the following sub-sections (use copy f
 
 **APIs / Interfaces:**
 
-* Public endpoints, message topics, or SDKs
+* Public endpoints, rest/grpc, error\_code, versioning
 
 **Data Owned:**
 
 * Entities persisted by this component
+
+**Design tradeoffs**
+
+* why using this sort login and not this ..
 
 **Failure Modes & Mitigations:**
 
@@ -124,54 +115,9 @@ _Repeat for all components (Auth, API Gateway, Order Service, Payment Service, L
 
 ***
 
-### 5. API Design
+### 5. Observability
 
-#### 5.1 API Principles
-
-* Versioning policy
-* Idempotency rules
-* Error handling and status codes
-* Pagination and filtering conventions
-
-#### 5.2 Public API (Client-facing)
-
-_Example endpoint:_ `POST /api/v1/orders`
-
-<pre class="language-json"><code class="lang-json">Description: Create an order
-
-<strong>Request:
-</strong>{
-  "customer_id": "uuid",
-  "items": [ { "sku": "string", "qty": 1 } ],
-  "metadata": {}
-}
-
-Response:
-{
-  "order_id": "uuid",
-  "status": "created"
-}
-
-Errors:
-  400 Bad Request — validation
-  401 Unauthorized — auth
-  409 Conflict — idempotency violation
-</code></pre>
-
-#### 5.3 Internal APIs / RPC
-
-Notes on gRPC or internal REST calls, payload size expectations
-
-#### 5.4 Authentication & Authorization
-
-* JWT / OAuth2 / mTLS usage
-* Role-based access rules for sensitive endpoints
-
-***
-
-### 6. Operational Concerns
-
-#### 6.1 Observability
+how we tracing data flow, what strategy to use, what data we need to carries in the logs
 
 **Logging**
 
@@ -186,24 +132,3 @@ Notes on gRPC or internal REST calls, payload size expectations
 
 * Distributed tracing (OpenTelemetry, Jaeger)
 * Trace sampling policy
-
-***
-
-### 7. Decision Logs (Architectural Decision Records - ADRs)
-
-* \[context] then the decision \[decision] and the consequences \[consequences]
-* \[context2] then the decision \[decision2] and the consequences \[consequences2]
-
-***
-
-### 8. Risks & Mitigations
-
-#### \[Title: Single DB bottleneck]
-
-* impact: high
-* mitigation: read replicas, partitioning
-
-#### \[Title: abc]
-
-* impact: high
-* mitigation: the mitigations

@@ -25,7 +25,7 @@
   * [Quadratic Equation](math/quadratic-equation.md)
   * [Polynomial](math/polynomial.md)
 * [System Design](system-design/README.md)
-  * [SDD: \[Project Name\]](system-design/sdd-project-name.md)
+  * [HLD: \[Project Name\]](system-design/hld-project-name.md)
   * [Digital Wallet](system-design/digital-wallet/README.md)
     * [Ledger Service](system-design/digital-wallet/ledger-service.md)
   * [Consistent Hashing](system-design/consistent-hashing.md)
