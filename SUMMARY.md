@@ -30,4 +30,3 @@
   * [Consistent Hashing](system-design/consistent-hashing.md)
   * [ID Generator](system-design/id-generator.md)
   * [Clock Skew & Time Sync](system-design/clock-skew-and-time-sync.md)
-* [Auth Gateway](auth-gateway.md)

@@ -10,7 +10,7 @@ description: software design document
 2. [High-Level Architecture](https://nothin.gitbook.io/computing/system-design/sdd-project-name#high-level-architecture)
 3. [Data Design](https://nothin.gitbook.io/computing/system-design/sdd-project-name#data-design)
 4. [Building Blocks (Components)](https://nothin.gitbook.io/computing/system-design/sdd-project-name#building-blocks-components)
-5. [API Design](https://nothin.gitbook.io/computing/system-design/sdd-project-name#api-design)
+5. [Observability](https://nothin.gitbook.io/computing/system-design/hld-project-name#id-5.-observability)
 
 ***
 
@@ -47,7 +47,7 @@ Chosen style (Microservices / Monolith / Event-driven / Serverless) and the reas
 
 #### 2.2 Component Diagram
 
-Insert component/container diagram here (plantuml or embedded image). Brief descriptions of each component and responsibilities.
+Insert component/container diagram here (plantuml or embedded image). Brief descriptions of each component
 
 #### 2.3 Architectural Decision Records
 
@@ -93,7 +93,7 @@ whats the main responsibility of the component and what is not
 
 **APIs / Interfaces:**
 
-* Public endpoints, rest/grpc, error\_code, versioning
+* Public endpoints rest/grpc, error\_code
 
 **Failure Modes & Mitigations:**
 
