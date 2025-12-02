@@ -8,7 +8,12 @@ One-sentence description of what this service does.&#x20;
 
 ***
 
-#### 2. Interface Contract
+#### 2. Module & Entities
+
+* entitties/domain objects
+* interfaces for the implementation for abstraction and avoid vendor locked in. Do not abuse abstraction, think first do we need it or not. Explain what each module do
+
+#### 3. Interface Contract
 
 **2.1 How to Communicate**
 
@@ -62,12 +67,3 @@ Response (201):
 }
 ```
 
-***
-
-#### 3. Module Abstraction
-
-interfaces for the implementation for abstraction and avoid vendor locked in. Do not abuse abstraction, think first do we need it or not
-
-#### 4. Module Implementation
-
-pseudocode for each module interface functions
