@@ -63,9 +63,9 @@ For each major decision include pros, cons, and consequences.
 
 data design must be align with functional and non function requirements
 
-#### 3.1 Storage Technologies
+#### 3.1 Storage
 
-]Primary store(s): PostgreSQL / MySQL / MongoDB / Cassandra / DynamoDB / etc. why choose this database and not the other ... whats the reason
+PostgreSQL / MySQL / MongoDB / Cassandra / DynamoDB / etc. why choose this database and not the other ... whats the reason
 
 #### 3.3 DB Schema
 
