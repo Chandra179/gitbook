@@ -11,9 +11,9 @@
 
 ***
 
-#### 1. Introduction
+### 1. Introduction
 
-**1.1 Context**
+#### **1.1 Context**
 
 This system provides customer-facing authentication by integrating with external OAuth2/OIDC providers (Google, GitHub, Facebook, etc.). The service acts as a centralized authentication gateway that abstracts multiple identity providers, manages user sessions, and issues internal tokens for downstream services. The goal is to provide a unified authentication experience while supporting social login, session management, and standard OIDC discovery for client applications.
 
@@ -25,23 +25,15 @@ This system provides customer-facing authentication by integrating with external
 * Support standard OAuth2 flows for client applications
 * Provide OIDC-compliant endpoints for interoperability
 
-**1.2 Constraints**
-
-* **MVP scope**: Core authentication flows only, advanced features (MFA, passwordless) deferred
-* **Timeline**: Rapid delivery prioritized over optimization
-* **User scale**: Target 50,000 users initially
-* **External dependencies**: Reliance on third-party provider availability (Google, GitHub, etc.)
-
-**1.3 Functional Requirements**
+#### **1.2 Functional Requirements**
 
 * FR-1: User Login & Federated Identity: The system must allow users to log in directly via the system's own credentials or by using external identity providers (like Google, GitHub).
 * FR-2: Internal Account Management: The system must securely create or link external user accounts to internal user profiles.
 * FR-3: Secure Authorization for Apps: The system must provide secure access tokens for client applications (web and mobile) to access protected APIs.
-* FR-4: Service-to-Service Authorization: The system must allow one backend service to securely obtain authorization to call another service (machine-to-machine).
-* FR-5: Token and Session Lifecycle: The system must manage the full session lifecycle, including issuing, refreshing, and revoking tokens to ensure continuous and secure access.
-* FR-6: Standardization and Discovery: The system must provide standard endpoints that allow client applications to automatically discover configuration details and retrieve core user profile information.
+* FR-4: Token and Session Lifecycle: The system must manage the full session lifecycle, including issuing, refreshing, and revoking tokens to ensure continuous and secure access.
+* FR-5: Standardization and Discovery: The system must provide standard endpoints that allow client applications to automatically discover configuration details and retrieve core user profile information.
 
-**1.4 Non-Functional Requirements**
+#### **1.3 Non-Functional Requirements**
 
 * **Performance**: P95 latency < 500ms for authentication flows, token operations < 100ms
 * **Availability**: 99.5% uptime target (acceptable downtime for MVP)
@@ -52,62 +44,18 @@ This system provides customer-facing authentication by integrating with external
 
 ***
 
-#### 2. High-Level Architecture
+### 2. High-Level Architecture
 
-**2.1 Architecture Style**
+#### **2.1 Architecture Style**
 
-**Microservices with API Gateway pattern**
+**Microservices with API Gateway pattern. Reasons:**
 
-**Justification:**
-
-* Separation of concerns: authentication logic isolated from business services
+* authentication logic isolated from business services
 * Independent scaling of authentication components
 * Flexibility to add/remove identity providers without affecting core services
 * API Gateway provides centralized entry point, rate limiting, and routing
 
-**2.2 Component Diagram**
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                         External Clients                        │
-│                 (Web App, Mobile App, SPA)                      │
-└────────────────────────┬────────────────────────────────────────┘
-                         │ HTTPS
-                         ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                         API Gateway                             │
-│            (Rate Limiting, Routing, TLS Termination)            │
-└────────┬────────────────────────────────────┬───────────────────┘
-         │                                    │
-         ▼                                    ▼
-┌──────────────────────────┐      ┌──────────────────────────────┐
-│  Authentication Service  │      │    Resource Services         │
-│                          │      │  (Business APIs requiring    │
-│  - OAuth2 Flows          │      │   authentication)            │
-│  - Provider Integration  │      │                              │
-│  - Token Management      │      └──────────────────────────────┘
-│  - Session Management    │
-│  - UserInfo Endpoint     │
-└────────┬─────────────────┘
-         │
-         ├──────────────┬──────────────┬──────────────┐
-         ▼              ▼              ▼              ▼
-┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐
-│   Google     │ │   GitHub     │ │  Facebook    │ │   Future     │
-│   OAuth2     │ │   OAuth2     │ │   OAuth2     │ │  Providers   │
-└──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘
-
-         │
-         ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                         Data Layer                              │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
-│  │  PostgreSQL  │  │    Redis     │  │  Secret Mgmt │          │
-│  │  (Users,     │  │  (Sessions,  │  │  (Provider   │          │
-│  │   Tokens)    │  │   Cache)     │  │   Secrets)   │          │
-│  └──────────────┘  └──────────────┘  └──────────────┘          │
-└─────────────────────────────────────────────────────────────────┘
-```
+#### **2.2 Component Diagram**
 
 **Component Responsibilities:**
 
@@ -117,7 +65,9 @@ This system provides customer-facing authentication by integrating with external
 * **Redis**: Session storage, token caching, rate limiting counters
 * **External Providers**: Third-party identity sources (Google, GitHub, Facebook)
 
-**2.3 Communication Patterns**
+#### **2.3 Communication Patterns**
+
+<figure><img src=".gitbook/assets/image (23).png" alt=""><figcaption></figcaption></figure>
 
 **Synchronous (HTTP/REST):**
 
@@ -126,18 +76,7 @@ This system provides customer-facing authentication by integrating with external
 * Authentication Service ↔ PostgreSQL: JDBC/SQL queries
 * API Gateway ↔ Authentication Service: Internal REST APIs
 
-**Asynchronous:**
-
-* Not required for MVP; future consideration for audit logs, analytics events
-
-**Why synchronous for MVP:**
-
-* Simpler implementation and debugging
-* Authentication flows are inherently request-response
-* Low latency requirements achievable with direct calls
-* Asynchronous patterns add complexity not justified for 50K users
-
-**2.4 Design Considerations & Tradeoffs**
+#### **2.4 Design Considerations & Tradeoffs**
 
 **Decision 1: PostgreSQL for persistent storage**
 
@@ -171,16 +110,16 @@ This system provides customer-facing authentication by integrating with external
 
 ***
 
-#### 3. Data Design
+### 3. Data Design
 
-**3.1 Storage Technologies & Justification**
+#### **3.1 Storage Technologies**
 
-**Primary Store: PostgreSQL 14+**
+**Primary Store: PostgreSQL**
 
 * **Use case**: Users, client applications, refresh tokens, provider mappings
 * **Rationale**: Transactional integrity for token issuance, referential integrity between users and tokens, mature backup/recovery
 
-**Cache/Session Store: Redis 7+**
+**Cache/Session Store: Redis**
 
 * **Use case**: Active sessions, authorization codes (short-lived), rate limit counters, UserInfo cache
 * **Rationale**: High-speed in-memory operations, built-in TTL for ephemeral data, reduces database reads
@@ -190,7 +129,7 @@ This system provides customer-facing authentication by integrating with external
 * **Use case**: OAuth2 provider client secrets, JWT signing keys
 * **Rationale**: Centralized secret rotation, audit logging, encryption at rest
 
-**3.2 Logical Schema**
+#### **3.2 DB Schema**
 
 ```sql
 -- Users table: Internal user accounts linked to external identities
@@ -260,7 +199,7 @@ CREATE INDEX idx_refresh_tokens_user_client ON refresh_tokens(user_id, client_id
 CREATE INDEX idx_refresh_tokens_expiry ON refresh_tokens(expires_at) WHERE NOT revoked;
 ```
 
-**3.3 Caching Strategy**
+#### **3.3 Caching Strategy**
 
 **Redis Cache Structure:**
 
@@ -297,7 +236,7 @@ CREATE INDEX idx_refresh_tokens_expiry ON refresh_tokens(expires_at) WHERE NOT r
 
 ***
 
-#### 4. Building Blocks (Components)
+### 4. Building Blocks (Components)
 
 **Component: `API Gateway`**
 
@@ -341,10 +280,8 @@ CREATE INDEX idx_refresh_tokens_expiry ON refresh_tokens(expires_at) WHERE NOT r
 
 * Implement Authorization Code flow with PKCE
 * Implement Client Credentials flow
-* Implement Refresh Token flow
+* Implement Refresh Token flow (token rotation)
 * Integrate with external OAuth2 providers (Google, GitHub, Facebook)
-* Generate and validate JWT access tokens
-* Issue and manage refresh tokens
 * Provide OIDC Discovery endpoint
 * Provide UserInfo endpoint
 * Manage user sessions (create, validate, destroy)

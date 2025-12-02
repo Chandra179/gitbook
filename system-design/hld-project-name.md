@@ -43,24 +43,19 @@ Time, for mvp only, prototype only, etc...
 
 #### 2.1 Architecture Style
 
-Chosen style (Microservices / Monolith / Event-driven / Serverless) and short justification.
+Chosen style (Microservices / Monolith / Event-driven / Serverless) and the reason in paragraphs
 
 #### 2.2 Component Diagram
 
 Insert component/container diagram here (plantuml or embedded image). Brief descriptions of each component and responsibilities.
 
-#### 2.3 Communication Patterns
-
-* Synchronous (HTTP/REST, gRPC) — where and why
-* Asynchronous (message broker, event streams) if needed — where and why
-
-#### 2.4 Design Considerations & Tradeoffs
+#### 2.3 Architectural Decision Records
 
 For each major decision include pros, cons, and consequences.
 
-* Decision2: \[example] SQL vs NoSQL — Rationale
-* Decision3: \[example] ...
-* Decision4: \[example] ...
+* _Example:_ Chose PostgreSQL over MongoDB (Decision) because strong transactional consistency was prioritized over horizontal write scalability (Tradeoff).
+* Example2: ...
+* Example3: ...
 
 ***
 
@@ -68,14 +63,13 @@ For each major decision include pros, cons, and consequences.
 
 data design must be align with functional and non function requirements
 
-#### 3.1 Storage Technologies & Justification
+#### 3.1 Storage Technologies
 
-* Primary store(s): PostgreSQL / MySQL / MongoDB / Cassandra / DynamoDB / etc.
-* Rationale for each choice (consistency, query patterns, scale)
+]Primary store(s): PostgreSQL / MySQL / MongoDB / Cassandra / DynamoDB / etc. why choose this database and not the other ... whats the reason
 
-#### 3.3 Logical Schema and ERD
+#### 3.3 DB Schema
 
-Link to ER diagram or include an image. Sample tables/entities with key attributes and types in SQL format
+database schema
 
 #### 3.4 Caching Strategy
 
@@ -91,24 +85,15 @@ _For each major component/service provide the following sub-sections (use copy f
 
 **Purpose:**
 
-* Short description of what it does and owns.
+Short description of what it does and owns.
 
 **Responsibilities:**
 
-* Responsibility A
-* Responsibility B
+whats the main responsibility of the component and what is not
 
 **APIs / Interfaces:**
 
 * Public endpoints, rest/grpc, error\_code, versioning
-
-**Data Owned:**
-
-* Entities persisted by this component
-
-**Design tradeoffs**
-
-* why using this sort login and not this ..
 
 **Failure Modes & Mitigations:**
 
