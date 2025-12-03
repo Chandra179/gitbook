@@ -1,6 +1,6 @@
 # Consistent Hashing
 
-**Data Partitioning (Sharding)** means splitting data across multiple servers instead of storing everything on one machine.
+**Data Partitioning (Sharding)** means splitting data across multiple servers instead of storing everything on one machine.&#x20;
 
 Imagine we have 1,000,000 users and 3 servers:
 
@@ -8,9 +8,7 @@ Imagine we have 1,000,000 users and 3 servers:
 * Server B → Users 333,334 – 666,666
 * Server C → Users 666,667 – 1,000,000
 
-But how do we decide which server stores which data?
-
-If we use simple hashing:
+But how do we decide which server stores which data? If we use simple hashing:
 
 ```
 server = hash(data_keys) % number_of_servers
@@ -64,16 +62,12 @@ A data key is stored on the first server encountered when moving **clockwise**. 
 
 #### What if no server is ahead?
 
-If a data key is at position `95` and there is no server ahead, it wraps around back to 0 and continues until it finds the first server.
-
-This is why it’s a ring.
+If a data key is at position `95` and there is no server ahead, it wraps around back to 0 and continues until it finds the first server. This is why it’s a ring.
 
 #### Adding a new server
 
 If we add a new server at position `75`: Only the data between positions 70 and 75 will move.\
-All other data stays exactly where it was.
-
-This gives us:
+All other data stays exactly where it was. This gives us:
 
 * Minimal data movement
 * No global reshuffle
@@ -116,8 +110,6 @@ All of these still map to the same physical Server A.
 
 Now the ring looks like: `A, B, C, A, B, A, C, B, A...`
 
-Example positions:
-
 ```
 12  → Server A  
 18  → Server B  
@@ -129,9 +121,7 @@ Example positions:
 92  → Server C
 ```
 
-This distributes data more evenly.
-
-Results:
+This distributes data more evenly. Results:
 
 * Even data distribution
 * Reduced hotspots
