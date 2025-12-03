@@ -29,8 +29,6 @@ JSON is the standard for APIs, but it has a fatal flaw: It has no Decimal type. 
 
 `The Failure`: A JavaScript frontend (or Node.js service) receives it. JavaScript treats all numbers as IEEE 754 Floats.
 
-JavaScript
-
 ```javascript
 // Frontend logic
 let total = response.amount + 0.10;
