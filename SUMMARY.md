@@ -23,7 +23,7 @@
   * [Problem](math/problem.md)
   * [Quadratic Equation](math/quadratic-equation.md)
   * [Polynomial](math/polynomial.md)
-* [Topic Breakdown](topic-breakdown.md)
+* [Topic Breakdown](system-design/template-component-design.md)
 * [System Design](system-design/README.md)
   * [\[Template\] High Level Design](system-design/template-high-level-design.md)
   * [Digital Wallet](system-design/digital-wallet/README.md)

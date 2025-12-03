@@ -6,12 +6,12 @@ description: personal blog + software engineer related topics
 
 #### About
 
-Software engineer 3.5+ years experience in Fintech, distributed system, workflow automation
+Software engineer 3+ years experience in Fintech, distributed system, workflow automation
 
 #### Experience
 
 {% tabs %}
-{% tab title="BFI (3.5 years)" %}
+{% tab title="BFI Finance" %}
 BFI finance is multifinance company providing: **leasing, consumer financing, and working capital financing**.&#x20;
 
 * Designed integration with third-party (KYC, OCR, fraud detection, credit scoring, liveness, forgery) APIs with full error‑handling logic (timeouts, error responses, schema changes)
@@ -21,7 +21,7 @@ BFI finance is multifinance company providing: **leasing, consumer financing, an
 * Integrated distributed tracing and structured logging for service level (Otel + Datadog) for easier debugging and monitoring
 {% endtab %}
 
-{% tab title="M+ Software (5 month)" %}
+{% tab title="M+ Software" %}
 M+ Software operating as an ERP consulting
 
 * Integrated multiple payment options to streamline transaction processing and improve system stability
@@ -30,20 +30,12 @@ M+ Software operating as an ERP consulting
 {% endtab %}
 {% endtabs %}
 
+#### Project
+
+* Golang SDK : project template for golang, modular approach. [https://github.com/Chandra179/go-sdk](https://github.com/Chandra179/go-sdk)
+* Web crawler : Keyword based crawler in golang. [https://github.com/Chandra179/axora](https://github.com/Chandra179/axora)
+
 #### Tech stack
 
 * Golang, Temporal, Docker, Javascript, Kubernetes, ArgoCD, Redis, RabbitMQ, Nats, GCP
-
-#### Domain knowledge
-
-* Security
-* Fintech
-* AI
-
-#### Project
-
-* Web crawler in Go: [https://github.com/Chandra179/axora](https://github.com/Chandra179/axora)
-* P2P chat: [https://github.com/Chandra179/p2pchat](https://github.com/Chandra179/p2pchat)
-
-
 
