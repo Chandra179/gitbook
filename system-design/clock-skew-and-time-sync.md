@@ -1,7 +1,5 @@
 # Clock Skew & Time Sync
 
-> Status: CRITICAL | Component: Snowflake ID Generator
-
 ### What is Clock Skew?
 
 Clock Skew is the phenomenon where the local system clock on a specific server drifts away from the actual, absolute time (Universal Coordinated Time or UTC).
