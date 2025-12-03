@@ -39,5 +39,3 @@ Partitioning Strategy:
 #### **Cluster**
 
 * Cluster: A set of Kafka brokers working together.
-
-Inter-broker Communication: Brokers exchange replication data, partition metadata, and perform leader election through an inter-broker port.
