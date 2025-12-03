@@ -4,8 +4,6 @@ description: snowflake id generato
 
 # ID Generator
 
-> Status: STANDARD | Type: Identification Strategy | Scope: Distributed Systems
-
 ### Introduction
 
 The Snowflake ID is a `64-bit` unique identifier generator designed to solve the problem of generating unique IDs in distributed systems without coordination. Unlike `UUIDs` (which are 128-bit and random), Snowflake IDs are k-ordered (roughly sorted by time), making them highly efficient for database indexing (B-Trees).
