@@ -23,11 +23,7 @@ Before we even get to the bugs, let's talk about storage.
 
 #### Trap #1: The JSON Serialization "Silent Killer"
 
-JSON is the standard for APIs, but it has a fatal flaw: It has no Decimal type. It only supports Strings and Floating Point numbers.
-
-`The Scenario`: Your backend sends a precise decimal: `{"amount": 100.50}`.
-
-`The Failure`: A JavaScript frontend (or Node.js service) receives it. JavaScript treats all numbers as IEEE 754 Floats.
+JSON is the standard for APIs, but it has no Decimal type. It only supports Strings and Floating Point numbers. For example, backend sends a precise decimal: `{"amount": 100.50}`. A JavaScript frontend (or Node.js service) receives it. JavaScript treats all numbers as IEEE 754 Floats.
 
 ```javascript
 // Frontend logic
@@ -35,41 +31,27 @@ let total = response.amount + 0.10;
 // Result: 100.60000000000001
 ```
 
-You have just corrupted the transaction data simply by moving it between services.
-
-**The BigInt Fix**: We send `{"amount": 10050}`. Every language in the world Java, Go, Python, Rust, JavaScript understands Integers exactly the same way. `10050 + 10 = 10060`. There is zero ambiguity.
+You have just corrupted the transaction data simply by moving it between services. We can fix it by using BigInt `{"amount": 10050}`. Every language in the world Java, Go, Python, Rust, JavaScript understands Integers exactly the same way. `10050 + 10 = 10060`. There is zero ambiguity.
 
 #### Trap #2: The Java `equals()` Bug
 
 In many languages (specifically Java), Decimal equality checks both value and scale.
 
-The Scenario:
-
 * Transaction A is stored as `$100.00` (Scale 2).
 * A refund calculation results in `$100.0` (Scale 1).
 
-The Bug:
-
 ```java
+//  bug
 new BigDecimal("100.00").equals(new BigDecimal("100.0")) // Returns FALSE
 ```
 
-If you use these values as keys in a HashMap (e.g., for deduplication or caching), the system treats them as two different numbers. This can lead to double-charging users or failing reconciliation jobs.
-
-**The BigInt Fix**: `10000` is always equal to `10000`. Integers do not carry "metadata" that confuses equality checks.
+If you use these values as keys in a HashMap (e.g., for deduplication or caching), the system treats them as two different numbers. This can lead to double-charging users or failing reconciliation jobs. By using BigInt `10000` is always equal to `10000`. Integers do not carry "metadata" that confuses equality checks.
 
 #### Trap #3: The "Non-Terminating" Crash
 
-If you don't configure `BigDecimal` division perfectly, it is arguably _too_ precise.
+If you don't configure `BigDecimal` division perfectly, it is arguably _too_ precise. For example you need to split a $100 bill between 3 users. You run `amount.divide(3)`. The system tries to calculate `33.3333333...` to infinity, you will get error `ArithmeticException: Non-terminating decimal expansion`.
 
-The Scenario: You need to split a $100 bill between 3 users.
-
-The Bug: You run `amount.divide(3)`. The system tries to calculate `33.3333333...` to infinity.
-
-* Result: `ArithmeticException: Non-terminating decimal expansion`.
-* Impact: The payment thread crashes.
-
-**The BigInt Fix**: Integer division (`10000 / 3`) results in `3333` with a remainder of 1. The use of Integers _forces_ the developer to write code to handle that remainder (the "extra penny"). You cannot accidentally crash the server; you are forced to handle the money correctly.
+By using **BigInt** Integer division (`10000 / 3`) results in `3333` with a remainder of 1. The use of Integers _forces_ the developer to write code to handle that remainder (the "extra penny"). You cannot accidentally crash the server; you are forced to handle the money correctly.
 
 ### Evidence
 
