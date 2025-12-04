@@ -4,7 +4,7 @@
 * [General](general/README.md)
   * [Bits & Bytes](general/bits-and-bytes.md)
   * [Character Encoding](general/character-encoding.md)
-  * [NAT](general/nat.md)
+  * [NAT & P2P Traversal](general/nat-and-p2p-traversal.md)
   * [API Design](general/api-design.md)
   * [BigInt](general/bigint.md)
   * [Database](general/database.md)
