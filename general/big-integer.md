@@ -1,80 +1,15 @@
-# BigInt
+# Big Integer
 
-While `BigDecimal` is mathematically precise _internally_, it is operationally fragile in distributed systems. Here is why we are choosing BigInt (Integers storing Minor Units) over `BigDecimal`, and why giants like Stripe and Uber do the same.
+We often use decimal for money, which allows for a value like `$10.5000001` . However, in a transactional context, money is actually discrete; it consists of individual, indivisible units. By using `BigInt` to store `$10.50` as exactly `1050` cents, we physically prevent the storage of "half a cent." This approach enforces a hard constraint on data integrity, ensuring that any rounding logic is handled explicitly before the data ever reaches the database, rather than relying on ambiguous floating-point interpretations later.
 
-### Money is Discrete, Not Continuous
+Beyond integrity, there is a distinct, performance cost to using Decimals. A standard `BIGINT` occupies exactly 8 bytes and fits perfectly into a 64-bit CPU register, making mathematical operations like addition and subtraction blazing fast—often requiring just a single CPU instruction.&#x20;
 
-* `BigDecimal` treats money as a continuous value. It allows you to store `$10.5000001`.
-* `BigInt` treats money as discrete particles. If you store values in "cents" (or the smallest currency unit), it is physically impossible to store half a cent.
+In contrast, database `DECIMAL` types can consume anywhere from 5 to 17 bytes. Worse, the CPU cannot process them natively; it must rely on software algorithms to simulate the math. While this overhead might seem negligible in isolation, it compounds aggressively when processing millions of ledger rows, creating a performance drag that offers no functional benefit.
 
-By using `BigInt` (e.g., storing `$10.50` as `1050`), we force the system to handle rounding logic _before_ the data ever hits the database. It enforces a hard constraint on data integrity.
+The most dangerous issues arise when it attempts to pass the data between systems. `BigDecimal` typically behaves well inside a single Java or C# class, but when passed the data to database, a frontend, or another microservice it will become inconsistent.
 
-### The "Invisible" Performance Cost
+Consider a backend sending a precise decimal like `{"amount": 100.50}`. A JavaScript frontend or Node.js service receiving this will treat it as an IEEE 754 Float. A simple operation like adding ten cents (`response.amount + 0.10`) can result in `100.60000000000001`. You have corrupted transaction data simply by moving it between services. Conversely, usage of Integers eliminates this ambiguity entirely. If you transmit `{"amount": 10050}`, every language in the world Java, Go, Python, Rust, JavaScript understands exactly what that number is. `10050 + 10` is always `10060`. There is no interpretation required.
 
-Before we even get to the bugs, let's talk about storage.
+Finally, using Integers forces developers to write safer code by preventing the "Non-Terminating" crash. If you attempt to split a **$100** bill among three users using `BigDecimal`, the system attempts to calculate `33.3333333...` to infinity, often throwing an `ArithmeticException` and crashing the application. Integer division (`10000 / 3`) naturally results in `3333` with a remainder of `1`. This constraint forces the engineer to acknowledge the "extra penny" and write logic to handle it, rather than letting the server crash or the money vanish into a floating-point void.
 
-* Storage: A `BIGINT` is exactly 8 bytes. It fits perfectly into a 64-bit CPU register.
-* Speed: Math operations (addition, subtraction) on Integers are single CPU instructions. They are blazing fast.
-* The Cost of Decimal: Database `DECIMAL` types often take 5–17 bytes. Worse, the CPU cannot add them natively; it relies on software algorithms to perform the math. At the scale of millions of ledger rows, this overhead compounds.
-
-### The "Fragile Boundary" Traps
-
-`BigDecimal` usually works fine inside a single Java or C# class. The problems explode when that data has to leave the application to a database, a frontend, or another microservice.
-
-#### Trap #1: The JSON Serialization "Silent Killer"
-
-JSON is the standard for APIs, but it has no Decimal type. It only supports Strings and Floating Point numbers. For example, backend sends a precise decimal: `{"amount": 100.50}`. A JavaScript frontend (or Node.js service) receives it. JavaScript treats all numbers as IEEE 754 Floats.
-
-```javascript
-// Frontend logic
-let total = response.amount + 0.10;
-// Result: 100.60000000000001
-```
-
-You have just corrupted the transaction data simply by moving it between services. We can fix it by using BigInt `{"amount": 10050}`. Every language in the world Java, Go, Python, Rust, JavaScript understands Integers exactly the same way. `10050 + 10 = 10060`. There is zero ambiguity.
-
-#### Trap #2: The Java `equals()` Bug
-
-In many languages (specifically Java), Decimal equality checks both value and scale.
-
-* Transaction A is stored as `$100.00` (Scale 2).
-* A refund calculation results in `$100.0` (Scale 1).
-
-```java
-//  bug
-new BigDecimal("100.00").equals(new BigDecimal("100.0")) // Returns FALSE
-```
-
-If you use these values as keys in a HashMap (e.g., for deduplication or caching), the system treats them as two different numbers. This can lead to double-charging users or failing reconciliation jobs. By using BigInt `10000` is always equal to `10000`. Integers do not carry "metadata" that confuses equality checks.
-
-#### Trap #3: The "Non-Terminating" Crash
-
-If you don't configure `BigDecimal` division perfectly, it is arguably _too_ precise. For example you need to split a $100 bill between 3 users. You run `amount.divide(3)`. The system tries to calculate `33.3333333...` to infinity, you will get error `ArithmeticException: Non-terminating decimal expansion`.
-
-By using **BigInt** Integer division (`10000 / 3`) results in `3333` with a remainder of 1. The use of Integers _forces_ the developer to write code to handle that remainder (the "extra penny"). You cannot accidentally crash the server; you are forced to handle the money correctly.
-
-### Evidence
-
-#### The Rails Incident (Issue #6033)
-
-The Ruby on Rails team famously had to force `BigDecimal` to serialize as Strings in JSON because transmitting them as numbers was corrupting data in JavaScript frontends. They realized that the "boundary" between backend and frontend was unsafe for Decimals. [https://github.com/rails/rails/issues/6033](https://github.com/rails/rails/issues/6033)
-
-#### Stripe (The Gold Standard)
-
-Stripe processes billions of dollars and strictly uses Integers. [https://stripe.com/docs/api/charges/create](https://stripe.com/docs/api/charges/create)
-
-> From the Stripe API Docs: Field: `amount` Type: `integer` Quote: _"A positive integer representing how much to charge in the \[smallest currency unit] (e.g., 100 cents to charge $1.00)._
-
-### Summary
-
-For our system, we follow the "Golden Rule" of Financial Engineering:
-
-> "Do math with Decimals, but store and transmit Integers."
-
-By using BigInts (Minor Units), we gain:
-
-1. Safety: Impossible to store fractional cents.
-2. Speed: Native CPU math operations.
-3. Stability: No JSON serialization errors or scale-based bugs.
-
-This ensures our ledger remains the immutable source of truth, free from the "dust" of floating-point arithmetic.
+This architectural approach is not theoretical; it is standard of the financial industry. The Ruby on Rails team famously had to force `BigDecimal` to serialize as Strings because transmitting them as numbers was corrupting data in JavaScript. Similarly, Stripe strictly uses Integers for all transactions. As their API documentation states, they require "a positive integer representing how much to charge in the smallest currency unit (e.g., 100 cents to charge $1.00)."
