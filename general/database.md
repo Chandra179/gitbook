@@ -4,11 +4,11 @@
 
 What gets locked? This refers to the size of the object being locked. Databases try to use the smallest lock possible (Row) to allow more users to work at the same time. If they run out of memory, they move up the hierarchy (Lock Escalation).
 
-* Database Level: Locks the entire database. No one else can connect.
-* Table Level: Locks one specific table (e.g., Users). Good for bulk loads/schema changes.
-* Page Level: A "Page" is a block of memory (usually 8KB) holding multiple rows. Locking a page locks all \~50 rows on it.
-* Row Level: Locks a single specific record. Maximum concurrency.
-* Column Level: Rare/Myth. Most standard databases DO NOT support this.
+* **Database Level**: Locks the entire database. No one else can connect.
+* **Table Level**: Locks one specific table (e.g., Users). Good for bulk loads/schema changes.
+* **Page Level**: A "Page" is a block of memory (usually 8KB) holding multiple rows. Locking a page locks all \~50 rows on it.
+* **Row Level:** Locks a single specific record. Maximum concurrency.
+* **Column Level**: Rare/Myth. Most standard databases DO NOT support this.
 
 **Lock Modes**
 
