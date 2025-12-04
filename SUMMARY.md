@@ -17,7 +17,6 @@
   * [Chunking](rag/chunking.md)
 * [P2P Chat](p2p-chat.md)
 * [ReactJS](reactjs.md)
-* [Passkey](passkey.md)
 * [Math](math/README.md)
   * [Basic](math/basic.md)
   * [Problem](math/problem.md)
