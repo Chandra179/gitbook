@@ -51,7 +51,7 @@ ch <- "apple" // blocks until receiver is ready
 
 * Created with `make(chan T, n)`
 * Capacity `n` allows sends to succeed without a receiver until the buffer is full
-* Receiving only blocks when buffer is empt
+* Receiving only blocks when buffer is empty
 
 ```go
 func main() {
@@ -79,7 +79,7 @@ ch <- "cherry" // waits until receiver drains a slot
 
 #### **Nil channel** <a href="#id-63b6" id="id-63b6"></a>
 
-A channel that is declared but not initialized (or set to nil) has unique properties:
+A channel that is declared but not initialized (or set to nil) has properties:
 
 1. Read: Blocks forever.
 2. Write: Blocks forever.
@@ -176,7 +176,7 @@ default:
 }
 ```
 
-### Common Usecases
+#### Common Usecases
 
 ```go
 // Wait on multiple channels
@@ -249,7 +249,7 @@ case msg := <-ch2:
 }
 ```
 
-### Tradeoffs & Common mistakes
+#### Tradeoffs & Common mistakes
 
 | Benefit                             | Trade-off / cost                                    |
 | ----------------------------------- | --------------------------------------------------- |
@@ -262,7 +262,7 @@ case msg := <-ch2:
 ❌ Using `default` without `time.Sleep()` → creates hot loops\
 ❌ Overusing `select` instead of restructuring goroutines
 
-### When to use it?
+#### When to use it?
 
 <table><thead><tr><th width="362.6219482421875">Use it when…</th><th>Don't use it when…</th></tr></thead><tbody><tr><td>Multiple channels might be ready</td><td>You only have 1 channel</td></tr><tr><td>You need timeouts / cancellation</td><td>You’re doing sequential processing</td></tr><tr><td>You're multiplexing goroutines</td><td>You can avoid concurrency entirely</td></tr></tbody></table>
 
@@ -324,6 +324,84 @@ ops.Add(1)
 
 // Reading
 fmt.Println("Ops:", ops.Load())
+```
+
+## Advanced Patterns
+
+#### Worker Pool
+
+Spawning `go func()` for every HTTP then you will get Out-Of-Memory (OOM) errors. Use a Worker Pool to throttle concurrency.
+
+```go
+func worker(id int, jobs <-chan int, results chan<- int) {
+    for j := range jobs {
+        fmt.Printf("worker %d processing job %d\n", id, j)
+        time.Sleep(time.Second) // Simulate work
+        results <- j * 2
+    }
+}
+
+func main() {
+    const numJobs = 100
+    const numWorkers = 5
+
+    jobs := make(chan int, numJobs)
+    results := make(chan int, numJobs)
+
+    // Start fixed number of workers
+    for w := 1; w <= numWorkers; w++ {
+        go worker(w, jobs, results)
+    }
+
+    // Send jobs
+    for j := 1; j <= numJobs; j++ {
+        jobs <- j
+    }
+    close(jobs) // Signal workers that no more jobs are coming
+
+    // Collect results
+    for a := 1; a <= numJobs; a++ {
+        <-results
+    }
+}
+```
+
+#### ErrGroup (`golang.org/x/sync/errgroup`)
+
+The modern "Senior" alternative to `sync.WaitGroup`. It handles:
+
+1. Waiting for goroutines.
+2. Error propagation (returns the first error encountered).
+3. Context cancellation (if one fails, cancel the others).
+
+```go
+import "golang.org/x/sync/errgroup"
+
+func main() {
+    g, ctx := errgroup.WithContext(context.Background())
+    urls := []string{"http://google.com", "http://bad-url.com", "http://bing.com"}
+
+    for _, url := range urls {
+        url := url // Capture loop var (standard in Go < 1.22)
+        g.Go(func() error {
+            // Check context before working
+            if ctx.Err() != nil {
+                return ctx.Err()
+            }
+            resp, err := http.Get(url)
+            if err == nil {
+                resp.Body.Close()
+            }
+            return err // If this returns error, all other Gs get cancelled via ctx
+        })
+    }
+
+    if err := g.Wait(); err != nil {
+        fmt.Println("Error encountered:", err)
+    } else {
+        fmt.Println("All fetches successful")
+    }
+}
 ```
 
 ## Goroutine Leak
