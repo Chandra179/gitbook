@@ -2,8 +2,11 @@
 
 ```
 Q: What are the ACID properties?
-Q: What is the "Cardinality" of a column, and how does it affect index effectiveness?
+Q: What is the column Cardinality?
+Q: How does a Composite Index work, and what is the "Leftmost Prefix" rule?
 Q: How do you identify and fix the N+1 Query Problem?
+Q: When should you use Normalization (3NF) versus Denormalization
+Q: What is Connection Pooling and why is it critical for high-throughput applications?
 Q: What is a "Race Condition" in a database context?
 Q: What is the difference between Optimistic and Pessimistic Locking, and when should I use which?
 Q: What specific data anomalies occur if we choose the wrong locking strategy or isolation level?
@@ -16,7 +19,7 @@ Q: How do we handle transactions when data is sharded or split across different 
 
 ```
 
-**Q**: What are the ACID properties?
+#### **Q**: What are the ACID properties?
 
 ACID stands for Atomicity (all-or-nothing execution), \
 Consistency (data always follows rules/constraints), \
@@ -27,7 +30,7 @@ In a high-throughput environment, Isolation is the property most frequently "neg
 
 ***
 
-**Q**: What is the "Cardinality" of a column, and how does it affect index effectiveness?
+#### **Q**: What is the "Cardinality" of a column, and how does it affect index effectiveness?
 
 Cardinality refers to the number of _unique_ values contained in a specific column relative to the total number of rows in the table. A column with "High Cardinality" contains mostly unique values (e.g., `User_ID`, `Email`, `UUID`), while a column with "Low Cardinality" contains very few unique values repeated many times (e.g., `Gender`, `Is_Active`, `Status`).
 
@@ -40,7 +43,27 @@ Impact on Index Effectiveness: Cardinality is the primary metric the Database Op
 
 ***
 
-**Q**: How do you identify and fix the N+1 Query Problem?
+#### **Q**: What is the difference between B-Tree and LSM Tree (Log-Structured Merge-tree) storage engines?
+
+The **B-Tree** (used by MySQL/InnoDB, PostgreSQL) its optimized for read-heavy workloads. It organizes data into fixed-size pages in a balanced tree structure. When you modify data, the engine finds the specific page and updates it in place. If a page is full, it splits, which can cause "write amplification" and random I/O operations. This makes B-Trees incredibly fast for reads (consistent lookup speed) but potentially slower for massive, concurrent write streams.
+
+The **LSM Tree** (used by Cassandra, RocksDB, LevelDB) is optimized for high-throughput write workloads. Instead of updating existing files, it treats storage as append-only. New data is written to a "MemTable" (in RAM) and eventually flushed to an immutable "SSTable" on disk (Sequential I/O). Because data is never overwritten, a single record might exist in multiple files (a delete is just a new entry marking it as deleted). Background processes run "Compaction" to merge these files and discard obsolete data. This makes LSM trees incredibly fast for writes, but reads can be slower because the engine may need to check several files to find the latest version of a key.
+
+***
+
+#### **Q**: How does a Composite Index work, and what is the "Leftmost Prefix" rule?
+
+A Composite Index is a single index acting on multiple columns, ordered by the sequence in which you define them (e.g., `CREATE INDEX idx_name ON Table (A, B, C)`). The database sorts the data first by column A; then, _only_ where A is identical, it sorts by B; and _only_ where both A and B are identical, it sorts by C.
+
+The Leftmost Prefix Rule states that the database can only utilize the index if the query search terms follow the index order from left to right without skipping. Using the example `(A, B, C)`:
+
+* Querying on A works (the index is sorted by A).
+* Querying on A and B works.
+* Querying on B or C alone _fails_ to use the index efficiently because, without knowing A, the values of B are scattered randomly throughout the index structure. It is akin to trying to find everyone named "David" in a phone book without knowing their last name; you would have to read every single entry.
+
+***
+
+#### **Q**: How do you identify and fix the N+1 Query Problem?
 
 The N+1 Query Problem is a performance issue that occurs primarily when using ORMs (like GORM in Go or Hibernate in Java). It happens when code fetches a parent record (1 query) and then iterates through a loop to fetch related child records for _each_ parent (N queries). For example, fetching 100 `Users` and then executing a new SQL query inside a loop to get the `Address` for each user results in 101 total database calls. This introduces massive network latency, often killing application performance under load.
 
@@ -53,7 +76,29 @@ How to Identify & Fix:
 
 ***
 
-**Q**: What is a "Race Condition" in a database context?
+#### Q: When should you use Normalization (3NF) versus Denormalization?
+
+**Normalization** (specifically 3rd Normal Form or 3NF) is the standard design strategy for write-heavy applications (OLTP) like banking systems, e-commerce order management, or inventory systems. The primary goal is to reduce data redundancy and ensure data integrity. By breaking data into smaller, related tables, you ensure that every piece of data lives in exactly one place. This eliminates "anomalies"—for example, if you update a customer's address, you only do it in the `Users` table, not in every single `Order` they’ve ever placed. You should use 3NF when your priority is data accuracy and optimizing for fast, consistent writes (INSERT/UPDATE/DELETE).
+
+**Denormalization**, in contrast, is an optimization technique used primarily for read-heavy workloads or analytics systems (OLAP). It duplicating data across tables to avoid expensive "JOIN" operations during queries. For example, in a high-traffic social media feed, you might store the `username` directly in the `Posts` table rather than just the `user_id`. This means the system can retrieve the post and the author's name in a single lookup without joining the `Users` table. You should use denormalization when your application suffers from slow read performance due to complex joins and you are willing to accept the trade-off of slower, more complex writes (since you now have to update the username in multiple places if it changes).
+
+***
+
+#### Q: What is Connection Pooling and why is it critical for high-throughput applications?
+
+Connection Pooling is a mechanism that maintains a cache of open, reusable database connections instead of opening and closing a new connection for every single user request. In a typical flow without pooling, every API call requires the application to:
+
+1. Open a TCP socket (Network 3-way handshake).
+2. Perform a TLS/SSL handshake (Encryption setup).
+3. Authenticate with the database (Password check).
+4. Execute the query.
+5. Close the connection
+
+For high-throughput applications, steps 1–3 are incredibly expensive and slow. If you have 10,000 users per second, performing the handshake 10,000 times will overwhelm both your application server and the database CPU, leading to massive latency. Connection pooling solves this by keeping a set of connections "alive." When a request comes in, it "borrows" an existing connection, executes the query, and immediately returns the connection to the pool for the next request to use.
+
+***
+
+#### **Q**: What is a "Race Condition" in a database context?
 
 A Race Condition occurs when the final outcome of a process depends on the uncontrollable timing or ordering of concurrent events. For example, imagine two users trying to withdraw $10 from a shared wallet that has $100.
 
@@ -64,32 +109,54 @@ A Race Condition occurs when the final outcome of a process depends on the uncon
 
 ***
 
-**Q**: What is the difference between Optimistic and Pessimistic Locking, and when should I use which?
+#### **Q**: What is the difference between Optimistic and Pessimistic Locking, and when should I use which?
 
 Isolation levels control how the DB handles locks implicitly, but sometimes you need explicit control.
 
 * Pessimistic Locking (`SELECT ... FOR UPDATE`): You assume a conflict _will_ happen. You lock the row immediately when you read it. No one else can touch it until you commit. Use this for high-contention data (e.g., a central generic wallet).
-* Optimistic Locking: You assume a conflict _probably won't_ happen. You don't lock the row on read. Instead, you read a version number (e.g., `version: 1`). When updating, you check if the version is still 1. If someone else changed it to 2 in the meantime, your update fails, and you retry. Use this for lower contention to avoid blocking database connections.
+*   Optimistic Locking: You assume a conflict _probably won't_ happen. You don't lock the row on read. Instead, you read a version number (e.g., `version: 1`). When updating, you check if the version is still 1. If someone else changed it to 2 in the meantime, your **update fails**, and you retry. Use this for lower contention to avoid blocking database connections.<br>
+
+    <pre><code>value = 100, version = 1
+
+    User 1 reads: value = 100, version = 1
+    User 2 reads: value = 100, version = 1
+
+    User 1 tries update:
+    UPDATE ... WHERE version = 1 → SUCCESS
+    <strong>value = 120 version = 2
+    </strong>
+    User 2 tries update using old version:
+    UPDATE ... WHERE version = 1 → FAIL (0 rows updated)
+
+    User 2 retries by reading latest:
+    value = 120, version = 2
+
+    User 2 recomputes and updates:
+    UPDATE ... WHERE version = 2 → SUCCESS
+    value = 150 version = 3
+    </code></pre>
 
 ***
 
-**Q**: What specific data anomalies occur if we choose the wrong locking strategy or isolation level?
+#### **Q**: How many transaction lock level are there and when to use them?
 
-Locks prevent conflicts, but it is important to understand _what specific errors_ occur when those locks are absent or too loose. In database theory, these errors are called "Read Phenomena." The first is the **Dirty Read**, which happens when a transaction reads uncommitted data from another transaction. If the other transaction rolls back, your application has processed data that "never existed."&#x20;
+**Read Uncommitted** is the lowest level, where a transaction can read data that has been modified by another transaction but not yet committed. This allows for "**dirty reads**," meaning if the other transaction rolls back, your transaction has processed invalid data. You should use this level only for non-critical logging or analytics tasks where absolute accuracy is less important than raw speed, and where blocking other transactions is unacceptable.
 
-The second is the **Non-Repeatable Read**. This occurs when you read a row (e.g., balance = 100), and before your transaction finishes, someone else updates it and commits. If you read that same row again within the same transaction, the value has changed. This breaks consistency in financial calculations where you expect inputs to remain static during a logical operation.
+**Read Committed** is the most common default level (e.g., in PostgreSQL, Oracle, SQL Server). It guarantees that a transaction can only read data that has been permanently committed. This prevents dirty reads but still allows "non-repeatable reads"—if you query the same row twice in one transaction, the data might change if someone else commits an update in between. You should use this for most standard web applications where you need a balance of strong concurrency and reasonable data integrity.
 
-The third is the **Phantom Read**. This is distinct from a Non-Repeatable read because the _rows you read didn't change_, but the _set of rows_ matching your criteria changed. For example, if you run `SELECT * FROM Orders WHERE Value > 1000` and get 5 records, but a split second later another user inserts a new order for $2000, a repeat of your query would return 6 records. The new record is a "phantom." Understanding these three phenomena is the prerequisite for configuring `TRANSACTION ISOLATION LEVELS` (Read Committed, Repeatable Read, Serializable) correctly in your Go applications.
+**Repeatable Read** ensures that if you read a row once, you will see the exact same data if you read it again within the same transaction, effectively "locking" that version of the row for your session. This prevents non-repeatable reads but can still allow "phantom reads," where new rows added by others might appear in your range queries. You should use this for reporting dashboards or financial calculations where numbers must remain consistent throughout the duration of operation.
+
+**Serializable** is the strictest level. It effectively forces transactions to run as if they were happening one after another, preventing all concurrency anomalies (dirty reads, non-repeatable reads, and phantoms). However, this comes at a massive performance cost due to heavy locking or frequent transaction retries. You should use this only for mission-critical operations where data integrity is non-negotiable, such as preventing double-booking in a reservation system or processing sensitive banking transfers.
 
 ***
 
-**Q**: Why shouldn't we just use the "Serializable" isolation level for everything to be safe?&#x20;
+#### **Q**: Why shouldn't we just use the "Serializable" isolation level for everything to be safe?&#x20;
 
 While `Serializable` guarantees the highest data integrity by strictly ordering transactions (making them appear sequential), it comes with a massive performance penalty. To achieve this, databases often employ aggressive locking or abort transactions frequently due to serialization anomalies. In a high-concurrency Fintech environment (e.g., thousands of payment requests per second), using `Serializable` acts as a bottleneck, drastically reducing Throughput. We need to choosing the lowest isolation level that still guarantees correctness for your specific use case (e.g., using `Read Committed` for general browsing but `Repeatable Read` or explicit locking for ledger updates).
 
 ***
 
-**Q**: What is the Write-Ahead Log (WAL), and why is it critical for durability?
+#### **Q**: What is the Write-Ahead Log (WAL), and why is it critical for durability?
 
 The Write-Ahead Log (WAL) is an append-only file where the database records changes (inserts, updates, deletes) _before_ they are written to the actual database data files. When a transaction is committed, the database first writes the details of that transaction to the WAL on the disk. Only after the WAL entry is safely stored does the database acknowledge the transaction as "Success" to the client. The actual data tables (B-Trees/Heaps) are updated later in memory and flushed to disk asynchronously (a process called "checkpointing").
 
@@ -100,7 +167,7 @@ Why it is critical: The WAL ensures Durability (the 'D' in ACID) and performance
 
 ***
 
-**Q**: What is the difference between Synchronous and Asynchronous Replication?
+#### **Q**: What is the difference between Synchronous and Asynchronous Replication?
 
 This distinction defines the trade-off between Data Integrity and Performance in a distributed system.
 
@@ -110,7 +177,7 @@ This distinction defines the trade-off between Data Integrity and Performance in
 
 ***
 
-**Q**: What is the difference between Vertical Scaling (Scaling Up) and Horizontal Scaling (Scaling Out)?
+#### **Q**: What is the difference between Vertical Scaling (Scaling Up) and Horizontal Scaling (Scaling Out)?
 
 Vertical Scaling (Scaling Up) means making a single server stronger by adding more CPU, RAM, or faster storage (e.g., upgrading from an AWS `t3.medium` to an `m5.2xlarge`). It is simple because you keep your data in one place, preserving ACID properties easily. However, you cannot buy a bigger computer, because it introduces a Single Point of Failure.&#x20;
 
@@ -118,7 +185,7 @@ Horizontal Scaling (Scaling Out) means adding _more_ servers (nodes) to handle t
 
 ***
 
-**Q**: How do "Eventual Consistency" and "Strong Consistency" differ in practice?
+#### **Q**: How do "Eventual Consistency" and "Strong Consistency" differ in practice?
 
 These concepts describe when a read operation is guaranteed to see the results of a write operation.
 
@@ -132,7 +199,7 @@ These concepts describe when a read operation is guaranteed to see the results o
 
 ***
 
-**Q**: How do we handle transactions when data is sharded or split across different services (Microservices)?
+#### **Q**: How do we handle transactions when data is sharded or split across different services (Microservices)?
 
 Once you move to Sharding or Microservices, you lose the ability to use a single database's ACID properties. If you need to update a `Wallet` database and a `Loan` database simultaneously, you face the distributed consistency problem. The traditional solution is Two-Phase Commit (2PC). In 2PC, a coordinator tells all databases to "Prepare" (lock resources and verify they can commit). If everyone says "Yes," the coordinator sends a "Commit" command. The downside is that this is a "blocking" protocol; if the coordinator crashes or the network fails, resources remain locked, freezing the system.
 
