@@ -27,15 +27,11 @@ Modern NAT behavior (RFC 4787) is defined by two rules: **How it maps outgoing**
 
 **A. Mapping Behavior (Outgoing)**
 
-_Rules for assigning the external port._
-
 * **Endpoint-Independent Mapping (EIM):** The router reuses the **same external port** (`:62000`) for the internal host, regardless of where it is sending packets.
 * **Address-Dependent Mapping (ADM):** Sending to a **new IP** results in a **new external port**.
 * **Address-and-Port-Dependent Mapping (Symmetric):** Sending to a **new IP** OR **new port** results in a **new external port**. (Strictest).
 
 **B. Filtering Behavior (Incoming)**
-
-_Rules for accepting return traffic._
 
 * **Endpoint-Independent Filtering (EIF):** Once a mapping is open, **anyone** can send packets to it. (Great for P2P).
 * **Address-Restricted:** Only the **IP you contacted** can reply.

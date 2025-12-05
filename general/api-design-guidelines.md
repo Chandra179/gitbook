@@ -4,7 +4,7 @@
 
 * Store and transmit monetary values as **Integers** representing the lowest currency unit (e.g., cents, sen, or satoshis) to absolutely eliminate floating-point rounding errors. Always pair the value with a Currency Code (ISO 4217).
 * Treat null, empty, and default values explicitly. In Fintech, `0` is a valid balance, not "missing data."
-* When consuming data, **only** unmarshal/deserialize fields required for logic to save memory. And validate _incoming_ request payloads (length, regex, noramlization, etc..) to avoid malformed data
+* If you accept a partial payload (PATCH), ensure your validation logic explicitly rejects _unknown_ fields.
 
 #### Performance & Efficiency
 
@@ -12,12 +12,16 @@
 * Never Base64 encode large files. Use `multipart/form-data` for uploads and binary streaming with correct `Content-Type` headers for downloads.
 * Apply dual-layer limiting. Use Infrastructure-level limiting (e.g., Nginx, API Gateway) to stop DDoS, and Application-level limiting (e.g., Redis Token Bucket) to enforce business rules per user/tenant.
 * Use pagination (cursor-based preferred over offset-based for large datasets), filtering, and sorting on all collection endpoints.
+* All internal APIs must accept and propagate standard Tracing Headers (e.g., W3C `traceparent` or B3 headers) to ensure we can debug a request across microservices
+* Is it batch/Bulk operations. Is it 'All-or-Nothing' (Atomic Transaction) or 'Partial Success'? If partial success is allowed, the response structure must explicitly map individual IDs to their success/error status.
+* For long running operations do not block the HTTP request. Return `202 Accepted` with a `Location` header pointing to a status polling endpoint, or use Webhooks."
 
 #### Reliability & Safety
 
-* Use idempotency for state-changing operations (POST/PATCH), especially payments. Require an `Idempotency-Key` header. Cache the response result with a TTL; if a client retries with the same key, return the cached response immediately without re-processing.
+* Use idempotency for state-changing operations (POST/PATCH), especially payments. Require an `Idempotency-Key` header. Cache the response result (200/422) with a TTL; if a client retries with the same key, return the cached response immediately without re-processing.
 * Set endpoint timeouts, Implement Circuit Breakers to fail fast when downstream dependencies are unhealthy, preventing cascading system failures.
 * Use Optimistic Locking (via `ETags` or `version` fields) to prevent "Lost Update" problems when multiple users modify the same resource simultaneously.
+* Strictly enforce PII/PCI redaction in logs and traces." In Fintech, logging a raw request body that contains a credit card number or a refresh token is (you get fired), do Log Sanitization
 
 #### HTTP Semantics & Status Codes
 
