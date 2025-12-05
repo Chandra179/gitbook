@@ -8,6 +8,21 @@
 * **P (Processor)** → the scheduler’s “cooking station.” It decides which goroutine should run on which OS thread. Example: `P1`, `P2`.
 * **M (Machine / OS Thread)** → the chef who executes the task. Example: `M1`, `M2`.
 
+#### **Work Stealing (Load Balancing):**
+
+* Each P has a Local Run Queue.
+* If P1 runs out of Gs, it doesn't go idle. It checks the Global Run Queue.
+* If that is empty, it attempts to steal half the Gs from P2’s queue.
+* _Result:_ All CPU cores stay saturated efficiently.
+
+#### **Syscall Handoff (Preventing Blocking):**
+
+* If a Goroutine (G1) makes a blocking syscall (e.g., file I/O), the thread (M1) blocks.
+* The Scheduler detaches P1 from M1 and moves P1 to a new (or sleeping) thread (M2).
+* P1 continues executing other goroutines (G2, G3).
+* When the syscall finishes, M1 tries to re-acquire a P.
+* _Result:_ Thousands of syscalls don’t starve your CPU.
+
 ## Channels in Go <a href="#id-7e3b" id="id-7e3b"></a>
 
 #### **Unbuffered channel** <a href="#bb03" id="bb03"></a>
@@ -61,6 +76,37 @@ ch <- "apple"
 ch <- "banana"
 ch <- "cherry" // waits until receiver drains a slot
 ```
+
+#### **Nil channel** <a href="#id-63b6" id="id-63b6"></a>
+
+A channel that is declared but not initialized (or set to nil) has unique properties:
+
+1. Read: Blocks forever.
+2. Write: Blocks forever.
+3. Close: Panics.
+
+```go
+func merger(in1, in2 <-chan int) {
+    for in1 != nil || in2 != nil {
+        select {
+        case v, ok := <-in1:
+            if !ok {
+                in1 = nil // 💡 Setting to nil disables this case forever!
+                continue
+            }
+            fmt.Println("From 1:", v)
+        case v, ok := <-in2:
+            if !ok {
+                in2 = nil
+                continue
+            }
+            fmt.Println("From 2:", v)
+        }
+    }
+}
+```
+
+***
 
 ## What happens to blocking channel operation? <a href="#id-6ffe" id="id-6ffe"></a>
 
@@ -219,6 +265,66 @@ case msg := <-ch2:
 ### When to use it?
 
 <table><thead><tr><th width="362.6219482421875">Use it when…</th><th>Don't use it when…</th></tr></thead><tbody><tr><td>Multiple channels might be ready</td><td>You only have 1 channel</td></tr><tr><td>You need timeouts / cancellation</td><td>You’re doing sequential processing</td></tr><tr><td>You're multiplexing goroutines</td><td>You can avoid concurrency entirely</td></tr></tbody></table>
+
+## Synchronization Primitives (`sync` package)
+
+#### Mutex (`sync.Mutex` vs `sync.RWMutex`)
+
+Use Mutexes when you need high-performance access to shared state (maps, structs, counters).
+
+* Mutex: Locks for both read and write.
+* RWMutex: Allows multiple readers OR one writer. Preferred for read-heavy workloads (e.g., caches).
+
+```go
+type SafeCounter struct {
+    mu sync.RWMutex
+    v  map[string]int
+}
+
+func (c *SafeCounter) Inc(key string) {
+    c.mu.Lock()         // 🔒 Write Lock: No one else can read or write
+    defer c.mu.Unlock()
+    c.v[key]++
+}
+
+func (c *SafeCounter) Value(key string) int {
+    c.mu.RLock()        // 🔓 Read Lock: Others can read, but no one can write
+    defer c.mu.RUnlock()
+    return c.v[key]
+}
+```
+
+#### WaitGroup (`sync.WaitGroup`)
+
+Calling `Add(1)` _inside_ the goroutine. This creates a race condition where `Wait()` might finish before the goroutine starts.
+
+```go
+var wg sync.WaitGroup
+
+for i := 0; i < 3; i++ {
+    wg.Add(1) // ✅ Correct: Add BEFORE starting goroutine
+    go func(id int) {
+        defer wg.Done()
+        fmt.Printf("Worker %d starting\n", id)
+    }(i)
+}
+
+wg.Wait() // Blocks until counter is 0
+```
+
+#### Atomic Operations (`sync/atomic`)
+
+For simple counters or boolean flags, Mutex is overkill. Atomics use low-level CPU instructions (CAS - Compare And Swap). They are \~10x faster than Mutex but harder to read.
+
+```go
+var ops atomic.Int64 // Go 1.19+ types
+
+// Inside goroutine
+ops.Add(1)
+
+// Reading
+fmt.Println("Ops:", ops.Load())
+```
 
 ## Goroutine Leak
 
