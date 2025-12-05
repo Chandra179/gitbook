@@ -2,17 +2,18 @@
 
 ```
 Q: What are the ACID properties?
-Q: What is a "Race Condition" in a database context?
-Q: What is the difference between Vertical Scaling (Scaling Up) and Horizontal Scaling (Scaling Out)?
-Q: Why shouldn't we just use the "Serializable" isolation level for everything to be safe? 
-Q: What is the difference between Optimistic and Pessimistic Locking, and when should I use which?
-Q: What specific data anomalies occur if we choose the wrong locking strategy or isolation level?
-Q: How do we handle transactions when data is sharded or split across different services (Microservices)?
 Q: What is the "Cardinality" of a column, and how does it affect index effectiveness?
 Q: How do you identify and fix the N+1 Query Problem?
+Q: What is a "Race Condition" in a database context?
+Q: What is the difference between Optimistic and Pessimistic Locking, and when should I use which?
+Q: What specific data anomalies occur if we choose the wrong locking strategy or isolation level?
+Q: Why shouldn't we just use the "Serializable" isolation level for everything to be safe? 
 Q: What is the Write-Ahead Log (WAL), and why is it critical for durability?
 Q: What is the difference between Synchronous and Asynchronous Replication?
+Q: What is the difference between Vertical Scaling (Scaling Up) and Horizontal Scaling (Scaling Out)?
 Q: How do "Eventual Consistency" and "Strong Consistency" differ in practice?
+Q: How do we handle transactions when data is sharded or split across different services (Microservices)?
+
 ```
 
 **Q**: What are the ACID properties?
@@ -23,58 +24,6 @@ Isolation (concurrent transactions don't interfere with each other), \
 Durability (saved data survives power loss).&#x20;
 
 In a high-throughput environment, Isolation is the property most frequently "negotiated" or relaxed because perfect isolation (Serializability) is incredibly expensive. To guarantee that every transaction appears to happen one after another, the database must employ aggressive locking or validation, which forces transactions to wait in line. This creates a massive bottleneck that kills performance. Therefore, engineers often deliberately choose weaker isolation levels (like _Read Committed_ or _Repeatable Read_) to allow higher concurrency and speed, accepting the risk of specific data anomalies (like Phantom Reads) as the "price" for scale.
-
-***
-
-**Q**: What is a "Race Condition" in a database context?
-
-A Race Condition occurs when the final outcome of a process depends on the uncontrollable timing or ordering of concurrent events. For example, imagine two users trying to withdraw $10 from a shared wallet that has $100.
-
-1. User A reads balance: $100.
-2. User B reads balance: $100 (before A saves).
-3. User A calculates $100 - $10 = $90 and saves.
-4. User B calculates $100 - $10 = $90 and saves. The final balance is $90, but it should be $80. The second update "raced" the first and overwrote it, causing a Lost Update anomaly. The system failed because it didn't block User B from reading the stale value while User A was working on it.
-
-***
-
-**Q**: What is the difference between Vertical Scaling (Scaling Up) and Horizontal Scaling (Scaling Out)?
-
-Vertical Scaling (Scaling Up) means making a single server stronger by adding more CPU, RAM, or faster storage (e.g., upgrading from an AWS `t3.medium` to an `m5.2xlarge`). It is simple because you keep your data in one place, preserving ACID properties easily. However, you cannot buy a bigger computer, because it introduces a Single Point of Failure.&#x20;
-
-Horizontal Scaling (Scaling Out) means adding _more_ servers (nodes) to handle the load, splitting the data across them (Sharding). This offers infinite scale and high availability (if one node dies, others survive). The trade-off is massive complexity: you lose ACID guarantees across nodes (requiring patterns like Sagas or 2PC) and must manage complex data distribution logic.
-
-***
-
-**Q**: Why shouldn't we just use the "Serializable" isolation level for everything to be safe?&#x20;
-
-While `Serializable` guarantees the highest data integrity by strictly ordering transactions (making them appear sequential), it comes with a massive performance penalty. To achieve this, databases often employ aggressive locking or abort transactions frequently due to serialization anomalies. In a high-concurrency Fintech environment (e.g., thousands of payment requests per second), using `Serializable` acts as a bottleneck, drastically reducing Throughput. We need to choosing the lowest isolation level that still guarantees correctness for your specific use case (e.g., using `Read Committed` for general browsing but `Repeatable Read` or explicit locking for ledger updates).
-
-***
-
-**Q**: What is the difference between Optimistic and Pessimistic Locking, and when should I use which?
-
-Isolation levels control how the DB handles locks implicitly, but sometimes you need explicit control.
-
-* Pessimistic Locking (`SELECT ... FOR UPDATE`): You assume a conflict _will_ happen. You lock the row immediately when you read it. No one else can touch it until you commit. Use this for high-contention data (e.g., a central generic wallet).
-* Optimistic Locking: You assume a conflict _probably won't_ happen. You don't lock the row on read. Instead, you read a version number (e.g., `version: 1`). When updating, you check if the version is still 1. If someone else changed it to 2 in the meantime, your update fails, and you retry. Use this for lower contention to avoid blocking database connections.
-
-***
-
-**Q**: What specific data anomalies occur if we choose the wrong locking strategy or isolation level?
-
-Locks prevent conflicts, but it is important to understand _what specific errors_ occur when those locks are absent or too loose. In database theory, these errors are called "Read Phenomena." The first is the **Dirty Read**, which happens when a transaction reads uncommitted data from another transaction. If the other transaction rolls back, your application has processed data that "never existed."&#x20;
-
-The second is the **Non-Repeatable Read**. This occurs when you read a row (e.g., balance = 100), and before your transaction finishes, someone else updates it and commits. If you read that same row again within the same transaction, the value has changed. This breaks consistency in financial calculations where you expect inputs to remain static during a logical operation.
-
-The third is the **Phantom Read**. This is distinct from a Non-Repeatable read because the _rows you read didn't change_, but the _set of rows_ matching your criteria changed. For example, if you run `SELECT * FROM Orders WHERE Value > 1000` and get 5 records, but a split second later another user inserts a new order for $2000, a repeat of your query would return 6 records. The new record is a "phantom." Understanding these three phenomena is the prerequisite for configuring `TRANSACTION ISOLATION LEVELS` (Read Committed, Repeatable Read, Serializable) correctly in your Go applications.
-
-***
-
-**Q**: How do we handle transactions when data is sharded or split across different services (Microservices)?
-
-Once you move to Sharding or Microservices, you lose the ability to use a single database's ACID properties. If you need to update a `Wallet` database and a `Loan` database simultaneously, you face the distributed consistency problem. The traditional solution is Two-Phase Commit (2PC). In 2PC, a coordinator tells all databases to "Prepare" (lock resources and verify they can commit). If everyone says "Yes," the coordinator sends a "Commit" command. The downside is that this is a "blocking" protocol; if the coordinator crashes or the network fails, resources remain locked, freezing the system.
-
-The modern standard for high-volume Fintech systems is the Saga Pattern. Instead of a single ACID transaction, a business process is broken down into a sequence of local transactions. Each step updates its own database and publishes an event to trigger the next step. Crucially, Sagas handle failure through Compensating Transactions. If the "Deduct Money" step succeeds but the "Disburse Loan" step fails, the system triggers a "Refund Money" transaction to undo the first step. This embraces "Eventually Consistency" rather than "Strong Consistency," allowing the system to remain highly available and performant even when parts of the network are slow.
 
 ***
 
@@ -104,6 +53,42 @@ How to Identify & Fix:
 
 ***
 
+**Q**: What is a "Race Condition" in a database context?
+
+A Race Condition occurs when the final outcome of a process depends on the uncontrollable timing or ordering of concurrent events. For example, imagine two users trying to withdraw $10 from a shared wallet that has $100.
+
+1. User A reads balance: $100.
+2. User B reads balance: $100 (before A saves).
+3. User A calculates $100 - $10 = $90 and saves.
+4. User B calculates $100 - $10 = $90 and saves. The final balance is $90, but it should be $80. The second update "raced" the first and overwrote it, causing a Lost Update anomaly. The system failed because it didn't block User B from reading the stale value while User A was working on it.
+
+***
+
+**Q**: What is the difference between Optimistic and Pessimistic Locking, and when should I use which?
+
+Isolation levels control how the DB handles locks implicitly, but sometimes you need explicit control.
+
+* Pessimistic Locking (`SELECT ... FOR UPDATE`): You assume a conflict _will_ happen. You lock the row immediately when you read it. No one else can touch it until you commit. Use this for high-contention data (e.g., a central generic wallet).
+* Optimistic Locking: You assume a conflict _probably won't_ happen. You don't lock the row on read. Instead, you read a version number (e.g., `version: 1`). When updating, you check if the version is still 1. If someone else changed it to 2 in the meantime, your update fails, and you retry. Use this for lower contention to avoid blocking database connections.
+
+***
+
+**Q**: What specific data anomalies occur if we choose the wrong locking strategy or isolation level?
+
+Locks prevent conflicts, but it is important to understand _what specific errors_ occur when those locks are absent or too loose. In database theory, these errors are called "Read Phenomena." The first is the **Dirty Read**, which happens when a transaction reads uncommitted data from another transaction. If the other transaction rolls back, your application has processed data that "never existed."&#x20;
+
+The second is the **Non-Repeatable Read**. This occurs when you read a row (e.g., balance = 100), and before your transaction finishes, someone else updates it and commits. If you read that same row again within the same transaction, the value has changed. This breaks consistency in financial calculations where you expect inputs to remain static during a logical operation.
+
+The third is the **Phantom Read**. This is distinct from a Non-Repeatable read because the _rows you read didn't change_, but the _set of rows_ matching your criteria changed. For example, if you run `SELECT * FROM Orders WHERE Value > 1000` and get 5 records, but a split second later another user inserts a new order for $2000, a repeat of your query would return 6 records. The new record is a "phantom." Understanding these three phenomena is the prerequisite for configuring `TRANSACTION ISOLATION LEVELS` (Read Committed, Repeatable Read, Serializable) correctly in your Go applications.
+
+***
+
+**Q**: Why shouldn't we just use the "Serializable" isolation level for everything to be safe?&#x20;
+
+While `Serializable` guarantees the highest data integrity by strictly ordering transactions (making them appear sequential), it comes with a massive performance penalty. To achieve this, databases often employ aggressive locking or abort transactions frequently due to serialization anomalies. In a high-concurrency Fintech environment (e.g., thousands of payment requests per second), using `Serializable` acts as a bottleneck, drastically reducing Throughput. We need to choosing the lowest isolation level that still guarantees correctness for your specific use case (e.g., using `Read Committed` for general browsing but `Repeatable Read` or explicit locking for ledger updates).
+
+***
+
 **Q**: What is the Write-Ahead Log (WAL), and why is it critical for durability?
 
 The Write-Ahead Log (WAL) is an append-only file where the database records changes (inserts, updates, deletes) _before_ they are written to the actual database data files. When a transaction is committed, the database first writes the details of that transaction to the WAL on the disk. Only after the WAL entry is safely stored does the database acknowledge the transaction as "Success" to the client. The actual data tables (B-Trees/Heaps) are updated later in memory and flushed to disk asynchronously (a process called "checkpointing").
@@ -125,6 +110,14 @@ This distinction defines the trade-off between Data Integrity and Performance in
 
 ***
 
+**Q**: What is the difference between Vertical Scaling (Scaling Up) and Horizontal Scaling (Scaling Out)?
+
+Vertical Scaling (Scaling Up) means making a single server stronger by adding more CPU, RAM, or faster storage (e.g., upgrading from an AWS `t3.medium` to an `m5.2xlarge`). It is simple because you keep your data in one place, preserving ACID properties easily. However, you cannot buy a bigger computer, because it introduces a Single Point of Failure.&#x20;
+
+Horizontal Scaling (Scaling Out) means adding _more_ servers (nodes) to handle the load, splitting the data across them (Sharding). This offers infinite scale and high availability (if one node dies, others survive). The trade-off is massive complexity: you lose ACID guarantees across nodes (requiring patterns like Sagas or 2PC) and must manage complex data distribution logic.
+
+***
+
 **Q**: How do "Eventual Consistency" and "Strong Consistency" differ in practice?
 
 These concepts describe when a read operation is guaranteed to see the results of a write operation.
@@ -136,6 +129,14 @@ These concepts describe when a read operation is guaranteed to see the results o
 **Eventual Consistency**: This guarantees that if no new updates are made, all reads will _eventually_ return the last updated value. However, for a short period (milliseconds to seconds), a user might read stale data. This allows the system to remain highly available and fast, as it doesn't need to block writes while syncing data.
 
 * _Use Case:_ Social media feeds, DNS records, or analytics. If you "Like" a post, it is acceptable if your friend doesn't see that "Like" for 2 seconds.
+
+***
+
+**Q**: How do we handle transactions when data is sharded or split across different services (Microservices)?
+
+Once you move to Sharding or Microservices, you lose the ability to use a single database's ACID properties. If you need to update a `Wallet` database and a `Loan` database simultaneously, you face the distributed consistency problem. The traditional solution is Two-Phase Commit (2PC). In 2PC, a coordinator tells all databases to "Prepare" (lock resources and verify they can commit). If everyone says "Yes," the coordinator sends a "Commit" command. The downside is that this is a "blocking" protocol; if the coordinator crashes or the network fails, resources remain locked, freezing the system.
+
+The modern standard for high-volume Fintech systems is the Saga Pattern. Instead of a single ACID transaction, a business process is broken down into a sequence of local transactions. Each step updates its own database and publishes an event to trigger the next step. Crucially, Sagas handle failure through Compensating Transactions. If the "Deduct Money" step succeeds but the "Disburse Loan" step fails, the system triggers a "Refund Money" transaction to undo the first step. This embraces "Eventually Consistency" rather than "Strong Consistency," allowing the system to remain highly available and performant even when parts of the network are slow.
 
 ***
 
