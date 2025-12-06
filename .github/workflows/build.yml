@@ -1,0 +1,211 @@
+name: Build and Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: 'latest'
+          extended: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Prepare Build Directory
+        run: |
+          mkdir -p hugo_build/content
+          mkdir -p hugo_build/layouts/_default
+          mkdir -p hugo_build/layouts/_default/_markup
+          mkdir -p hugo_build/assets
+          
+          # Create hugo.toml
+          cat <<EOF > hugo_build/hugo.toml
+          baseURL = "/"
+          languageCode = "en-us"
+          title = "Portfolio"
+          disableKinds = ["RSS", "Sitemap", "Taxonomy", "Term"]
+          [markup.goldmark.renderer]
+          unsafe = true
+          EOF
+          
+          # Copy content
+          
+          # Copy root markdown files (excluding SUMMARY.md and DEPLOYMENT.md)
+          find . -maxdepth 1 -name "*.md" ! -name "SUMMARY.md" ! -name "DEPLOYMENT.md" -exec cp {} hugo_build/content/ \;
+          
+          # Copy content directories
+          for dir in general golang math rag system-design; do
+            if [ -d "$dir" ]; then
+              cp -r "$dir" hugo_build/content/
+            fi
+          done
+
+          # Copy assets to hugo_build/assets for processing
+          if [ -d ".gitbook/assets" ]; then
+            mkdir -p hugo_build/assets/.gitbook/assets
+            cp -r .gitbook/assets/* hugo_build/assets/.gitbook/assets/
+          fi
+
+          # Create Render Hook for Images (Inline Base64)
+          cat <<EOF > hugo_build/layouts/_default/_markup/render-image.html
+          {{- \$dest := .Destination -}}
+          {{- \$img := resources.Get \$dest -}}
+          {{- if not \$img -}}
+            {{- /* Try to resolve relative paths by cleaning them */ -}}
+            {{- \$cleanDest := replace \$dest "../" "" -}}
+            {{- \$img = resources.Get \$cleanDest -}}
+          {{- end -}}
+          
+          {{- if \$img -}}
+            {{- \$base64 := \$img.Content | base64Encode -}}
+            <img src="data:{{ \$img.MediaType.Type }};base64,{{ \$base64 }}" alt="{{ .Text }}" {{ with .Title }}title="{{ . }}"{{ end }} />
+          {{- else -}}
+            {{- /* Fallback for external URLs or missing files */ -}}
+            <img src="{{ .Destination | safeURL }}" alt="{{ .Text }}" {{ with .Title }}title="{{ . }}"{{ end }} />
+          {{- end -}}
+          EOF
+
+      - name: Generate Layout and Patch Scripts
+        run: |
+          cat <<EOF > builder.py
+          import os
+          import re
+
+          def read_file(path):
+              try:
+                  with open(path, 'r', encoding='utf-8') as f:
+                      return f.read()
+              except FileNotFoundError:
+                  print(f"Warning: {path} not found")
+                  return ""
+
+          html = read_file('src/index.html')
+          css = read_file('src/css/styles.css')
+          js_config = read_file('src/js/config.js')
+          js_nav = read_file('src/js/navigation-data.js')
+          js_marked = read_file('src/js/marked-extensions.js')
+          js_app = read_file('src/js/app.js')
+
+          # Patch app.js
+          
+          # 1. Disable initSearch fetch logic
+          js_app = js_app.replace('async initSearch() {', 'async initSearch() { this.searchIndex = window.SEARCH_INDEX || []; return;')
+
+          # 2. Patch loadContent to use CONTENT_MAP
+          # We use regex to replace the fetch blocks with CONTENT_MAP lookups
+          
+          # Pattern for standalone pages: fetch('../' + category + '.md')
+          # We match the block from fetch to marked.parse
+          # Note: We need to be careful with regex matching across multiple lines
+          
+          patch_standalone = r"const response = await fetch\(`\.\./\$\{category\}\.md`\);[\s\S]+?this\.content = marked\.parse\(markdown\);"
+          replacement_standalone = r"const content = window.CONTENT_MAP[\`\${category}.md\`]; if (!content) { this.content = marked.parse('# Page Not Found'); } else { this.content = content; }"
+          js_app = re.sub(patch_standalone, replacement_standalone, js_app)
+
+          # Pattern for category README: fetch('../' + category + '/README.md')
+          patch_readme = r"const response = await fetch\(`\.\./\$\{category\}/README\.md`\);[\s\S]+?this\.content = marked\.parse\(markdown\);"
+          replacement_readme = r"const content = window.CONTENT_MAP[\`\${category}/README.md\`]; if (!content) { this.content = marked.parse('# ' + category + '\\\\n\\\\nREADME not found.'); } else { this.content = content; }"
+          js_app = re.sub(patch_readme, replacement_readme, js_app)
+
+          # Pattern for pages: fetch('../' + category + '/' + page + '.md')
+          # This one usually has 'const filePath = ...' before it
+          patch_page = r"const filePath = `\.\./\$\{category\}/\$\{page\}\.md`;\s+const response = await fetch\(filePath\);[\s\S]+?this\.content = marked\.parse\(markdown\);"
+          replacement_page = r"const content = window.CONTENT_MAP[\`\${category}/\${page}.md\`]; if (!content) { this.content = marked.parse('# Page Not Found'); } else { this.content = content; }"
+          js_app = re.sub(patch_page, replacement_page, js_app)
+          
+          # Inline CSS
+          html = html.replace('<link rel="stylesheet" href="./css/styles.css">', f'<style>{css}</style>')
+
+          # Inline JS
+          html = html.replace('<script src="./js/config.js"></script>', f'<script>{js_config}</script>')
+          html = html.replace('<script src="./js/navigation-data.js"></script>', f'<script>{js_nav}</script>')
+          html = html.replace('<script src="./js/marked-extensions.js"></script>', f'<script>{js_marked}</script>')
+          html = html.replace('<script src="./js/app.js"></script>', f'<script>{js_app}</script>')
+
+          # Inject Hugo Template Script
+          # We use Go template syntax here, which will be processed by Hugo
+          hugo_script = """
+          <script>
+          window.CONTENT_MAP = {
+            {{ range .Site.RegularPages }}
+            "{{ .File.Path }}": {{ .Content | jsonify }},
+            {{ end }}
+          };
+
+          window.SEARCH_INDEX = [
+            {{ range .Site.RegularPages }}
+            {
+              title: {{ .Title | jsonify }},
+              category: {{ .Params.category | default "General" | jsonify }},
+              page: {{ .Title | jsonify }},
+              link: "#" + {{ .File.Path | replace ".md" "" | jsonify }},
+              plainText: {{ .Plain | jsonify }}
+            },
+            {{ end }}
+          ];
+          </script>
+          """
+          
+          # Insert before the closing body tag
+          html = html.replace('</body>', f'{hugo_script}</body>')
+
+          # Write to Hugo layout
+          with open('hugo_build/layouts/index.html', 'w', encoding='utf-8') as f:
+              f.write(html)
+              
+          print("Successfully generated hugo_build/layouts/index.html")
+          EOF
+          
+          python3 builder.py
+
+      - name: Build with Hugo
+        run: |
+          cd hugo_build
+          hugo --minify
+          
+          # Verify output
+          if [ ! -f "public/index.html" ]; then
+            echo "Error: public/index.html was not generated"
+            exit 1
+          fi
+          
+          # Move public to root for upload
+          mv public ../public
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
