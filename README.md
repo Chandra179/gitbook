@@ -1,5 +1,3 @@
-# My Blog
-
 # About
 
 Software engineer 4 years experience in Fintech, distributed system, workflow automation
