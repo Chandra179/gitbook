@@ -373,6 +373,19 @@ html {
 
 /* Styling for explicit .math class elements */
 .math {
-    font-family: 'KaTeX_Main', 'Times New Roman', serif;
+    font-family: 'KaTeX_Main',
+        'Times New Roman',
+        serif;
     font-size: 1.1em;
+}
+
+/* Search Result Highlighting */
+.search-highlight {
+    background-color: #fef08a;
+    /* yellow-200 */
+    color: #854d0e;
+    /* yellow-800 */
+    padding: 0 2px;
+    border-radius: 2px;
+    font-weight: 500;
 }

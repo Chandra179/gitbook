@@ -8,6 +8,10 @@ function portfolioApp() {
         content: '',
         loading: true,
         navigationData: navigationData,
+        searchQuery: '',
+        searchIndex: [],
+        searchResults: [],
+        isSearchOpen: false,
         expandedSections: {},
 
         init() {
@@ -32,6 +36,154 @@ function portfolioApp() {
             // Handle initial load and hash changes
             window.addEventListener('hashchange', () => this.handleRoute());
             this.handleRoute();
+
+            // Initialize search index
+            this.initSearch();
+        },
+
+        async initSearch() {
+            const index = [];
+
+            for (const section of this.navigationData) {
+                if (section.standalone) {
+                    try {
+                        const response = await fetch(`../${section.slug}.md`);
+                        if (response.ok) {
+                            const text = await response.text();
+                            this.indexContent(index, text, section.name, section.slug, section.name);
+                        }
+                    } catch (e) {
+                        console.warn(`Failed to index ${section.slug}`, e);
+                    }
+                } else if (section.pages) {
+                    for (const page of section.pages) {
+                        try {
+                            const response = await fetch(`../${section.slug}/${page.slug}.md`);
+                            if (response.ok) {
+                                const text = await response.text();
+                                this.indexContent(index, text, page.name, `${section.slug}/${page.slug}`, section.name);
+                            }
+                        } catch (e) {
+                            console.warn(`Failed to index ${section.slug}/${page.slug}`, e);
+                        }
+                    }
+                }
+            }
+            this.searchIndex = index;
+        },
+
+        indexContent(index, text, pageName, pageLink, categoryName) {
+            // Split by headers (h1, h2, h3)
+            // We'll use a regex to find headers and their content
+            const lines = text.split('\n');
+            let currentSection = {
+                title: pageName,
+                content: '',
+                anchor: ''
+            };
+
+            lines.forEach(line => {
+                const headerMatch = line.match(/^(#{1,3})\s+(.+)$/);
+                if (headerMatch) {
+                    // Push previous section
+                    if (currentSection.content.trim()) {
+                        index.push({
+                            title: currentSection.title,
+                            category: categoryName,
+                            page: pageName,
+                            link: `#${pageLink}${currentSection.anchor ? '#' + currentSection.anchor : ''}`,
+                            plainText: this.stripMarkdown(currentSection.content)
+                        });
+                    }
+
+                    // Start new section
+                    const title = headerMatch[2];
+                    const anchor = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+                    currentSection = {
+                        title: title,
+                        content: '',
+                        anchor: anchor
+                    };
+                } else {
+                    currentSection.content += line + '\n';
+                }
+            });
+
+            // Push last section
+            if (currentSection.content.trim()) {
+                index.push({
+                    title: currentSection.title,
+                    category: categoryName,
+                    page: pageName,
+                    link: `#${pageLink}${currentSection.anchor ? '#' + currentSection.anchor : ''}`,
+                    plainText: this.stripMarkdown(currentSection.content)
+                });
+            }
+        },
+
+        stripMarkdown(markdown) {
+            // Simple markdown stripper
+            return markdown
+                .replace(/^#+\s+/gm, '') // Headers
+                .replace(/(\*\*|__)(.*?)\1/g, '$2') // Bold
+                .replace(/(\*|_)(.*?)\1/g, '$2') // Italic
+                .replace(/`([^`]+)`/g, '$1') // Inline code
+                .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Links
+                .replace(/!\[([^\]]*)\]\([^)]+\)/g, '') // Images
+                .replace(/>\s+/gm, '') // Blockquotes
+                .replace(/```[\s\S]*?```/g, '') // Code blocks
+                .replace(/\n/g, ' '); // Newlines
+        },
+
+        performSearch() {
+            if (this.searchQuery.length < 2) {
+                this.searchResults = [];
+                return;
+            }
+
+            const query = this.searchQuery.toLowerCase();
+            const results = this.searchIndex.filter(item => {
+                return item.title.toLowerCase().includes(query) ||
+                    item.plainText.toLowerCase().includes(query);
+            });
+
+            // Map results to include snippets
+            this.searchResults = results.map(item => {
+                const snippet = this.getSnippet(item.plainText, query);
+                return {
+                    ...item,
+                    snippet
+                };
+            }).slice(0, 10); // Limit to 10 results
+        },
+
+        getSnippet(text, query) {
+            const index = text.toLowerCase().indexOf(query);
+            if (index === -1) return text.slice(0, 100) + '...';
+
+            const start = Math.max(0, index - 40);
+            const end = Math.min(text.length, index + query.length + 60);
+
+            return (start > 0 ? '...' : '') +
+                text.slice(start, end) +
+                (end < text.length ? '...' : '');
+        },
+
+        highlightText(text, query) {
+            if (!query) return text;
+            const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+            return text.replace(regex, '<span class="search-highlight">$1</span>');
+        },
+
+        closeSearch() {
+            this.isSearchOpen = false;
+            this.searchQuery = '';
+            this.searchResults = [];
+        },
+
+        navigateToSearchResult(link) {
+            window.location.hash = link;
+            this.closeSearch();
         },
 
         toggleSection(slug) {
@@ -43,7 +195,16 @@ function portfolioApp() {
         },
 
         handleRoute() {
-            const hash = window.location.hash.slice(1) || 'README';
+            let hash = window.location.hash.slice(1) || 'README';
+
+            // Handle anchors in hash (e.g. category/page#header)
+            let anchor = '';
+            if (hash.includes('#')) {
+                const parts = hash.split('#');
+                hash = parts[0];
+                anchor = parts[1];
+            }
+
             this.currentPage = hash;
 
             // Check if this is a standalone page
@@ -108,7 +269,7 @@ function portfolioApp() {
             }
         },
 
-        async loadContent(category, page) {
+        async loadContent(category, page, anchor) {
             this.loading = true;
 
             try {
@@ -157,6 +318,16 @@ function portfolioApp() {
                     this.applyTimelineClass();
                     this.renderMath();
                     this.renderCodeBlocks();
+
+                    // Scroll to anchor if present
+                    if (anchor) {
+                        const element = document.getElementById(anchor);
+                        if (element) {
+                            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    } else {
+                        window.scrollTo(0, 0);
+                    }
                 }, 100);
 
             } catch (error) {
