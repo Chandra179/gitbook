@@ -4,6 +4,9 @@
 rm -rf dist
 mkdir -p dist
 
+# Build Tailwind CSS
+npm run build:css
+
 # Copy index.html
 cp src/index.html dist/index.html
 
@@ -33,3 +36,4 @@ cp reactjs.md dist/
 echo "Build complete! Content is in ./dist"
 
 # npx wrangler deploy
+# semgrep scan

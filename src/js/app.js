@@ -53,7 +53,7 @@ function portfolioApp() {
                             this.indexContent(index, text, section.name, section.slug, section.name);
                         }
                     } catch (e) {
-                        console.warn(`Failed to index ${section.slug}`, e);
+                        console.warn('Failed to index', section.slug, e);
                     }
                 } else if (section.pages) {
                     for (const page of section.pages) {
@@ -64,7 +64,7 @@ function portfolioApp() {
                                 this.indexContent(index, text, page.name, `${section.slug}/${page.slug}`, section.name);
                             }
                         } catch (e) {
-                            console.warn(`Failed to index ${section.slug}/${page.slug}`, e);
+                            console.warn('Failed to index', section.slug, page.slug, e);
                         }
                     }
                 }
@@ -137,6 +137,12 @@ function portfolioApp() {
 
         performSearch() {
             if (this.searchQuery.length < 2) {
+                this.searchResults = [];
+                return;
+            }
+
+            // Limit query length to prevent ReDoS
+            if (this.searchQuery.length > 100) {
                 this.searchResults = [];
                 return;
             }
@@ -369,22 +375,24 @@ function portfolioApp() {
                 return;
             }
 
-            let tocHTML = '';
+            // Clear existing TOC
+            toc.innerHTML = '';
+
             headers.forEach(header => {
                 const level = header.tagName === 'H2' ? 'ml-0' : 'ml-4';
                 const text = header.textContent;
                 const id = header.id;
 
-                tocHTML += `
-                    <a href="#${id}" 
-                       class="toc-link block py-1 text-gray-600 hover:text-gray-900 border-l-2 border-transparent hover:border-gray-300 pl-3 ${level}"
-                       onclick="document.getElementById('${id}').scrollIntoView({behavior: 'smooth', block: 'start'}); return false;">
-                        ${text}
-                    </a>
-                `;
+                const link = document.createElement('a');
+                link.href = `#${id}`;
+                link.className = `toc-link block py-1 text-gray-600 hover:text-gray-900 border-l-2 border-transparent hover:border-gray-300 pl-3 ${level}`;
+                link.textContent = text; // Safe
+                link.onclick = (e) => {
+                    e.preventDefault();
+                    document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+                };
+                toc.appendChild(link);
             });
-
-            toc.innerHTML = tocHTML;
 
             // Highlight active TOC link on scroll
             this.setupTOCHighlight();

@@ -1,0 +1,27 @@
+{
+  "name": "gitbook",
+  "version": "1.0.0",
+  "description": "Software engineer 4 years experience in Fintech, distributed system, workflow automation",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "tailwindcss -i ./src/css/input.css -o ./src/css/output.css --minify"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chandra179/gitbook.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Chandra179/gitbook/issues"
+  },
+  "homepage": "https://github.com/Chandra179/gitbook#readme",
+  "devDependencies": {
+    "autoprefixer": "^10.4.22",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.1"
+  }
+}
