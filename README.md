@@ -1,14 +1,18 @@
+---
+description: personal blog + software engineer related topics
+---
+
 # My Blog
 
 #### About
 
-Software engineer 3+ years experience in Fintech, distributed system, workflow automation
+Software engineer 4 years experience in Fintech, distributed system, workflow automation
 
 #### Experience
 
 {% tabs %}
 {% tab title="BFI Finance" %}
-BFI finance is multifinance company providing: **leasing, consumer financing, and working capital financing**.&#x20;
+BFI finance is multifinance company providing: **leasing, consumer financing, and working capital financing**.
 
 * Designed integration with third-party (KYC, OCR, fraud detection, credit scoring, liveness, forgery) APIs with full error‑handling logic (timeouts, error responses, schema changes)
 * Improved loan application system from single to multi-collateral loan architecture, allowing borrowers to combine multiple assets under one financing agreement
@@ -34,4 +38,3 @@ M+ Software operating as an ERP consulting
 #### Tech stack
 
 * Golang, Temporal, Docker, Javascript, Kubernetes, ArgoCD, Redis, RabbitMQ, Nats, GCP
-
