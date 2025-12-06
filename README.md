@@ -1,7 +1,3 @@
----
-description: personal blog + software engineer related topics
----
-
 # My Blog
 
 #### About
