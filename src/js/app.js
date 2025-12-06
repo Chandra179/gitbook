@@ -156,6 +156,7 @@ function portfolioApp() {
                     this.generateTOC();
                     this.applyTimelineClass();
                     this.renderMath();
+                    this.renderCodeBlocks();
                 }, 100);
 
             } catch (error) {
@@ -166,6 +167,7 @@ function portfolioApp() {
                     this.generateTOC();
                     this.applyTimelineClass();
                     this.renderMath();
+                    this.renderCodeBlocks();
                 }, 100);
             }
 
@@ -294,6 +296,12 @@ function portfolioApp() {
                         console.error('KaTeX rendering error for .math element:', e);
                     }
                 });
+            }
+        },
+
+        renderCodeBlocks() {
+            if (typeof hljs !== 'undefined') {
+                hljs.highlightAll();
             }
         }
     };

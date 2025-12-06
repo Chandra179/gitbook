@@ -282,6 +282,13 @@ html {
     display: block;
 }
 
+/* Override Highlight.js background to match our pre styling */
+.hljs {
+    background: transparent !important;
+    padding: 0 !important;
+    /* Let pre handle padding */
+}
+
 /* Link Underline on Hover Only */
 .prose a {
     text-decoration: none;
