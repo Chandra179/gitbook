@@ -1,7 +1,3 @@
----
-description: e2e RAG pipeline from collecting data to agentic system
----
-
 # RAG
 
 ## URLs Collector

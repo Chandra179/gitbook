@@ -1,7 +1,3 @@
----
-description: software design document
----
-
 # \[Template] High Level Design
 
 1. whats the core feature?

@@ -110,7 +110,7 @@
         class="hidden lg:flex fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50 items-center justify-between">
         <!-- Left: Logo -->
         <div class="flex items-center w-64 pl-6">
-            <div class="font-bold text-xl text-gray-900">GitBook</div>
+            <div class="font-bold text-xl text-gray-900">MyBlog</div>
         </div>
 
         <!-- Middle: Search Bar -->
@@ -177,7 +177,7 @@
 
     <!-- Left Sidebar (Navigation) -->
     <aside
-        class="fixed top-16 left-0 bottom-0 w-64 bg-white overflow-y-auto z-40 transition-transform duration-300 lg:translate-x-0 border-r border-gray-200"
+        class="fixed top-16 left-0 bottom-0 w-64 bg-white overflow-y-auto z-40 transition-transform duration-300 lg:translate-x-0"
         :class="mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
         <div class="p-6">
         </div>
@@ -252,7 +252,6 @@
     <main class="lg:ml-64 xl:mr-64 min-h-screen bg-white pt-16">
         <div class="max-w-3xl mx-auto px-6 py-8 lg:py-12 mt-16 lg:mt-0">
             <!-- Mobile Breadcrumb (only visible on mobile now) -->
-            <!-- Removed as per user request -->
 
             <!-- Loading State -->
             <div x-show="loading" class="flex items-center justify-center py-20">
@@ -266,7 +265,7 @@
     </main>
 
     <!-- Right Sidebar (TOC) -->
-    <aside class="hidden xl:block fixed top-16 right-0 bottom-0 w-64 overflow-y-auto bg-white border-l border-gray-200">
+    <aside class="hidden xl:block fixed top-16 right-0 bottom-0 w-64 overflow-y-auto bg-white">
         <div class="p-6">
         </div>
         <nav id="toc" class="px-4 pb-6 space-y-2 text-sm">

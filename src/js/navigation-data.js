@@ -3,7 +3,7 @@
 // Categories (with dropdown) have pages array
 const navigationData = [
     {
-        name: 'My Blog',
+        name: 'Introduction',
         slug: 'README',
         standalone: true
     },

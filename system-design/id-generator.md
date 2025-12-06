@@ -1,7 +1,3 @@
----
-description: snowflake id generato
----
-
 # ID Generator
 
 ### Introduction

@@ -366,7 +366,6 @@ function portfolioApp() {
             const toc = document.getElementById('toc');
 
             if (headers.length === 0) {
-                toc.innerHTML = '<p class="text-gray-400 text-xs">No headings found</p>';
                 return;
             }
 

@@ -1,7 +1,3 @@
----
-description: networking address translation
----
-
 # NAT & P2P Traversal
 
 #### Packet Flow
