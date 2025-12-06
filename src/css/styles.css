@@ -339,26 +339,33 @@ html {
 
 /* KaTeX Math Display */
 .katex-display {
-    margin: 1.5em 0;
+    margin: 1em 0;
     overflow-x: auto;
     overflow-y: hidden;
-    text-align: center;
+    /* text-align: center;  <-- Removed centering to act more like paragraph if needed, though display math usually centers */
+    text-align: left;
+    /* User wants it to act like paragraph */
     display: block;
 }
 
 /* Inline KaTeX should stay inline */
 .katex {
     font-size: 1.1em;
-    display: inline;
     text-align: left;
 }
 
-/* Only display math should be centered */
-.katex-display>.katex {
+/* Ensure inline math doesn't break line height too much */
+.katex-html {
     display: inline-block;
 }
 
 /* Prevent paragraphs with inline math from being centered */
 .prose p {
     text-align: left;
+}
+
+/* Styling for explicit .math class elements */
+.math {
+    font-family: 'KaTeX_Main', 'Times New Roman', serif;
+    font-size: 1.1em;
 }

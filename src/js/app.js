@@ -269,14 +269,30 @@ function portfolioApp() {
             // Render KaTeX math formulas if available
             if (typeof renderMathInElement !== 'undefined') {
                 const content = document.getElementById('content');
+
+                // 1. Auto-render delimiters ($$ and $)
                 renderMathInElement(content, {
                     delimiters: [
-                        { left: '$$', right: '$$', display: true },
+                        { left: '$$', right: '$$', display: false },
                         { left: '$', right: '$', display: false },
                         { left: '\\[', right: '\\]', display: true },
                         { left: '\\(', right: '\\)', display: false }
                     ],
                     throwOnError: false
+                });
+
+                // 2. Explicitly render elements with class="math"
+                // These are often used in tables or specific HTML structures
+                const mathElements = content.querySelectorAll('.math');
+                mathElements.forEach(el => {
+                    try {
+                        katex.render(el.textContent, el, {
+                            throwOnError: false,
+                            displayMode: false // Treat as inline by default
+                        });
+                    } catch (e) {
+                        console.error('KaTeX rendering error for .math element:', e);
+                    }
                 });
             }
         }
