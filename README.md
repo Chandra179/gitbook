@@ -1,12 +1,12 @@
 # My Blog
 
-### About
+# About
 
 Software engineer 4 years experience in Fintech, distributed system, workflow automation
 
-### Experience
+## Experience
 
-#### BFI finance
+### BFI finance
 
 **leasing, consumer financing, and working capital financing**.
 
@@ -16,17 +16,17 @@ Software engineer 4 years experience in Fintech, distributed system, workflow au
 * Automated manual loan approval workflows into a data-driven orchestrated system, reducing operational effort and failure rates.
 * Integrated distributed tracing and structured logging for service level (Otel + Datadog) for easier debugging and monitoring
 
-#### M+ Software operating
+### M+ Software
 
 * Integrated multiple payment options to streamline transaction processing and improve system stability
 * Managed ERP version migration to ensure smooth system compatibility and feature continuity
 * Maintained ERP order dashboard and client landing pages to enhance user experience and operational efficiency.
 
-#### Project
+### Project
 
 * Golang SDK : project template for golang, modular approach. [https://github.com/Chandra179/go-sdk](https://github.com/Chandra179/go-sdk)
 * Web crawler : Keyword based crawler in golang. [https://github.com/Chandra179/axora](https://github.com/Chandra179/axora)
 
-#### Tech stack
+### Tech stack
 
 * Golang, Temporal, Docker, Javascript, Kubernetes, ArgoCD, Redis, RabbitMQ, Nats, GCP
