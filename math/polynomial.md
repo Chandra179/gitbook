@@ -12,7 +12,7 @@ General form
 * The exponent $$\mathbf{n}$$ is the degree of the polynomial.
 * The coefficient $$\mathbf{a_n}$$ is the leading coefficient.
 
-<figure><img src="../.gitbook/assets/image (14).png" alt="" width="563"><figcaption><p>poly func</p></figcaption></figure>
+<figure><img src="../.gitbook/assets/9basisfunc.png" alt="" width="563"><figcaption><p>poly func</p></figcaption></figure>
 
 The image shows that the linear, quadratic, and cubing functions are all types of polynomials. They create smooth, non-repeating curves. Compare those to the Goniometric Function (which repeats its wave pattern forever) or the Logarithmic/Exponential functions (which have limits or grow extremely fast), and you can see how different they are from the basic polynomial shape.
 
