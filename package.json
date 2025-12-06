@@ -1,0 +1,16 @@
+{
+    "name": "gitbook-static",
+    "version": "1.0.0",
+    "description": "Static gitbook documentation site",
+    "scripts": {
+        "dev": "npx http-server src -p 8000",
+        "deploy": "wrangler pages deploy src --project-name=my-blog"
+    },
+    "keywords": [
+        "documentation",
+        "gitbook",
+        "static-site"
+    ],
+    "author": "",
+    "license": "MIT"
+}

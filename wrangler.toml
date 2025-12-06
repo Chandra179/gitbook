@@ -1,0 +1,40 @@
+# Cloudflare Pages Configuration
+# This file is optional but helps Cloudflare Pages understand your project structure
+
+# Build configuration
+[build]
+  # The directory containing your static files
+  command = ""
+  publish = "src"
+
+# Headers configuration for better security and caching
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
+# Cache static assets
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Cache markdown files (shorter cache for content updates)
+[[headers]]
+  for = "/*.md"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+# Redirects (optional - redirect root to /src if needed)
+# [[redirects]]
+#   from = "/"
+#   to = "/src"
+#   status = 301
