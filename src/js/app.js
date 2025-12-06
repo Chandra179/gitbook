@@ -11,6 +11,11 @@ function portfolioApp() {
         expandedSections: {},
 
         init() {
+            // Initialize marked extensions (tabs, KaTeX)
+            if (typeof initializeMarkedExtensions === 'function') {
+                initializeMarkedExtensions();
+            }
+
             // Set up marked options
             marked.setOptions({
                 breaks: true,
@@ -150,6 +155,7 @@ function portfolioApp() {
                     this.addIdsToHeaders();
                     this.generateTOC();
                     this.applyTimelineClass();
+                    this.renderMath();
                 }, 100);
 
             } catch (error) {
@@ -159,6 +165,7 @@ function portfolioApp() {
                     this.addIdsToHeaders();
                     this.generateTOC();
                     this.applyTimelineClass();
+                    this.renderMath();
                 }, 100);
             }
 
@@ -256,6 +263,22 @@ function portfolioApp() {
 
         isCategoryActive(category) {
             return this.currentCategory === category;
+        },
+
+        renderMath() {
+            // Render KaTeX math formulas if available
+            if (typeof renderMathInElement !== 'undefined') {
+                const content = document.getElementById('content');
+                renderMathInElement(content, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false },
+                        { left: '\\[', right: '\\]', display: true },
+                        { left: '\\(', right: '\\)', display: false }
+                    ],
+                    throwOnError: false
+                });
+            }
         }
     };
 }

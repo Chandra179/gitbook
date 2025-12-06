@@ -25,6 +25,15 @@
     <!-- Marked.js -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
+    <!-- KaTeX for Math Formulas -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Marked KaTeX Extension -->
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/marked-katex-extension@5.1.0/dist/marked-katex-extension.umd.min.js"></script>
+
     <!-- Custom Styles -->
     <link rel="stylesheet" href="./css/styles.css">
 </head>
@@ -145,6 +154,9 @@
             <!-- TOC will be generated here -->
         </nav>
     </aside>
+
+    <!-- Marked Extensions -->
+    <script src="./js/marked-extensions.js"></script>
 
     <!-- Navigation Data -->
     <script src="./js/navigation-data.js"></script>

@@ -290,3 +290,75 @@ html {
 .prose a:hover {
     text-decoration: underline;
 }
+
+/* GitBook-style Tabs */
+.gitbook-tabs {
+    margin: 1.5em 0;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.tab-headers {
+    display: flex;
+    background-color: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.tab-header {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    font-weight: 500;
+    color: #6b7280;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+}
+
+.tab-header:hover {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+.tab-header.active {
+    color: #3b82f6;
+    border-bottom-color: #3b82f6;
+    background-color: white;
+}
+
+.tab-contents {
+    background-color: white;
+}
+
+.tab-content {
+    padding: 1.5rem;
+}
+
+/* KaTeX Math Display */
+.katex-display {
+    margin: 1.5em 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    text-align: center;
+    display: block;
+}
+
+/* Inline KaTeX should stay inline */
+.katex {
+    font-size: 1.1em;
+    display: inline;
+    text-align: left;
+}
+
+/* Only display math should be centered */
+.katex-display>.katex {
+    display: inline-block;
+}
+
+/* Prevent paragraphs with inline math from being centered */
+.prose p {
+    text-align: left;
+}
