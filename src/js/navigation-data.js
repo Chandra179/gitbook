@@ -4,7 +4,6 @@ const navigationData = [
         name: 'General',
         slug: 'general',
         pages: [
-            { name: 'README', slug: 'README' },
             { name: 'API Design Guidelines', slug: 'api-design-guidelines' },
             { name: 'Big Integer', slug: 'big-integer' },
             { name: 'Bits and Bytes', slug: 'bits-and-bytes' },
@@ -18,7 +17,6 @@ const navigationData = [
         name: 'Golang',
         slug: 'golang',
         pages: [
-            { name: 'README', slug: 'README' },
             { name: 'Goroutine', slug: 'goroutine' },
             { name: 'Strings', slug: 'strings' }
         ]
@@ -27,7 +25,6 @@ const navigationData = [
         name: 'Math',
         slug: 'math',
         pages: [
-            { name: 'README', slug: 'README' },
             { name: 'Basic', slug: 'basic' },
             { name: 'Polynomial', slug: 'polynomial' },
             { name: 'Problem', slug: 'problem' },
@@ -38,7 +35,6 @@ const navigationData = [
         name: 'RAG',
         slug: 'rag',
         pages: [
-            { name: 'README', slug: 'README' },
             { name: 'Chunking', slug: 'chunking' },
             { name: 'Crawling Result', slug: 'crawling-result' }
         ]
@@ -47,7 +43,6 @@ const navigationData = [
         name: 'System Design',
         slug: 'system-design',
         pages: [
-            { name: 'README', slug: 'README' },
             { name: 'Clock Skew and Time Sync', slug: 'clock-skew-and-time-sync' },
             { name: 'Consistent Hashing', slug: 'consistent-hashing' },
             { name: 'ID Generator', slug: 'id-generator' },
@@ -56,3 +51,4 @@ const navigationData = [
         ]
     }
 ];
+

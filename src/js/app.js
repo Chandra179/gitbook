@@ -56,6 +56,7 @@ function portfolioApp() {
 
         navigateToCategory(category) {
             window.location.hash = category;
+            this.expandedSections[category] = true; // Expand the section
         },
 
         navigateToPage(category, page) {
@@ -87,13 +88,21 @@ function portfolioApp() {
 
             try {
                 if (!page) {
-                    // Just category, show empty/placeholder content
-                    const categoryData = this.navigationData.find(cat => cat.slug === category);
-                    const categoryName = categoryData ? categoryData.name : category;
-                    this.content = marked.parse(`# ${categoryName}\n\nSelect a page from the sidebar to view content.`);
+                    // Just category, load README.md for that category
+                    const response = await fetch(`../${category}/README.md`);
+
+                    if (!response.ok) {
+                        const categoryData = this.navigationData.find(cat => cat.slug === category);
+                        const categoryName = categoryData ? categoryData.name : category;
+                        this.content = marked.parse(`# ${categoryName}\n\nREADME file not found for this category.`);
+                    } else {
+                        const markdown = await response.text();
+                        this.content = marked.parse(markdown);
+                    }
                 } else {
-                    // Fetch markdown file (server runs from gitbook root, so path is category/page.md)
-                    const response = await fetch(`/${category}/${page}.md`);
+                    // Fetch markdown file
+                    // Use relative path from src/ directory to parent directory
+                    const response = await fetch(`../${category}/${page}.md`);
 
                     if (!response.ok) {
                         this.content = marked.parse(`# Page Not Found\n\nThe file \`${category}/${page}.md\` could not be loaded.`);
