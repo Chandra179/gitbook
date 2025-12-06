@@ -276,6 +276,12 @@ function portfolioApp() {
         },
 
         async loadContent(category, page, anchor) {
+            const toc = document.getElementById('toc');
+            if (toc) {
+                toc.innerHTML = ''; 
+                toc.style.display = 'none'; // Hide it visually
+            }
+
             this.loading = true;
 
             try {
@@ -371,22 +377,34 @@ function portfolioApp() {
             const headers = content.querySelectorAll('h2, h3');
             const toc = document.getElementById('toc');
 
+            // Safety check
+            if (!toc) return;
+
+            // Reset: Clear content and hide by default
+            toc.innerHTML = '';
+            toc.style.display = 'none';
+
+            // If no headers, we stop here. The TOC remains hidden (style.display = 'none')
             if (headers.length === 0) {
                 return;
             }
 
-            // Clear existing TOC
-            toc.innerHTML = '';
+            // If we have headers, make the container visible again
+            toc.style.display = 'block';
 
             headers.forEach(header => {
                 const level = header.tagName === 'H2' ? 'ml-0' : 'ml-4';
                 const text = header.textContent;
                 const id = header.id;
 
+                if (!id) return;
+
                 const link = document.createElement('a');
                 link.href = `#${id}`;
-                link.className = `toc-link block py-1 text-gray-600 hover:text-gray-900 border-l-2 border-transparent hover:border-gray-300 pl-3 ${level}`;
-                link.textContent = text; // Safe
+                // Styling matches GitBook sidebar items
+                link.className = `toc-link block py-1 text-sm text-gray-600 hover:text-gray-900 border-l-2 border-transparent hover:border-gray-300 pl-3 ${level}`;
+                link.textContent = text;
+                
                 link.onclick = (e) => {
                     e.preventDefault();
                     document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -394,7 +412,6 @@ function portfolioApp() {
                 toc.appendChild(link);
             });
 
-            // Highlight active TOC link on scroll
             this.setupTOCHighlight();
         },
 
