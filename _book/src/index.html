@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Documentation</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind Configuration -->
+    <script src="./js/config.js"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- KaTeX for Math Formulas -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Marked KaTeX Extension -->
+    <script defer
+        src="https://cdn.jsdelivr.net/npm/marked-katex-extension@5.1.0/dist/marked-katex-extension.umd.min.js"></script>
+
+    <!-- Highlight.js for Syntax Highlighting -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+
+<body class="bg-gray-50 font-sans" x-data="portfolioApp()">
+
+    <!-- Mobile Header -->
+    <div
+        class="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50 flex items-center px-4 gap-4">
+        <button @click="mobileMenuOpen = !mobileMenuOpen" class="p-2 hover:bg-gray-100 rounded-lg flex-shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                </path>
+            </svg>
+        </button>
+
+        <!-- Mobile Search Bar -->
+        <div class="flex-1 max-w-xs min-w-0 relative" @click.away="closeSearch()">
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <input type="text" x-model="searchQuery" @input.debounce.300ms="performSearch()"
+                    @focus="isSearchOpen = true" @keydown.escape="closeSearch()"
+                    class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
+                    placeholder="Search...">
+            </div>
+
+            <!-- Search Results Dropdown -->
+            <div x-show="isSearchOpen && searchQuery.length > 0" x-transition:enter="transition ease-out duration-100"
+                x-transition:enter-start="transform opacity-0 scale-95"
+                x-transition:enter-end="transform opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-75"
+                x-transition:leave-start="transform opacity-100 scale-100"
+                x-transition:leave-end="transform opacity-0 scale-95"
+                class="absolute left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-50 max-h-[70vh] overflow-y-auto"
+                style="display: none;">
+
+                <template x-if="searchResults.length === 0">
+                    <div class="p-4 text-center text-sm text-gray-500">
+                        No results found for "<span x-text="searchQuery" class="font-medium text-gray-900"></span>"
+                    </div>
+                </template>
+
+                <template x-for="(result, index) in searchResults" :key="index">
+                    <a :href="result.link" @click.prevent="navigateToSearchResult(result.link)"
+                        class="block p-4 hover:bg-gray-50 border-b border-gray-100 last:border-0 transition duration-150">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs font-semibold text-blue-600 uppercase tracking-wider"
+                                x-text="result.category"></span>
+                            <span class="text-xs text-gray-400" x-text="result.page"></span>
+                        </div>
+                        <h4 class="text-sm font-medium text-gray-900 mb-1"
+                            x-html="highlightText(result.title, searchQuery)"></h4>
+                        <p class="text-xs text-gray-500 line-clamp-2"
+                            x-html="highlightText(result.snippet, searchQuery)"></p>
+                    </a>
+                </template>
+            </div>
+        </div>
+    </div>
+
+    <!-- Desktop Header -->
+    <header
+        class="hidden lg:flex fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50 items-center justify-between">
+        <!-- Left: Logo -->
+        <div class="flex items-center w-64 pl-6">
+            <div class="font-bold text-xl text-gray-900">MyBlog</div>
+        </div>
+
+        <!-- Middle: Search Bar -->
+        <div class="flex-1 min-w-0">
+            <div class="max-w-3xl mx-auto px-6 w-full">
+                <div class="relative w-full" @click.away="closeSearch()">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <input type="text" x-model="searchQuery" @input.debounce.300ms="performSearch()"
+                            @focus="isSearchOpen = true" @keydown.escape="closeSearch()"
+                            class="block w-[550px] pl-10 pr-3 py-2 border border-gray-200 rounded-lg leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
+                            placeholder="Search...">
+                        <!-- <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <span class="text-gray-400 text-xs border border-gray-200 rounded px-1.5 py-0.5">Ctrl
+                                K</span>
+                        </div> -->
+                    </div>
+
+                    <!-- Search Results Dropdown -->
+                    <div x-show="isSearchOpen && searchQuery.length > 0"
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="transform opacity-0 scale-95"
+                        x-transition:enter-end="transform opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="transform opacity-100 scale-100"
+                        x-transition:leave-end="transform opacity-0 scale-95"
+                        class="absolute left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-50 max-h-[70vh] overflow-y-auto"
+                        style="display: none;">
+
+                        <template x-if="searchResults.length === 0">
+                            <div class="p-4 text-center text-sm text-gray-500">
+                                No results found for "<span x-text="searchQuery"
+                                    class="font-medium text-gray-900"></span>"
+                            </div>
+                        </template>
+
+                        <template x-for="(result, index) in searchResults" :key="index">
+                            <a :href="result.link" @click.prevent="navigateToSearchResult(result.link)"
+                                class="block p-4 hover:bg-gray-50 border-b border-gray-100 last:border-0 transition duration-150">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs font-semibold text-blue-600 uppercase tracking-wider"
+                                        x-text="result.category"></span>
+                                    <span class="text-xs text-gray-400" x-text="result.page"></span>
+                                </div>
+                                <h4 class="text-sm font-medium text-gray-900 mb-1"
+                                    x-html="highlightText(result.title, searchQuery)"></h4>
+                                <p class="text-xs text-gray-500 line-clamp-2"
+                                    x-html="highlightText(result.snippet, searchQuery)"></p>
+                            </a>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Spacer to balance layout -->
+        <div class="hidden xl:block w-64"></div>
+    </header>
+
+    <!-- Left Sidebar (Navigation) -->
+    <aside
+        class="fixed top-16 left-0 bottom-0 w-64 bg-white overflow-y-auto z-40 transition-transform duration-300 lg:translate-x-0"
+        :class="mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
+        <div class="p-6">
+        </div>
+
+        <nav class="px-4 pb-6">
+            <!-- Dynamic Navigation Sections -->
+            <template x-for="section in navigationData" :key="section.slug">
+                <div>
+                    <!-- Standalone Page (no dropdown) -->
+                    <template x-if="section.standalone">
+                        <div class="mb-6">
+                            <a :href="`#${section.slug}`" @click.prevent="navigate(section.slug)"
+                                class="block px-3 mb-2 text-xs font-semibold uppercase tracking-wider hover:text-gray-900"
+                                :class="currentPage === section.slug ? 'text-blue-600' : 'text-gray-500'"
+                                x-text="section.name">
+                            </a>
+                        </div>
+                    </template>
+
+                    <!-- Category with Pages (with dropdown) -->
+                    <template x-if="!section.standalone">
+                        <div class="mb-6">
+                            <!-- Section Header (clickable) -->
+                            <div class="flex items-center justify-between px-3 mb-2 group">
+                                <a :href="`#${section.slug}`" @click.prevent="navigateToCategory(section.slug)"
+                                    class="text-xs font-semibold uppercase tracking-wider hover:text-gray-900 flex-1"
+                                    :class="isCategoryActive(section.slug) && currentPage === section.slug ? 'text-blue-600' : 'text-gray-500'"
+                                    x-text="section.name"></a>
+                                <!-- Chevron icon -->
+                                <svg @click="toggleSection(section.slug)"
+                                    class="w-4 h-4 text-gray-400 transition-transform duration-200 cursor-pointer hover:text-gray-600"
+                                    :class="isSectionExpanded(section.slug) ? 'rotate-180' : ''" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7">
+                                    </path>
+                                </svg>
+                            </div>
+
+                            <!-- Pages (dropdown) -->
+                            <div x-show="isSectionExpanded(section.slug)"
+                                x-transition:enter="transition ease-out duration-200"
+                                x-transition:enter-start="opacity-0 transform -translate-y-2"
+                                x-transition:enter-end="opacity-100 transform translate-y-0"
+                                x-transition:leave="transition ease-in duration-150"
+                                x-transition:leave-start="opacity-100 transform translate-y-0"
+                                x-transition:leave-end="opacity-0 transform -translate-y-2">
+                                <template x-for="page in section.pages" :key="page.slug">
+                                    <a :href="`#${section.slug}/${page.slug}`"
+                                        @click.prevent="navigateToPage(section.slug, page.slug)"
+                                        class="nav-link block px-6 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 mb-1"
+                                        :class="isPageActive(section.slug, page.slug) ? 'active' : ''">
+                                        <span x-text="page.name"></span>
+                                    </a>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </nav>
+    </aside>
+
+    <!-- Overlay for mobile menu -->
+    <div x-show="mobileMenuOpen" @click="mobileMenuOpen = false"
+        class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+        x-transition:enter="transition-opacity ease-linear duration-300" x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-300"
+        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"></div>
+
+    <!-- Main Content Area -->
+    <main class="lg:ml-64 xl:mr-64 min-h-screen bg-white pt-16">
+        <div class="max-w-3xl mx-auto px-6 py-8 lg:py-12 mt-16 lg:mt-0">
+            <!-- Mobile Breadcrumb (only visible on mobile now) -->
+
+            <!-- Loading State -->
+            <div x-show="loading" class="flex items-center justify-center py-20">
+                <div class="loader"></div>
+            </div>
+
+            <!-- Content -->
+            <article x-show="!loading" id="content" class="prose prose-lg prose-blue max-w-none" x-html="content">
+            </article>
+        </div>
+    </main>
+
+    <!-- Right Sidebar (TOC) -->
+    <aside class="hidden xl:block fixed top-16 right-0 bottom-0 w-64 overflow-y-auto bg-white">
+        <div class="p-6">
+        </div>
+        <nav id="toc" class="px-4 pb-6 space-y-2 text-sm">
+            <!-- TOC will be generated here -->
+        </nav>
+    </aside>
+
+    <!-- Marked Extensions -->
+    <script src="./js/marked-extensions.js"></script>
+
+    <!-- Navigation Data -->
+    <script src="./js/navigation-data.js"></script>
+
+    <!-- Application Logic -->
+    <script src="./js/app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,767 @@
+
+<!DOCTYPE HTML>
+<html lang="en" >
+    <head>
+        <meta charset="UTF-8">
+        <title>RAG · My Blog</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="HonKit 6.1.4">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-hints/plugin-hints.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/@honkit/honkit-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/@honkit/honkit-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="crawling-result.html" />
+    
+    
+    <link rel="prev" href="../golang/goroutine.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book honkit-cloak">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    My Blog
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../general/">
+            
+                <a href="../general/">
+            
+                    
+                    General
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="../general/bits-and-bytes.html">
+            
+                <a href="../general/bits-and-bytes.html">
+            
+                    
+                    Bits & Bytes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="../general/character-encoding.html">
+            
+                <a href="../general/character-encoding.html">
+            
+                    
+                    Character Encoding
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="../general/nat-and-p2p-traversal.html">
+            
+                <a href="../general/nat-and-p2p-traversal.html">
+            
+                    
+                    NAT & P2P Traversal
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="../general/api-design-guidelines.html">
+            
+                <a href="../general/api-design-guidelines.html">
+            
+                    
+                    API Design Guidelines
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.5" data-path="../general/big-integer.html">
+            
+                <a href="../general/big-integer.html">
+            
+                    
+                    Big Integer
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.6" data-path="../general/database.html">
+            
+                <a href="../general/database.html">
+            
+                    
+                    Database
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.7" data-path="../general/kafka.html">
+            
+                <a href="../general/kafka.html">
+            
+                    
+                    Kafka
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../golang/">
+            
+                <a href="../golang/">
+            
+                    
+                    Golang
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="../golang/strings.html">
+            
+                <a href="../golang/strings.html">
+            
+                    
+                    Strings
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="../golang/goroutine.html">
+            
+                <a href="../golang/goroutine.html">
+            
+                    
+                    Goroutine
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.4" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    RAG
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="crawling-result.html">
+            
+                <a href="crawling-result.html">
+            
+                    
+                    Crawling Result
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="chunking.html">
+            
+                <a href="chunking.html">
+            
+                    
+                    Chunking
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="../p2p-chat.html">
+            
+                <a href="../p2p-chat.html">
+            
+                    
+                    P2P Chat
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="../reactjs.html">
+            
+                <a href="../reactjs.html">
+            
+                    
+                    ReactJS
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" data-path="../math/">
+            
+                <a href="../math/">
+            
+                    
+                    Math
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.7.1" data-path="../math/basic.html">
+            
+                <a href="../math/basic.html">
+            
+                    
+                    Basic
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.2" data-path="../math/problem.html">
+            
+                <a href="../math/problem.html">
+            
+                    
+                    Problem
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.3" data-path="../math/quadratic-equation.html">
+            
+                <a href="../math/quadratic-equation.html">
+            
+                    
+                    Quadratic Equation
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.4" data-path="../math/polynomial.html">
+            
+                <a href="../math/polynomial.html">
+            
+                    
+                    Polynomial
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8" data-path="../system-design/template-component-design.html">
+            
+                <a href="../system-design/template-component-design.html">
+            
+                    
+                    Topic Breakdown
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9" data-path="../system-design/">
+            
+                <a href="../system-design/">
+            
+                    
+                    System Design
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.9.1" data-path="../system-design/template-high-level-design.html">
+            
+                <a href="../system-design/template-high-level-design.html">
+            
+                    
+                    [Template] High Level Design
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2" data-path="../system-design/consistent-hashing.html">
+            
+                <a href="../system-design/consistent-hashing.html">
+            
+                    
+                    Consistent Hashing
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.3" data-path="../system-design/id-generator.html">
+            
+                <a href="../system-design/id-generator.html">
+            
+                    
+                    ID Generator
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.4" data-path="../system-design/clock-skew-and-time-sync.html">
+            
+                <a href="../system-design/clock-skew-and-time-sync.html">
+            
+                    
+                    Clock Skew & Time Sync
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10" data-path="../saas-ideas.html">
+            
+                <a href="../saas-ideas.html">
+            
+                    
+                    SaaS Ideas
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://github.com/honkit/honkit" target="blank" class="gitbook-link">
+            Published with HonKit
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >RAG</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="rag">RAG</h1>
+<h2 id="urls-collector">URLs Collector</h2>
+<p>we need some urls to be crawled so i was thinking to use <strong>seed urls</strong> and <strong>browser automation</strong> where we collect the urls from browser search like  google, brave, etc..</p>
+<h2 id="crawl-config">Crawl Config</h2>
+<ul>
+<li>If we crawling on the same site (domain) multiple times in short time range we can get blocked so we need IP rotation we can use Residental/Tor proxy </li>
+<li>Domain whitelist</li>
+<li>handle URL visits deduplication avoid visiting same URL can cause a loop</li>
+<li>respect robots.txt</li>
+<li>rate limit request per domain, 10-15 req/sec, random delay</li>
+</ul>
+<h2 id="prefiltering">PreFiltering</h2>
+<p>Before visiting URL we need to skip junk URL, can detect by path or query param using regex </p>
+<pre><code class="lang-go">(contact|privacy|terms|faq|tag|archive|about|signin|login|register|subscribe|feedback|cookies|sitemap)
+</code></pre>
+<h2 id="content-extraction">Content extraction</h2>
+<p>For HTML content we need to do:</p>
+<ul>
+<li>Remove header and footer from body (junk)</li>
+<li>Kept pages if combination of head title and meta[description/content/property] relevant to given topic</li>
+<li>Minimum word count 200 if its less will likely be junk</li>
+<li>Sentence count, Estimated by splitting text on <code>.</code>, <code>!</code>, and <code>?</code> . Ideal avg sentence length: 10–30 words</li>
+<li>Vocabulary richness (unique words / total words) <code>uinqueWords/totalWords</code> Low (&lt;0.25) = repetitive or poor content. High (&gt;0.6) = rare, may be fragmented; ideal ≈ 0.3–0.6</li>
+<li><p>Final score</p>
+<pre><code>Combines length, richness, and sentence metrics.
+Weighted as:
+- Length:   50%
+- Richness: 30%
+- Sentence: 20%
+Returns a score in range [0–100].
+</code></pre></li>
+</ul>
+<h2 id="chunking--embed">Chunking &amp; Embed</h2>
+<ul>
+<li>markdown chunking, refer to: <a href="https://nothin.gitbook.io/computing/llm/chunking" target="_blank">ChunkStrategies</a></li>
+<li>calculate the token for each chunk using model  <code>tokenizer.json</code> , ex: <a href="https://huggingface.co/BAAI/bge-base-en-v1.5/blob/main/tokenizer.json" target="_blank">https://huggingface.co/BAAI/bge-base-en-v1.5/blob/main/tokenizer.json</a></li>
+<li>Embedding model will be modular so we can change the embed model depends on usecase and token size. ex: <a href="http://ghcr.io/huggingface/text-embeddings-inference:cpu-latest" target="_blank">http://ghcr.io/huggingface/text-embeddings-inference:cpu-latest</a> <code>BAAI/bge-base-en-v1.5</code> , max 512 token</li>
+</ul>
+<h2 id="vector">Vector</h2>
+<p>metadata will be mandatory to further process the content after retrieval for more precise and accurate result</p>
+<pre><code class="lang-json">{
+  <span class="hljs-string">"collection_name"</span>: <span class="hljs-string">"documents"</span>,
+  <span class="hljs-string">"points"</span>: {
+    <span class="hljs-string">"id"</span>: <span class="hljs-string">""</span>,        
+    <span class="hljs-string">"vectors"</span>: [],
+    <span class="hljs-string">"payload"</span>: {
+      <span class="hljs-string">"url"</span>: <span class="hljs-string">"url"</span>,
+      <span class="hljs-string">"page_content"</span>: <span class="hljs-string">"However, the prevailing view was that held by ..."</span>
+      <span class="hljs-string">"metadata"</span>: {
+        <span class="hljs-string">"title"</span>: <span class="hljs-string">"Economic Impact of Inflation"</span>,
+        <span class="hljs-string">"author"</span>: <span class="hljs-string">"Jane Doe"</span>,
+        <span class="hljs-string">"hostname"</span>: <span class="hljs-string">"economy.com"</span>,
+        <span class="hljs-string">"date"</span>: <span class="hljs-string">"2025-10-10"</span>,
+        <span class="hljs-string">"categories"</span>: [<span class="hljs-string">"economy"</span>, <span class="hljs-string">"politics"</span>],
+        <span class="hljs-string">"tags"</span>: [<span class="hljs-string">"economic analysis"</span>, <span class="hljs-string">"economic indicators"</span>]
+      }
+    }
+  },
+}
+</code></pre>
+<h2 id="content-retrieval">Content Retrieval</h2>
+<ul>
+<li>Reranker model:  re-score top-k retrieved chunks for final ranking. example using model: <code>bge-reranker-large, cross-encoder/ms-marco-MiniLM-L-6-v2</code></li>
+<li>Evaluate retrieval metrics: Build a small query–answer–source eval set. Track: <code>Recall@k, Precision@k MRR (Mean Reciprocal Rank)</code></li>
+<li><p>context assembly &amp; formatting, structured context block</p>
+<pre><code>[Source: economy.com | Date: 2025-10-10 | Title: Economic Impact of Inflation]
+Text snippet...
+</code></pre></li>
+<li>Dynamic context length: Don’t always use fixed top-3 chunks. Use token-aware retrieval (stop before prompt exceeds model context)</li>
+</ul>
+<h2 id="tbd-content-evaluation">[TBD] Content Evaluation</h2>
+<ul>
+<li>Create 20–50 gold queries with known answers from your data.</li>
+<li>Evaluate:<ul>
+<li>Retrieval recall</li>
+<li>LLM factual accuracy (manual or automated via LLM-as-judge)</li>
+<li>Faithfulness (percentage of generated text supported by context)</li>
+</ul>
+</li>
+</ul>
+<h2 id="tbd-content-enrichment">[TBD] Content Enrichment</h2>
+<ul>
+<li>NER + keyphrase extraction (e.g. spaCy or <code>flair</code> )</li>
+<li><p>Store entities in metadata:</p>
+<pre><code class="lang-json"><span class="hljs-string">"entities"</span>: [<span class="hljs-string">"Bank of Indonesia"</span>, <span class="hljs-string">"GDP"</span>, <span class="hljs-string">"Inflation"</span>],
+<span class="hljs-string">"keyphrases"</span>: [<span class="hljs-string">"monetary policy"</span>, <span class="hljs-string">"price stability"</span>]
+</code></pre>
+</li>
+<li>Use these as <strong>filters</strong> or <strong>boosters</strong> in retrieval:<ul>
+<li>Query mentions → boost related documents.</li>
+<li>Enables faceted retrieval and multi-hop search later.</li>
+</ul>
+</li>
+</ul>
+<h2 id="tbd-graph-rag">[TBD] Graph RAG</h2>
+<h2 id="tbd-model-finetune">[TBD] Model Finetune</h2>
+<ul>
+<li>Extract named entities (people, organizations, etc.)</li>
+<li>Extract key phrases</li>
+</ul>
+<h2 id="tbd-agentic-system">[TBD] Agentic System</h2>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="../golang/goroutine.html" class="navigation navigation-prev " aria-label="Previous page: Goroutine">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="crawling-result.html" class="navigation navigation-next " aria-label="Next page: Crawling Result">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"RAG","level":"1.4","depth":1,"next":{"title":"Crawling Result","level":"1.4.1","depth":2,"path":"rag/crawling-result.md","ref":"rag/crawling-result.md","articles":[]},"previous":{"title":"Goroutine","level":"1.3.2","depth":2,"path":"golang/goroutine.md","ref":"golang/goroutine.md","articles":[]},"articles":[{"title":"Crawling Result","level":"1.4.1","depth":2,"path":"rag/crawling-result.md","ref":"rag/crawling-result.md","articles":[]},{"title":"Chunking","level":"1.4.2","depth":2,"path":"rag/chunking.md","ref":"rag/chunking.md","articles":[]}],"dir":"ltr"},"config":{"plugins":["hints"],"root":"./","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"hints":{"info":"fa fa-info-circle","tip":"fa fa-mortar-board","danger":"fa fa-exclamation-circle","working":"fa fa-wrench"},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56},"embedFonts":false},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"My Blog","language":"en","gitbook":"*"},"file":{"path":"rag/README.md","mtime":"2025-12-06T08:55:36.833Z","type":"markdown"},"gitbook":{"version":"6.1.4","time":"2025-12-06T11:33:05.637Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <noscript>
+        <style>
+            .honkit-cloak {
+                display: block !important;
+            }
+        </style>
+    </noscript>
+    <script>
+        // Restore sidebar state as critical path for prevent layout shift
+        function __init__getSidebarState(defaultValue){
+            var baseKey = "";
+            var key = baseKey + ":sidebar";
+            try {
+                var value = localStorage[key];
+                if (value === undefined) {
+                    return defaultValue;
+                }
+                var parsed = JSON.parse(value);
+                return parsed == null ? defaultValue : parsed;
+            } catch (e) {
+                return defaultValue;
+            }
+        }
+        function __init__restoreLastSidebarState() {
+            var isMobile = window.matchMedia("(max-width: 600px)").matches;
+            if (isMobile) {
+                // Init last state if not mobile
+                return;
+            }
+            var sidebarState = __init__getSidebarState(true);
+            var book = document.querySelector(".book");
+            // Show sidebar if it enabled
+            if (sidebarState && book) {
+                book.classList.add("without-animation", "with-summary");
+            }
+        }
+
+        try {
+            __init__restoreLastSidebarState();
+        } finally {
+            var book = document.querySelector(".book");
+            book.classList.remove("honkit-cloak");
+        }
+    </script>
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/@honkit/honkit-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+
