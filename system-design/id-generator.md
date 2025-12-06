@@ -68,13 +68,10 @@ There are two ways to "run out" of Snowflake IDs: overflowing the Sequence or ov
 * If Exceeded: The system waits (sleeps) until the next millisecond to reset the sequence to 0.
 
 #### Limit 2: Lifespan Limit (The Timestamp)
-
-* Constraint: 41 bits = $$2^{41} - 1$$ milliseconds.
-*   Calculation:
-
-    $$2^{41} \text{ ms} \approx 2,199,023,255,551 \text{ ms} \frac{2,199,023,255,551}{1000 \times 60 \times 60 \times 24 \times 365.25} \approx \mathbf{69.7 \text{ Years}}$$
+*  Constraint: 41 bits = $$2^{41} - 1$$ milliseconds.
+*  Calculation: $$2^{41} \text{ ms} \approx 2,199,023,255,551 \text{ ms} \frac{2,199,023,255,551}{1000 \times 60 \times 60 \times 24 \times 365.25} \approx \mathbf{69.7 \text{ Years}}$$
 * Meaning: The system works for \~69 years relative to your custom Epoch.
-* Mitigation: If you start your Epoch in 2024, the IDs remain valid until \~2093. After that, you must rotate the Epoch or migrate ID structures.
+* Mitigation: If you start your Epoch in 2024, the IDs remain valid until ~2093. After that, you must rotate the Epoch or migrate ID structures.
 
 ***
 
