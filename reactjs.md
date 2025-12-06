@@ -39,9 +39,7 @@ React doesn’t manipulate the real DOM directly. Instead, it uses a **Virtual D
 * A component **unmounts** when it is **removed from the DOM**.
 * React cleans up state, event listeners, etc., for that component.
 
-{% hint style="info" %}
-Rendering : React prepares the UI (virtual DOM calculation)
-{% endhint %}
+**Rendering** : React prepares the UI (virtual DOM calculation)
 
 ```javascript
 // ===============

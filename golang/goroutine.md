@@ -114,9 +114,7 @@ func merger(in1, in2 <-chan int) {
 * It is placed in the channel’s **send queue (`sendq`)** or **receive queue (`recvq`)**.
 * Once the corresponding send or receive happens, the goroutine is **resumed**.
 
-{% hint style="info" %}
 **Note:** No extra data is stored for the goroutine; only a reference in the channel queue.
-{% endhint %}
 
 <figure><img src="https://miro.medium.com/v2/resize:fit:1094/1*sJ9y0EHlDqpmj7gnWrnL3w.png" alt="" height="436" width="700"><figcaption></figcaption></figure>
 
