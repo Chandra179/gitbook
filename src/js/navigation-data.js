@@ -1,5 +1,22 @@
 // Navigation data structure based on directory structure
+// Standalone pages (no dropdown) have standalone: true
+// Categories (with dropdown) have pages array
 const navigationData = [
+    {
+        name: 'My Blog',
+        slug: 'README',
+        standalone: true
+    },
+    {
+        name: 'P2P Chat',
+        slug: 'p2p-chat',
+        standalone: true
+    },
+    {
+        name: 'ReactJS',
+        slug: 'reactjs',
+        standalone: true
+    },
     {
         name: 'General',
         slug: 'general',

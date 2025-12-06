@@ -2,9 +2,9 @@
 function portfolioApp() {
     return {
         mobileMenuOpen: false,
-        currentPage: 'general/README',
-        currentCategory: 'general',
-        breadcrumb: 'General / README',
+        currentPage: 'README',
+        currentCategory: null,
+        breadcrumb: 'README',
         content: '',
         loading: true,
         navigationData: navigationData,
@@ -18,9 +18,10 @@ function portfolioApp() {
                 headerIds: true,
             });
 
-            // Initialize expanded sections (expand first section by default)
-            if (this.navigationData.length > 0) {
-                this.expandedSections[this.navigationData[0].slug] = true;
+            // Initialize expanded sections (expand first category by default)
+            const firstCategory = this.navigationData.find(item => !item.standalone);
+            if (firstCategory) {
+                this.expandedSections[firstCategory.slug] = true;
             }
 
             // Handle initial load and hash changes
@@ -37,16 +38,27 @@ function portfolioApp() {
         },
 
         handleRoute() {
-            const hash = window.location.hash.slice(1) || 'general/README';
+            const hash = window.location.hash.slice(1) || 'README';
             this.currentPage = hash;
 
-            // Parse category and page from hash (format: category/page or just category)
-            const parts = hash.split('/');
-            this.currentCategory = parts[0];
-            const page = parts[1] || null;
+            // Check if this is a standalone page
+            const standaloneItem = this.navigationData.find(item => item.standalone && item.slug === hash);
 
-            this.updateBreadcrumb(this.currentCategory, page);
-            this.loadContent(this.currentCategory, page);
+            if (standaloneItem) {
+                // Standalone page
+                this.currentCategory = null;
+                this.updateBreadcrumb(hash, null);
+                this.loadContent(hash, null);
+            } else {
+                // Parse category and page from hash (format: category/page or just category)
+                const parts = hash.split('/');
+                this.currentCategory = parts[0];
+                const page = parts[1] || null;
+
+                this.updateBreadcrumb(this.currentCategory, page);
+                this.loadContent(this.currentCategory, page);
+            }
+
             this.mobileMenuOpen = false;
         },
 
@@ -64,6 +76,14 @@ function portfolioApp() {
         },
 
         updateBreadcrumb(category, page) {
+            // Check if this is a standalone page
+            const standaloneItem = this.navigationData.find(item => item.standalone && item.slug === category);
+
+            if (standaloneItem) {
+                this.breadcrumb = standaloneItem.name;
+                return;
+            }
+
             // Find the category in navigation data
             const categoryData = this.navigationData.find(cat => cat.slug === category);
 
@@ -87,7 +107,20 @@ function portfolioApp() {
             this.loading = true;
 
             try {
-                if (!page) {
+                // Check if this is a standalone page
+                const standaloneItem = this.navigationData.find(item => item.standalone && item.slug === category);
+
+                if (standaloneItem) {
+                    // Load standalone page from root directory
+                    const response = await fetch(`../${category}.md`);
+
+                    if (!response.ok) {
+                        this.content = marked.parse(`# Page Not Found\n\nThe file \`${category}.md\` could not be loaded.`);
+                    } else {
+                        const markdown = await response.text();
+                        this.content = marked.parse(markdown);
+                    }
+                } else if (!page) {
                     // Just category, load README.md for that category
                     const response = await fetch(`../${category}/README.md`);
 
@@ -100,12 +133,12 @@ function portfolioApp() {
                         this.content = marked.parse(markdown);
                     }
                 } else {
-                    // Fetch markdown file
-                    // Use relative path from src/ directory to parent directory
-                    const response = await fetch(`../${category}/${page}.md`);
+                    // Fetch markdown file from category subdirectory
+                    const filePath = `../${category}/${page}.md`;
+                    const response = await fetch(filePath);
 
                     if (!response.ok) {
-                        this.content = marked.parse(`# Page Not Found\n\nThe file \`${category}/${page}.md\` could not be loaded.`);
+                        this.content = marked.parse(`# Page Not Found\n\nThe file \`${filePath}\` could not be loaded.`);
                     } else {
                         const markdown = await response.text();
                         this.content = marked.parse(markdown);
