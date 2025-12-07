@@ -1,6 +1,6 @@
-# \[Template] High Level Design
+# Online Travel Agency
 
-#### Whats the core feature?
+#### What's the Core Feature?
 
 * Real-time Integration: Aggregating flight and hotel inventory from disparate API sources (airlines, GDS, bedbanks) with varying speeds and protocols.
 * High-Performance Search: Handling massive traffic spikes (Black Friday) using caching and request coalescing to prevent system crashes.
@@ -9,7 +9,7 @@
 * Async Fulfillment: Decoupling payment from ticketing to keep the user interface responsive, with automated recovery (refunds) for failed bookings.
 * Post-Booking Services: Online check-in support and management of rescheduling/cancellations.
 
-#### How big the systems? daily active users, requests per second, consistency level
+#### How Big is the System?
 
 * Traffic:
   * Normal: \~1,000 Requests Per Second (RPS).
@@ -20,16 +20,16 @@
   * Search: Eventual Consistency. Prices cached with dynamic TTL (Time-To-Live) based on flight proximity (e.g., 5 mins standard, 1 min if flight is soon).
   * Booking: Strong Consistency. ACID transactions required to prevent double-spending or double-booking.
 
-#### Whats the user journey look like?
+#### What's the User Journey?
 
-* Search: User queries "Jakarta to Tokyo". System hits Redis Cache (Superset data).
-* Filter: User applies "Direct Only". System filters the cached master list in-memory (Go) instantly.
-* Verify (Crucial): User selects a flight. System pauses to hit the Live Airline API to confirm the seat and price still exist.
-* Pay: User pays. System creates a `PENDING_TICKET` record.
-* Async Ticketing: System displays "Processing...". A background worker talks to the airline to issue the ticket (PNR).
-* Confirmation: User receives the e-ticket via email.
+1. Search: User queries "Jakarta to Tokyo". System hits Redis Cache (Superset data).
+2. Filter: User applies "Direct Only". System filters the cached master list in-memory (Go) instantly.
+3. Verify (Crucial): User selects a flight. System pauses to hit the Live Airline API to confirm the seat and price still exist.
+4. Pay: User pays. System creates a `PENDING_TICKET` record.
+5. Async Ticketing: System displays "Processing...". A background worker talks to the airline to issue the ticket (PNR).
+6. Confirmation: User receives the e-ticket via email.
 
-#### Whats the data model look like?
+#### What's the Data Model?
 
 * Search Cache (Redis):
   * Key Strategy: `flight:s:{Origin}:{Dest}:{Date}:{Cabin}:{PaxCount}` (Broad Key).
@@ -39,7 +39,7 @@
   * `bookings` table: `id`, `user_id`, `status` (INIT, PAID, TICKETED, REFUND\_NEEDED), `snapshot_price` (JSON - exact price user saw), `pnr_ref`.
   * `booking_segments` table: Stores immutable details of the flight legs booked.
 
-#### Big picture of the systems (component diagram)
+#### Big Picture (Component Diagram)
 
 * Gateway: Rate Limiting (Token Bucket) & Auth.
 * Read Path (Go):
