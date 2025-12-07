@@ -13,7 +13,7 @@ Contextual Group Formation with Capacity Enforcement
 
 ***
 
-#### 2. Scale & Constraints
+#### Scale & Constraints
 
 _Assumption: Growth-stage startup scale._
 
@@ -27,7 +27,7 @@ _Assumption: Growth-stage startup scale._
 
 ***
 
-#### 3. User Journey
+#### User Journey
 
 1. Profile Setup (The Filter): User signs up and defines their "Vector": `{Interests: [marketing, System Design], Level: Intermediate, Availability: Weekends}`.
 2. Discovery (The Feed): User sees a ranked list of cards: "Build a Redis Clone (Go)", "Marketing automation".
