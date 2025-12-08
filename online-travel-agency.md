@@ -39,6 +39,8 @@ Search Cache (Redis):
 
 Booking DB (PostgreSQL):
 
+* Use versioning because if we have update operation and we running multiple machines so the row could be accessed at the same time. We can use locking mechanism for the alternatives but in high traffic it will become slow.&#x20;
+
 ```sql
 CREATE TABLE bookings (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
