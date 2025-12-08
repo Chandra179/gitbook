@@ -31,13 +31,78 @@
 
 #### What's the Data Model?
 
-* Search Cache (Redis):
-  * Key Strategy: `flight:s:{Origin}:{Dest}:{Date}:{Cabin}:{PaxCount}` (Broad Key).
-  * Optimization: Stores compressed (Snappy/Zstd) lists of _all_ airlines for that route.
-  * Logic: Filtering (by Airline, Time, Stops) happens in the application layer, not the cache layer.
-* Booking DB (PostgreSQL):
-  * `bookings` table: `id`, `user_id`, `status` (INIT, PAID, TICKETED, REFUND\_NEEDED), `snapshot_price` (JSON - exact price user saw), `pnr_ref`.
-  * `booking_segments` table: Stores immutable details of the flight legs booked.
+Search Cache (Redis):
+
+* Key Strategy: `flight:s:{Origin}:{Dest}:{Date}:{Cabin}:{PaxCount}` (Broad Key).
+* Optimization: Stores compressed (Snappy/Zstd) lists of _all_ airlines for that route.
+* Logic: Filtering (by Airline, Time, Stops) happens in the application layer, not the cache layer.
+
+Booking DB (PostgreSQL):
+
+```sql
+CREATE TABLE bookings (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL, -- The main account holder making the booking
+    
+    -- Status Management
+    status VARCHAR(50) NOT NULL DEFAULT 'INIT', -- e.g., INIT, PENDING_PAYMENT, PAID, TICKETED, REFUNDED, CANCELLED
+    
+    -- Financials
+    total_amount BIGINT NOT NULL,
+    currency CHAR(3) NOT NULL DEFAULT 'IDR', -- ISO Currency Code
+    
+    -- The "Lean" Data Fields (Storing complex data as JSON)
+    -- Structure: [{"type": "ADT", "title": "Mr", "name": "John Doe", "passport": "..."}]
+    passengers JSONB NOT NULL, 
+    
+    -- Structure: [{"flight_code": "GA871", "src": "CGK", "dst": "NRT", "dep_time": "..."}]
+    flight_segments JSONB NOT NULL, 
+    
+    -- Contact info for this specific booking
+    contact_details JSONB NOT NULL, -- {"email": "john@email.com", "phone": "+6281..."}
+
+    -- Concurrency Control (CRITICAL)
+    -- Application must increment this on every update. 
+    -- WHERE version = read_version
+    version INT NOT NULL DEFAULT 1,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Index for "My Orders" page
+CREATE INDEX idx_bookings_user_id ON bookings(user_id);
+-- Index for finding bookings by status (e.g., finding expired unpaid bookings)
+CREATE INDEX idx_bookings_status ON bookings(status);
+
+
+CREATE TABLE transactions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    booking_id UUID NOT NULL REFERENCES bookings(id),
+    
+    -- What happened?
+    event_type VARCHAR(50) NOT NULL, -- e.g., PAYMENT_INITIATED, PAYMENT_SUCCESS, REFUND_REQUESTED, REFUND_COMPLETED
+    
+    -- Money Flow
+    -- Positive (+) for Charging user, Negative (-) for Refunds
+    amount BIGINT NOT NULL,
+    currency CHAR(3) NOT NULL DEFAULT 'IDR',
+    
+    -- External Reference (Reconciliation)
+    payment_provider VARCHAR(50) NOT NULL, -- e.g., 'STRIPE', 'XENDIT', 'MIDTRANS'
+    external_ref_id VARCHAR(255), -- The Transaction ID or VA Number from the provider
+    
+    -- Audit Trail
+    -- Store the full raw Webhook/Response from the provider here for debugging
+    payload JSONB, 
+    
+    -- When it happened (Immutable)
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_transactions_booking_id ON transactions(booking_id);
+CREATE INDEX idx_transactions_external_ref ON transactions(external_ref_id);
+```
 
 #### Big Picture (Component Diagram)
 
