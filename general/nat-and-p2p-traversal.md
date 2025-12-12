@@ -57,11 +57,11 @@
 
 ***
 
-#### NAT Types & Viability Table
+#### NAT Types & Viability
 
 _Synthesizing the mechanics into classic definitions and P2P impact._
 
-| Classic Name        | Mapping Rule             | Filtering Rule       | STUN/Hole Punch |  Direct P2P? |
+| Name                | Mapping Rule             | Filtering Rule       | STUN/Hole Punch |  Direct P2P? |
 | ------------------- | ------------------------ | -------------------- | :-------------: | :----------: |
 | **Full Cone**       | Endpoint-Independent     | Endpoint-Independent |      ✅ Easy     |     ✅ Yes    |
 | **Restricted Cone** | Endpoint-Independent     | Address-Restricted   |     ✅ Likely    |     ✅ Yes    |
@@ -78,13 +78,13 @@ _How to establish connectivity when behind NAT._
 **A. STUN (Hole Punching)**
 
 * **Mechanism:** Client asks a public STUN server: "What is my public IP:Port?"
-* **Action:** Client shares this public address with a peer. Both peers send packets to each other simultaneously to create entries (holes) in their NAT tables.
-* **Requirement:** Requires **Endpoint-Independent Mapping**. If the router changes the port when switching from talking to the STUN server to talking to the peer, this fails.
+* Client shares this public address with a peer. Both peers send packets to each other simultaneously to create entries (holes) in their NAT tables.
+* Requires **Endpoint-Independent Mapping**. If the router changes the port when switching from talking to the STUN server to talking to the peer, this fails.
 
 **B. TURN (Relay)**
 
 * **Mechanism:** When direct connection fails (e.g., Symmetric NAT), both peers connect outbound to a TURN server.
-* **Action:** The server relays data between them.
+* The server relays data between them.
 * **Trade-off:** 100% reliable but adds latency and bandwidth costs.
 * **Why it works:** NATs always allow outbound connections.
 
@@ -104,7 +104,7 @@ _How to establish connectivity when behind NAT._
 
 **E. UPnP / NAT-PMP**
 
-* **Mechanism:** The app programmatically asks the router to reserve a specific external port.
+* **Mechanism:** The app asks the router to reserve a specific external port.
 * **Result:** Effectively an automated "Static Port Forward."
 
-> **⚠️ Critical Note: Keep-Alives** NAT mappings are temporary. If a UDP connection is idle (typically >60s), the router deletes the mapping. Apps **must** send periodic empty packets ("heartbeats") to keep the path open.
+> **⚠️ Note: Keep-Alives** NAT mappings are temporary. If a UDP connection is idle (typically >60s), the router deletes the mapping. Apps **must** send periodic empty packets ("heartbeats") to keep the path open.
