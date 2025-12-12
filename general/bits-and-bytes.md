@@ -1,6 +1,6 @@
 # Bits & Bytes
 
-A **bit** is the smallest unit of information — it can be **0 or 1**.
+A **bit** is the smallest unit of information in computer — **0 or 1**.
 
 * 1 bit → 2 possibilities → `0`, `1`
 * 2 bits → 2² = 4 possibilities → `00`, `01`, `10`, `11`

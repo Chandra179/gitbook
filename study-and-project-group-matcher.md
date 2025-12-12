@@ -45,6 +45,8 @@ We need ACID compliance for the group capacity logic.
 Users Table
 
 * `id`: UUID (PK)
+* email: string
+* fullname: string
 * `tags`: JSONB (e.g., `["golang", "finance", "indonesian"]`)
 * `stats`: JSONB (for the "Wrapped" feature, aggregated nightly)
 
@@ -54,14 +56,16 @@ Groups Table
 * `owner_id`: UUID (FK)
 * `capacity`: Integer (default 5)
 * `current_count`: Integer (The critical counter)
-* `version`: Integer (For Optimistic Locking)
-* `status`: Enum (OPEN, CLOSED, COMPLETED)
+* title: string
+* description: string
+* tags: JSONB
+* `status`: string (OPEN, CLOSED, COMPLETED)
 
 Group\_Members Table
 
 * `group_id`: UUID (FK)
 * `user_id`: UUID (FK)
-* `role`: Enum (LEADER, MEMBER)
+* `role`: string (LEADER, MEMBER)
 * `joined_at`: Timestamp
 * _Primary Key is Composite (group\_id, user\_id) to prevent duplicate joins._
 

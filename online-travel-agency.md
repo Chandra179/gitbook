@@ -49,7 +49,6 @@ CREATE TABLE bookings (
     -- Status Management
     status VARCHAR(50) NOT NULL DEFAULT 'INIT', -- e.g., INIT, PENDING_PAYMENT, PAID, TICKETED, REFUNDED, CANCELLED
     
-    -- Financials
     total_amount BIGINT NOT NULL,
     currency CHAR(3) NOT NULL DEFAULT 'IDR', -- ISO Currency Code
     

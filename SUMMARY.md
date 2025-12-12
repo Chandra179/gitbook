@@ -6,7 +6,6 @@
   * [Character Encoding](general/character-encoding.md)
   * [NAT & P2P Traversal](general/nat-and-p2p-traversal.md)
   * [API Design Guidelines](general/api-design-guidelines.md)
-  * [Big Integer](general/big-integer.md)
   * [Database](general/database.md)
   * [Kafka](general/kafka.md)
   * [Oauth2 & Oidc](general/oauth2-and-oidc.md)

@@ -2,36 +2,20 @@
 
 #### Packet Flow
 
-**Scenario:** A device inside a home network talks to a public server.
-
-* **Internal:** Your Device (`192.168.1.50`)
-* **Gateway:** Router (`WAN: 145.23.66.90` | `LAN: 192.168.1.1`)
-* **External:** Spotify (`Public IP`)
-
-**The Lifecycle:**
-
-1. **Outbound:** Device sends `src=192.168.1.50:5000` → `dst=Spotify`.
-2. **Rewrite (NAT):** Router replaces source with `src=145.23.66.90:41200` (an ephemeral port).
-3. **Inbound:** Spotify replies to `145.23.66.90:41200`.
-4. **Lookup & Forward:** Router checks its mapping table, translates back to `192.168.1.50:5000`, and forwards.
+* Your device sends: `src:192.168.1.50:5000 → dst:Spotify (35.186.224.25)`
+* Router receives it and performs NAT: Converts private source → public source\
+  `192.168.1.50:5000 → 145.23.66.90:41200`
+* Router forwards the translated packet to Spotify: `src:145.23.66.90:41200 → dst:35.186.224.25`
+* Spotify replies back to the router’s public IP: `reply → 145.23.66.90:41200`
+* Router checks its NAT table entry: `145.23.66.90:41200 ↔ 192.168.1.50:5000`
+* Router rewrites the reply back to the private address: `dst becomes 192.168.1.50:5000`
+* Packet is delivered to your device.
 
 ***
 
 #### NAT Mapping & Filtering
 
-Modern NAT behavior (RFC 4787) is defined by two rules: **How it maps outgoing** and **Who it lets in**.
-
-**A. Mapping Behavior (Outgoing)**
-
-* **Endpoint-Independent Mapping (EIM):** The router reuses the **same external port** (`:62000`) for the internal host, regardless of where it is sending packets.
-* **Address-Dependent Mapping (ADM):** Sending to a **new IP** results in a **new external port**.
-* **Address-and-Port-Dependent Mapping (Symmetric):** Sending to a **new IP** OR **new port** results in a **new external port**. (Strictest).
-
-**B. Filtering Behavior (Incoming)**
-
-* **Endpoint-Independent Filtering (EIF):** Once a mapping is open, **anyone** can send packets to it. (Great for P2P).
-* **Address-Restricted:** Only the **IP you contacted** can reply.
-* **Port-Restricted:** Only the exact **IP and Port** you contacted can reply.
+<table><thead><tr><th width="157">Type</th><th width="264.5999755859375">Name</th><th>Description</th></tr></thead><tbody><tr><td><strong>EIM</strong></td><td>Endpoint-Independent Mapping</td><td>Router reuses the same external port (e.g., <code>:62000</code>) for the internal host, no matter which external IP it communicates with.</td></tr><tr><td><strong>ADM</strong></td><td>Address-Dependent Mapping</td><td>A new external port is created when sending to a <em>new destination IP</em>.</td></tr><tr><td><strong>Symmetric</strong></td><td>Address- and Port-Dependent Mapping</td><td>A new external port is created when sending to a <em>new IP or new port</em> (strictest form).</td></tr></tbody></table>
 
 ***
 

@@ -11,11 +11,11 @@
 | Space           | 32      | 00100000 | 0x20 |
 | Enter (newline) | 10      | 00001010 | 0x0A |
 
-ASCII only defines **128 characters**, which works for English, but fails for other languages — no ñ, é, ü, 中, or 😄.
+ASCII only defines **128 characters**, which works for English, but not for other languages — no ñ, é, ü, 中, or 😄.
 
 ## **Unicode**
 
-**Unicode** assigns a unique **code point** (a number) to every character in every writing system.
+**Unicode** assigns a unique **code point** (a number) to every character
 
 | Character | Unicode Code Point | Hex Notation |
 | --------- | ------------------ | ------------ |
@@ -24,7 +24,7 @@ ASCII only defines **128 characters**, which works for English, but fails for ot
 | 中         | U+4E2D             | 0x4E2D       |
 | 😄        | U+1F604            | 0x1F604      |
 
-A **code point** is _not_ a byte — it’s just a number (like an ID). Unicode defines several **encoding forms** to represent those code points as bytes.
+A **code point** is _not_ a byte, it’s just a number (like an ID). Unicode defines several **encoding forms** to represent those code points as bytes.
 
 ### UTF-8 (most common)
 
