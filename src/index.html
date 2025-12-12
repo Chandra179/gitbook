@@ -143,10 +143,6 @@
                             @focus="isSearchOpen = true" @keydown.escape="closeSearch()"
                             class="block w-[550px] pl-10 pr-3 py-2 border border-gray-200 rounded-lg leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
                             placeholder="Search...">
-                        <!-- <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                            <span class="text-gray-400 text-xs border border-gray-200 rounded px-1.5 py-0.5">Ctrl
-                                K</span>
-                        </div> -->
                     </div>
 
                     <!-- Search Results Dropdown -->
@@ -266,8 +262,6 @@
     <!-- Main Content Area -->
     <main class="lg:ml-64 xl:mr-64 min-h-screen bg-white pt-16">
         <div class="max-w-3xl mx-auto px-6 py-8 lg:py-12 mt-16 lg:mt-0">
-            <!-- Mobile Breadcrumb (only visible on mobile now) -->
-
             <!-- Loading State -->
             <div x-show="loading" class="flex items-center justify-center py-20">
                 <div class="loader"></div>
@@ -288,13 +282,20 @@
         </nav>
     </aside>
 
-    <!-- Marked Extensions -->
-    <script src="./js/marked-extensions.js"></script>
+    <!-- CRITICAL: Load JavaScript modules in correct order -->
+    
+    <!-- 1. Load module classes first (they define classes used by app.js) -->
+    <script src="./js/router.js"></script>
+    <script src="./js/search.js"></script>
+    <script src="./js/content-loader.js"></script>
+    <script src="./js/toc-generator.js"></script>
+    <script src="./js/renderer.js"></script>
 
-    <!-- Navigation Data -->
+    <!-- 2. Load configuration and extensions -->
+    <script src="./js/marked-extensions.js"></script>
     <script src="./js/navigation-data.js"></script>
 
-    <!-- Application Logic -->
+    <!-- 3. Load main app last (it instantiates the module classes) -->
     <script src="./js/app.js"></script>
 </body>
 

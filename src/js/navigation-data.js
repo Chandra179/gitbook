@@ -18,11 +18,15 @@ const navigationData = [
         standalone: true
     },
     {
+        name: 'Topic Breakdown',
+        slug: 'topic-breakdown',
+        standalone: true
+    },
+    {
         name: 'General',
         slug: 'general',
         pages: [
             { name: 'API Design Guidelines', slug: 'api-design-guidelines' },
-            { name: 'Big Integer', slug: 'big-integer' },
             { name: 'Bits and Bytes', slug: 'bits-and-bytes' },
             { name: 'Character Encoding', slug: 'character-encoding' },
             { name: 'Database', slug: 'database' },
@@ -63,9 +67,23 @@ const navigationData = [
             { name: 'Clock Skew and Time Sync', slug: 'clock-skew-and-time-sync' },
             { name: 'Consistent Hashing', slug: 'consistent-hashing' },
             { name: 'ID Generator', slug: 'id-generator' },
-            { name: 'Template Component Design', slug: 'template-component-design' },
             { name: 'Template High Level Design', slug: 'template-high-level-design' }
         ]
-    }
+    },
+    // {
+    //     name: 'Online Travel Agency',
+    //     slug: 'online-travel-agency',
+    //     standalone: true
+    // },
+    {
+        name: 'Study & Project Group Matcher',
+        slug: 'study-and-project-group-matcher',
+        standalone: true
+    },
+    {
+        name: 'SaaS Ideas',
+        slug: 'saas-ideas',
+        standalone: true
+    },
 ];
 

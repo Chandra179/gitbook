@@ -1,0 +1,27 @@
+/* KaTeX Math Display and Styling */
+
+/* Display Math (Block) */
+.katex-display {
+    margin: 1em 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    text-align: left; /* Acts like paragraph */
+    display: block;
+}
+
+/* Inline Math */
+.katex {
+    font-size: 1.1em;
+    text-align: left;
+}
+
+/* Inline math layout */
+.katex-html {
+    display: inline-block;
+}
+
+/* Explicit .math class elements */
+.math {
+    font-family: 'KaTeX_Main', 'Times New Roman', serif;
+    font-size: 1.1em;
+}
