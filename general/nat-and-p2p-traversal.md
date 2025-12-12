@@ -15,7 +15,45 @@
 
 #### NAT Mapping & Filtering
 
-<table><thead><tr><th width="157">Type</th><th width="264.5999755859375">Name</th><th>Description</th></tr></thead><tbody><tr><td><strong>EIM</strong></td><td>Endpoint-Independent Mapping</td><td>Router reuses the same external port (e.g., <code>:62000</code>) for the internal host, no matter which external IP it communicates with.</td></tr><tr><td><strong>ADM</strong></td><td>Address-Dependent Mapping</td><td>A new external port is created when sending to a <em>new destination IP</em>.</td></tr><tr><td><strong>Symmetric</strong></td><td>Address- and Port-Dependent Mapping</td><td>A new external port is created when sending to a <em>new IP or new port</em> (strictest form).</td></tr></tbody></table>
+**Mapping Behavior (Outgoing)**
+
+```
+1. Endpoint-Independent Mapping (EIM)
+   Internal: 192.168.1.50:5000
+   → Sends to 1.1.1.1:443 → Router maps to 145.23.66.90:62000
+   → Sends to 8.8.8.8:443 → STILL uses 145.23.66.90:62000
+   (Same external port reused no matter the destination)
+
+2. Address-Dependent Mapping (ADM)
+   Internal: 192.168.1.50:5000
+   → Sends to 1.1.1.1:443 → mapped to 145.23.66.90:62000
+   → Sends to 8.8.8.8:443 → mapped to 145.23.66.90:62001
+   (New external port for each NEW external IP)
+
+3. Address-and-Port-Dependent (Symmetric NAT)
+   Internal: 192.168.1.50:5000
+   → Sends to 1.1.1.1:443 → mapped to 145.23.66.90:62000
+   → Sends to 1.1.1.1:80  → mapped to 145.23.66.90:62001
+   (New external port for EACH different IP OR PORT)
+```
+
+**Filtering Behavior (Incoming)**
+
+<pre><code>1. Endpoint-Independent Filtering (EIF) 
+   Router opened: 145.23.66.90:62000 → 192.168.1.50:5000 
+   ANY external host can now send to 145.23.66.90:62000 
+   (Most open, good for P2P)
+
+2. Address-Restricted Filtering 
+   145.23.66.90:62000  contacted 1.1.1.1 
+   ONLY 1.1.1.1 can reply to 145.23.66.90:62000 
+   (Different IPs are blocked)
+<strong>
+</strong><strong>3. Port-Restricted Filtering 
+</strong><strong>   145.23.66.90:62000 contacted 1.1.1.1:443 
+</strong><strong>   ONLY 1.1.1.1:443 can reply 
+</strong><strong>   (Strictest; both IP AND port must match)
+</strong></code></pre>
 
 ***
 
