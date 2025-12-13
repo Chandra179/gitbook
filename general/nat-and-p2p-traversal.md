@@ -57,21 +57,7 @@
 
 ***
 
-#### NAT Types & Viability
-
-_Synthesizing the mechanics into classic definitions and P2P impact._
-
-| Name                | Mapping Rule             | Filtering Rule       | STUN/Hole Punch |  Direct P2P? |
-| ------------------- | ------------------------ | -------------------- | :-------------: | :----------: |
-| **Full Cone**       | Endpoint-Independent     | Endpoint-Independent |      ✅ Easy     |     ✅ Yes    |
-| **Restricted Cone** | Endpoint-Independent     | Address-Restricted   |     ✅ Likely    |     ✅ Yes    |
-| **Port-Restricted** | Endpoint-Independent     | Port-Restricted      |    ⚠️ Complex   |   ⚠️ Maybe   |
-| **Symmetric**       | Per-Destination (Strict) | Port-Restricted      |     ❌ Fails     | ❌ Relay Only |
-| **CGNAT**           | ISP-level NAT            | Highly Restrictive   |       ❌ No      | ❌ Relay Only |
-
-***
-
-#### Traversal Solutions
+#### NAT Traversal Solutions
 
 _How to establish connectivity when behind NAT._
 
@@ -85,8 +71,6 @@ _How to establish connectivity when behind NAT._
 
 * **Mechanism:** When direct connection fails (e.g., Symmetric NAT), both peers connect outbound to a TURN server.
 * The server relays data between them.
-* **Trade-off:** 100% reliable but adds latency and bandwidth costs.
-* **Why it works:** NATs always allow outbound connections.
 
 **C. ICE**
 
@@ -95,16 +79,3 @@ _How to establish connectivity when behind NAT._
   1. **Host Candidate:** Direct LAN connection (Best).
   2. **Server Reflexive:** Public IP via STUN (Good).
   3. **Relay:** Via TURN (Fallback/Slowest).
-
-**D. Hairpinning (NAT Loopback)**
-
-* **Scenario:** Two devices on the _same_ LAN try to talk via their _public_ IP.
-* **Behavior:** The router recognizes the public IP is its own, loops the packet back to the LAN.
-* **Relevance:** Essential for P2P apps so local peers don't fail when using public signaling addresses.
-
-**E. UPnP / NAT-PMP**
-
-* **Mechanism:** The app asks the router to reserve a specific external port.
-* **Result:** Effectively an automated "Static Port Forward."
-
-> **⚠️ Note: Keep-Alives** NAT mappings are temporary. If a UDP connection is idle (typically >60s), the router deletes the mapping. Apps **must** send periodic empty packets ("heartbeats") to keep the path open.

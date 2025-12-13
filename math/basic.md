@@ -1,6 +1,8 @@
 # Basic
 
-**Real number**&#x20;
+**Real number**
+
+<figure><img src="../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
 
 there is no real number that, when multiplied by itself, results in a negative number. The expression $$\sqrt{-9}$$ asks the question: What real number, when multiplied by itself (squared), equals $$-9$$?
 
@@ -24,7 +26,7 @@ Since there is no way to multiply a real number by itself and get a negative res
 
 **Natural number** positive number
 
-**Irrational number** Any real number that cannot be written as a ratio of two integers ($$p/q$$)
+**Irrational number** Any real number that cannot be written as a ratio of two integers ($$p/q$$) like $$\mathbf{\sqrt{2}}$$, $$\mathbf{\pi}$$, $$\mathbf{e}$$ (Euler's number)
 
 **Variables** (like $$x$$ or $$y$$)
 
@@ -112,3 +114,8 @@ Total Cost = $$\$50 + \$30 + \$10 + \$6 = \mathbf{\$96}$$
 
 <figure><img src="../.gitbook/assets/quadrant_axis.png" alt="" width="375"><figcaption></figcaption></figure>
 
+***
+
+**Intervals**
+
+<figure><img src="../.gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
