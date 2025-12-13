@@ -2,6 +2,8 @@
 
 **Integer Exponents**
 
+<figure><img src="../../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+
 A product of identical numbers is usually written in exponential notation
 
 * $$2^5 = 2 \times 2 \times 2 \times 2 \times 2 = 32$$
