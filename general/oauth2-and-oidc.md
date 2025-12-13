@@ -18,13 +18,13 @@ Access Token TTL: Short (e.g., 5-15 minutes)
 
 #### Refresh Token
 
-Discover expiry/revocation when refresh attempt fails  (might be the refresh token is expired. And handle failure gracefully (delete session + force re-login) like logout mechanism
+Check if refresh attempt fails  (might be the refresh token is expired. And handle failure gracefully (delete session + force re-login) like logout mechanism
 
 #### **Refresh Access token**
 
 Don't wait for the token to actually expire and fail a request. Instead, check the token's age on every request and refresh it _before_ it dies. Refresh Token TTL: Long (e.g., 7-30 days)
 
-**The "Concurrency Race"**
+**Concurrency Race**
 
 If a user loads a dashboard that fires 5 API requests simultaneously (e.g., fetching profile, graph data, notifications, etc.), and their token is expired:
 
@@ -63,29 +63,4 @@ CREATE TABLE users (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
-
-CREATE TABLE federated_identities (
-    -- The 'iss' (Issuer) claim from the ID Token.
-    -- Example: 'https://accounts.google.com' or 'https://github.com'
-    provider VARCHAR(255) NOT NULL,
-    
-    -- The 'sub' (Subject) claim from the ID Token.
-    -- Example: '10769150350006150715113' (Google) or '583231' (GitHub)
-    -- WARNING: These are strings, not always integers.
-    subject_id VARCHAR(255) NOT NULL,
-    
-    -- The link to your internal user
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    
-    -- Metadata (Optional but useful for debugging/audits)
-    last_login_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    
-    -- COMPOSITE PRIMARY KEY
-    -- A user is unique based on WHO they logged in with (provider) 
-    -- and THEIR ID on that platform (subject_id).
-    PRIMARY KEY (provider, subject_id)
-);
-
--- Fast lookup to find all linked accounts for a specific internal user
-CREATE INDEX idx_federated_identities_user_id ON federated_identities(user_id);
 ```

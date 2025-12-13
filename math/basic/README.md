@@ -2,7 +2,7 @@
 
 **Real number**
 
-<figure><img src="../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
 
 there is no real number that, when multiplied by itself, results in a negative number. The expression $$\sqrt{-9}$$ asks the question: What real number, when multiplied by itself (squared), equals $$-9$$?
 
@@ -31,12 +31,6 @@ Since there is no way to multiply a real number by itself and get a negative res
 **Variables** (like $$x$$ or $$y$$)
 
 **Coefficients** (the number multiplying the variable, like the 3 in $$3x^2$$)
-
-**Exponents** (the power, like the 2 in $$x^2$$)
-
-* $$x^a \cdot x^b = x^{a+b}$$
-* $$\frac{x^a}{x^b} = x^{a-b}$$
-* $$(x^a)^b = x^{ab}$$
 
 **Terms** (parts separated by addition/subtraction, like $$3x^2$$, $$-5x$$, and $$7$$)
 
@@ -84,7 +78,7 @@ Total Cost = $$\$50 + \$30 + \$10 + \$6 = \mathbf{\$96}$$
 
 ***
 
-<figure><img src="../.gitbook/assets/prop_of_fractions.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/prop_of_fractions.png" alt=""><figcaption></figcaption></figure>
 
 ***
 
@@ -112,10 +106,14 @@ Total Cost = $$\$50 + \$30 + \$10 + \$6 = \mathbf{\$96}$$
 
 **Cartesian Coordinate System**
 
-<figure><img src="../.gitbook/assets/quadrant_axis.png" alt="" width="375"><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/quadrant_axis.png" alt="" width="375"><figcaption></figcaption></figure>
 
 ***
 
 **Intervals**
 
-<figure><img src="../.gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
+
+**Absolute Value**
+
+<figure><img src="../../.gitbook/assets/image (2).png" alt=""><figcaption></figcaption></figure>
