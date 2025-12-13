@@ -34,4 +34,4 @@
 
 * CNNs: Convolutional Neural Networks (for Images).
 * RNNs / LSTMs: Recurrent Neural Networks (for basic sequences).
-* Transformers & Attention: The modern standard. You must learn the Attention Mechanism because it replaced RNNs and powers every modern AI agent (like GPT/Gemini).
+* Transformers & Attention: read sequence of input into sequece of output (like GPT/Gemini).
