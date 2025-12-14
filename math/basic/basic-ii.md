@@ -2,7 +2,7 @@
 
 #### **Integer Exponents**
 
-<figure><img src="../../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
 
 A product of identical numbers is usually written in exponential notation
 
@@ -45,3 +45,37 @@ Simplifying $$\sqrt[4]{(x^2)^4}$$
 The final simplified expression is $$3x^2|y|$$.
 
 The key takeaway is that the absolute value signs are essential when simplifying an even root of a variable raised to the same power (like $$\sqrt[4]{y^4}$$), unless you are certain the result is non-negative (like in the case of $$x^2$$).
+
+#### Product Formulas
+
+<figure><img src="../../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+
+$$(3x + 4)(3x - 4) = (3x)^2 - (4)^2$$
+
+$$(3x + 4)(3x - 4) = 9x^2 - 16$$
+
+
+
+$$(2y + 5)^2 = (2y)^2 + 2(2y)(5) + (5)^2$$
+
+$$(2y + 5)^2 = 4y^2 + 20y + 25$$
+
+
+
+$$(z - 6)^2 = (z)^2 - 2(z)(6) + (6)^2$$
+
+$$(z - 6)^2 = z^2 - 12z + 36$$
+
+
+
+$$(x + 2)^3 = (x)^3 + 3(x)^2(2) + 3(x)(2)^2 + (2)^3$$
+
+$$(x + 2)^3 = x^3 + 6x^2 + 12x + 8$$
+
+
+
+$$(2m - 1)^3 = (2m)^3 - 3(2m)^2(1) + 3(2m)(1)^2 - (1)^3$$
+
+$$(2m - 1)^3 = 8m^3 - 3(4m^2)(1) + 3(2m)(1) - 1$$
+
+$$(2m - 1)^3 = 8m^3 - 12m^2 + 6m - 1$$
