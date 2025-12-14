@@ -123,7 +123,7 @@ A product of identical numbers is usually written in exponential notation
 
 #### **Radicals**
 
-The number inside the root _must_ be a result of something being raised to the power of $$ $n$ $$
+The number inside the root _must_ be a result of something being raised to the power of $$n$$
 
 <figure><img src="../.gitbook/assets/prop_of_roots.png" alt=""><figcaption></figcaption></figure>
 
@@ -135,7 +135,7 @@ $$\sqrt[4]{81x^8y^4} = \sqrt[4]{81}\sqrt[4]{x^8}\sqrt[4]{y^4}$$ This step uses P
 
 This step simplifies each of the three terms separately:
 
-1. Simplifying $$\sqrt[4]{81}$$ Since $$ $3^4 = 3 \times 3 \times 3 \times 3 = 81$ $$, the fourth root of 81 is 3.
+1. Simplifying $$\sqrt[4]{81}$$ Since $$3^4 = 3 \times 3 \times 3 \times 3 = 81$$, the fourth root of 81 is 3.
 2. Simplifying $$\sqrt[4]{x^8}$$:
    * This is rewritten by expressing $$x^8$$ as a power of 4: $$x^8 = (x^2)^4$$.
    * The term becomes $$\sqrt[4]{(x^2)^4}$$.
@@ -163,25 +163,17 @@ $$(3x + 4)(3x - 4) = (3x)^2 - (4)^2$$
 
 $$(3x + 4)(3x - 4) = 9x^2 - 16$$
 
-
-
 $$(2y + 5)^2 = (2y)^2 + 2(2y)(5) + (5)^2$$
 
 $$(2y + 5)^2 = 4y^2 + 20y + 25$$
-
-
 
 $$(z - 6)^2 = (z)^2 - 2(z)(6) + (6)^2$$
 
 $$(z - 6)^2 = z^2 - 12z + 36$$
 
-
-
 $$(x + 2)^3 = (x)^3 + 3(x)^2(2) + 3(x)(2)^2 + (2)^3$$
 
 $$(x + 2)^3 = x^3 + 6x^2 + 12x + 8$$
-
-
 
 $$(2m - 1)^3 = (2m)^3 - 3(2m)^2(1) + 3(2m)(1)^2 - (1)^3$$
 
@@ -202,4 +194,3 @@ $$\frac{\cancel{(x + 2)}(x + 3)}{(x - 2)\cancel{(x + 2)}} = \frac{x + 3}{x - 2}$
 A rational expression can be written in the form $$\frac{P(x)}{Q(x)}$$, where $$P(x)$$ and $$Q(x)$$ are polynomials.
 
 denominator, $$Q(x)$$, cannot be equal to zero. Division by zero is undefined
-

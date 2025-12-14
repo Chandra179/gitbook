@@ -30,4 +30,4 @@
 * [Online Travel Agency](online-travel-agency.md)
 * [Study & Project Group Matcher](study-and-project-group-matcher.md)
 * [Neural Network](neural-network.md)
-* [Knowledge Graph](knowledge-graph.md)
+* [Knowledge Graph](knowledge-gra.md)
