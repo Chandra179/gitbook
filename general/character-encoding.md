@@ -58,9 +58,7 @@ Uses 2 or 4 bytes per character
 
 ### UTF-32
 
-* Always uses 4 bytes per character (fixed length)
-* Simple but memory-heavy
-* Example:
+Always uses 4 bytes per character (fixed length)
 
 | Character | Code Point | UTF-32 (Hex) |
 | --------- | ---------- | ------------ |

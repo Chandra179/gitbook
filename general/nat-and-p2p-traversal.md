@@ -59,23 +59,22 @@
 
 #### NAT Traversal Solutions
 
-_How to establish connectivity when behind NAT._
+**STUN (Hole Punching)**
 
-**A. STUN (Hole Punching)**
+* A client behind a NAT sends a request to a STUN server on the public internet.
+* The NAT translates the client's private IP and port to a public IP and port.
+* The STUN server sees the public IP/port in the packet's source address.
+* The STUN server sends this public IP/port back to the client.
+* The client then shares this public address information with its peer via a separate signaling mechanism.
+* The peers attempt a direct peer-to-peer (P2P) connection using the discovered public addresses.
 
-* **Mechanism:** Client asks a public STUN server: "What is my public IP:Port?"
-* Client shares this public address with a peer. Both peers send packets to each other simultaneously to create entries (holes) in their NAT tables.
-* Requires **Endpoint-Independent Mapping**. If the router changes the port when switching from talking to the STUN server to talking to the peer, this fails.
+**TURN (Relay)**
 
-**B. TURN (Relay)**
+TURN is an extension of STUN that acts as a fallback when STUN fails (most commonly due to Symmetric NAT or strict firewall policies).
 
-* **Mechanism:** When direct connection fails (e.g., Symmetric NAT), both peers connect outbound to a TURN server.
-* The server relays data between them.
-
-**C. ICE**
-
-* **Mechanism:** A protocol that gathers all possible addresses (**Candidates**) and tests them in priority order.
-* **Priority Logic:**
-  1. **Host Candidate:** Direct LAN connection (Best).
-  2. **Server Reflexive:** Public IP via STUN (Good).
-  3. **Relay:** Via TURN (Fallback/Slowest).
+* The **ICE framework** attempts STUN first. If the direct connection attempt fails, the clients fall back to TURN.
+* The client requests an Allocation on the TURN server. The TURN server reserves a public IP address and port (the Relayed Transport Address) for the client.
+* The client sends this Relayed Transport Address to its peer via the signaling mechanism.
+* The peer sends all its traffic _to_ the TURN server's Relayed Transport Address.
+* The TURN server receives the data and relays it to the first client.
+* All communication for the duration of the session flows through the TURN server
