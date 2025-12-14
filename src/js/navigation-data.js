@@ -85,5 +85,10 @@ const navigationData = [
         slug: 'neural-network',
         standalone: true
     },
+    {
+        name: 'Knowledge Graph',
+        slug: 'knowledge-gra',
+        standalone: true
+    },
 ];
 
