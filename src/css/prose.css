@@ -178,6 +178,9 @@
     margin-bottom: 2em;
     font-size: 0.875em;
     line-height: 1.7142857;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
 }
 
 .prose thead {
