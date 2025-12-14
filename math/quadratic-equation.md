@@ -1,17 +1,26 @@
-# Quadratic Equation
+# Equation
+
+### Equations
+
+<figure><img src="../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+
+### Linear Equation
+
+its always a straight line, so the of degree power (exponent) is 1
+
+* $$y = mx + b$$
+* $$ax + by = c$$
+
+### Non-Linear Equation
+
+the exponent is greater than 1
+
+* $$y = 3x^2 - 4x + 1$$
+* $$x^3 + y = 7$$
+
+### Quadratic Equation
 
 Quadratic equations are essential for modeling paths, areas, and optimization problems. They are defined by the standard form $$ax^2 + bx + c = 0$$, where $$x$$ is the unknown, and $$a$$, $$b$$, and $$c$$ are known coefficients.
-
-#### Factoring&#x20;
-
-Factoring is the easiest method, but it only works quickly when the answers ($$x$$ solutions) are simple integers or easy fractions. In real-world problems, the answers are rarely that neat.
-
-| **Equation** | **x2+5x+6=0**                          | **x2+4x−7=0**                                     |
-| ------------ | -------------------------------------- | ------------------------------------------------- |
-| Solutions    | $$x = -2$$ and $$x = -3$$              | $$x = -2 + \sqrt{11}$$ and $$x = -2 - \sqrt{11}$$ |
-| Factoring?   | Yes (Factors are easy: $$(x+2)(x+3)$$) | No (The solutions involve a messy $$\sqrt{11}$$)  |
-
-If you tried to factor $$x^2 + 4x - 7 = 0$$, you would spend forever looking for two integers that multiply to $$-7$$ and add to $$4$$. They don't exist!
 
 #### Completing Square
 
