@@ -2,9 +2,9 @@
 
 <figure><img src=".gitbook/assets/p2pdiagram.png" alt=""><figcaption></figcaption></figure>
 
-### Connection Strategy (NAT Traversal)
+### Connection Strategy
 
-The application uses a three-tier fallback strategy to establish peer connections:
+The application uses a ICE framework for connection fallback
 
 ```
 Direct Connection → Hole Punching → Relay Connection
@@ -13,15 +13,13 @@ Direct Connection → Hole Punching → Relay Connection
 **Connection Flow:**
 
 1. **Open Ports with UPnP** - Automatically configure router port forwarding when possible
-2. **Direct Connection (First Attempt)** - Try direct TCP connection if both peers have public IPs or are on the same network
-3. **Hole Punching (Second Attempt)** - Use DCUtR (Direct Connection Upgrade through Relay) to punch through NATs
-4. **Relay Connection (Final Fallback)** - Route traffic through relay server using Circuit Relay v2
+2. **Direct Connection** - Try direct TCP connection if both peers have public IPs or are on the same network
+3. **Hole Punching** - Use DCUtR (Direct Connection Upgrade through Relay) to punch through NATs
+4. **Relay Connection** - Route traffic through relay server using Circuit Relay v2
 
 ### Peer Discovery
 
-**Method:** Kademlia DHT (Distributed Hash Table)
-
-Peers discover each other through the DHT network:
+Peers discovery using  Kademlia DHT (Distributed Hash Table)
 
 * Each peer advertises its presence using a rendezvous string (`/private-chat/1.0.0`)
 * Peers query the DHT to find others advertising the same rendezvous

@@ -62,16 +62,17 @@ There are two ways to "run out" of Snowflake IDs: overflowing the Sequence or ov
 
 #### Limit 1: Throughput Limit (The Sequence)
 
-* Constraint: 12 bits = 4,096 values (0 to 4095).
-* Meaning: A single node can generate max 4,096 IDs per millisecond.
+* 12 bits = 4,096 values (0 to 4095).
+* A single node can generate max 4,096 IDs per millisecond.
 * Max Throughput: $$4,096 \times 1,000 \text{ ms} = \mathbf{4,096,000 \text{ IDs/sec/node}}$$.
-* If Exceeded: The system waits (sleeps) until the next millisecond to reset the sequence to 0.
+* If Exceeded, the system waits (sleeps) until the next millisecond to reset the sequence to 0.
 
 #### Limit 2: Lifespan Limit (The Timestamp)
-*  Constraint: 41 bits = $$2^{41} - 1$$ milliseconds.
-*  Calculation: $$2^{41} \text{ ms} \approx 2,199,023,255,551 \text{ ms} \frac{2,199,023,255,551}{1000 \times 60 \times 60 \times 24 \times 365.25} \approx \mathbf{69.7 \text{ Years}}$$
-* Meaning: The system works for \~69 years relative to your custom Epoch.
-* Mitigation: If you start your Epoch in 2024, the IDs remain valid until ~2093. After that, you must rotate the Epoch or migrate ID structures.
+
+* 41 bits = $$2^{41} - 1$$ milliseconds.
+* &#x20;$$2^{41} \text{ ms} \approx 2,199,023,255,551 \text{ ms} \frac{2,199,023,255,551}{1000 \times 60 \times 60 \times 24 \times 365.25} \approx \mathbf{69.7 \text{ Years}}$$
+* The system works for \~69 years relative to your custom Epoch.
+* If you start your Epoch in 2024, the IDs remain valid until \~2093. After that, you must rotate the Epoch or migrate ID structures.
 
 ***
 

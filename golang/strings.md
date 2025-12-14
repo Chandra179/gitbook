@@ -2,7 +2,7 @@
 
 Using `+=` for string concatenation is **inefficient approach** especially when working with large or numerous strings. Here’s why:
 
-1. **String Immutability**: Strings in Go are immutable, meaning they can’t be modified after creation. Every time you use `+=` to append to a string, Go creates a completely new string that combines the original with the new part. The previous strings are discarded, and the program needs to reallocate memory for each new string. This causes a lot of unnecessary memory allocation and copying.
+1. **String Immutability**: Strings in Go are immutable, they can’t be modified after creation. Every time you use `+=` to append to a string, Go creates a new string that combines the original with the new part. The previous strings are discarded, and the program needs to reallocate memory for each new string. This causes unnecessary memory allocation and copying.
 2. **Performance Bottleneck**: With each new allocation, the previous memory allocation becomes unused, leading to **more garbage collection work**. As the number of concatenations grows, this approach can significantly impact performance, causing a slowdown that increases with the number of concatenated parts.
 
 ```go
@@ -19,7 +19,7 @@ func concat(values []string) string { // ["hello", "world", "!"]
 // 0xx3 hello world !
 ```
 
-### The Solution: Using "`strings.Builder"` <a href="#id-9498" id="id-9498"></a>
+### The Solution: Using `strings.Builder` <a href="#id-9498" id="id-9498"></a>
 
 `strings.Builder` manages an **internal byte slice (buffer)** where it accumulates the strings you append, without creating a new string every time. This approach is both faster and more memory-efficient because it minimizes the number of allocations.
 
@@ -29,7 +29,7 @@ Here’s how `strings.Builder` works:
 * Each time you call `WriteString`, it appends the new string’s bytes to this buffer.
 * Once you’ve added all the parts, calling `String()` on the `Builder` reads the buffer’s contents as a single string.
 
-```
+```go
 import "strings"
 
 func concat(values []string) string {
@@ -67,10 +67,3 @@ func concat(values []string) string {
     return sb.String()
 }
 ```
-
-### When to Use `strings.Builder` <a href="#c5f0" id="c5f0"></a>
-
-In general, `strings.Builder` is preferable for concatenating multiple strings, especially if you’re dealing with loops or a large number of concatenations. As a rule of thumb:
-
-* Use `strings.Builder` when concatenating more than a few strings
-* Consider using `Grow` if you have a good estimate of the final string size.

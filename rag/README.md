@@ -2,27 +2,20 @@
 
 ## URLs Collector
 
-we need some urls to be crawled so i was thinking to use **seed urls** and **browser automation** where we collect the urls from browser search like  google, brave, etc..
+we need some urls to be crawled so i was thinking to use **seed urls** and **browser automation** where we collect the urls from browser search like google, brave, etc..
 
 ## Crawl Config
 
-* If we crawling on the same site (domain) multiple times in short time range we can get blocked so we need IP rotation we can use Residental/Tor proxy&#x20;
+* If we crawling on the same site (domain) multiple times in short time range we can get blocked so we need IP rotation we can use Residental/Tor proxy
 * Domain whitelist
 * handle URL visits deduplication avoid visiting same URL can cause a loop
 * respect robots.txt
 * rate limit request per domain, 10-15 req/sec, random delay
-
-## PreFiltering
-
-Before visiting URL we need to skip junk URL, can detect by path or query param using regex&#x20;
-
-```go
-(contact|privacy|terms|faq|tag|archive|about|signin|login|register|subscribe|feedback|cookies|sitemap)
-```
+* define regex to skip junk URL, ex: `(contact|privacy|terms|faq|tag)`
 
 ## Content extraction
 
-For HTML content we need to do:
+For HTML content we need to do
 
 * Remove header and footer from body (junk)
 * Kept pages if combination of head title and meta\[description/content/property] relevant to given topic
@@ -42,8 +35,8 @@ For HTML content we need to do:
 
 ## Chunking & Embed
 
-* markdown chunking, refer to: [ChunkStrategies](https://nothin.gitbook.io/computing/llm/chunking)
-* calculate the token for each chunk using model  `tokenizer.json` , ex: [https://huggingface.co/BAAI/bge-base-en-v1.5/blob/main/tokenizer.json](https://huggingface.co/BAAI/bge-base-en-v1.5/blob/main/tokenizer.json)
+* use markdown chunking, refer to [ChunkStrategies](https://nothin.gitbook.io/computing/llm/chunking)
+* calculate the token for each chunk using the model `tokenizer.json` , ex: [https://huggingface.co/BAAI/bge-base-en-v1.5/blob/main/tokenizer.json](https://huggingface.co/BAAI/bge-base-en-v1.5/blob/main/tokenizer.json)
 * Embedding model will be modular so we can change the embed model depends on usecase and token size. ex: [http://ghcr.io/huggingface/text-embeddings-inference:cpu-latest](http://ghcr.io/huggingface/text-embeddings-inference:cpu-latest) `BAAI/bge-base-en-v1.5` , max 512 token
 
 ## Vector
@@ -74,7 +67,7 @@ metadata will be mandatory to further process the content after retrieval for mo
 
 ## Content Retrieval
 
-* Reranker model:  re-score top-k retrieved chunks for final ranking. example using model: `bge-reranker-large, cross-encoder/ms-marco-MiniLM-L-6-v2`
+* Reranker model: re-score top-k retrieved chunks for final ranking. example using model: `bge-reranker-large, cross-encoder/ms-marco-MiniLM-L-6-v2`
 * Evaluate retrieval metrics: Build a small query–answer–source eval set. Track: `Recall@k, Precision@k MRR (Mean Reciprocal Rank)`
 *   context assembly & formatting, structured context block
 
@@ -113,4 +106,3 @@ metadata will be mandatory to further process the content after retrieval for mo
 * Extract key phrases
 
 ## \[TBD] Agentic System
-

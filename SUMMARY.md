@@ -22,7 +22,6 @@
   * [Problem](math/problem.md)
   * [Equation](math/quadratic-equation.md)
   * [Polynomial](math/polynomial.md)
-* [Topic Breakdown](topic-breakdown.md)
 * [System Design](system-design/README.md)
   * [\[Template\] High Level Design](system-design/template-high-level-design.md)
   * [Consistent Hashing](system-design/consistent-hashing.md)

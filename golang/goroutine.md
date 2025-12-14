@@ -77,35 +77,6 @@ ch <- "banana"
 ch <- "cherry" // waits until receiver drains a slot
 ```
 
-#### **Nil channel** <a href="#id-63b6" id="id-63b6"></a>
-
-A channel that is declared but not initialized (or set to nil) has properties:
-
-1. Read: Blocks forever.
-2. Write: Blocks forever.
-3. Close: Panics.
-
-```go
-func merger(in1, in2 <-chan int) {
-    for in1 != nil || in2 != nil {
-        select {
-        case v, ok := <-in1:
-            if !ok {
-                in1 = nil // 💡 Setting to nil disables this case forever!
-                continue
-            }
-            fmt.Println("From 1:", v)
-        case v, ok := <-in2:
-            if !ok {
-                in2 = nil
-                continue
-            }
-            fmt.Println("From 2:", v)
-        }
-    }
-}
-```
-
 ***
 
 ## What happens to blocking channel operation? <a href="#id-6ffe" id="id-6ffe"></a>
@@ -134,7 +105,7 @@ Summar&#x79;**:**
 
 ## Closures in goroutine <a href="#fec9" id="fec9"></a>
 
-Common pitfall: goroutines inside loops capturing the loop variable
+goroutines inside loops capturing the loop variable
 
 ```go
 numbers := []int{1, 2, 3}
@@ -246,23 +217,6 @@ case msg := <-ch2:
     fmt.Println("Got from ch2:", msg)
 }
 ```
-
-#### Tradeoffs & Common mistakes
-
-| Benefit                             | Trade-off / cost                                    |
-| ----------------------------------- | --------------------------------------------------- |
-| Avoids blocking, prevents deadlocks | Logic becomes more complex as channels grow         |
-| Handles multiple channels elegantly | Hard to test + debug because timing/race conditions |
-| Enables timeouts + cancellation     | `default` can accidentally create busy loops        |
-| Non-blocking I/O                    | Can hide back-pressure problems if misused          |
-
-❌ Putting heavy logic inside `select`\
-❌ Using `default` without `time.Sleep()` → creates hot loops\
-❌ Overusing `select` instead of restructuring goroutines
-
-#### When to use it?
-
-<table><thead><tr><th width="362.6219482421875">Use it when…</th><th>Don't use it when…</th></tr></thead><tbody><tr><td>Multiple channels might be ready</td><td>You only have 1 channel</td></tr><tr><td>You need timeouts / cancellation</td><td>You’re doing sequential processing</td></tr><tr><td>You're multiplexing goroutines</td><td>You can avoid concurrency entirely</td></tr></tbody></table>
 
 ## Synchronization Primitives (`sync` package)
 
