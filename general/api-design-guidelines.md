@@ -37,3 +37,44 @@
 * Never break a live API. When introducing v2, deploy it alongside v1. Mark v1 as deprecated (via headers), monitor traffic until it hits zero, and then remove.
 * Use explicit versioning in the URL (`/v1/`) or Header (`Accept-Version`). With their own tradeoffs
 * Document the _actual_ behavior, including edge cases and error responses. Use schema-first design (OpenAPI/Swagger) to ensure implementation matches documentation.
+
+#### Request Coalescing
+
+Let's say the endpoint has a million incoming identical requests from multiple users, which we forward to an external API. Surely, this will be slow and result in high latency. Since it's the same request, we can use Request Coalescing.
+
+How it works: When a request comes in for "Data ID=50":
+
+1. Check is there already an ongoing HTTP request to the external API for "ID=50"?
+2. If No launch the request.
+3. If Yes do not make a new request. Instead, "subscribe" to the existing one. Pause and wait for that first request to finish.
+4. When the one request finishes, the result is copied and returned to all waiting listeners instantly.
+
+```go
+import (
+    "fmt"
+    "net/http"
+    "golang.org/x/sync/singleflight"
+)
+
+var requestGroup singleflight.Group
+
+func HandleRequest(w http.ResponseWriter, r *http.Request) {
+    key := r.URL.Query().Get("id") // e.g., "user_123"
+
+    // singleflight.Do ensures that for a given 'key', the function 
+    // is executed only once at a time.
+    // All concurrent calls with the same key wait for the return of this one function.
+    v, err, shared := requestGroup.Do(key, func() (interface{}, error) {
+        // This logic runs ONLY ONCE per concurrent batch
+        return CallSlowExternalAPI(key)
+    })
+
+    if err != nil {
+        http.Error(w, err.Error(), 500)
+        return
+    }
+
+    // 'v' is the result shared among all simultaneous requests
+    fmt.Fprintf(w, "Result: %v (Shared? %v)", v, shared)
+}
+```
