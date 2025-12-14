@@ -19,8 +19,7 @@
 
 * Use idempotency for state-changing operations (POST/PATCH). Cache the response result (200/422) with a TTL; if a client retries with the same key, return the cached response immediately without re-processing.
 * Set endpoint timeouts, Implement Circuit Breakers to fail fast when downstream dependencies are unhealthy.
-* Use Optimistic Locking (via `ETags` or `version` fields) to prevent "Lost Update" problems when multiple users modify the same resource simultaneously.
-* Enforce PII/PCI in logs and traces." In Fintech, logging a raw request body that contains a credit card number or a refresh token is (you get fired), do Log Sanitization
+* Enforce PII/PCI in logs and traces." In Fintech, logging a raw request body that contains a credit card number or a refresh token is (you get fired), also do Log Sanitization
 
 #### HTTP Semantics & Status Codes
 

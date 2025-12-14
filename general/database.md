@@ -10,7 +10,6 @@ Q: What is Connection Pooling and why is it critical for high-throughput applica
 Q: What is a "Race Condition" in a database context?
 Q: What is the difference between Optimistic and Pessimistic Locking, and when should I use which?
 Q: What specific data anomalies occur if we choose the wrong locking strategy or isolation level?
-Q: Why shouldn't we just use the "Serializable" isolation level for everything to be safe? 
 Q: What is the Write-Ahead Log (WAL), and why is it critical for durability?
 Q: What is the difference between Synchronous and Asynchronous Replication?
 Q: What is the difference between Vertical Scaling (Scaling Up) and Horizontal Scaling (Scaling Out)?
@@ -26,7 +25,7 @@ Consistency (data always follows rules/constraints), \
 Isolation (concurrent transactions don't interfere with each other), \
 Durability (saved data survives power loss).&#x20;
 
-In a high-throughput environment, Isolation is the property most frequently "negotiated" or relaxed because perfect isolation (Serializability) is incredibly expensive. To guarantee that every transaction appears to happen one after another, the database must employ aggressive locking or validation, which forces transactions to wait in line. This creates a massive bottleneck that kills performance. Therefore, engineers often deliberately choose weaker isolation levels (like _Read Committed_ or _Repeatable Read_) to allow higher concurrency and speed, accepting the risk of specific data anomalies (like Phantom Reads) as the "price" for scale.
+In a high-throughput environment, Isolation mostly relaxed because perfect isolation (Serializability) is incredibly expensive. To guarantee that every transaction appears to happen one after another, the database must employ aggressive locking or validation, which forces transactions to wait in line. This creates a massive bottleneck that kills performance. Therefore, engineers often choose weaker isolation levels (like _Read Committed_ or _Repeatable Read_) to allow higher concurrency and speed, accepting the risk of specific data anomalies (like Phantom Reads) as the "price" for scale.
 
 ***
 
@@ -39,15 +38,13 @@ Impact on Index Effectiveness: Cardinality is the primary metric the Database Op
 * High Cardinality: Indexes are extremely effective here. The B-Tree structure can rapidly narrow down millions of rows to the specific one you need.
 * Low Cardinality: Indexes are often ignored. If you index a `Status` column (Active/Inactive) and query for "Active" users (where 90% of users are active), using the index is actually slower than a full table scan. This is because the database would have to jump back and forth between the index and the table data (random I/O) for 90% of the records. A sequential read of the whole table (Full Table Scan) is much faster in this scenario.
 
-> Rule of Thumb: If a query returns more than \~30% of the total rows, the optimizer will likely ignore your index.
-
 ***
 
 #### **Q**: What is the difference between B-Tree and LSM Tree (Log-Structured Merge-tree) storage engines?
 
 The **B-Tree** (used by MySQL/InnoDB, PostgreSQL) its optimized for read-heavy workloads. It organizes data into fixed-size pages in a balanced tree structure. When you modify data, the engine finds the specific page and updates it in place. If a page is full, it splits, which can cause "write amplification" and random I/O operations. This makes B-Trees incredibly fast for reads (consistent lookup speed) but potentially slower for massive, concurrent write streams.
 
-The **LSM Tree** (used by Cassandra, RocksDB, LevelDB) is optimized for high-throughput write workloads. Instead of updating existing files, it treats storage as append-only. New data is written to a "MemTable" (in RAM) and eventually flushed to an immutable "SSTable" on disk (Sequential I/O). Because data is never overwritten, a single record might exist in multiple files (a delete is just a new entry marking it as deleted). Background processes run "Compaction" to merge these files and discard obsolete data. This makes LSM trees incredibly fast for writes, but reads can be slower because the engine may need to check several files to find the latest version of a key.
+The **LSM Tree** (used by Cassandra, RocksDB, LevelDB) is optimized for high-throughput write workloads. Instead of updating existing files, it treats storage as append-only. New data is written to a "MemTable" (in RAM) and eventually flushed to an immutable "SSTable" on disk (Sequential I/O). Because data is never overwritten, a single record might exist in multiple files. Background processes run "Compaction" to merge these files and discard obsolete data. This makes LSM trees incredibly fast for writes, but reads can be slower because the engine may need to check several files to find the latest version of a key.
 
 ***
 
@@ -59,7 +56,7 @@ The Leftmost Prefix Rule states that the database can only utilize the index if 
 
 * Querying on A works (the index is sorted by A).
 * Querying on A and B works.
-* Querying on B or C alone _fails_ to use the index efficiently because, without knowing A, the values of B are scattered randomly throughout the index structure. It is akin to trying to find everyone named "David" in a phone book without knowing their last name; you would have to read every single entry.
+* Querying on B or C alone _fails_ to use the index efficiently because, without knowing A, the values of B are scattered randomly throughout the index structure.
 
 ***
 
@@ -80,7 +77,7 @@ How to Identify & Fix:
 
 **Normalization** (specifically 3rd Normal Form or 3NF) is the standard design strategy for write-heavy applications (OLTP) like banking systems, e-commerce order management, or inventory systems. The primary goal is to reduce data redundancy and ensure data integrity. By breaking data into smaller, related tables, you ensure that every piece of data lives in exactly one place. This eliminates "anomalies"—for example, if you update a customer's address, you only do it in the `Users` table, not in every single `Order` they’ve ever placed. You should use 3NF when your priority is data accuracy and optimizing for fast, consistent writes (INSERT/UPDATE/DELETE).
 
-**Denormalization**, in contrast, is an optimization technique used primarily for read-heavy workloads or analytics systems (OLAP). It duplicating data across tables to avoid expensive "JOIN" operations during queries. For example, in a high-traffic social media feed, you might store the `username` directly in the `Posts` table rather than just the `user_id`. This means the system can retrieve the post and the author's name in a single lookup without joining the `Users` table. You should use denormalization when your application suffers from slow read performance due to complex joins and you are willing to accept the trade-off of slower, more complex writes (since you now have to update the username in multiple places if it changes).
+**Denormalization**, is an optimization technique used for read-heavy workloads or analytics systems (OLAP). It duplicating data across tables to avoid expensive "JOIN" operations during queries. For example, in a high-traffic social media feed, you might store the `username` directly in the `Posts` table rather than just the `user_id`. This means the system can retrieve the post and the author's name in a single lookup without joining the `Users` table. You should use denormalization when your application suffers from slow read performance due to complex joins and you are willing to accept the trade-off of slower, more complex writes (since you now have to update the username in multiple places if it changes).
 
 ***
 
@@ -116,7 +113,7 @@ Isolation levels control how the DB handles locks implicitly, but sometimes you 
 * Pessimistic Locking (`SELECT ... FOR UPDATE`): You assume a conflict _will_ happen. You lock the row immediately when you read it. No one else can touch it until you commit. Use this for high-contention data (e.g., a central generic wallet).
 *   Optimistic Locking: You assume a conflict _probably won't_ happen. You don't lock the row on read. Instead, you read a version number (e.g., `version: 1`). When updating, you check if the version is still 1. If someone else changed it to 2 in the meantime, your **update fails**, and you retry. Use this for lower contention to avoid blocking database connections.<br>
 
-    <pre><code>value = 100, version = 1
+    <pre class="language-sql"><code class="lang-sql">value = 100, version = 1
 
     User 1 reads: value = 100, version = 1
     User 2 reads: value = 100, version = 1
@@ -142,28 +139,21 @@ Isolation levels control how the DB handles locks implicitly, but sometimes you 
 
 **Read Uncommitted** is the lowest level, where a transaction can read data that has been modified by another transaction but not yet committed. This allows for "**dirty reads**," meaning if the other transaction rolls back, your transaction has processed invalid data. You should use this level only for non-critical logging or analytics tasks where absolute accuracy is less important than raw speed, and where blocking other transactions is unacceptable.
 
-**Read Committed** is the most common default level (e.g., in PostgreSQL, Oracle, SQL Server). It guarantees that a transaction can only read data that has been permanently committed. This prevents dirty reads but still allows "non-repeatable reads"—if you query the same row twice in one transaction, the data might change if someone else commits an update in between. You should use this for most standard web applications where you need a balance of strong concurrency and reasonable data integrity.
+**Read Committed** is the most common default level (e.g., in PostgreSQL, Oracle, SQL Server). It guarantees that a transaction can only read data that has been permanently committed. This prevents dirty reads but still allows "non-repeatable reads"—if you query the same row twice in one transaction, the data might change if someone else commits an update in between. You should use this for most standard web applications where you need a balance of strong concurrency and reasonable data integrity.&#x20;
 
-**Repeatable Read** ensures that if you read a row once, you will see the exact same data if you read it again within the same transaction, effectively "locking" that version of the row for your session. This prevents non-repeatable reads but can still allow "phantom reads," where new rows added by others might appear in your range queries. You should use this for reporting dashboards or financial calculations where numbers must remain consistent throughout the duration of operation.
+* _(if someone update the data it reads the updated data)_
 
-**Serializable** is the strictest level. It effectively forces transactions to run as if they were happening one after another, preventing all concurrency anomalies (dirty reads, non-repeatable reads, and phantoms). However, this comes at a massive performance cost due to heavy locking or frequent transaction retries. You should use this only for mission-critical operations where data integrity is non-negotiable, such as preventing double-booking in a reservation system or processing sensitive banking transfers.
+**Repeatable Read** ensures that if you read a row once, you will see the exact same data if you read it again within the same transaction, effectively "locking" that version of the row for your session. This prevents non-repeatable reads but can still allow "phantom reads," where new rows added by others might appear in your range queries. You should use this for reporting dashboards or financial calculations where numbers must remain consistent throughout the duration of operation.&#x20;
 
-***
+* _(updated data is not reads by the transaction but new data can be still read)_
 
-#### **Q**: Why shouldn't we just use the "Serializable" isolation level for everything to be safe?&#x20;
-
-While `Serializable` guarantees the highest data integrity by strictly ordering transactions (making them appear sequential), it comes with a massive performance penalty. To achieve this, databases often employ aggressive locking or abort transactions frequently due to serialization anomalies. In a high-concurrency Fintech environment (e.g., thousands of payment requests per second), using `Serializable` acts as a bottleneck, drastically reducing Throughput. We need to choosing the lowest isolation level that still guarantees correctness for your specific use case (e.g., using `Read Committed` for general browsing but `Repeatable Read` or explicit locking for ledger updates).
+**Serializable** is the strictest level. It effectively forces transactions to run as if they were happening one after another, preventing all concurrency anomalies (dirty reads, non-repeatable reads, and phantoms). However, this comes at a massive performance cost due to heavy locking or frequent transaction retries. You should use this only for critical operations where data integrity is non-negotiable, such as preventing double-booking in a reservation system or processing sensitive banking transfers
 
 ***
 
 #### **Q**: What is the Write-Ahead Log (WAL), and why is it critical for durability?
 
-The Write-Ahead Log (WAL) is an append-only file where the database records changes (inserts, updates, deletes) _before_ they are written to the actual database data files. When a transaction is committed, the database first writes the details of that transaction to the WAL on the disk. Only after the WAL entry is safely stored does the database acknowledge the transaction as "Success" to the client. The actual data tables (B-Trees/Heaps) are updated later in memory and flushed to disk asynchronously (a process called "checkpointing").
-
-Why it is critical: The WAL ensures Durability (the 'D' in ACID) and performance.
-
-1. Performance: Writing to the main data file requires "Random I/O" (finding the exact spot in the B-Tree on the disk), which is slow. Writing to the WAL is "Sequential I/O" (appending to the end of a file), which is incredibly fast.
-2. Crash Recovery: If the database server loses power immediately after a commit but before the main data files are updated, the data in memory is lost. However, upon restart, the database reads the WAL, "replays" the events recorded there, and restores the database to the consistent state it was in right before the crash.
+Write-Ahead Log (WAL) is an append-only file where the database records changes (inserts, updates, deletes) _before_ they are written to the actual database data files. When a transaction is committed, the database first writes the details of that transaction to the WAL on the disk. Only after the WAL entry is safely stored does the database acknowledge the transaction as "Success" to the client. The actual data tables (B-Trees/Heaps) are updated later in memory and flushed to disk asynchronously (a process called "checkpointing").
 
 ***
 
@@ -179,15 +169,13 @@ This distinction defines the trade-off between Data Integrity and Performance in
 
 #### **Q**: What is the difference between Vertical Scaling (Scaling Up) and Horizontal Scaling (Scaling Out)?
 
-Vertical Scaling (Scaling Up) means making a single server stronger by adding more CPU, RAM, or faster storage (e.g., upgrading from an AWS `t3.medium` to an `m5.2xlarge`). It is simple because you keep your data in one place, preserving ACID properties easily. However, you cannot buy a bigger computer, because it introduces a Single Point of Failure.&#x20;
+Vertical Scaling (Scaling Up) means making a single server stronger by adding more CPU, RAM, or faster storage (e.g., upgrading from an AWS `t3.medium` to an `m5.2xlarge`). However, you cannot buy a bigger computer, because it introduces a Single Point of Failure.&#x20;
 
 Horizontal Scaling (Scaling Out) means adding _more_ servers (nodes) to handle the load, splitting the data across them (Sharding). This offers infinite scale and high availability (if one node dies, others survive). The trade-off is massive complexity: you lose ACID guarantees across nodes (requiring patterns like Sagas or 2PC) and must manage complex data distribution logic.
 
 ***
 
 #### **Q**: How do "Eventual Consistency" and "Strong Consistency" differ in practice?
-
-These concepts describe when a read operation is guaranteed to see the results of a write operation.
 
 **Strong Consistency**: This guarantees that once a write is confirmed, _any_ subsequent read from any node will return that new value. However, achieving this requires coordination (locking or synchronous consensus like Paxos/Raft), which increases latency and reduces scalability.
 
