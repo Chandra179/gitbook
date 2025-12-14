@@ -4,7 +4,7 @@
 
 **Real number**
 
-<figure><img src="../.gitbook/assets/image (1) (1) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/linear_number_line.png" alt=""><figcaption></figcaption></figure>
 
 there is no real number that, when multiplied by itself, results in a negative number. The expression $$\sqrt{-9}$$ asks the question: What real number, when multiplied by itself (squared), equals $$-9$$?
 
@@ -99,15 +99,15 @@ Total Cost = $$\$50 + \$30 + \$10 + \$6 = \mathbf{\$96}$$
 
 #### **Intervals**
 
-<figure><img src="../.gitbook/assets/image (1) (1) (1) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/interval_notation.png" alt=""><figcaption></figcaption></figure>
 
 #### **Absolute Value**
 
-<figure><img src="../.gitbook/assets/image (2).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/prop_absolute_value.png" alt=""><figcaption></figcaption></figure>
 
 #### **Integer Exponents**
 
-<figure><img src="../.gitbook/assets/image (1) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/laws_of_exponent.png" alt=""><figcaption></figcaption></figure>
 
 A product of identical numbers is usually written in exponential notation
 
@@ -125,7 +125,7 @@ A product of identical numbers is usually written in exponential notation
 
 The number inside the root _must_ be a result of something being raised to the power of $$ $n$ $$
 
-<figure><img src="../.gitbook/assets/image (9).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/prop_of_roots.png" alt=""><figcaption></figcaption></figure>
 
 The expression to simplify is $$\sqrt[4]{81x^8y^4}$$.
 
@@ -157,7 +157,7 @@ The key takeaway is that the absolute value signs are essential when simplifying
 
 #### Product Formulas
 
-<figure><img src="../.gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/product_formulas.png" alt=""><figcaption></figcaption></figure>
 
 $$(3x + 4)(3x - 4) = (3x)^2 - (4)^2$$
 

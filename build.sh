@@ -1,22 +1,35 @@
 #!/bin/bash
 
+# Ensure script stops on first error
+set -e
+
+# Install dependencies if node_modules is missing
+if [ ! -d "node_modules" ]; then
+    echo "Installing dependencies..."
+    npm install
+fi
+
 # Clean dist directory
 rm -rf dist
 mkdir -p dist
 
 # Build Tailwind CSS
+echo "Building CSS..."
 npm run build:css
 
 # Copy index.html
 cp src/index.html dist/index.html
 
-
 # Copy assets
 cp -r src/css dist/css
 cp -r src/js dist/js
+
 # Copy .gitbook assets (images)
 mkdir -p dist/.gitbook
-cp -r .gitbook/assets dist/.gitbook/assets
+# Only copy if assets exist to prevent error
+if [ -d ".gitbook/assets" ]; then
+    cp -r .gitbook/assets dist/.gitbook/assets
+fi
 
 # Copy content directories
 # Check if directories exist before copying to avoid errors
@@ -27,11 +40,23 @@ for dir in general golang math rag system-design; do
 done
 
 # Copy root markdown files
-# Using find to copy only .md files from root, excluding node_modules, dist, etc.
-# But simply listing known files is safer based on navigation-data.js
-cp README.md dist/
-cp p2p-chat.md dist/
-cp reactjs.md dist/
+# Added check to prevent errors if specific files are missing
+files=(
+    "README.md"
+    "p2p-chat.md"
+    "reactjs.md"
+    "study-and-project-group-matcher.md"
+    "topic-breakdown.md"
+    "neural-network.md"
+)
+
+for file in "${files[@]}"; do
+    if [ -f "$file" ]; then
+        cp "$file" dist/
+    else
+        echo "Warning: $file not found, skipping."
+    fi
+done
 
 echo "Build complete! Content is in ./dist"
 

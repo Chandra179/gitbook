@@ -2,7 +2,7 @@
 
 ### Equations
 
-<figure><img src="../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/prop_equality.png" alt=""><figcaption></figcaption></figure>
 
 ### Linear Equation
 

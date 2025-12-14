@@ -18,16 +18,11 @@ const navigationData = [
         standalone: true
     },
     {
-        name: 'Topic Breakdown',
-        slug: 'topic-breakdown',
-        standalone: true
-    },
-    {
         name: 'General',
         slug: 'general',
         pages: [
+            { name: 'Bits and Bytes', slug: 'bits-and-bytes' }, 
             { name: 'API Design Guidelines', slug: 'api-design-guidelines' },
-            { name: 'Bits and Bytes', slug: 'bits-and-bytes' },
             { name: 'Character Encoding', slug: 'character-encoding' },
             { name: 'Database', slug: 'database' },
             { name: 'Kafka', slug: 'kafka' },
@@ -49,7 +44,7 @@ const navigationData = [
             { name: 'Basic', slug: 'basic' },
             { name: 'Polynomial', slug: 'polynomial' },
             { name: 'Problem', slug: 'problem' },
-            { name: 'Quadratic Equation', slug: 'quadratic-equation' }
+            { name: 'Equation', slug: 'quadratic-equation' }
         ]
     },
     {
@@ -80,9 +75,14 @@ const navigationData = [
         slug: 'study-and-project-group-matcher',
         standalone: true
     },
+    // {
+    //     name: 'SaaS Ideas',
+    //     slug: 'saas-ideas',
+    //     standalone: true
+    // },
     {
-        name: 'SaaS Ideas',
-        slug: 'saas-ideas',
+        name: 'Neural Network',
+        slug: 'neural-network',
         standalone: true
     },
 ];
