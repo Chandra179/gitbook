@@ -4,11 +4,8 @@ This design focuses on a platform connecting users for collaborative learning or
 
 #### Core Feature
 
-Contextual Group Formation with Capacity Enforcement
-
 * Smart Matching: Users find groups not just by keyword, but by _compatibility_ (Timezone, Skill Level, Skills(design,vibe coder,marketing), Intent: "Serious" vs "Casual").
-* Before creating the group itself, the things that we want to build must be clear maybe proposal or ideas and the goals and why
-* Strict Enrollment: A "First-Come-First-Serve" or "Application-Approval" model that strictly enforces the max 5 user limit to ensure intimate, high-quality groups.
+* Before creating the group itself, the user intent must be clear maybe proposal or ideas and the goals and why
 
 ***
 
@@ -19,7 +16,6 @@ Contextual Group Formation with Capacity Enforcement
 3. The Decision (The Funnel):
    * _Path A (Open Group):_ Click "Join" -> System checks capacity -> Success
    * _Path B (Application):_ Click "Apply" -> Write short pitch -> Owner approves -> Notification -> Join.
-4. The Lifecycle: Group activates -> Members collaborate
 
 ***
 
