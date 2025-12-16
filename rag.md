@@ -17,40 +17,9 @@ we need some urls to be crawled so i was thinking to use **seed urls** and **bro
 
 Use Docling to extract PDFs to markdown (including image, table)
 
-## Markdown Chunking & Embedding Strategy
+## Markdown Chunking & Embedding
 
-### Overview
-
-Parse markdown → Identify elements → Apply rules:
-
-* Headers: natural boundaries
-* Tables: keep intact (single chunk if possible)
-* Lists: keep complete
-* Paragraphs: split if needed
-* Add token overlap between consecutive chunks. Overlap\_tokens = 50 (configurable)
-
-For each chunk:
-
-1. Count tokens using target model's tokenizer `tokenizer.json`. Ex: [https://huggingface.co/BAAI/bge-base-en-v1.5/blob/main/tokenizer.json](https://huggingface.co/BAAI/bge-base-en-v1.5/blob/main/tokenizer.json)
-2. If token\_count > max\_embed\_space:
-   * For text: split by paragraphs/sentences
-   * For tables: split by rows (keep header)
-3. Adjust chunk boundaries
-4. Re-validate
-
-### **Embedding Config**
-
-```
-├── model_name: "BAAI/bge-base-en-v1.5"
-├── tokenizer_path: "tokenizer.json" or HuggingFace model ID
-├── max_token_limit: 512 (model's actual limit)
-├── target_chunk_size: 400 (leave buffer for safety)
-├── min_chunk_size: 100 (avoid too-small chunks)
-├── overlap_tokens: 50 (for context preservation)
-└── model_dim: 768 (embedding dimension)
-```
-
-### Content-Type Specific Rules
+For each new line `\n` check using regex if its `Headers, Tables, Lists, Paragraphs` . Below is the chunking strategy for  each component:
 
 #### Tables
 
@@ -75,8 +44,6 @@ If header has no content or very short: → Merge with next section → Preserve
 
 `![Caption text](images/image1.png)`
 
-**Handling:**
-
 1. Include caption in surrounding text chunk
 2. Context strategy:
    * Include paragraph before image (context)
@@ -84,21 +51,23 @@ If header has no content or very short: → Merge with next section → Preserve
    * Include paragraph after image (explanation)
    * This keeps image reference meaningful
 
-### Handling Oversized Elements (Recursive Strategy)
+#### Then For each chunk
 
-If element still exceeds target\_chunk\_size after initial split:
+1. Count tokens using target model's tokenizer `tokenizer.json`. Ex: [https://huggingface.co/BAAI/bge-base-en-v1.5/blob/main/tokenizer.json](https://huggingface.co/BAAI/bge-base-en-v1.5/blob/main/tokenizer.json).
+2. Add token overlap between consecutive chunks. Overlap\_tokens = 50 (configurable)
+3. If token\_count > max\_embed\_space:
+   * Do the chunking strategy again until its not exceed max\_embed\_space (recursive)
 
-1. **Apply progressively finer splitting:**
-   * Tables: rows → cells (if meaningful)
-   * Text: paragraphs → sentences → phrases
-2. **Set maximum recursion depth = 3** (prevent infinite loops)
-3. **If still oversized after max recursion:** Truncate to `max_token_limit - 10`, store full text separately with key: `{chunk_id}_full_text`
-
-**Configuration:**
+### **Embedding Config**
 
 ```
-MAX_RECURSION_DEPTH = 3
-TRUNCATION_BUFFER = 10  # tokens to leave as safety margin
+├── model_name: "BAAI/bge-base-en-v1.5"
+├── tokenizer_path: "tokenizer.json" or HuggingFace model ID
+├── max_token_limit: 512 (model's actual limit)
+├── target_chunk_size: 400 (leave buffer for safety)
+├── min_chunk_size: 100 (avoid too-small chunks)
+├── overlap_tokens: 50 (for context preservation)
+└── model_dim: 768 (embedding dimension)
 ```
 
 ### Metadata Schema
