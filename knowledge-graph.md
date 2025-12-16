@@ -1,38 +1,5 @@
 # Knowledge Graph
 
-#### UseCase: Economy causalities&#x20;
-
-* Ingestion:
-  * Images:  `Image Captioning` (Llama3) $$\rightarrow$$ Append caption to text.
-  * Tables: Run `Table-to-Markdown` parsing $$\rightarrow$$ Convert to text grid.
-  * Math: Run `OCR` $$\rightarrow$$ Convert to LaTeX string.
-  * Output: markdown
-* Chunking the data per markdown header before feed to LLM
-* Coreference resolution: _Prompt:_ "Resolve pronouns (he, it, they, this move) to the specific entity names they refer to in your output."
-* Top relationships: `LEADS_TO, STIMULATES, MITIGATES, DRIVES_DEMAND_FOR, TRIGGERED_BY`
-*   Use Prompt engineering to extract the relationship from text. use LLM models (Llama 3)
-
-    ```
-    You are an expert economic analyst. Your task is to extract causal relationships from financial text.
-
-    You must extract relationships matching ONLY these categories:
-    1. LEADS_TO: A general positive outcome or result.
-    2. STIMULATES: An active, sharp boost or encouragement (active verb).
-    3. MITIGATES: A reduction of a negative effect or risk.
-    4. DRIVES_DEMAND_FOR: An increase in market appetite or consumption.
-    5. TRIGGERED_BY: The initial event that started a chain (reverse logic).
-    6. CONSTRAINS: A structural limit, cap, or restriction.
-
-    Rules:
-    - Extract the entities exactly as they appear in the text.
-    - If no causal relationship exists, return an empty list.
-    - Output MUST be valid JSON with the following schema:
-      [
-        {"subject": "Entity A", "relation": "LABEL", "object": "Entity B", "confidence": "High/Medium/Low"}
-      ]
-    ```
-* Entity disambiguation: Use vector search nearest neighbor after schema is generated
-
 #### Ingestion & Transformation
 
 * Convert your raw data (PDFs, Images, Tables) into a unified text format (preferably Markdown)
@@ -64,4 +31,3 @@
 #### Construction
 
 * Push triples to Neo4j.
-

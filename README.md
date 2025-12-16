@@ -1,4 +1,4 @@
-# About
+# My Blog
 
 Software engineer 4 years experience in Fintech, distributed system, workflow automation
 
@@ -23,7 +23,6 @@ Software engineer 4 years experience in Fintech, distributed system, workflow au
 ### Project
 
 * Golang SDK : project template for golang, modular approach. [https://github.com/Chandra179/go-sdk](https://github.com/Chandra179/go-sdk)
-* Web crawler : Keyword based crawler in golang. [https://github.com/Chandra179/axora](https://github.com/Chandra179/axora)
 
 ### Tech stack
 
