@@ -102,19 +102,17 @@ Configurable embedding model and use Vector DB Qdrant for storage, configuration
 
 ```json
 {
-  "chunk_id": "econ_nuclear_760_473a79f5",
+  "chunk_id": "econ_nuclear_738_3ca61ea9",
   "document_id": "econ_nuclear",
   "document_title": "econ_nuclear.md",
-  "token_count": 179,
+  "token_count": 18,
   "chunk_type": "paragraph",
-  "section_path": "2. NTPC - history",
+  "section_path": "1. Power industry",
   "section_level": 2,
-  "chunk_index": 760,
-  "entities": {
-    "ORG": ["World Bank", "NTPC", "GOI", "the World Bank", "MW"],
-  },
+  "chunk_index": 738,
+  "search_content": "Context: | | 2008 - 2009 Source : Ministry of Power, India, Annual Report , 2011, Delhi: Ministry of Power, 7. --- 1. Power industry Table 7. 2 Electricity demand projection at GDP growth of 8% and 9% --- Context: | | Projected peak demand (GW) | Projected peak demand (GW) | Installed capacity required (GW) | Installed capacity required (GW) | |-----------|------------------------------|------------------------------|------------------------------------|------------------------------------| | Year | 8% | 9% | 8% | 9% | | 2011-2012 | 158 | 168 | 220 | 233 | | 2016-2017 | 226 | 250 | 306 | 337 | | 2021-2022 | 323 | 373 | 425 | 488 | | 2026-2027 | 437 | 522 | 575 | 685 | | 2031-2032 | 592 | 733 | 778 | 960 |",
   "has_multi_representation": false,
   "has_image": false,
-  "content": "[Context before: The Singarauli coalfields, at the junction of Uttar Pradesh and Madhya Pradesh, became the focus of thermal power development. These was a general belief that 'by controlling a large proportion of the generation investments, the centre] would be better able to coordinate the development of the sector, establish a framework for least-cost power development programming, and create a long-range transmission planning system' (World Bank 1999: 2). NTPC was a beneficiary of government policies as GOI directed multilateral financial flows to NTPC to enable it to expand capacity. Three loans and credits provided by the World Bank (1977, 1978, 1982) helped NTPC commission its first 200 MW power station in 1982, followed by several more in 1985 and 1986. [Context after: The World Bank had always supported the development of the electricity sector in India.]"
+  "content": "Table 7. 2 Electricity demand projection at GDP growth of 8% and 9%"
 }
 ```
