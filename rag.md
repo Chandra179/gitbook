@@ -26,8 +26,6 @@ Input: Markdown Text
     ↓
 [SectionAnalyzer] → Hierarchical sections
     ↓
-[SemanticChunker] → Create chunks with ancestry
-    ↓
 [ChunkSplitters] → Handle element-specific logic
     ↓
 [OverlapHandler] → Apply sliding window
@@ -35,7 +33,7 @@ Input: Markdown Text
 Output: SemanticChunk objects with relationships
 ```
 
-Parsed markdown into structured AST (Abstract Syntax Tree) format, table example:
+#### **AST (Abstract Syntax Tree)**
 
 * `table_open` (The container)
   * `thead_open` (The header section)
@@ -50,31 +48,107 @@ Parsed markdown into structured AST (Abstract Syntax Tree) format, table example
   * `tbody_close`
 * `table_close`
 
-the extracted elements will be created as object, the final output will be collection of extracted objects
+#### **Parser**
+
+Parse the markdown to AST (Abstract Syntax Tree) structure&#x20;
 
 ```json
 [
     {
-        "type": "ElementType.CODE_BLOCK",
-        "content": "def hello():\n    print('world')",
+        "type": "ElementType.HEADING",
+        "content": "Setup",
+        "level": 2,
         "metadata": {
-          "language": "python"
+            "tag": "h2"
         },
-        "children": [] // Code blocks usually have no children
+        "children": []
+    },
+    {
+        "type": "ElementType.LIST",
+        "content": "* Item 1\n* Item 2",
+        "level": null,
+        "metadata": {
+            "is_ordered": false,
+            "item_count": 2
+        },
+        "children": []
+    },
+    {
+        "type": "ElementType.TABLE",
+        "content": "| Col A | Col B |\n|---|---|\n| Val 1 | Val 2 |",
+        "level": null,
+        "metadata": {
+            "num_rows": 2,
+            "num_cols": 2,
+            "has_header": true
+        },
+        "children": []
     }
 ]
 ```
 
+#### Section Hierarchy
+
 then we build section hierarchy. Usually text, tables, formula, image will be under a header. For example header 1 is the bigger header (top-level) then all the text, images, tables will be chunk into 1 like this
 
 ```json
-{
-  "chunk_type": "text",
-  "section_path": "BOC as filial son",
-  "token_count": 235,
-  "chunk_id": "econ_nuclear_392_0b4aa421",
-  "content": "Note : The big state banks include China's Postal bank. Source : Table constructed from data in Zhong (2010) and PBC (2010 a,b,c). stringently in action'. An indicator of how susceptible banks are to this pressure is the ratio of platform-to-total loans. The function of policy banks is clearly to implement government policy, but we can compare the ratio of platform-to-total loans of the big state banks with the ratio of the other non-policy banks. Table 10.9 shows the big state banks have a ratio of platform loans that was below the average for the other non-policy banks. Being state-owned, they have the pick of the best and least risky projects. Leung (2011: 2) estimated that in 2009 BOC had a platform-to-total loan ratio of 6.2%. Using data in PWC (2011: 11) and Table 10.7, I estimate the BOC ratio in 2009-10 to be between 8 and 9.1%. Both estimates are lower than the ratio estimates in Table 10.9 for the non-policy banks."
-}
+[
+  {
+    "Section (h1: Title)": {
+      "level": 1,
+      "content_elements": ["Some text here."],
+      "subsections": [
+        {
+          "Section (h2: Subtopic)": {
+            "level": 2,
+            "content_elements": ["More text."],
+            "subsections": []
+          }
+        }
+      ]
+    }
+  },
+  {
+    "Section (h1: Second Title)": {
+      "level": 1,
+      "content_elements": [],
+      "subsections": []
+    }
+  }
+]
+```
+
+#### Chunking
+
+chunk the sections and subsections into 1 object
+
+```json
+[
+    {
+        "content": "Some text here.",
+        "token_count": 3,
+        "chunk_type": "paragraph",
+        "section_path": "h1: Title",
+        "is_continuation": false,
+        "split_sequence": null,
+    },
+    {
+        "content": "More text.",
+        "token_count": 2,
+        "chunk_type": "paragraph",
+        "section_path": "h1: Title > h2: Subtopic",
+        "is_continuation": false,
+        "split_sequence": null,
+    },
+    {
+        "content": "Second Title", 
+        "token_count": 2,
+        "chunk_type": "heading",
+        "section_path": "h1: Second Title",
+        "is_continuation": false,
+        "split_sequence": null,
+    }
+]
 ```
 
 ### **Embedding**
