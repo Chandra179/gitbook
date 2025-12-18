@@ -50,10 +50,7 @@ const navigationData = [
     {
         name: 'RAG',
         slug: 'rag',
-        pages: [
-            { name: 'Chunking', slug: 'chunking' },
-            { name: 'Crawling Result', slug: 'crawling-result' }
-        ]
+        standalone: true
     },
     {
         name: 'System Design',
