@@ -4,16 +4,15 @@ This design focuses on a platform connecting users for collaborative learning or
 
 #### Core Feature
 
-* Smart Matching: Users find groups not just by keyword, but by _compatibility_ (Timezone, Skill Level, Skills(design,vibe coder,marketing), Intent: "Serious" vs "Casual").
-* Before creating the group itself, the user intent must be clear maybe proposal or ideas and the goals and why
+* Smart Matching: Users find groups not just by keyword, but by _compatibility_ (Timezone, Skill Level, Skills(design,vibe coder,marketing).
 
 ***
 
 #### User Journey
 
-1. Profile Setup (The Filter): User signs up and defines their "Vector": `{Interests: [marketing, System Design], Level: Intermediate, Availability: Weekends}`.
-2. Discovery (The Feed): User sees a ranked list of cards: "Build a Redis Clone (Go)", "Marketing automation".
-3. The Decision (The Funnel):
+1. Profile Setup: User signs up and defines their "Vector": `{Interests: [marketing, System Design, biology], Skill: Golang, advertising, accounting}`.
+2. Discovery: User sees a ranked list of cards: "Build a Redis Clone (Go)", "Marketing automation".
+3. The Decision:
    * _Path A (Open Group):_ Click "Join" -> System checks capacity -> Success
    * _Path B (Application):_ Click "Apply" -> Write short pitch -> Owner approves -> Notification -> Join.
 

@@ -41,9 +41,6 @@ the extracted elements will be created as object, the final output will be colle
     {
         "type": "ElementType.CODE_BLOCK",
         "content": "def hello():\n    print('world')",
-        "level": null, // Only used if type is HEADING
-        "line_start": 45,
-        "line_end": 47,
         "metadata": {
           "language": "python"
         },
@@ -56,33 +53,16 @@ then we build section hierarchy. Usually text, tables, formula, image will be un
 
 ```json
 {
-  "content": "The `_chunk_section` method recursively processes document elements...",
-  "original_content": "The `_chunk_section` method recursively processes document elements...",
-  "token_count": 45,
-  "chunk_type": "code_explanation",
-  "chunk_index": 12,
-
-  // --- HIERARCHY / LINKING CONTEXT ---
-  // This is how the chunk knows it belongs to "Methods" inside "Class Section"
-  "section_path": "Introductiton",
-  "section_level": 3,
-
-  // --- RAG METADATA (Optional) ---
-  "entities": {
-    "PERSON": ["jacob", "adam"]
-  },
-
-  // --- MULTI-REPRESENTATION (for advanced RAG) ---
-  "has_multi_representation": true,
-  "natural_language_description": "Explanation of the recursive chunking logic.",
-  "extra_metadata": {
-    "file_type": ".py",
-    "language": "python"
-  }
+  "search_content": "BOC as filial son Note : The big state banks inc…",
+  "chunk_type": "text",
+  "document_id": "econ_nuclear",
+  "section_path": "BOC as filial son",
+  "token_count": 235,
+  "chunk_id": "econ_nuclear_392_0b4aa421",
+  "chunk_index": 392,
+  "content": "Note : The big state banks include China's Postal bank. Source : Table constructed from data in Zhong (2010) and PBC (2010 a,b,c). stringently in action'. An indicator of how susceptible banks are to this pressure is the ratio of platform-to-total loans. The function of policy banks is clearly to implement government policy, but we can compare the ratio of platform-to-total loans of the big state banks with the ratio of the other non-policy banks. Table 10.9 shows the big state banks have a ratio of platform loans that was below the average for the other non-policy banks. Being state-owned, they have the pick of the best and least risky projects. Leung (2011: 2) estimated that in 2009 BOC had a platform-to-total loan ratio of 6.2%. Using data in PWC (2011: 11) and Table 10.7, I estimate the BOC ratio in 2009-10 to be between 8 and 9.1%. Both estimates are lower than the ratio estimates in Table 10.9 for the non-policy banks."
 }
 ```
-
-then for each section we enrich it by adding context like \[Context before: ...] current context \[Context after: ...], extract entities, flag to check if `has_multi_representation, has_image, table_description, code_description`
 
 ### **Embedding**
 
@@ -98,21 +78,6 @@ Configurable embedding model and use Vector DB Qdrant for storage, configuration
 └── model_dim: 768 (embedding dimension)
 ```
 
-**Metadata Schema**
+**Search**
 
-```json
-{
-  "chunk_id": "econ_nuclear_738_3ca61ea9",
-  "document_id": "econ_nuclear",
-  "document_title": "econ_nuclear.md",
-  "token_count": 18,
-  "chunk_type": "paragraph",
-  "section_path": "1. Power industry",
-  "section_level": 2,
-  "chunk_index": 738,
-  "search_content": "Context: | | 2008 - 2009 Source : Ministry of Power, India, Annual Report , 2011, Delhi: Ministry of Power, 7. --- 1. Power industry Table 7. 2 Electricity demand projection at GDP growth of 8% and 9% --- Context: | | Projected peak demand (GW) | Projected peak demand (GW) | Installed capacity required (GW) | Installed capacity required (GW) | |-----------|------------------------------|------------------------------|------------------------------------|------------------------------------| | Year | 8% | 9% | 8% | 9% | | 2011-2012 | 158 | 168 | 220 | 233 | | 2016-2017 | 226 | 250 | 306 | 337 | | 2021-2022 | 323 | 373 | 425 | 488 | | 2026-2027 | 437 | 522 | 575 | 685 | | 2031-2032 | 592 | 733 | 778 | 960 |",
-  "has_multi_representation": false,
-  "has_image": false,
-  "content": "Table 7. 2 Electricity demand projection at GDP growth of 8% and 9%"
-}
-```
+Improving vector search using Reranker (Cross-Encoder)
