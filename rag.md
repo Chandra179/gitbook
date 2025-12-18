@@ -19,6 +19,22 @@ Use Docling to extract PDFs to markdown (including image, table, etc..)
 
 ### Markdown Chunking
 
+```
+Input: Markdown Text
+    ↓
+[Parser] → MarkdownElement objects
+    ↓
+[SectionAnalyzer] → Hierarchical sections
+    ↓
+[SemanticChunker] → Create chunks with ancestry
+    ↓
+[ChunkSplitters] → Handle element-specific logic
+    ↓
+[OverlapHandler] → Apply sliding window
+    ↓
+Output: SemanticChunk objects with relationships
+```
+
 Parsed markdown into structured AST (Abstract Syntax Tree) format, table example:
 
 * `table_open` (The container)
@@ -53,13 +69,10 @@ then we build section hierarchy. Usually text, tables, formula, image will be un
 
 ```json
 {
-  "search_content": "BOC as filial son Note : The big state banks inc…",
   "chunk_type": "text",
-  "document_id": "econ_nuclear",
   "section_path": "BOC as filial son",
   "token_count": 235,
   "chunk_id": "econ_nuclear_392_0b4aa421",
-  "chunk_index": 392,
   "content": "Note : The big state banks include China's Postal bank. Source : Table constructed from data in Zhong (2010) and PBC (2010 a,b,c). stringently in action'. An indicator of how susceptible banks are to this pressure is the ratio of platform-to-total loans. The function of policy banks is clearly to implement government policy, but we can compare the ratio of platform-to-total loans of the big state banks with the ratio of the other non-policy banks. Table 10.9 shows the big state banks have a ratio of platform loans that was below the average for the other non-policy banks. Being state-owned, they have the pick of the best and least risky projects. Leung (2011: 2) estimated that in 2009 BOC had a platform-to-total loan ratio of 6.2%. Using data in PWC (2011: 11) and Table 10.7, I estimate the BOC ratio in 2009-10 to be between 8 and 9.1%. Both estimates are lower than the ratio estimates in Table 10.9 for the non-policy banks."
 }
 ```

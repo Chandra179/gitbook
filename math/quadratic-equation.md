@@ -43,3 +43,5 @@ $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
 With the formula, you just plug in $$a=3$$, $$b=5$$, and $$c=-4$$ directly, avoiding all the complicated steps:
 
 $$x = \frac{-5 \pm \sqrt{5^2 - 4(3)(-4)}}{2(3)}$$
+
+We use quadratic functions whenever a relationship involves squaring a value, ex: Projectile Motion (Physics), Optimization (Business & Engineering)
