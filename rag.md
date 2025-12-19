@@ -87,7 +87,7 @@ It will build into JSON object like this:
 ]
 ```
 
-Then we build section hierarchy. Mostly text, tables, formula and image will be under a header. For example header 1 is the bigger header (top-level) then all the text, images, tables will into 1 group. This approach is made to keep track which sections belongs to which header, ex: `#header1 > ##header2 > tables` . But if the chunk size is bigger than the token limits, we should seperate it into new chunk while still keep track of the header. for example:
+Then we build section hierarchy. Mostly text, tables, formula and image will be under a header. For example header 1 is the bigger header (top-level) then all the text, images, tables will into 1 group. This approach is made to keep track which sections belongs to which header, ex: `#header1 > ##header2 > tables` .&#x20;
 
 ```json
 [
@@ -122,6 +122,8 @@ Each the text, paragraphs, code, tables have their own strategies for chunking
 2. tables, if tables to large split by rows
 3. codes, split by lines
 4. list, split by items
+
+If the chunk size is bigger than the `token limits + overlap tokens` , we should seperate it into new chunk while still keep tracking the header. &#x20;
 
 #### Chunking
 
