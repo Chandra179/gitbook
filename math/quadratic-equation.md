@@ -1,4 +1,4 @@
-# Equation
+# Basic II
 
 ### Equations
 
@@ -38,6 +38,8 @@ Working with those fractions is complex and prone to error.
 
 #### Quadratic Formula
 
+Must degree of 2
+
 $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
 
 With the formula, you just plug in $$a=3$$, $$b=5$$, and $$c=-4$$ directly, avoiding all the complicated steps:
@@ -45,3 +47,16 @@ With the formula, you just plug in $$a=3$$, $$b=5$$, and $$c=-4$$ directly, avoi
 $$x = \frac{-5 \pm \sqrt{5^2 - 4(3)(-4)}}{2(3)}$$
 
 We use quadratic functions whenever a relationship involves squaring a value, ex: Projectile Motion (Physics), Optimization (Business & Engineering)
+
+#### Complex Number
+
+Real number + imaginary number
+
+\$$a + bi\$$
+
+The Real Part ($$a$$): These are normal numbers like $$5$$, $$-3$$
+
+The Imaginary Part ($$bi$$): This is a real number multiplied by $$i$$
+
+<figure><img src="../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+
