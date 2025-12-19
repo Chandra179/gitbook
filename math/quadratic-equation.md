@@ -60,3 +60,19 @@ The Imaginary Part ($$bi$$): This is a real number multiplied by $$i$$
 
 <figure><img src="../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
 
+#### Guidelines for Modeling with Equations
+
+1. Identify the Variable. **Identify the quantity** that the problem asks you to find. This quantity can usually be determined by a careful reading of the question that is posed at the end of the problem. Then introduce notation for the variable (call it x or some other letter).
+2. Translate from **Words to Algebra**. Read each sentence in the problem again, and express all the quantities mentioned in the problem in terms of the variable you defined in Step 1. To organize this information, it is sometimes helpful to draw a diagram or make a table.
+3. Set Up the Model. Find the crucial fact in the problem that gives a relationship between the expressions you listed in Step 2. Set up an equation (or model) that expresses this relationship.
+4. Solve the Equation and Check Your Answer. Solve the equation, check your answer, and state your answer as a sentence.
+
+A car rental company charges $30 a day and 15¢ a mile for renting a car. A tourist rents\
+a car for two days, and the bill comes to $108. How many miles was the car driven?
+
+* Let $$x$$ = the number of miles driven.
+* Daily cost: The company charges $$\$30$$ per day. Since the car was rented for 2 days, the cost is $$2 \times 30 = 60$$.
+* Mileage cost: The company charges $$15¢$$ (or $$\$0.15$$) per mile. For $$x$$ miles, the cost is $$0.15x$$.
+* Total Bill: The problem states the final bill comes to $$\$108$$.
+* $$\text{Daily Cost} + \text{Mileage Cost} = \text{Total Bill}$$
+* $$60 + 0.15x = 108$$
