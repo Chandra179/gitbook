@@ -33,7 +33,9 @@ Input: Markdown Text
 Output: SemanticChunk objects with relationships
 ```
 
-#### **AST (Abstract Syntax Tree)**
+when it comes to chunking we dont want to cut mid sentence or paragraph while chunking chunk text, for table and codeblock we want to keep it together as if we cut it it will lose meaning on the text. How to do that? first we build the markdown tree using **AST (Abstract Syntax Tree)** it can detect the opening and closing of elements,&#x20;
+
+for example: table is opened when is tagged as `table_open` and close as `table_close`&#x20;
 
 * `table_open` (The container)
   * `thead_open` (The header section)
@@ -48,9 +50,7 @@ Output: SemanticChunk objects with relationships
   * `tbody_close`
 * `table_close`
 
-#### **Parser**
-
-Parse the markdown to AST (Abstract Syntax Tree) structure&#x20;
+It will build into JSON object like this:
 
 ```json
 [
@@ -87,9 +87,7 @@ Parse the markdown to AST (Abstract Syntax Tree) structure&#x20;
 ]
 ```
 
-#### Section Hierarchy
-
-then we build section hierarchy. Usually text, tables, formula, image will be under a header. For example header 1 is the bigger header (top-level) then all the text, images, tables will be chunk into 1 like this
+Then we build section hierarchy. Mostly text, tables, formula and image will be under a header. For example header 1 is the bigger header (top-level) then all the text, images, tables will into 1 group. This approach is made to keep track which sections belongs to which header, ex: `#header1 > ##header2 > tables` . But if the chunk size is bigger than the token limits, we should seperate it into new chunk while still keep track of the header. for example:
 
 ```json
 [
@@ -117,6 +115,13 @@ then we build section hierarchy. Usually text, tables, formula, image will be un
   }
 ]
 ```
+
+Each the text, paragraphs, code, tables have their own strategies for chunking
+
+1. paragraphs/text, if it s to long split it by sentence/clauses/words, if its to short merged it into one&#x20;
+2. tables, if tables to large split by rows
+3. codes, split by lines
+4. list, split by items
 
 #### Chunking
 
