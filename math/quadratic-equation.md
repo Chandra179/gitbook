@@ -58,7 +58,7 @@ The Real Part ($$a$$): These are normal numbers like $$5$$, $$-3$$
 
 The Imaginary Part ($$bi$$): This is a real number multiplied by $$i$$
 
-<figure><img src="../.gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (1) (1).png" alt=""><figcaption></figcaption></figure>
 
 #### Guidelines for Modeling with Equations
 
@@ -76,3 +76,31 @@ a car for two days, and the bill comes to $108. How many miles was the car drive
 * Total Bill: The problem states the final bill comes to $$\$108$$.
 * $$\text{Daily Cost} + \text{Mileage Cost} = \text{Total Bill}$$
 * $$60 + 0.15x = 108$$
+
+#### Inequalities
+
+<figure><img src="../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+
+A linear inequality is one where the variable has a power of 1. When you graph these, they always form a straight line that divides the plane into two regions.
+
+* $$ax + b < c$$ or $$y > mx + b$$
+* $$2x + 3 \leq 7$$
+
+> Subtract 3: $$2x \leq 4$$
+>
+> Divide by 2: $$x \leq 2$$
+
+A nonlinear inequality contains a variable with a power other than 1 (like $$x^2$$, $$x^3$$), or variables multiplied together, or variables in a denominator.
+
+* Quadratic ($$x^2$$), Rational ($$\frac{1}{x}$$), or Absolute Value ($$|x|$$).
+* $$x^2 - 4 > 0$$
+
+> Find the "critical points" where $$x^2 - 4 = 0$$. This happens at $$x = 2$$ and $$x = -2$$.
+>
+> Test the intervals:
+>
+> * If $$x = 0$$ (between -2 and 2): $$0^2 - 4 > 0$$ is False.
+> * If $$x = 3$$ (greater than 2): $$3^2 - 4 > 0$$ is True.
+> *   If $$x = -3$$ (less than -2): $$(-3)^2 - 4 > 0$$ is True.
+>
+>     The solution is $$x < -2$$ or $$x > 2$$.

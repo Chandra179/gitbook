@@ -88,11 +88,11 @@ Then, we build a section hierarchy. Typically, text, tables, formulas, and image
 ]
 ```
 
-Then for each objects we merged `content_elements` with the `subsections` (notes: only merged content and subsections in the same object not other objects). Then we apply overlap tokens to maintain contextual continuity
+Then for each objects we merged `content_elements` with the `subsections` (notes: only merged content and subsections in the same object not other objects). Then we do chunking
 
-<figure><img src=".gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+<figure><img src=".gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
 
-If the chunk size is bigger than the `token limits + overlap tokens` we should seperate it into a new chunk. Each the text, paragraphs, code, tables have their own strategies for chunking
+If the chunk size is bigger than the `token limits + overlap tokens` we should split it into a new chunk. Each the text, paragraphs, code, tables have their own strategies for chunking
 
 1. paragraphs/text, if its to long split it by sentence/clauses/words, if its to short merged it into one&#x20;
 2. tables, if tables to large split by rows while still keep the table header
@@ -122,7 +122,7 @@ If the chunk size is bigger than the `token limits + overlap tokens` we should s
 ]
 ```
 
-The split sequence acts as an index to indicate which part of the content is being separated into a new chunk object.
+The `split_sequence` acts as an index to indicate which part of the content is being separated into a new chunk object.
 
 ### **Embedding**
 
