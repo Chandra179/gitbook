@@ -66,19 +66,6 @@ It will build into JSON object like this:
         "children": []
       }
     ]
-  },
-  {
-    "type": "ElementType.HEADING",
-    "content": "Setup",
-    "level": 2,
-    "children": [
-      {
-        "type": "ElementType.HEADING",
-        "content": "Setup",
-        "level": 2,
-        "children": []
-      }
-    ]
   }
 ]
 ```
@@ -107,7 +94,7 @@ Then for each objects we merged `content_elements` with the `subsections` (notes
 
 If the chunk size is bigger than the `token limits + overlap tokens` we should seperate it into a new chunk. Each the text, paragraphs, code, tables have their own strategies for chunking
 
-1. paragraphs/text, if it s to long split it by sentence/clauses/words, if its to short merged it into one&#x20;
+1. paragraphs/text, if its to long split it by sentence/clauses/words, if its to short merged it into one&#x20;
 2. tables, if tables to large split by rows while still keep the table header
 3. codes, split by lines
 4. list, split by items
