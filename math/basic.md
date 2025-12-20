@@ -91,10 +91,6 @@ Total Cost = $$\$50 + \$30 + \$10 + \$6 = \mathbf{\$96}$$
 * Variable ($$x^4, x^3, x^2$$): The lowest power is $$\mathbf{x^2}$$.
 * GCF: $$5x^2$$
 
-#### **Cartesian Coordinate System**
-
-<figure><img src="../.gitbook/assets/quadrant_axis.png" alt="" width="375"><figcaption></figcaption></figure>
-
 ***
 
 #### **Intervals**

@@ -52,7 +52,7 @@ We use quadratic functions whenever a relationship involves squaring a value, ex
 
 Real number + imaginary number
 
-\$$a + bi\$$
+$$a + bi$$
 
 The Real Part ($$a$$): These are normal numbers like $$5$$, $$-3$$
 
@@ -104,3 +104,7 @@ A nonlinear inequality contains a variable with a power other than 1 (like $$x^2
 > *   If $$x = -3$$ (less than -2): $$(-3)^2 - 4 > 0$$ is True.
 >
 >     The solution is $$x < -2$$ or $$x > 2$$.
+
+#### The Coordinate Plane, Graphs of Equations, Circles
+
+<figure><img src="../.gitbook/assets/quadrant_axis.png" alt="" width="375"><figcaption></figcaption></figure>
