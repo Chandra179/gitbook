@@ -79,7 +79,7 @@ const navigationData = [
     },
     {
         name: 'Knowledge Graph',
-        slug: 'knowledge-gra',
+        slug: 'knowledge-graph',
         standalone: true
     },
 ];
