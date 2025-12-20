@@ -58,7 +58,7 @@ The Real Part ($$a$$): These are normal numbers like $$5$$, $$-3$$
 
 The Imaginary Part ($$bi$$): This is a real number multiplied by $$i$$
 
-<figure><img src="../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
 
 #### Guidelines for Modeling with Equations
 

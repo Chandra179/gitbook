@@ -33,7 +33,7 @@ Input: Markdown Text
 Output: SemanticChunk objects with relationships
 ```
 
-when it comes to chunking we dont want to cut mid sentence or paragraph while chunking chunk text, for table and codeblock we want to keep it together as if we cut it it will lose meaning on the text. How to do that? first we build the markdown tree using **AST (Abstract Syntax Tree)** it can detect the opening and closing of elements,&#x20;
+When it comes to chunking, we don't want to cut mid-sentence or mid-paragraph. For tables and code blocks, we want to keep them together; if we cut them, the text will lose its meaning. How do we do that? First, we build a Markdown tree using an **AST (Abstract Syntax Tree)**, which can detect the opening and closing of elements,&#x20;
 
 for example: table is opened when is tagged as `table_open` and close as `table_close`&#x20;
 
@@ -83,7 +83,7 @@ It will build into JSON object like this:
 ]
 ```
 
-Then we build section hierarchy. Mostly text, tables, formula and image will be under a header. For example, header 1 is the bigger header (top-level) then all the text, images, tables will be group into 1. This approach is made to keep track which sections belongs to which header, ex: `#header1 > ##header2 > tables` .&#x20;
+Then, we build a section hierarchy. Typically, text, tables, formulas, and images are nested under a header. For example, Header 1 is the top-level header; all associated content is grouped under it. This ensures that related data stays together.
 
 ```json
 [
@@ -101,47 +101,41 @@ Then we build section hierarchy. Mostly text, tables, formula and image will be 
 ]
 ```
 
-Each the text, paragraphs, code, tables have their own strategies for chunking
+Then for each objects we merged `content_elements` with the `subsections` (notes: only merged content and subsections in the same object not other objects). Then we apply overlap tokens to maintain contextual continuity
+
+<figure><img src=".gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+
+If the chunk size is bigger than the `token limits + overlap tokens` we should seperate it into a new chunk. Each the text, paragraphs, code, tables have their own strategies for chunking
 
 1. paragraphs/text, if it s to long split it by sentence/clauses/words, if its to short merged it into one&#x20;
-2. tables, if tables to large split by rows
+2. tables, if tables to large split by rows while still keep the table header
 3. codes, split by lines
 4. list, split by items
 
-If the chunk size is bigger than the `token limits + overlap tokens` , we should seperate it into new chunk while still keep tracking the header. &#x20;
-
-#### Chunking
-
-chunk the sections and subsections into 1 object
-
 ```json
 [
-    {
-        "content": "Some text here.",
-        "token_count": 3,
-        "chunk_type": "paragraph",
-        "section_path": "h1: Title",
-        "is_continuation": false,
-        "split_sequence": null,
-    },
-    {
-        "content": "More text.",
-        "token_count": 2,
-        "chunk_type": "paragraph",
-        "section_path": "h1: Title > h2: Subtopic",
-        "is_continuation": false,
-        "split_sequence": null,
-    },
-    {
-        "content": "Second Title", 
-        "token_count": 2,
-        "chunk_type": "heading",
-        "section_path": "h1: Second Title",
-        "is_continuation": false,
-        "split_sequence": null,
-    }
+  {
+    "chunk_type": "table",
+    "split_sequence": "24/27",
+    "is_continuation": true,
+    "section_path": "Inclusive of the years 1998-2000 only > Index",
+    "document_id": "econ_nuclear",
+    "token_count": 443,
+    "content": "| Agricultural Bank of China, 221, 223, 225, 226, …"
+  },
+  {
+    "token_count":447,
+    "content":"| Agricultural Bank of China, 221, 223, 225, 226, …",
+    "chunk_type":"table",
+    "is_continuation":true,
+    "section_path":"Inclusive of the years 1998-2000 only > Index",
+    "document_id":"econ_nuclear",
+    "split_sequence":"8/27"
+  }
 ]
 ```
+
+The split sequence acts as an index to indicate which part of the content is being separated into a new chunk object.
 
 ### **Embedding**
 
