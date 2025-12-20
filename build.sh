@@ -46,9 +46,9 @@ files=(
     "p2p-chat.md"
     "reactjs.md"
     "study-and-project-group-matcher.md"
-    "topic-breakdown.md"
     "neural-network.md"
     "knowledge-graph.md"
+    "rag.md"
 )
 
 for file in "${files[@]}"; do
