@@ -54,65 +54,50 @@ It will build into JSON object like this:
 
 ```json
 [
-    {
+  {
+    "type": "ElementType.HEADING",
+    "content": "Setup",
+    "level": 2,
+    "children": [
+      {
         "type": "ElementType.HEADING",
         "content": "Setup",
         "level": 2,
-        "metadata": {
-            "tag": "h2"
-        },
         "children": []
-    },
-    {
-        "type": "ElementType.LIST",
-        "content": "* Item 1\n* Item 2",
-        "level": null,
-        "metadata": {
-            "is_ordered": false,
-            "item_count": 2
-        },
+      }
+    ]
+  },
+  {
+    "type": "ElementType.HEADING",
+    "content": "Setup",
+    "level": 2,
+    "children": [
+      {
+        "type": "ElementType.HEADING",
+        "content": "Setup",
+        "level": 2,
         "children": []
-    },
-    {
-        "type": "ElementType.TABLE",
-        "content": "| Col A | Col B |\n|---|---|\n| Val 1 | Val 2 |",
-        "level": null,
-        "metadata": {
-            "num_rows": 2,
-            "num_cols": 2,
-            "has_header": true
-        },
-        "children": []
-    }
+      }
+    ]
+  }
 ]
 ```
 
-Then we build section hierarchy. Mostly text, tables, formula and image will be under a header. For example header 1 is the bigger header (top-level) then all the text, images, tables will into 1 group. This approach is made to keep track which sections belongs to which header, ex: `#header1 > ##header2 > tables` .&#x20;
+Then we build section hierarchy. Mostly text, tables, formula and image will be under a header. For example, header 1 is the bigger header (top-level) then all the text, images, tables will be group into 1. This approach is made to keep track which sections belongs to which header, ex: `#header1 > ##header2 > tables` .&#x20;
 
 ```json
 [
   {
-    "Section (h1: Title)": {
-      "level": 1,
+      "level": 1, //heading level, #, ##
       "content_elements": ["Some text here."],
       "subsections": [
         {
-          "Section (h2: Subtopic)": {
             "level": 2,
             "content_elements": ["More text."],
             "subsections": []
           }
-        }
       ]
-    }
   },
-  {
-    "Section (h1: Second Title)": {
-      "level": 1,
-      "content_elements": [],
-      "subsections": []
-    }
-  }
 ]
 ```
 
