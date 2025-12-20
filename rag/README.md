@@ -1,18 +1,5 @@
 # RAG
 
-### URLs Collector
-
-we need some urls to be crawled we can use **seed urls** and **browser automation** (where we collect the urls from browser search like google, brave, etc..)&#x20;
-
-### Crawl Config
-
-* If we crawling on the same site (domain) multiple times in short time range we can get blocked so we need IP rotation. We can use Residental/Tor proxy `zhaowde/rotating-tor-http-proxy`
-* Domain whitelist, crawl only trusted domain
-* handle URL visits deduplication avoid visiting same URL can cause infinite loop
-* respect robots.txt
-* rate limit request per domain, 10-15 req/sec, random delay
-* define regex to skip junk URL, ex: `(contact|privacy|terms|faq|tag)`
-
 ### Content Extraction
 
 Use Docling to extract PDFs to markdown (including image, table, etc..)
@@ -50,7 +37,7 @@ for example: table is opened when is tagged as `table_open` and close as `table_
   * `tbody_close`
 * `table_close`
 
-It will build into JSON object like this:
+using markdown-it python will build into JSON object like this:
 
 ```json
 [
@@ -126,18 +113,29 @@ The `split_sequence` acts as an index to indicate which part of the content is b
 
 ### **Embedding**
 
-Configurable embedding model and use Vector DB Qdrant for storage, configuration:
+We need to store **dense vector** from the embed result, and also create **sparse vector** using SPLADE (Sparse Lexical and Expansion Model). Why both? Using both allows us to implement Hybrid Search, which combines two different retrieval methods by using **Reciprocal Rank Fusion (RRF)**
 
-```
-├── model_name: "BAAI/bge-base-en-v1.5"
-├── tokenizer_path: "tokenizer.json" or HuggingFace model ID
-├── max_token_limit: 512 (model's actual limit)
-├── target_chunk_size: 400 (leave buffer for safety)
-├── min_chunk_size: 100 (avoid too-small chunks)
-├── overlap_tokens: 50 (for context preservation)
-└── model_dim: 768 (embedding dimension)
-```
+#### Dense vector embed config
 
-**Search**
+* model\_name: "BAAI/bge-base-en-v1.5"
+* tokenizer\_path: "tokenizer.json" or HuggingFace model ID
+* max\_token\_limit: 512 (model's actual limit)
+* model\_dim: 768 (embedding dimension)
 
-Improving vector search using Reranker (Cross-Encoder)
+#### Sparse vector embed config
+
+* model\_name: `"prithivida/Splade_PP_en_v1"` (The industry standard for high-performance SPLADE embeddings).
+* expansion\_enabled: `True` (Enables the model to activate related tokens not present in the original text).
+* top\_k\_pruning: `100` (To optimize storage in Qdrant, we typically keep only the top 100 highest-scoring non-zero dimensions).
+* max\_token\_limit: `512` (Matches dense model's limit for consistency during chunking).
+* output\_format: `{"indices": List[int], "values": List[float]}` (The specific format required by Qdrant's sparse vector index).
+
+### **Retrieval**
+
+To improve retrieval we can use reranker pipeline by using **dense vector and sparse vector search.** Then we need combine it using **RRF**. Then we re-rank the combined candidates using a cross-encoder, which processes the query and the document together to calculate a highly accurate relevance score.
+
+* Store sparse vector in qdrant from embed result
+* Use Qdrant BM25 natively to store Sparse Vectors
+* Use Qdrant Reciprocal Rank Fusion (RRF)
+* Use Qdrant reranking through its Query API
+
