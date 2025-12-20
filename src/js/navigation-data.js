@@ -42,9 +42,9 @@ const navigationData = [
         slug: 'math',
         pages: [
             { name: 'Basic', slug: 'basic' },
+            { name: 'Basic II', slug: 'basic2' },
             { name: 'Polynomial', slug: 'polynomial' },
             { name: 'Problem', slug: 'problem' },
-            { name: 'Equation', slug: 'quadratic-equation' }
         ]
     },
     {
@@ -72,11 +72,6 @@ const navigationData = [
         slug: 'study-and-project-group-matcher',
         standalone: true
     },
-    // {
-    //     name: 'SaaS Ideas',
-    //     slug: 'saas-ideas',
-    //     standalone: true
-    // },
     {
         name: 'Neural Network',
         slug: 'neural-network',
