@@ -57,3 +57,14 @@ Since you are already using FastEmbed for sparse vectors, migrating your dense v
 
 This is a "hack" environment variable for Intel’s OpenMP library. Both PyTorch (via `sentence-transformers`) and FastEmbed try to initialize their own parallel processing threads. This conflict usually crashes the program. Setting it to `TRUE` stops the crash but can cause performance issues because the two libraries "fight" for CPU cores.
 
+***
+
+#### Sparse Vectors Vs. Dense Vectors
+
+A **Sparse Vector** is just a frequency count of unique words.&#x20;
+
+* Sentence A: "Cat, Cat, Dog"
+* The Sparse Vector: `[0, 0, 2, 1, 0]`
+
+A **Dense Vector** is like a set of GPS coordinates, but instead of just 2D (Latitude, Longitude) or 3D (Latitude, Longitude, Altitude), it usually has hundreds or thousands of dimensions. example: dense Vector (768 dimensions): You are mapping a point in a "Concept Space."
+

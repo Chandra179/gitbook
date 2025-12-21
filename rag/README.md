@@ -134,3 +134,29 @@ since we are store **dense vector and sparse vector** we can do hybrid search, t
 * Qdrant have built in Reciprocal Rank Fusion (RRF) query
 * Use **Re-ranker** `BAAI/bge-reranker-v2-m3`  with `CrossEncoder` from sentence-transformers&#x20;
 
+### Checklist
+
+\[ ] Context Compaction (LLMLingua): If you have >10 chunks, run them through a compaction step to remove redundant words (stop-words, repeated headers) while keeping the core facts. This saves tokens and increases the "signal-to-noise" ratio for the final generation.
+
+\[ ] Implement RAGAS (or Arize Phoenix): Since most eval frameworks are Python-based, run a small sidecar service. Focus on three metrics:
+
+* Faithfulness: Does the answer match the retrieved chunks?
+* Context Recall: Did your hybrid search actually find the chunk that contains the answer?
+* Answer Relevance: Does the response actually solve the user's intent?
+
+\[ ] Document-Level Summarization: During ingestion, generate a 2-sentence summary of the entire file. Prepend this to every chunk's text before embedding.
+
+\[ ] One-Sentence Chunk Context: For each chunk, use a fast model (Claude 3.5 Haiku or Gemini Flash) to explain where the chunk sits.
+
+* _Prompt snippet:_ "Map this chunk to the document summary. Answer with one sentence: 'This chunk discusses \[X] in the context of \[Y].'"
+
+\[ ] Implement HyDE (Hypothetical Document Embeddings): \* Generate a "fake" answer first.
+
+* Embed the fake answer instead of the question.
+* Why? A fake answer "looks" like your document chunks in vector space; a question does not.
+
+\[ ] Multi-Query Expansion: Generate 3 variations of the user's query and run your Hybrid Search for all of them, then use your RRF (Reciprocal Rank Fusion) to merge the results.
+
+\[ ] Relevance Filtering: Use your Cross-Encoder/Re-ranker scores to drop any chunks below a certain threshold (e.g., `< 0.7`).
+
+\[ ] Citation Mapping: Ensure your final LLM output explicitly tags the chunks it used (e.g., "According to \[Source 1]...").

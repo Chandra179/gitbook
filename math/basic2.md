@@ -118,7 +118,7 @@ A nonlinear inequality contains a variable with a power other than 1 (like $$x^2
 
 **Example**
 
-<figure><img src="../.gitbook/assets/distance_example.png" alt="" width="375"><figcaption></figcaption></figure>
+<figure><img src="/broken/files/z1WCIiZ0EmSYcP1Nt9c9" alt="" width="375"><figcaption></figcaption></figure>
 
 The goal is to find which point is closer to $$A(5, 3)$$. To do that, we find the distance to $$P(1, -2)$$ and the distance to $$Q(8, 9)$$.
 
