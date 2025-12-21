@@ -19,7 +19,7 @@
 * [ReactJS](reactjs.md)
 * [Math](math/README.md)
   * [Basic](math/basic.md)
-  * [Basic II](math/basic-ii.md)
+  * [Basic II](math/basic2.md)
   * [Problem](math/problem.md)
   * [Polynomial](math/polynomial.md)
 * [System Design](system-design/README.md)
