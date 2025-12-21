@@ -107,4 +107,11 @@ A nonlinear inequality contains a variable with a power other than 1 (like $$x^2
 
 #### The Coordinate Plane, Graphs of Equations, Circles
 
-<figure><img src="../.gitbook/assets/quadrant_axis.png" alt="" width="375"><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/image (3).png" alt="" width="563"><figcaption></figcaption></figure>
+
+**Distance formula** $$d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$$
+
+* The Subtraction $$(x_2 - x_1)$$: This is just a math way of saying "how many steps did I walk sideways?" If you start at $$x=2$$ and end at $$x=5$$, you walked $$5 - 2 = 3$$ steps.
+* The Squaring $$(...)^2$$: This comes directly from Pythagoras ($$a^2 + b^2 = c^2$$). Squaring also makes sure that even if you walk "backwards" (negative numbers), the result becomes positive, because distance is always positive.
+* The Plus Sign $$(+)$$: We add the "sideways steps" squared and the "upward steps" squared together, just like $$a^2 + b^2$$.
+* The Square Root $$(\sqrt{\dots})$$: In the Pythagorean theorem, we have $$c^2$$. To get just $$c$$ (the distance), we have to "undo" the square by taking the square root.

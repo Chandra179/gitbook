@@ -125,17 +125,12 @@ We need to store **dense vector** from the embed result, and also create **spars
 #### Sparse vector embed config
 
 * model\_name: `"prithivida/Splade_PP_en_v1"` (The industry standard for high-performance SPLADE embeddings).
-* expansion\_enabled: `True` (Enables the model to activate related tokens not present in the original text).
-* top\_k\_pruning: `100` (To optimize storage in Qdrant, we typically keep only the top 100 highest-scoring non-zero dimensions).
 * max\_token\_limit: `512` (Matches dense model's limit for consistency during chunking).
-* output\_format: `{"indices": List[int], "values": List[float]}` (The specific format required by Qdrant's sparse vector index).
 
 ### **Retrieval**
 
-To improve retrieval we can use reranker pipeline by using **dense vector and sparse vector search.** Then we need combine it using **RRF**. Then we re-rank the combined candidates using a cross-encoder, which processes the query and the document together to calculate a highly accurate relevance score.
+since we are store **dense vector and sparse vector** we can do hybrid search, then we need combine the result into one using **RRF**. Then we re-rank the combined candidates using a cross-encoder.
 
-* Store sparse vector in qdrant from embed result
-* Use Qdrant BM25 natively to store Sparse Vectors
-* Use Qdrant Reciprocal Rank Fusion (RRF)
-* Use Qdrant reranking through its Query API
+* Qdrant have built in Reciprocal Rank Fusion (RRF) query
+* Use re-ranker `BAAI/bge-reranker-v2-m3`&#x20;
 

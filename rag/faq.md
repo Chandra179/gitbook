@@ -33,8 +33,27 @@ Yes, it works very well. \* This means you are taking a medium-sized piece of te
 
 ***
 
-#### What is Reciprocal Rank Fusion (RRF) and do I need it?
+#### Can my RAG pipeline be improved further?
 
-* What it is: An algorithm that combines search results from multiple sources (like keyword search and semantic search) into one single list. It ranks items based on their position in each list rather than their raw scores.
-* Do you need it? Yes, if you want Hybrid Search. It allows you to find documents that are both "semantically similar" (meaning) and "lexically similar" (exact keywords).
-* Formula: $$RRFscore(d) = \sum_{r \in R} \frac{1}{k + r(d)}$$ (where $$k$$ is usually 60).
+Yes, you are on a great path (hybrid search (sparse, dense) vector, RRF), but you can "level up" by:
+
+* Adding a Re-ranker, use a Cross-Encoder to re-score the top 50 results from Qdrant.
+* Parent Document Retrieval: Search small chunks but return the full paragraph to the LLM for better context.
+
+***
+
+#### What is the difference between `sentence-transformers` and `fastembed` for dense vectors?
+
+The Comparison:
+
+* `fastembed`: Faster on CPUs, tiny footprint, no PyTorch/CUDA dependency, but fewer models available.
+* `sentence-transformers`: More flexible (access to any model on Hugging Face), better for GPUs, but much "heavier" (requires PyTorch).
+
+Since you are already using FastEmbed for sparse vectors, migrating your dense vectors to it would allow you to delete PyTorch, reduce your Docker image size, and remove the `KMP_DUPLICATE_LIB_OK` workaround.
+
+***
+
+#### What does `KMP_DUPLICATE_LIB_OK` do?
+
+This is a "hack" environment variable for Intel’s OpenMP library. Both PyTorch (via `sentence-transformers`) and FastEmbed try to initialize their own parallel processing threads. This conflict usually crashes the program. Setting it to `TRUE` stops the crash but can cause performance issues because the two libraries "fight" for CPU cores.
+
