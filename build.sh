@@ -48,9 +48,6 @@ files=(
     "study-and-project-group-matcher.md"
     "neural-network.md"
     "knowledge-graph.md"
-    "rag.md"
-    "crawling.md"
-    "basic2.md"
 )
 
 for file in "${files[@]}"; do
