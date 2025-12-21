@@ -115,3 +115,29 @@ A nonlinear inequality contains a variable with a power other than 1 (like $$x^2
 * The Squaring $$(...)^2$$: This comes directly from Pythagoras ($$a^2 + b^2 = c^2$$). Squaring also makes sure that even if you walk "backwards" (negative numbers), the result becomes positive, because distance is always positive.
 * The Plus Sign $$(+)$$: We add the "sideways steps" squared and the "upward steps" squared together, just like $$a^2 + b^2$$.
 * The Square Root $$(\sqrt{\dots})$$: In the Pythagorean theorem, we have $$c^2$$. To get just $$c$$ (the distance), we have to "undo" the square by taking the square root.
+
+**Example**
+
+<figure><img src="../.gitbook/assets/distance_example.png" alt="" width="375"><figcaption></figcaption></figure>
+
+The goal is to find which point is closer to $$A(5, 3)$$. To do that, we find the distance to $$P(1, -2)$$ and the distance to $$Q(8, 9)$$.
+
+Distance from $$A(5, 3)$$ to $$P(1, -2)$$
+
+* Step 1 (Subtract): $$5 - 1 = 4$$ and $$3 - (-2) = 5$$
+* Step 2 (Square): $$4^2 = 16$$ and $$5^2 = 25$$
+* Step 3 (Add): $$16 + 25 = 41$$
+* Step 4 (Root): The distance is $$\sqrt{41} \approx \mathbf{6.40}$$
+
+Distance from $$A(5, 3)$$ to $$Q(8, 9)$$
+
+* Step 1 (Subtract): $$5 - 8 = -3$$ and $$3 - 9 = -6$$
+*   Step 2 (Square): $$(-3)^2 = 9$$ and $$(-6)^2 = 36$$
+
+    (Notice how squaring makes the negatives disappear!)
+* Step 3 (Add): $$9 + 36 = 45$$
+* Step 4 (Root): The distance is $$\sqrt{45} \approx \mathbf{6.71}$$
+
+The Conclusion
+
+Since $$\sqrt{41}$$ is a smaller number than $$\sqrt{45}$$, Point $$P$$ is closer to $$A$$ than Point $$Q$$ is.
