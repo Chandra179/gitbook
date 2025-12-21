@@ -26,7 +26,8 @@ const navigationData = [
             { name: 'Character Encoding', slug: 'character-encoding' },
             { name: 'Database', slug: 'database' },
             { name: 'Kafka', slug: 'kafka' },
-            { name: 'NAT and P2P Traversal', slug: 'nat-and-p2p-traversal' }
+            { name: 'NAT and P2P Traversal', slug: 'nat-and-p2p-traversal' },
+            { name: 'Crawling', slug: 'crawling' }
         ]
     },
     {
@@ -50,7 +51,9 @@ const navigationData = [
     {
         name: 'RAG',
         slug: 'rag',
-        standalone: true
+        pages: [
+            { name: 'FAQ', slug: 'faq' },
+        ]
     },
     {
         name: 'System Design',

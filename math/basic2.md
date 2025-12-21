@@ -58,7 +58,7 @@ The Real Part ($$a$$): These are normal numbers like $$5$$, $$-3$$
 
 The Imaginary Part ($$bi$$): This is a real number multiplied by $$i$$
 
-<figure><img src="../.gitbook/assets/image (1) (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/complex_number_table.png" alt=""><figcaption></figcaption></figure>
 
 #### Guidelines for Modeling with Equations
 
@@ -79,7 +79,7 @@ a car for two days, and the bill comes to $108. How many miles was the car drive
 
 #### Inequalities
 
-<figure><img src="../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/inequalities_rules.png" alt=""><figcaption></figcaption></figure>
 
 A linear inequality is one where the variable has a power of 1. When you graph these, they always form a straight line that divides the plane into two regions.
 
@@ -107,7 +107,7 @@ A nonlinear inequality contains a variable with a power other than 1 (like $$x^2
 
 #### The Coordinate Plane, Graphs of Equations, Circles
 
-<figure><img src="../.gitbook/assets/image (3).png" alt="" width="563"><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/coordinate_plane.png" alt="" width="563"><figcaption></figcaption></figure>
 
 **Distance formula** $$d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$$
 
