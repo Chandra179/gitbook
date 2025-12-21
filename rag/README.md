@@ -20,9 +20,9 @@ Input: Markdown Text
 Output: SemanticChunk objects with relationships
 ```
 
-When it comes to chunking, we don't want to cut mid-sentence or mid-paragraph. For tables and code blocks, we want to keep them together; if we cut them, the text will lose its meaning. How do we do that? First, we build a Markdown tree using an **AST (Abstract Syntax Tree)**, which can detect the opening and closing of elements,&#x20;
+When it comes to chunking, we don't want to cut mid-sentence or mid-paragraph. For tables and code blocks, we want to keep them together; if we cut them, the text will lose its meaning. How do we do that? First, we build a Markdown tree using an **AST (Abstract Syntax Tree)**, which can detect the opening and closing of elements,
 
-for example: table is opened when is tagged as `table_open` and close as `table_close`&#x20;
+for example: table is opened when is tagged as `table_open` and close as `table_close`
 
 * `table_open` (The container)
   * `thead_open` (The header section)
@@ -81,7 +81,7 @@ Then for each objects we merged `content_elements` with the `subsections` (notes
 
 If the chunk size is bigger than the `token limits + overlap tokens` we should split it into a new chunk. Each the text, paragraphs, code, tables have their own strategies for chunking
 
-1. paragraphs/text, if its to long split it by sentence/clauses/words, if its to short merged it into one&#x20;
+1. paragraphs/text, if its to long split it by sentence/clauses/words, if its to short merged it into one
 2. tables, if tables to large split by rows while still keep the table header
 3. codes, split by lines
 4. list, split by items
@@ -132,5 +132,5 @@ We need to store **dense vector** from the embed result, and also create **spars
 since we are store **dense vector and sparse vector** we can do hybrid search, then we need combine the result into one using **RRF**. Then we re-rank the combined candidates using a cross-encoder.
 
 * Qdrant have built in Reciprocal Rank Fusion (RRF) query
-* Use re-ranker `BAAI/bge-reranker-v2-m3`&#x20;
+* Use **Re-ranker** `BAAI/bge-reranker-v2-m3`  with `CrossEncoder` from sentence-transformers&#x20;
 
