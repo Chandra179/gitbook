@@ -194,9 +194,13 @@ We need to store **dense vector** from the embed result, and also create **spars
 * model\_name: `prithivida/Splade_PP_en_v1` (The industry standard for high-performance SPLADE embeddings).
 * max\_token\_limit: `512` (Matches dense model's limit for consistency during chunking).
 
+{% hint style="info" %}
+the model config flexible, we can change it later
+{% endhint %}
+
 ### **Retrieval**
 
-since we are store **dense vector and sparse vector** we can do hybrid search, then we need combine the result into one using **RRF**. Then we re-rank the combined candidates using a cross-encoder.
+Do hybrid search for **dense vector and sparse vector**, then we need combine the result into one using **RRF**. Then we re-rank the combined candidates using a cross-encoder.
 
 * Qdrant have built in Reciprocal Rank Fusion (RRF) query
 * Use **Re-ranker** `BAAI/bge-reranker-v2-m3`  with `CrossEncoder` from sentence-transformers
