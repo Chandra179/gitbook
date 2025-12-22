@@ -37,18 +37,18 @@ for example: table is opened when is tagged as `table_open` and close as `table_
   * `tbody_close`
 * `table_close`
 
-using markdown-it python will build into JSON object like this:
+using markdown-it python to build it into JSON object like this:
 
 ```json
 [
   {
     "type": "ElementType.HEADING",
-    "content": "Setup",
+    "content": "this is content abc",
     "level": 2,
     "children": [
       {
         "type": "ElementType.HEADING",
-        "content": "Setup",
+        "content": "on section abc we have ...",
         "level": 2,
         "children": []
       }
@@ -57,34 +57,71 @@ using markdown-it python will build into JSON object like this:
 ]
 ```
 
-Then, we build a section hierarchy. Typically, text, tables, formulas, and images are nested under a header. For example, Header 1 is the top-level header; all associated content is grouped under it. This ensures that related data stays together.
+Then, we build a section hierarchy. Instead of treating a document as a continuous stream of text, it groups content (tables, lists, paragraphs) under their respective headers. For example, Header 1 is the top-level header; all associated content is grouped under it.  example:
+
+```md
+# Header A
+## Header A.1
+<tables>
+<list>
+
+# Header B
+<paragraph>
+```
+
+the structure will be:
 
 ```json
 [
   {
-      "level": 1, //heading level, #, ##
-      "content_elements": ["Some text here."],
-      "subsections": [
-        {
-            "level": 2,
-            "content_elements": ["More text."],
-            "subsections": []
-          }
-      ]
+    "level": 1, 
+    "heading": "Header A",
+    "content_elements": [], 
+    "subsections": [
+      {
+        "level": 2,
+        "heading": "Header A.1",
+        "content_elements": [
+          "<tables>",
+          "<list>"
+        ],
+        "subsections": []
+      }
+    ]
   },
+  {
+    "level": 1,
+    "heading": "Header B",
+    "content_elements": [
+      "<paragraph>"
+    ],
+    "subsections": []
+  }
 ]
 ```
 
-Then for each objects we merged `content_elements` with the `subsections` (notes: only merged content and subsections in the same object not other objects). Then we do chunking
-
-<figure><img src="../.gitbook/assets/chunk_overlap.png" alt=""><figcaption></figcaption></figure>
-
-If the chunk size is bigger than the `token limits + overlap tokens` we should split it into a new chunk. Each the text, paragraphs, code, tables have their own strategies for chunking
+Next we do chunking. Each the text, paragraphs, code, tables have their own strategies for chunking
 
 1. paragraphs/text, if its to long split it by sentence/clauses/words, if its to short merged it into one
 2. tables, if tables to large split by rows while still keep the table header
 3. codes, split by lines
 4. list, split by items
+
+If the chunk size is bigger than the `token limits` we should split it into a new chunk. Also adds `overlap context` before and after the current chunk for better retrieval. example:
+
+<figure><img src="../.gitbook/assets/chunk_overlap.png" alt=""><figcaption></figcaption></figure>
+
+```md
+# Header A
+## Header A.1
+<tables>
+<list>
+
+# Header B
+<paragraph>
+```
+
+If we want to chunk `## Header A.1 <list>`, the "before" context is `<tables>` and the "after" context is `# Header B`. Since `# Header B` is at the same level as `# Header A` (Level 1), we do not add it as "after" context. The final output will be:
 
 ```json
 [
@@ -92,37 +129,57 @@ If the chunk size is bigger than the `token limits + overlap tokens` we should s
     "chunk_type": "table",
     "split_sequence": "24/27",
     "is_continuation": true,
-    "section_path": "Inclusive of the years 1998-2000 only > Index",
-    "document_id": "econ_nuclear",
     "token_count": 443,
+    "section_path": "Inclusive of the years 1998-2000 only > Index",
     "content": "| Agricultural Bank of China, 221, 223, 225, 226, …"
   },
   {
-    "token_count":447,
-    "content":"| Agricultural Bank of China, 221, 223, 225, 226, …",
     "chunk_type":"table",
+    "split_sequence":"8/27",
     "is_continuation":true,
+    "token_count":447,
     "section_path":"Inclusive of the years 1998-2000 only > Index",
-    "document_id":"econ_nuclear",
-    "split_sequence":"8/27"
+    "content":" 227, states that …",
   }
 ]
 ```
 
-The `split_sequence` acts as an index to indicate which part of the content is being separated into a new chunk object.
+The `split_sequence` is an index to indicate which part of the content is being separated into a new chunk object.&#x20;
 
 ### **Embedding**
 
-We need to store **dense vector** from the embed result, and also create **sparse vector** using SPLADE (Sparse Lexical and Expansion Model). Using both allows us to implement Hybrid Search for retrieval.
+We need to store **dense vector** from the embed result, and also create **sparse vector** using SPLADE (Sparse Lexical and Expansion Model). Its needed for Hybrid Search retrieval.
 
-```
-Text: "1991 reforms" 
-Dense Vector: [0.12, -0.04, 0.89, 0.23, -0.11, ...] 
-(continues for 768 dimensions)
-
-Text: "1991 reforms" 
-Sparse Vector: { "1991": 2.4, "reforms": 3.1, "economic": 0.5 } 
-(All other 50,000+ words are 0)
+```json
+{
+  "id": 31868393794739972,
+  "payload": {
+    "is_continuation": false,
+    "token_count": 322,
+    "extra": null,
+    "document_id": "econ_nuclear",
+    "split_sequence": null,
+    "chunk_type": "text",
+    "content": "The policy to promote the development of small-scale coal mines worked...",
+    "section_path": "2.  The boom-and-bust road of the coal industry"
+  },
+  "vector": {
+    "sparse": {
+      "indices": [
+        21447,
+        21762
+      ],
+      "values": [
+        0.14956795,
+        0.12950781
+      ]
+    },
+    "dense": [
+      -0.011004133,
+      -0.007966931
+    ]
+  }
+}  
 ```
 
 #### Dense vector embed config
