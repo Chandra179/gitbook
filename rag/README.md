@@ -4,7 +4,7 @@
 
 Use Docling to extract PDFs to markdown (including image, table, etc..)
 
-### Markdown Chunking
+### Structure-Aware Chunking
 
 ```
 Input: Markdown Text
@@ -20,7 +20,7 @@ Input: Markdown Text
 Output: SemanticChunk objects with relationships
 ```
 
-When it comes to chunking, we don't want to cut mid-sentence or mid-paragraph. For tables and code blocks, we want to keep them together; if we cut them, the text will lose its meaning. How do we do that? First, we build a Markdown tree using an **AST (Abstract Syntax Tree)**, which can detect the opening and closing of elements,
+When doing chunking we don't want to cut mid-sentence or mid-paragraph. For tables and code blocks, we want to keep them together; if we cut them, the text will lose its meaning. How do we do that? First, we build a Markdown tree using an **AST (Abstract Syntax Tree)**, which can detect the opening and closing of elements,
 
 for example: table is opened when is tagged as `table_open` and close as `table_close`
 
@@ -113,18 +113,28 @@ The `split_sequence` acts as an index to indicate which part of the content is b
 
 ### **Embedding**
 
-We need to store **dense vector** from the embed result, and also create **sparse vector** using SPLADE (Sparse Lexical and Expansion Model). Why both? Using both allows us to implement Hybrid Search, which combines two different retrieval methods by using **Reciprocal Rank Fusion (RRF)**
+We need to store **dense vector** from the embed result, and also create **sparse vector** using SPLADE (Sparse Lexical and Expansion Model). Using both allows us to implement Hybrid Search for retrieval.
+
+```
+Text: "1991 reforms" 
+Dense Vector: [0.12, -0.04, 0.89, 0.23, -0.11, ...] 
+(continues for 768 dimensions)
+
+Text: "1991 reforms" 
+Sparse Vector: { "1991": 2.4, "reforms": 3.1, "economic": 0.5 } 
+(All other 50,000+ words are 0)
+```
 
 #### Dense vector embed config
 
-* model\_name: "BAAI/bge-base-en-v1.5"
+* model\_name: `BAAI/bge-base-en-v1.5`
 * tokenizer\_path: "tokenizer.json" or HuggingFace model ID
 * max\_token\_limit: 512 (model's actual limit)
 * model\_dim: 768 (embedding dimension)
 
 #### Sparse vector embed config
 
-* model\_name: `"prithivida/Splade_PP_en_v1"` (The industry standard for high-performance SPLADE embeddings).
+* model\_name: `prithivida/Splade_PP_en_v1` (The industry standard for high-performance SPLADE embeddings).
 * max\_token\_limit: `512` (Matches dense model's limit for consistency during chunking).
 
 ### **Retrieval**
@@ -132,11 +142,10 @@ We need to store **dense vector** from the embed result, and also create **spars
 since we are store **dense vector and sparse vector** we can do hybrid search, then we need combine the result into one using **RRF**. Then we re-rank the combined candidates using a cross-encoder.
 
 * Qdrant have built in Reciprocal Rank Fusion (RRF) query
-* Use **Re-ranker** `BAAI/bge-reranker-v2-m3`  with `CrossEncoder` from sentence-transformers&#x20;
+* Use **Re-ranker** `BAAI/bge-reranker-v2-m3`  with `CrossEncoder` from sentence-transformers
+* Compress search results using `microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank` for saving context tokens space
 
 ### Checklist
-
-\[ ] Context Compaction (LLMLingua): If you have >10 chunks, run them through a compaction step to remove redundant words (stop-words, repeated headers) while keeping the core facts. This saves tokens and increases the "signal-to-noise" ratio for the final generation.
 
 \[ ] Implement RAGAS (or Arize Phoenix): Since most eval frameworks are Python-based, run a small sidecar service. Focus on three metrics:
 
@@ -160,3 +169,7 @@ since we are store **dense vector and sparse vector** we can do hybrid search, t
 \[ ] Relevance Filtering: Use your Cross-Encoder/Re-ranker scores to drop any chunks below a certain threshold (e.g., `< 0.7`).
 
 \[ ] Citation Mapping: Ensure your final LLM output explicitly tags the chunks it used (e.g., "According to \[Source 1]...").
+
+#### Reference
+
+[https://www.oreilly.com/library/view/a-simple-guide/9781633435858/](https://www.oreilly.com/library/view/a-simple-guide/9781633435858/)

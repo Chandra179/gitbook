@@ -6,7 +6,7 @@ Yes. You should never try to fill the entire token limit with one block of text.
 
 * Token Limit is your "hard ceiling" (how much the AI can remember at once).
 * Chunk Size is your "unit of search" (usually 256–1024 tokens).
-* _Strategy:_ Break your data into small chunks (e.g., 512 tokens) so the system can retrieve only the most relevant parts, leaving plenty of room for the AI to "think" and answer.
+* Break your data into small chunks (e.g., 512 tokens) so the system can retrieve only the most relevant parts, leaving plenty of room for the AI to "think" and answer.
 
 ***
 
@@ -33,26 +33,6 @@ Yes, it works very well. \* This means you are taking a medium-sized piece of te
 
 ***
 
-#### Can my RAG pipeline be improved further?
-
-Yes, you are on a great path (hybrid search (sparse, dense) vector, RRF), but you can "level up" by:
-
-* Adding a Re-ranker, use a Cross-Encoder to re-score the top 50 results from Qdrant.
-* Parent Document Retrieval: Search small chunks but return the full paragraph to the LLM for better context.
-
-***
-
-#### What is the difference between `sentence-transformers` and `fastembed` for dense vectors?
-
-The Comparison:
-
-* `fastembed`: Faster on CPUs, tiny footprint, no PyTorch/CUDA dependency, but fewer models available.
-* `sentence-transformers`: More flexible (access to any model on Hugging Face), better for GPUs, but much "heavier" (requires PyTorch).
-
-Since you are already using FastEmbed for sparse vectors, migrating your dense vectors to it would allow you to delete PyTorch, reduce your Docker image size, and remove the `KMP_DUPLICATE_LIB_OK` workaround.
-
-***
-
 #### What does `KMP_DUPLICATE_LIB_OK` do?
 
 This is a "hack" environment variable for Intel’s OpenMP library. Both PyTorch (via `sentence-transformers`) and FastEmbed try to initialize their own parallel processing threads. This conflict usually crashes the program. Setting it to `TRUE` stops the crash but can cause performance issues because the two libraries "fight" for CPU cores.
@@ -68,3 +48,8 @@ A **Sparse Vector** is just a frequency count of unique words.&#x20;
 
 A **Dense Vector** is like a set of GPS coordinates, but instead of just 2D (Latitude, Longitude) or 3D (Latitude, Longitude, Altitude), it usually has hundreds or thousands of dimensions. example: dense Vector (768 dimensions): You are mapping a point in a "Concept Space."
 
+***
+
+#### Should LLMLingua compress chunks individually or as a combined context
+
+Combined. Compressing them together allows LLMLingua to identify and remove redundancies _across_ different documents, which is much more efficient than looking at them in isolation.
