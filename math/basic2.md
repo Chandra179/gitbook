@@ -118,7 +118,7 @@ A nonlinear inequality contains a variable with a power other than 1 (like $$x^2
 
 **Example**
 
-<figure><img src="/broken/files/z1WCIiZ0EmSYcP1Nt9c9" alt="" width="375"><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/coorplane_example.png" alt="" width="375"><figcaption></figcaption></figure>
 
 The goal is to find which point is closer to $$A(5, 3)$$. To do that, we find the distance to $$P(1, -2)$$ and the distance to $$Q(8, 9)$$.
 
@@ -141,3 +141,21 @@ Distance from $$A(5, 3)$$ to $$Q(8, 9)$$
 The Conclusion
 
 Since $$\sqrt{41}$$ is a smaller number than $$\sqrt{45}$$, Point $$P$$ is closer to $$A$$ than Point $$Q$$ is.
+
+***
+
+<figure><img src="../.gitbook/assets/midpoint_distance.png" alt="" width="563"><figcaption></figcaption></figure>
+
+**Midpoint formula** finds the coordinates of the point that lies exactly halfway between two endpoints.
+
+$$M = \left( \frac{x_1 + x_2}{2}, \frac{y_1 + y_2}{2} \right)$$
+
+**Circle equation standard Form (Center-Radius Form)**
+
+This is the most common and useful form because it tells you the center and the radius at a glance.
+
+$$(x - h)^2 + (y - k)^2 = r^2$$
+
+* $$(h, k)$$: The coordinates of the center.
+* $$r$$: The radius of the circle.
+* $$(x, y)$$: Any point on the edge of the circle.
