@@ -60,7 +60,7 @@ The Imaginary Part ($$bi$$): This is a real number multiplied by $$i$$
 
 <figure><img src="../.gitbook/assets/complex_number_table.png" alt=""><figcaption></figcaption></figure>
 
-#### Guidelines for Modeling with Equations
+### Guidelines for Modeling with Equations
 
 1. Identify the Variable. **Identify the quantity** that the problem asks you to find. This quantity can usually be determined by a careful reading of the question that is posed at the end of the problem. Then introduce notation for the variable (call it x or some other letter).
 2. Translate from **Words to Algebra**. Read each sentence in the problem again, and express all the quantities mentioned in the problem in terms of the variable you defined in Step 1. To organize this information, it is sometimes helpful to draw a diagram or make a table.
@@ -77,7 +77,7 @@ a car for two days, and the bill comes to $108. How many miles was the car drive
 * $$\text{Daily Cost} + \text{Mileage Cost} = \text{Total Bill}$$
 * $$60 + 0.15x = 108$$
 
-#### Inequalities
+### Inequalities
 
 <figure><img src="../.gitbook/assets/inequalities_rules.png" alt=""><figcaption></figcaption></figure>
 
@@ -105,7 +105,7 @@ A nonlinear inequality contains a variable with a power other than 1 (like $$x^2
 >
 >     The solution is $$x < -2$$ or $$x > 2$$.
 
-#### The Coordinate Plane, Graphs of Equations, Circles
+### The Coordinate Plane, Graphs of Equations, Circles
 
 <figure><img src="../.gitbook/assets/coordinate_plane.png" alt="" width="563"><figcaption></figcaption></figure>
 
@@ -159,3 +159,17 @@ $$(x - h)^2 + (y - k)^2 = r^2$$
 * $$(h, k)$$: The coordinates of the center.
 * $$r$$: The radius of the circle.
 * $$(x, y)$$: Any point on the edge of the circle.
+
+### Lines
+
+slope is the measure of steepness
+
+$$slope = rise/sun$$
+
+$$m = \frac{y_2 - y_1}{x_2 - x_1}$$
+
+* Numerator ($$y_2 - y_1$$): This is the Rise. It tells you how much the line goes up or down.
+* Denominator ($$x_2 - x_1$$): This is the Run. It tells you how much the line goes left or right.
+
+<figure><img src="../.gitbook/assets/slope_of_line.png" alt=""><figcaption></figcaption></figure>
+

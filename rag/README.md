@@ -206,6 +206,11 @@ Do hybrid search for **dense vector and sparse vector**, then we need combine th
 * Use **Re-ranker** `BAAI/bge-reranker-v2-m3`  with `CrossEncoder` from sentence-transformers
 * Compress search results using `microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank` for saving context tokens space
 
+### Generation
+
+* Inject retrieved context from Retrieval process and pass it along with user query to LLM (ollama)
+* create prompt template for `system` and `user`&#x20;
+
 ### Reference
 
 [https://www.oreilly.com/library/view/a-simple-guide/9781633435858/](https://www.oreilly.com/library/view/a-simple-guide/9781633435858/)
