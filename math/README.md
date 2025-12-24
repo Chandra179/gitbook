@@ -1,19 +1,16 @@
 # Math
 
-* **Algebra 1 & 2**: Solving for $$x$$, exponents, logarithms ($$log$$), and function notation $$f(x)$$.
-* **Trigonometry**: The unit circle, sine, and cosine. (Essential for fields like Computer Graphics or Signal Processing).
-* **Pre-Calculus**: Combining algebra and trig to understand limits and complex functions.
-* **Calculus 1 (Differential)**: Learning about the Derivative. In AI, this is how we calculate "error" change.
-* **Calculus 2 (Integral)**: Learning about the Integral (area under a curve). Essential for continuous probability.
-* **Calculus 3 (Multivariable)**: Taking derivatives of functions with many variables. This is the math that actually powers Gradient Descent in Machine Learning.
-* **Linear Algebra**: The study of vectors and matrices. This is the "language" of data. Every pixel in an image or word in a Large Language Model is stored as a vector.
-* **Discrete Mathematics**: Unlike Calculus (which is continuous), this deals with "distinct" objects. It covers logic, set theory, graph theory (networks), and combinatorics (counting). This is the foundation for Algorithms.
-* **Probability & Statistics**: You use Calculus and Set Theory here to model uncertainty. In a Master's program, you move from "What is the average?" to "How likely is this AI model to be correct?"
-* **Mathematical Proofs**: Many Master's programs expect you to move beyond _calculating_ an answer to _proving_ that an algorithm will always work.
 
 
-
-
-
-
-
+* **Pre-Algebra**: Mastery of fractions, decimals, negative numbers, and the order of operations (PEMDAS).
+* **Algebra 1 & 2**: Solving for $$ $x$ $$, factoring polynomials, exponents, logarithms, and understanding functions ($$ $f(x)$ $$).
+* **Geometry & Trigonometry**: Shapes, spatial logic, the unit circle, and sine/cosine functions.
+* **Pre-Calculus**: Combining algebra and trig to handle limits and prepare for the study of change.
+* **Calculus 1 (Differential)**: Understanding the derivative (the slope of a curve).
+* **Discrete Mathematics**: Logic, set theory, and graph theory. This can be started anytime after Algebra 2 and is the "math of computer logic."
+* **Linear Algebra**: Matrices and vectors. This is the most important math for AI data representation; start this after Calculus 1.
+* **Calculus 2 (Integral)**: Accumulating quantities (area under a curve) and infinite series.
+* **Calculus 3 (Multivariable)**: Taking derivatives and integrals with many variables at once. This combines with Linear Algebra for AI optimization.
+* **Probability & Statistics**: Using Calculus and Set Theory to model uncertainty and data distributions.
+* **Specialized Master's Math**: Numerical Methods (math for computers), Information Theory (data compression), and Optimization Theory (complex decision making).
+* **Mathematical Proofs**: The practice of proving why math rules work, usually integrated into Discrete Math and Linear Algebra courses.
