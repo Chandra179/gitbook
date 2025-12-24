@@ -15,8 +15,6 @@ Input: Markdown Text
     ↓
 [ChunkSplitters] → Handle element-specific logic
     ↓
-[OverlapHandler] → Apply sliding window
-    ↓
 Output: SemanticChunk objects with relationships
 ```
 
