@@ -1,4 +1,10 @@
+---
+layout: editorial
+---
+
 # Algebra
+
+
 
 <table><thead><tr><th width="128.2000732421875">Terms</th><th width="184.79998779296875">Name</th><th>Example</th></tr></thead><tbody><tr><td>0</td><td>Zero Polynomial</td><td><span class="math">0</span></td></tr><tr><td>1</td><td>Monomial</td><td><span class="math">7x^3</span></td></tr><tr><td>2</td><td>Binomial</td><td><span class="math">x - 5</span></td></tr><tr><td>3</td><td>Trinomial</td><td><span class="math">x^2 + 2x + 1</span></td></tr><tr><td>4+</td><td>Polynomial</td><td><span class="math">x^3 + 3x^2 - x + 10</span></td></tr></tbody></table>
 
