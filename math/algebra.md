@@ -21,6 +21,8 @@ radical into fraction exponent
 
 $$\sqrt[3]{x^2} = x^{2/3}$$
 
+**The Binomial Theorem**
+
 ### Linear Functions (Graphing)
 
 **Slope**
@@ -274,6 +276,8 @@ $$x^3 - 4x^2 + 9$$ by $$(x - 3)$$
 | Top Row    | 3       | 1         | -4        | 0        | 9        |
 | Middle Row |         |           | 3         | -3       | -9       |
 | Bottom Row |         | 1         | -1        | -3       | 0        |
+
+**The Remainder & Factor Theorems**
 
 ### Rational Functions
 
