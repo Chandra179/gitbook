@@ -79,6 +79,8 @@ $$y=3x, x+y=16$$ (Substitution)
 
 $$x+y=10, x-y=2$$ (Elimination).
 
+#### Matrices
+
 ### Absolute Value Equations
 
 Use it when you need to find exact points. For example, if you are 5 miles away from a landmark, you could be at two specific points (5 miles north or 5 miles south).
@@ -107,6 +109,8 @@ $$6x^2 + 11x - 10 = 0$$
 * $$a = 6$$, $$b = 11$$, and $$c = -10$$.
 * $$D = (11)^2 - 4(6)(-10)$$
 * $$D = 121 + 240 = \mathbf{361}$$
+
+Completing the Square and Vertex Form: $$y = a(x-h)^2 + k$$
 
 ### Complex & Imaginary Numbers
 
@@ -296,6 +300,8 @@ A hole (Removable Discontinuity) happens when the denominator is zero, but the p
   * But notice that $$(x-3)$$ is on top and bottom. They cancel!
   * The graph will look exactly like the line $$y = x+2$$, but with an empty circle (a hole) at the point where $$x=3$$
 
+**Radical and Rational Inequalities**
+
 ### Inverse Functions
 
 The $$-1$$ in $$f^{-1}(x)$$ is not an exponent. It doesn't mean $$\frac{1}{f(x)}$$. It is simply a special symbol used to label the inverse
@@ -366,13 +372,17 @@ $$2^4 = 16$$, then $$y = 4$$. So, $$\log_2(16) = 4$$.
 * The "Cancel" Rules: $$\ln(e^x) = x$$ and $$e^{\ln(x)} = x$$. (They undo each other).
 * The Reference Points: $$\ln(1) = 0$$ (because $$e^0 = 1$$) and $$\ln(e) = 1$$ (because $$e^1 = e$$).
 
+**Arithmetic & Geometric Sequences and Summation (**$$\Sigma$$**)**
+
 ### Function Composition
 
 $$f(g(x))$$ is called a composite function
 
 the output of $$g(x)$$ becomes the input for $$f(x)$$
 
-### Circle Equation
+### Trigonometry
+
+### Conic Sections
 
 $$(x-h)^2 + (y-k)^2 = r^2$$
 
@@ -393,3 +403,5 @@ If a circle is centered at $$(0, 0)$$ with a radius of $$5$$:
 
 * $$(x - 0)^2 + (y - 0)^2 = 5^2$$
 * $$x^2 + y^2 = 25$$
+
+### Probability and Statistics
