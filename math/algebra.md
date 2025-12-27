@@ -68,6 +68,19 @@ $$y=3x, x+y=16$$ (Substitution)&#x20;
 
 $$x+y=10, x-y=2$$ (Elimination).
 
+#### Absolute Value Equations
+
+Use it when you need to find exact points. For example, if you are 5 miles away from a landmark, you could be at two specific points (5 miles north or 5 miles south).
+
+$$|ax + b| = c$$:
+
+1. Isolate the absolute value expression on one side.
+2. Split into two separate equations:
+   * Case 1: $$ $ax + b = c$ $$
+   * Case 2: $$ $ax + b = -c$ $$
+3. Solve both equations for $$ $x$ $$.
+4. Check for extraneous solutions (if you started with an equation like $$ $|x| = -5$ $$, there is no solution because distance cannot be negative).
+
 #### Exponents and Radicals
 
 Understanding the rules of "repeated multiplication."
@@ -336,6 +349,8 @@ When numbers range from 1 to 1,000,000,000, a standard graph is hard to read. A 
 **Log-to-Exponential Conversion**
 
 <p align="center"><span class="math">\log_b(x) = y \quad \longleftrightarrow \quad b^y = x</span></p>
+
+<p align="center"><span class="math">\log_b(x) = \frac{\log_k(x)}{\log_k(b)}</span></p>
 
 $$2^4 = 16$$, then $$y = 4$$. So, $$\log_2(16) = 4$$.
 

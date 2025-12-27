@@ -9,7 +9,6 @@
   * [Database](general/database.md)
   * [Kafka](general/kafka.md)
   * [Oauth2 & Oidc](general/oauth2-and-oidc.md)
-  * [Crawling](general/crawling.md)
 * [Golang](golang/README.md)
   * [Strings](golang/strings.md)
   * [Goroutine](golang/goroutine.md)
