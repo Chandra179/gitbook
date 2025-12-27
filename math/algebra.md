@@ -1,27 +1,62 @@
 # Algebra
 
-### Foundational Building Blocks
+### Exponential, Radical, Factoring
 
 <table><thead><tr><th width="128.2000732421875">Terms</th><th width="184.79998779296875">Name</th><th>Example</th></tr></thead><tbody><tr><td>0</td><td>Zero Polynomial</td><td><span class="math">0</span></td></tr><tr><td>1</td><td>Monomial</td><td><span class="math">7x^3</span></td></tr><tr><td>2</td><td>Binomial</td><td><span class="math">x - 5</span></td></tr><tr><td>3</td><td>Trinomial</td><td><span class="math">x^2 + 2x + 1</span></td></tr><tr><td>4+</td><td>Polynomial</td><td><span class="math">x^3 + 3x^2 - x + 10</span></td></tr></tbody></table>
 
-### Exponents and Radicals
+**Exponential**
 
-Understanding the rules of "repeated multiplication."
+<table><thead><tr><th width="207.800048828125">Rule Name</th><th width="260.800048828125">Mathematical Definition</th><th>Example</th></tr></thead><tbody><tr><td>Product Rule</td><td><span class="math">x^a \cdot x^b = x^{a+b}</span></td><td><span class="math">x^4 \cdot x^5 = x^{4+5} = x^9</span></td></tr><tr><td>Quotient Rule</td><td><span class="math">\frac{x^a}{x^b} = x^{a-b}</span></td><td><span class="math">\frac{x^7}{x^3} = x^{7-3} = x^4</span></td></tr><tr><td>Power of a Power</td><td><span class="math">(x^a)^b = x^{a \cdot b}</span></td><td><span class="math">(x^3)^2 = x^6</span></td></tr><tr><td>Negative Exponent</td><td><span class="math">x^{-a} = \frac{1}{x^a}</span></td><td><span class="math">x^{-2} = \frac{1}{x^2}</span></td></tr><tr><td>Zero Exponent</td><td><span class="math">x^0 = 1</span> (where <span class="math">x \neq 0</span>)</td><td><span class="math">1,250^0 = 1</span></td></tr></tbody></table>
 
-* Product rule, Power rule, and Quotient rule.
-* $$x^4 \cdot x^5 = x^9$$ and $$\sqrt{x+2}=5$$.
+**Radical**
 
-### Polynomials and Factoring
+<table><thead><tr><th width="172.5999755859375">Radical Form</th><th width="254.59991455078125">Exponent Form</th><th>Logic</th></tr></thead><tbody><tr><td><span class="math">\sqrt{x}</span></td><td><span class="math">x^{1/2}</span></td><td>The "invisible" root is 2.</td></tr><tr><td><span class="math">\sqrt[3]{x}</span></td><td><span class="math">x^{1/3}</span></td><td>The root is 3.</td></tr><tr><td><span class="math">\sqrt[3]{x^2}</span></td><td><span class="math">x^{2/3}</span></td><td>The power is 2, the root is 3.</td></tr><tr><td><span class="math">(\sqrt[4]{x})^5</span></td><td><span class="math">x^{5/4}</span></td><td>The power is 5, the root is 4.</td></tr></tbody></table>
 
-Factoring trinomials and recognizing the "Difference of Squares."
+**Factoring** &#x20;
 
-$$(x+4)(x+5)$$ and $$(x-7)(x+7)$$.
+$$x^2 + 7x + 10$$
 
-radical into fraction exponent
+* What multiplies to $$10$$? (Possible pairs: $$1 \times 10$$ or $$2 \times 5$$).
+* Which pair adds to $$7$$? ($$2 + 5 = 7$$).
+* Factored Form: $$(x + 2)(x + 5)$$.
 
-$$\sqrt[3]{x^2} = x^{2/3}$$
+### **Binomial Theorem**
 
-**The Binomial Theorem**
+Binomial Theorem is a shortcut used to expand expressions where two terms (a binomial) are raised to a high power, such as $$(x + y)^{10}$$
+
+Instead of manually multiplying $$(x + y)$$ by itself ten times which would take a lot of time and likely lead to errors. The theorem provides a formula to find the expanded version instantly.
+
+<p align="center"><span class="math">(a + b)^n = \sum_{k=0}^{n} \binom{n}{k} a^{n-k} b^k</span></p>
+
+* $$\binom{n}{k}$$ (Binomial Coefficient): This is the "n choose k" combination. It tells you the number in front of each term. You can find these using factorials or Pascal’s Triangle.
+* $$a^{n-k}$$: The power of the first term starts at $$n$$ and decreases by 1 for each term.
+* $$b^k$$: The power of the second term starts at 0 and increases by 1 for each term.
+* $$n + 1$$ Terms: There will always be one more term than the power you started with (e.g., $$(x+y)^3$$ has 4 terms).
+
+Suppose a factory produces light bulbs, and historical data shows that 5% (0.05) of all bulbs produced are defective. An inspector randomly selects a sample of 4 bulbs for testing. We want to find the probability of finding exactly 2 defective bulbs in that sample.
+
+To use the theorem, we define our binomial terms ($$a + b$$):
+
+* $$a = 0.05$$ (The probability of a "Success" – in this case, a defective bulb).
+* $$b = 0.95$$ (The probability of a "Failure" – a working bulb).
+* $$n = 4$$ (The total number of trials or bulbs sampled).
+* $$k = 2$$ (The specific term we want: exactly 2 defective bulbs).
+
+We don't need the whole expansion $$(0.05 + 0.95)^4$$ we only need the specific term where the power of $$a$$ is 2. The formula for a specific term is:
+
+$$\text{Probability} = \binom{n}{k} \cdot a^k \cdot b^{n-k}$$
+
+1.  The Coefficient $$\binom{4}{2}$$: Use Pascal's Triangle or the formula $$\frac{n!}{k!(n-k)!}$$.
+
+    $$\binom{4}{2} = \frac{4 \cdot 3}{2 \cdot 1} = 6$$
+
+    (There are 6 different ways or sequences to get exactly 2 defective bulbs out of 4).
+2. The Probabilities:
+   * $$a^k = (0.05)^2 = 0.0025$$
+   * $$b^{n-k} = (0.95)^2 = 0.9025$$
+3. Multiply them together: $$6 \cdot 0.0025 \cdot 0.9025 = 0.0135375$$
+
+The probability of finding exactly 2 defective bulbs in a sample of 4 is approximately 1.35%.
 
 ### Linear Functions (Graphing)
 
@@ -36,7 +71,9 @@ $$m = \frac{y_2 - y_1}{x_2 - x_1}$$
 * $$(2, 3)$$ and $$(5, 9)$$
 * $$m = \frac{9 - 3}{5 - 2}$$
 
-**Slope-Intercept**: $$y=mx+b$$
+**Slope-Intercept**
+
+$$y=mx+b$$
 
 When you know the slope and where the line hits the y-axis (the y-intercept), or when you need to graph a line quickly.
 
@@ -46,7 +83,9 @@ $$m = -\frac{1}{2}$$ and $$b = 4$$
 * $$y = -\frac{1}{2}(10) + 4 \rightarrow y = -5 + 4$$.
 * $$y = -1$$
 
-**Point-Slope**: $$y - y_1 = m(x - x_1)$$
+**Point-Slope**
+
+$$y - y_1 = m(x - x_1)$$
 
 Use it when you have a slope and any point (not necessarily the y-intercept)
 
@@ -57,7 +96,9 @@ Write the equation of a line that has a slope of $$3$$ and passes through the po
 * $$y + 1 = 3(x - 4)$$
 * $$y + 1 = 3(x - 4)$$
 
-**Standard Form**: $$Ax + By = C$$. used it to find intercepts easily or to solve systems of equations using the "Elimination"
+**Standard Form**
+
+$$Ax + By = C$$. used it to find intercepts easily or to solve systems of equations using the "Elimination"
 
 Find the x-intercept and y-intercept for the line $$3x + 4y = 12$$.
 
@@ -73,21 +114,57 @@ If you multiply or divide both sides of an inequality by a negative number, you 
 
 Adding or subtracting numbers does not change the sign, even if the numbers are negative.
 
-### Systems of Equations
+### Substitution & Elimination
 
-Substitution and Elimination methods.
+**Elimination**
 
-$$y=3x, x+y=16$$ (Substitution)
+$$\begin{cases} 3x + 4y = 7 \\ 2x + 3y = 5 \end{cases}$$
 
-$$x+y=10, x-y=2$$ (Elimination).
+Multiply the top by $$2$$ and the bottom by $$-3$$:
 
-#### Matrices
+$$\begin{cases} 6x + 8y = 14 \\ -6x - 9y = -15 \end{cases}$$
+
+$$-y = -1 \implies y = 1$$
+
+$$2x + 3(1) = 5 \implies 2x = 2 \implies x = 1$$
+
+$$(1, 1)$$
+
+***
+
+**Substitution**
+
+$$\begin{cases} 2x - 3y = -2 \\ 4x + y = 24 \end{cases}$$
+
+Isolate $$y$$ in the second equation: $$y = 24 - 4x$$
+
+Substitute into the first: $$2x - 3(24 - 4x) = -2$$
+
+$$2x - 72 + 12x = -2$$
+
+$$14x = 70 \implies x = 5$$
+
+Substitute: $$y = 24 - 4(5) \implies y = 4$$
+
+$$(5, 4)$$
+
+### Matrix
+
+*   Quantity Matrix ($$Q$$): Rows = Locations, Columns = Items
+
+    $$Q = \begin{bmatrix} 50 & 80 \\ 30 & 100 \end{bmatrix}$$
+*   Price Matrix ($$P$$): A column matrix of prices
+
+    $$P = \begin{bmatrix} 3 \\ 2 \end{bmatrix}$$
+* ($$Q \times P$$):
+  * Downtown: $$(50 \times 3) + (80 \times 2) = 150 + 160 = \$310$$
+  * Uptown: $$(30 \times 3) + (100 \times 2) = 90 + 200 = \$290$$
 
 ### Absolute Value Equations
 
 Use it when you need to find exact points. For example, if you are 5 miles away from a landmark, you could be at two specific points (5 miles north or 5 miles south).
 
-$$|ax + b| = c$$:
+$$|ax + b| = c$$
 
 1. Isolate the absolute value expression on one side.
 2. Split into two separate equations:
@@ -183,7 +260,7 @@ $$f(x) = a_n x^n + a_{n-1} x^{n-1} + \dots + a_1 x + a_0$$
 * $$a_n$$: The leading coefficient (the number attached to the highest power).
 * $$a_0$$: The constant term (the number with no variable).
 
-**Examples of Solving Polynomial Equations**
+***
 
 $$x^4 - 13x^2 + 36 = 0$$
 
