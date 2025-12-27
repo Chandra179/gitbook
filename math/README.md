@@ -3,7 +3,7 @@
 
 
 * **Pre-Algebra**: Mastery of fractions, decimals, negative numbers, and the order of operations (PEMDAS).
-* **Algebra 1 & 2**: Solving for $$ $x$ $$, factoring polynomials, exponents, logarithms, and understanding functions ($$ $f(x)$ $$).
+* **Algebra 1 & 2**: Solving for $$x$$, factoring polynomials, exponents, logarithms, and understanding functions ($$f(x)$$).
 * **Geometry & Trigonometry**: Shapes, spatial logic, the unit circle, and sine/cosine functions.
 * **Pre-Calculus**: Combining algebra and trig to handle limits and prepare for the study of change.
 * **Calculus 1 (Differential)**: Understanding the derivative (the slope of a curve).
