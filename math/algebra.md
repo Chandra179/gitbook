@@ -1,7 +1,3 @@
----
-layout: editorial
----
-
 # Algebra
 
 ### Foundational Building Blocks
