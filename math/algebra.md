@@ -76,10 +76,10 @@ $$|ax + b| = c$$:
 
 1. Isolate the absolute value expression on one side.
 2. Split into two separate equations:
-   * Case 1: $$ $ax + b = c$ $$
-   * Case 2: $$ $ax + b = -c$ $$
-3. Solve both equations for $$ $x$ $$.
-4. Check for extraneous solutions (if you started with an equation like $$ $|x| = -5$ $$, there is no solution because distance cannot be negative).
+   * Case 1: $$ax + b = c$$
+   * Case 2: $$ax + b = -c$$
+3. Solve both equations for $$x$$.
+4. Check for extraneous solutions (if you started with an equation like $$|x| = -5$$, there is no solution because distance cannot be negative).
 
 #### Exponents and Radicals
 
@@ -367,3 +367,55 @@ There is no such power. As $$y$$ gets smaller and smaller (like $$-100, -1000, \
 
 * The "Cancel" Rules: $$\ln(e^x) = x$$ and $$e^{\ln(x)} = x$$. (They undo each other).
 * The Reference Points: $$\ln(1) = 0$$ (because $$e^0 = 1$$) and $$\ln(e) = 1$$ (because $$e^1 = e$$).
+
+***
+
+$$f(g(x))$$ is called a composite function
+
+the output of $$g(x)$$ becomes the input for $$f(x)$$
+
+***
+
+**Circle Equation**
+
+$$(x-h)^2 + (y-k)^2 = r^2$$
+
+every point $$(x, y)$$ that lies on the edge of a specific circle
+
+$$(h, k)$$: These are the coordinates of the Center of the circle.
+
+* $$h$$ is the x-coordinate (left/right).
+* $$k$$ is the y-coordinate (up/down).
+
+$$r$$: This is the Radius (the distance from the center to the edge).
+
+* Note: In the equation, the radius is squared ($$r^2$$).
+
+$$(x, y)$$: These represent any point on the boundary of the circle.
+
+If a circle is centered at $$(0, 0)$$ with a radius of $$5$$:
+
+* $$(x - 0)^2 + (y - 0)^2 = 5^2$$
+* $$x^2 + y^2 = 25$$
+
+***
+
+**Inverse Functions**
+
+The $$-1$$ in $$f^{-1}(x)$$ is not an exponent. It doesn't mean $$\frac{1}{f(x)}$$. It is simply a special symbol used to label the inverse
+
+Find the inverse of $$f(x) = 2x + 3$$
+
+1.  Replace $$f(x)$$ with $$y$$
+
+    $$y = 2x + 3$$
+2.  Swap $$x$$ and $$y$$
+
+    $$x = 2y + 3$$
+3.  Solve for the new $$y$$
+
+    $$x - 3 = 2y$$\
+    $$\frac{x - 3}{2} = y$$
+4.  Replace $$y$$ with $$f^{-1}(x)$$
+
+    $$f^{-1}(x) = \frac{x - 3}{2}$$
