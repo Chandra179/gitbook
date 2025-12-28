@@ -133,3 +133,145 @@ If you then walk from the Coffee Shop back to Home, you walk another $$5$$ units
 * Total Trip without the Store stop: $$5 + 5 = \mathbf{10}$$ units.
 
 ### Matrix
+
+If Matrix $$A$$ is $$(m \times n)$$ and Matrix $$B$$ is $$(n \times p)$$, the resulting Matrix $$C$$ will be $$(m \times p)$$.
+
+$$A = \begin{bmatrix} 1 & 2 & 3 \\ 4 & 5 & 6 \end{bmatrix}, \quad B = \begin{bmatrix} 7 & 8 \\ 9 & 10 \\ 11 & 12 \end{bmatrix}$$
+
+Top-Left Entry (Row 1 of A $$\times$$ Column 1 of B)
+
+$$(1 \times 7) + (2 \times 9) + (3 \times 11) = 7 + 18 + 33 = \mathbf{58}$$
+
+Top-Right Entry (Row 1 of A $$\times$$ Column 2 of B):
+
+$$(1 \times 8) + (2 \times 10) + (3 \times 12) = 8 + 20 + 36 = \mathbf{64}$$
+
+Bottom-Left Entry (Row 2 of A $$\times$$ Column 1 of B):
+
+$$(4 \times 7) + (5 \times 9) + (6 \times 11) = 28 + 45 + 66 = \mathbf{139}$$
+
+Bottom-Right Entry (Row 2 of A $$\times$$ Column 2 of B):
+
+$$(4 \times 8) + (5 \times 10) + (6 \times 12) = 32 + 50 + 72 = \mathbf{154}$$
+
+$$C = \begin{bmatrix} 58 & 64 \\ 139 & 154 \end{bmatrix}$$
+
+### Linear Equations
+
+linear equations in matrix form, $$Ax = b$$
+
+* Matrix $$A$$ (Coefficient Matrix): Contains only the numbers (coefficients) in front of the variables.
+* Vector $$x$$ (Variable Vector): A column vector of the unknowns (e.g., $$x, y, z$$).
+* Vector $$b$$ (Constant Vector): A column vector of the answers on the right side of the equals sign.
+
+$$2x + 3y = 8$$
+
+$$5x - y = 1$$
+
+To write this in $$Ax = b$$ form:
+
+$$\begin{bmatrix} 2 & 3 \\ 5 & -1 \end{bmatrix} \begin{bmatrix} x \\ y \end{bmatrix} = \begin{bmatrix} 8 \\ 1 \end{bmatrix}$$
+
+***
+
+### **Law Of Operations**
+
+<table><thead><tr><th width="176.5999755859375">Operation</th><th width="187.4000244140625">Law</th><th>Formula</th></tr></thead><tbody><tr><td>Multiplication</td><td>Not Commutative</td><td><span class="math">AB \neq BA</span></td></tr><tr><td>Multiplication</td><td>Associative</td><td><span class="math">A(BC) = (AB)C</span></td></tr><tr><td>Transpose</td><td>Product Law</td><td><span class="math">(AB)^T = B^T A^T</span></td></tr><tr><td>Inverse</td><td>Product Law</td><td><span class="math">(AB)^{-1} = B^{-1} A^{-1}</span></td></tr><tr><td>Scalar</td><td>Distributive</td><td><span class="math">c(A + B) = cA + cB</span></td></tr></tbody></table>
+
+***
+
+### **Factorization**
+
+**LU Decomposition (**$$A = LU$$**)**
+
+This is the matrix version of Gaussian Elimination.
+
+* L stands for Lower Triangular, and U stands for Upper Triangular.
+* Once you factor $$A$$ into $$L$$ and $$U$$, you can solve $$Ax = b$$ for 1,000 different values of $$b$$ almost instantly. It is much faster than re-running elimination every time.
+
+**QR Decomposition (**$$A = QR$$**)**
+
+This breaks a matrix into an Orthogonal matrix ($$Q$$) and an Upper Triangular matrix ($$R$$). Computers love orthogonal matrices because they don't lose precision during calculations. This is the standard way to solve Least Squares problems (finding the best-fit line in Data Science).
+
+**Singular Value Decomposition (**$$A = U\Sigma V^T$$**)**
+
+It factors any matrix into three parts that represent its rotation, scaling, and rotation.
+
+* Compression: You can throw away the small values in $$\Sigma$$ to shrink a high-res image into a tiny file while keeping it recognizable.
+  * PCA (Principal Component Analysis): Finding the most important patterns in a massive dataset.
+
+***
+
+### **Augmented Matrix**
+
+Often, when solving these equations by hand (using a method like Gaussian Elimination), we use an Augmented Matrix.&#x20;
+
+$$\left[ \begin{array}{cc|c} 2 & 3 & 8 \\ 5 & -1 & 1 \end{array} \right]$$
+
+To solve the equation we use&#x20;
+
+### Identity Matrix
+
+$$I = \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}$$
+
+### Matrix Elimination
+
+simplifying a complex fraction. make the matrix clean
+
+#### **Matrix Inverse**
+
+inverse matrix  is the mathematical "undo" button. Think of a matrix $$A$$ as a function that transforms data (moving a character in a game, encrypting a message, or blurring an image), the inverse $$A^{-1}$$ is the function that reverses that transformation exactly.
+
+&#x20;($$x = A^{-1}b$$)
+
+When you multiply a matrix by its inverse, you get the Identity Matrix.
+
+$$A \cdot A^{-1} = I$$
+
+This method is like basic algebra. If $$ax = b$$, then $$x = b/a$$. In matrices, we multiply by the inverse instead of dividing.
+
+$$A = \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}, \quad x = \begin{bmatrix} x \\ y \end{bmatrix}, \quad b = \begin{bmatrix} 5 \\ 11 \end{bmatrix}$$
+
+For a $$2 \times 2$$ matrix $$\begin{bmatrix} a & b \\ c & d \end{bmatrix}$$, the inverse is $$\frac{1}{ad-bc} \begin{bmatrix} d & -b \\ -c & a \end{bmatrix}$$.
+
+Determinant: $$(1 \times 4) - (2 \times 3) = 4 - 6 = \mathbf{-2}$$
+
+Swap and Negate: Swap 1 and 4, make 2 and 3 negative $$\to \begin{bmatrix} 4 & -2 \\ -3 & 1 \end{bmatrix}$$
+
+Multiply by 1/Det: $$A^{-1} = -\frac{1}{2} \begin{bmatrix} 4 & -2 \\ -3 & 1 \end{bmatrix} = \begin{bmatrix} -2 & 1 \\ 1.5 & -0.5 \end{bmatrix}$$
+
+$$\begin{bmatrix} x \\ y \end{bmatrix} = \begin{bmatrix} -2 & 1 \\ 1.5 & -0.5 \end{bmatrix} \begin{bmatrix} 5 \\ 11 \end{bmatrix} = \begin{bmatrix} (-2 \times 5) + (1 \times 11) \\ (1.5 \times 5) + (-0.5 \times 11) \end{bmatrix} = \mathbf{\begin{bmatrix} 1 \\ 2 \end{bmatrix}}$$
+
+Solution: $$x = 1, y = 2$$
+
+***
+
+#### **Gaussian Elimination**
+
+This method uses "row operations" to simplify the matrix into a form where we can read the answers.
+
+We combine Matrix $$A$$ and Vector $$b$$ into one:
+
+$$\left[ \begin{array}{cc|c} 1 & 2 & 5 \\ 3 & 4 & 11 \end{array} \right]$$
+
+We want to eliminate the $$3$$ in the second row. We can do this by: Row 2 $$\to$$ Row 2 $$- (3 \times$$ Row 1).
+
+$$(3 - 3 \times 1) = 0$$
+
+$$(4 - 3 \times 2) = -2$$
+
+$$(11 - 3 \times 5) = -4$$
+
+New Matrix:
+
+$$\left[ \begin{array}{cc|c} 1 & 2 & 5 \\ 0 & -2 & -4 \end{array} \right]$$
+
+**Back-Substitution**
+
+Now we turn the rows back into equations
+
+1. Bottom row: $$-2y = -4 \implies \mathbf{y = 2}$$
+2. Top row: $$x + 2y = 5$$
+3. Substitute y: $$x + 2(2) = 5 \implies x + 4 = 5 \implies \mathbf{x = 1}$$
+
+Solution: $$x = 1, y = 2$$
