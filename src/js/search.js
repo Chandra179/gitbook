@@ -21,26 +21,41 @@ class Search {
                     console.warn('Failed to index', section.slug, e);
                 }
             } else if (section.pages) {
-                for (const page of section.pages) {
-                    try {
-                        const response = await fetch(`../${section.slug}/${page.slug}.md`);
-                        if (response.ok) {
-                            const text = await response.text();
-                            this.indexContent(
-                                index,
-                                text,
-                                page.name,
-                                `${section.slug}/${page.slug}`,
-                                section.name
-                            );
-                        }
-                    } catch (e) {
-                        console.warn('Failed to index', section.slug, page.slug, e);
-                    }
-                }
+                await this.indexPages(index, section.pages, section.slug, section.name);
             }
         }
         this.searchIndex = index;
+    }
+
+    // Recursive function to index pages including nested folders
+    async indexPages(index, pages, categorySlug, categoryName, pathPrefix = '') {
+        for (const page of pages) {
+            if (page.isFolder && page.pages) {
+                // Recursively index nested folder pages
+                const folderPath = pathPrefix ? `${pathPrefix}/${page.slug}` : page.slug;
+                await this.indexPages(index, page.pages, categorySlug, categoryName, folderPath);
+            } else {
+                // Index regular page
+                try {
+                    const pagePath = pathPrefix ? `${pathPrefix}/${page.slug}` : page.slug;
+                    const filePath = `../${categorySlug}/${pagePath}.md`;
+                    const response = await fetch(filePath);
+                    
+                    if (response.ok) {
+                        const text = await response.text();
+                        this.indexContent(
+                            index,
+                            text,
+                            page.name,
+                            `${categorySlug}/${pagePath}`,
+                            categoryName
+                        );
+                    }
+                } catch (e) {
+                    console.warn('Failed to index', categorySlug, page.slug, e);
+                }
+            }
+        }
     }
 
     indexContent(index, text, pageName, pageLink, categoryName) {
@@ -113,7 +128,6 @@ class Search {
             return [];
         }
 
-        // Limit query length to prevent ReDoS
         if (this.searchQuery.length > 100) {
             this.searchResults = [];
             return [];
@@ -125,11 +139,10 @@ class Search {
                 item.plainText.toLowerCase().includes(lowerQuery);
         });
 
-        // Map results to include snippets
         this.searchResults = results.map(item => {
             const snippet = this.getSnippet(item.plainText, lowerQuery);
             return { ...item, snippet };
-        }).slice(0, 10); // Limit to 10 results
+        }).slice(0, 10);
 
         return this.searchResults;
     }

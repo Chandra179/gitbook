@@ -15,7 +15,6 @@ class ContentLoader {
             if (standaloneItem) {
                 // Load standalone page from root directory
                 const response = await fetch(`../${category}.md`);
-
                 if (!response.ok) {
                     markdown = `# Page Not Found\n\nThe file \`${category}.md\` could not be loaded.`;
                 } else {
@@ -24,7 +23,6 @@ class ContentLoader {
             } else if (!page) {
                 // Just category, load README.md for that category
                 const response = await fetch(`../${category}/README.md`);
-
                 if (!response.ok) {
                     const categoryData = this.navigationData.find(cat => cat.slug === category);
                     const categoryName = categoryData ? categoryData.name : category;
@@ -33,7 +31,7 @@ class ContentLoader {
                     markdown = await response.text();
                 }
             } else {
-                // Fetch markdown file from category subdirectory
+                // Handle nested paths (e.g., "algebra/files")
                 const filePath = `../${category}/${page}.md`;
                 const response = await fetch(filePath);
 
@@ -46,7 +44,6 @@ class ContentLoader {
 
             const html = marked.parse(markdown);
 
-            // Trigger callback with loaded content
             if (this.onContentLoaded) {
                 this.onContentLoaded(html, anchor);
             }

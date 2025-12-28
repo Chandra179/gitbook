@@ -15,7 +15,6 @@ class Router {
     handleRoute() {
         let hash = window.location.hash.slice(1) || 'README';
 
-        // Handle anchors in hash (e.g. category/page#header)
         let anchor = '';
         if (hash.includes('#')) {
             const parts = hash.split('#');
@@ -25,7 +24,6 @@ class Router {
 
         this.currentPage = hash;
 
-        // Check if this is a standalone page
         const standaloneItem = this.navigationData.find(
             item => item.standalone && item.slug === hash
         );
@@ -34,14 +32,13 @@ class Router {
             this.currentCategory = null;
             this.updateBreadcrumb(hash, null);
         } else {
-            // Parse category and page from hash (format: category/page or just category)
+            // Parse category and page from hash (format: category/subfolder/page)
             const parts = hash.split('/');
             this.currentCategory = parts[0];
-            const page = parts[1] || null;
+            const page = parts.slice(1).join('/') || null; // Join remaining parts
             this.updateBreadcrumb(this.currentCategory, page);
         }
 
-        // Trigger route change callback
         if (this.onRouteChange) {
             this.onRouteChange(this.currentCategory || hash, anchor);
         }
@@ -79,9 +76,26 @@ class Router {
         if (!page) {
             this.breadcrumb = categoryData.name;
         } else {
-            const pageData = categoryData.pages.find(p => p.slug === page);
-            const pageName = pageData ? pageData.name : page;
-            this.breadcrumb = `${categoryData.name} / ${pageName}`;
+            // Handle nested paths (e.g., "algebra/files")
+            const parts = page.split('/');
+            const breadcrumbParts = [categoryData.name];
+            
+            let currentLevel = categoryData.pages;
+            for (let i = 0; i < parts.length; i++) {
+                const slug = parts[i];
+                const item = currentLevel?.find(p => p.slug === slug);
+                
+                if (item) {
+                    breadcrumbParts.push(item.name);
+                    if (item.isFolder && item.pages) {
+                        currentLevel = item.pages;
+                    }
+                } else {
+                    breadcrumbParts.push(slug);
+                }
+            }
+            
+            this.breadcrumb = breadcrumbParts.join(' / ');
         }
     }
 

@@ -1,65 +1,54 @@
 function portfolioApp() {
     return {
-        // UI state
         mobileMenuOpen: false,
         loading: true,
         isSearchOpen: false,
         expandedSections: {},
+        expandedFolders: {}, // NEW: Track expanded nested folders
 
-        // Module instances
         router: null,
         search: null,
         contentLoader: null,
         tocGenerator: null,
         renderer: null,
 
-        // Data
         navigationData: navigationData,
 
         init() {
-            // Initialize marked extensions
             if (typeof initializeMarkedExtensions === 'function') {
                 initializeMarkedExtensions();
             }
 
-            // Set up marked options
             marked.setOptions({
                 breaks: true,
                 gfm: true,
                 headerIds: true,
             });
 
-            // Initialize modules
             this.router = new Router(this.navigationData);
             this.search = new Search(this.navigationData);
             this.contentLoader = new ContentLoader(this.navigationData);
             this.tocGenerator = new TOCGenerator();
             this.renderer = new Renderer();
 
-            // Set up router callback
             this.router.onRouteChange = (category, anchor) => {
                 const page = this.router.getCurrentPage().includes('/') 
-                    ? this.router.getCurrentPage().split('/')[1] 
+                    ? this.router.getCurrentPage().split('/').slice(1).join('/')
                     : null;
                 this.loadContent(category, page, anchor);
             };
 
-            // Set up content loader callback
             this.contentLoader.onContentLoaded = (html, anchor) => {
                 this.content = html;
                 this.postRenderActions(anchor);
             };
 
-            // Initialize expanded sections (expand first category by default)
             const firstCategory = this.navigationData.find(item => !item.standalone);
             if (firstCategory) {
                 this.expandedSections[firstCategory.slug] = true;
             }
 
-            // Start router
             this.router.init();
-
-            // Initialize search index
             this.search.init();
         },
 
@@ -71,13 +60,11 @@ function portfolioApp() {
         },
 
         postRenderActions(anchor) {
-            // Wait for DOM update then apply all rendering
             setTimeout(() => {
                 this.tocGenerator.addIdsToHeaders();
                 this.tocGenerator.generate();
                 this.renderer.renderAll();
 
-                // Scroll to anchor if present
                 if (anchor) {
                     const element = document.getElementById(anchor);
                     if (element) {
@@ -89,7 +76,6 @@ function portfolioApp() {
             }, 100);
         },
 
-        // Navigation methods
         navigate(path) {
             this.router.navigate(path);
         },
@@ -103,15 +89,24 @@ function portfolioApp() {
             this.router.navigateToPage(category, page);
         },
 
+        // NEW: Navigate to nested page
+        navigateToNestedPage(category, folder, page) {
+            window.location.hash = `${category}/${folder}/${page}`;
+        },
+
         isPageActive(category, page) {
             return this.router.isPageActive(category, page);
+        },
+
+        // NEW: Check if nested page is active
+        isNestedPageActive(category, folder, page) {
+            return this.currentPage === `${category}/${folder}/${page}`;
         },
 
         isCategoryActive(category) {
             return this.router.isCategoryActive(category);
         },
 
-        // Search methods
         performSearch() {
             return this.search.performSearch(this.searchQuery);
         },
@@ -131,7 +126,6 @@ function portfolioApp() {
             return this.search.highlightText(text, query);
         },
 
-        // Section expansion
         toggleSection(slug) {
             this.expandedSections[slug] = !this.expandedSections[slug];
         },
@@ -140,7 +134,17 @@ function portfolioApp() {
             return this.expandedSections[slug] || false;
         },
 
-        // Getters for template binding
+        // NEW: Toggle nested folders
+        toggleFolder(category, folder) {
+            const key = `${category}/${folder}`;
+            this.expandedFolders[key] = !this.expandedFolders[key];
+        },
+
+        isFolderExpanded(category, folder) {
+            const key = `${category}/${folder}`;
+            return this.expandedFolders[key] || false;
+        },
+
         get currentPage() {
             return this.router ? this.router.getCurrentPage() : 'README';
         },
