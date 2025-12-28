@@ -8,9 +8,9 @@ n-Dimensional Vector: A list of 1,000 numbers representing a user's preferences 
 
 ***
 
-
-
 ### Linear Combination
+
+<figure><img src="../../.gitbook/assets/vector_addition.png" alt=""><figcaption></figcaption></figure>
 
 Scalar Multiplication
 
@@ -40,12 +40,6 @@ $$(3 \times 1) + (4 \times 2) = 3 + 8 = \mathbf{11}$$
 
 The number 11. It is no longer a point on a graph; it is a "score."
 
-***
-
-the length is $$\|\vec{v}\| = \sqrt{x^2 + y^2}$$
-
-Length of $$\vec{A}$$ is 5 (because $$\sqrt{3^2 + 4^2} = 5$$). The Length of $$\vec{B}$$ is 2.23.
-
 This tells you how intense or strong the data is. example: In music: It’s the Volume. A loud song has a long vector; a quiet song has a short vector.
 
 ***
@@ -54,13 +48,28 @@ This tells you how intense or strong the data is. example: In music: It’s the 
 
 &#x20;$$|v \cdot w| \leq \|v\| \|w\|$$
 
-$$\|v\| \|w\| = 5 \times 2.23 = \mathbf{11.15}$$. (length)
+***
+
+the length is $$\|\vec{v}\| = \sqrt{x^2 + y^2}$$
+
+Length of $$\vec{A}$$ is 5 (because $$\sqrt{3^2 + 4^2} = 5$$). The Length of $$\vec{B}$$ is 2.23.
+
+$$\|v\| \|w\| = 5 \times 2.23 = \mathbf{11.15}$$. (Maximum possible dot product you could get if two specific vectors were perfectly aligned)
+
+***
+
+**Cosine Rule (The Angle)**
 
 $$\text{Similarity} = \frac{\text{Actual Score (Dot Product)}}{\text{Potential Score (Product of Lengths)}}$$
 
 $$\frac{11.0}{11.15} \approx \mathbf{0.986}$$
 
 If a "Loud" song and a "Quiet" song are both Heavy Metal, they will point in the same direction (small angle).
+
+* $$\cos(\theta) = 0.986$$.
+* $$\cos^{-1}(0.986)$$ $$\approx 9.6^\circ$$
+
+<table><thead><tr><th width="206.199951171875">If Similarity (Cosine) is...</th><th width="187.60003662109375">The Angle (θ) is...</th><th>What it means</th></tr></thead><tbody><tr><td>1.00</td><td>0°</td><td>Perfectly identical direction.</td></tr><tr><td>0.707</td><td>45°</td><td>Halfway between same and different.</td></tr><tr><td>0.00</td><td>90°</td><td>Completely different (Perpendicular).</td></tr></tbody></table>
 
 ***
 
@@ -78,40 +87,49 @@ This "normalizes" data so you can compare different vectors fairly, regardless o
 
 ***
 
-**Cosine Rule (The Angle)**
-
-the "Similarity" as $$0.986$$. In Strang's book, that number is formally known as $$\cos(\theta)$$. formula ($$\frac{v \cdot w}{\|v\| \|w\|}$$) is exactly how we find the angle between two vectors.
-
-* If the result is 1, the angle is 0° (Perfectly aligned).
-* If the result is 0, the angle is 90° (Perpendicular).
-
-***
-
 **Triangle Inequality**
+
+<figure><img src="../../.gitbook/assets/triangle_inequality.png" alt=""><figcaption></figcaption></figure>
 
 It states that the shortest distance between two points is a straight line.
 
 $$\|v + w\| \leq \|v\| + \|w\|$$
 
-Imagine you walk along vector $$\vec{v}$$, then turn and walk along vector $$\vec{w}$$.
+Example
 
-* The total distance you walked is $$\|v\| + \|w\|$$.
-* The "shortcut" (the direct line from start to finish) is $$\|v + w\|$$.
-* The shortcut can never be longer than the two separate paths added together.
+* Home: $$(0,0)$$
+* Grocery Store: Point $$(4, 0)$$
+* Coffee Shop: Point $$(4, 3)$$
 
-$$\vec{A} = [3, 4]$$ and $$\vec{B} = [1, 2]$$.
+First, you walk from Home to the Store, then from the Store to the Coffee Shop.
 
-* Length of A: $$5$$
-* Length of B: $$2.23$$
-* Sum of Lengths: $$5 + 2.23 = \mathbf{7.23}$$
+1. Vector $$\vec{v}$$ (Home to Store): You move 4 units East.
+   * $$\vec{v} = [4, 0]$$
+   * Length $$\|v\| = 4$$
+2. Vector $$\vec{w}$$ (Store to Coffee): You move 3 units North.
+   * $$\vec{w} = [0, 3]$$
+   * Length $$\|w\| = 3$$
 
-Now, let's find the "Shortcut" ($$\vec{A} + \vec{B}$$):
+Total Distance of Path B: $$4 + 3 = \mathbf{7}$$
 
-* $$\vec{A} + \vec{B} = [3+1, 4+2] = [4, 6]$$
-* Length of Shortcut: $$\sqrt{4^2 + 6^2} = \sqrt{16 + 36} = \sqrt{52} \approx \mathbf{7.21}$$
+If you had walked straight from Home to the Coffee Shop, you are looking for the length of the vector $$\vec{v} + \vec{w}$$.
 
-$$7.21 \leq 7.23$$.
+* Combined Vector: $$[4+0, 0+3] = [4, 3]$$
+* Length $$\|v+w\|$$: Using Pythagoras: $$\sqrt{4^2 + 3^2} = \sqrt{16 + 9} = \sqrt{25} = \mathbf{5}$$
 
-The shortcut ($$7.21$$) is slightly shorter than the long way around ($$7.23$$) because the two vectors aren't pointing in the exact same direction. They form a very thin triangle!
+Now we plug these numbers into the inequality:
+
+$$\|v + w\| \leq \|v\| + \|w\|$$
+
+$$\mathbf{5} \leq \mathbf{4 + 3}$$
+
+$$\mathbf{5} \leq \mathbf{7}$$
+
+The inequality is True. The straight line ($$5$$) is shorter than the two-step path ($$7$$).
+
+If you then walk from the Coffee Shop back to Home, you walk another $$5$$ units.
+
+* Total Trip with the Store stop: $$4 + 3 + 5 = \mathbf{12}$$ units.
+* Total Trip without the Store stop: $$5 + 5 = \mathbf{10}$$ units.
 
 ### Matrix
