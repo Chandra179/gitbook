@@ -115,15 +115,3 @@ $$f(f^{-1}(x)) = 2\left(\frac{x - 3}{2}\right) + 3$$
 1. The $$2$$s cancel: $$(x - 3) + 3$$
 2. The $$3$$s cancel: $$x$$ > Result: If you get $$x$$, your inverse is perfect.
 
-### Matrix
-
-*   Quantity Matrix ($$Q$$): Rows = Locations, Columns = Items
-
-    $$Q = \begin{bmatrix} 50 & 80 \\ 30 & 100 \end{bmatrix}$$
-*   Price Matrix ($$P$$): A column matrix of prices
-
-    $$P = \begin{bmatrix} 3 \\ 2 \end{bmatrix}$$
-* ($$Q \times P$$):
-  * Downtown: $$(50 \times 3) + (80 \times 2) = 150 + 160 = \$310$$
-  * Uptown: $$(30 \times 3) + (100 \times 2) = 90 + 200 = \$290$$
-

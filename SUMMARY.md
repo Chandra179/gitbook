@@ -26,6 +26,7 @@
     * [Logarithmic & Exponential Functions](math/algebra/logarithmic-and-exponential-functions.md)
     * [Trigonometry](math/algebra/trigonometry.md)
     * [Conic Sections](math/algebra/conic-sections.md)
+    * [Matrix](math/algebra/matrix.md)
   * [Precalculus](math/basic.md)
   * [Precalculus II](math/basic2.md)
   * [Problem](math/problem.md)
