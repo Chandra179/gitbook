@@ -65,3 +65,15 @@
 **Software Engineering Agent (SWE-agent)**: Autonomous or semi-autonomous systems that use CodeLLMs to solve complex software engineering tasks, such as fixing bugs or implementing features.
 
 **Language Server Protocol (LSP)**: A protocol used to integrate CodeLLMs into IDEs, providing features like autocompletion, "go to definition," and real-time error checking.
+
+### Five Pillars of Reasoning
+
+[https://arxiv.org/pdf/2512.14691](https://arxiv.org/pdf/2512.14691)
+
+To systematically assess these capabilities, the authors propose a principled framework based on five core reasoning abilities:
+
+* **Physical Reasoning**: Understanding gravity, collisions, and object permanence.
+* **Logical Reasoning**: Manipulating abstract concepts and following rules.
+* **3D Spatial Reasoning**: Navigating environments and understanding 3D relationships.
+* **2D Spatial Reasoning**: Accurately interpreting layouts and positions in a 2D plane.
+* **Temporal Reasoning**: Modeling causality and event order over time.
