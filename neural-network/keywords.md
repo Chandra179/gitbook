@@ -1,49 +1,67 @@
 # Keywords
 
-**CodeLLM** (Code Large Language Model): Large-scale Transformer models specifically pre-trained or fine-tuned on vast amounts of source code to perform programming tasks.
+### Model Architectures and Components
 
-**Transformer** A neural network architecture that uses self-attention mechanisms, forming the foundation for most modern LLMs.
+**CodeLLM (Code Large Language Model)**: Large-scale Transformer models specifically pre-trained or fine-tuned on vast amounts of source code to perform programming tasks.
 
-**Post-training** – The phase after pre-training where a model is adapted for specific tasks or behaviors, typically via SFT or RL.
+**Transformer**: A neural network architecture that uses self-attention mechanisms, forming the foundation for most modern LLMs.
 
-**AST** (Abstract Syntax Tree): A tree representation of the abstract syntactic structure of source code, used by models to understand code logic beyond plain text.
+**Mixture of Experts (MoE)**: A model architecture where different specialized sub-networks ("experts") are activated for different inputs, enabling larger capacity with efficient computation.
 
-**CFG** (Control Flow Graph): A representation of all paths that might be traversed through a program during its execution, helping models reason about program behavior.
+**Multimodal LLM (MLLM)**: A model that can process and understand multiple types of input data, such as text, images, and code.
+
+**AST (Abstract Syntax Tree)**: A tree representation of the abstract syntactic structure of source code, used by models to understand code logic beyond plain text.
+
+**CFG (Control Flow Graph)**: A representation of all paths that might be traversed through a program during its execution, helping models reason about program behavior.
+
+### Training Phases and Methods
 
 **Pre-training**: The initial phase where a model is trained on massive, unlabeled code datasets (like GitHub) to learn general programming patterns.
 
-**SFT** (Supervised Fine-Tuning): The process of further training a pre-trained model on high-quality, human-annotated instruction-following data to specialize it for specific tasks.
+**Post-training**: The phase after pre-training where a model is adapted for specific tasks or behaviors, typically via SFT or RL.
 
-**RLHF** (Reinforcement Learning from Human Feedback): A method to align model outputs with human preferences by training a reward model based on human rankings of code quality.
+**Supervised Fine-Tuning (SFT)**: The process of further training a pre-trained model on high-quality, human-annotated instruction-following data to specialize it for specific tasks.
 
-**RLAIF** (Reinforcement Learning from AI Feedback): A variation of RLHF where another AI (often a more powerful model) provides the feedback and rewards instead of humans.
+**Instruction Tuning**: A form of SFT where the model is trained on datasets formatted as instructions and desired responses to improve instruction-following capability.
 
-**(RLVR)Reinforcement Learning with Verifiable Rewards** – RL using deterministic, automated rewards (like unit test pass/fail) for tasks like code generation.
+### Reinforcement Learning and Alignment Techniques
 
-**Context Engineering**: The practice of strategically selecting and formatting the "context" (code snippets, documentation, or repo-level info) provided to the model to improve its output accuracy.
+**Reinforcement Learning from Human Feedback (RLHF)**: A method to align model outputs with human preferences by training a reward model based on human rankings of code quality.
 
-**RAG** (Retrieval-Augmented Generation): A technique where the model retrieves relevant code snippets from an external database or repository to supplement its internal knowledge before generating code.
+**Reinforcement Learning from AI Feedback (RLAIF)**: A variation of RLHF where another AI (often a more powerful model) provides the feedback and rewards instead of humans.
 
-**Mixture of Experts (MoE)** – A model architecture where different specialized sub-networks ("experts") are activated for different inputs, enabling larger capacity with efficient computation.
+**Reinforcement Learning with Verifiable Rewards (RLVR)**: RL using deterministic, automated rewards (like unit test pass/fail) for tasks like code generation.
 
-**Next Token Prediction (NTP)** – The standard autoregressive training objective where a model predicts the next token in a sequence.
+**Direct Preference Optimization (DPO)**: An alternative to RLHF that optimizes the model to prefer "better" code samples directly without requiring a separate reward model.
 
-**Multi-Token Prediction (MTP)** – An extended training objective where the model predicts multiple future tokens simultaneously.
+### Training Objectives and Tasks
 
-**Repo-level Prompting**: Providing the model with context from an entire software repository rather than just a single file, allowing it to understand cross-file dependencies.
+**Next Token Prediction (NTP)**: The standard autoregressive training objective where a model predicts the next token in a sequence.
 
-**CoT** (Chain-of-Thought): A prompting technique that encourages the model to generate a sequence of intermediate reasoning steps before providing the final code.
+**Multi-Token Prediction (MTP)**: An extended training objective where the model predicts multiple future tokens simultaneously.
 
-**Infilling**: A training objective where the model learns to predict missing segments of code given the surrounding prefix and suffix (often called Fill-In-the-Middle or FIM).
+**Infilling (Fill-in-the-Middle / FIM)**: A training objective where the model learns to predict missing segments of code given the surrounding prefix and suffix.
 
-**SWE-agent** (Software Engineering Agent): Autonomous or semi-autonomous systems that use CodeLLMs to solve complex software engineering tasks, such as fixing bugs or implementing features.
+### Evaluation and Benchmarks
 
 **HumanEval / MBPP**: Standardized benchmarks (HumanEval and Mostly Basic Python Problems) used to evaluate the functional correctness of code generated by models.
 
-**Instruction Tuning** – A form of SFT where the model is trained on datasets formatted as instructions and desired responses to improve instruction-following capability.
+**Pass@k**: A metric used to evaluate code generation, measuring the probability that at least one of the top k generated code samples passes all unit tests.
 
-**Pass@k**: A metric used to evaluate code generation, measuring the probability that at least one of the top _k_ generated code samples passes all unit tests.
+**CodeBLEU**: An evaluation metric for code that extends BLEU by incorporating syntactic and semantic matching via Abstract Syntax Trees (ASTs) and data flow.
 
-**DPO** (Direct Preference Optimization): An alternative to RLHF that optimizes the model to prefer "better" code samples directly without requiring a separate reward model.
+### Prompting and Context Techniques
 
-**LSP** (Language Server Protocol): A protocol used to integrate CodeLLMs into IDEs, providing features like autocompletion, "go to definition," and real-time error checking.
+**Context Engineering**: The practice of strategically selecting and formatting the "context" (code snippets, documentation, or repo-level info) provided to the model to improve its output accuracy.
+
+**Chain-of-Thought (CoT)**: A prompting technique that encourages the model to generate a sequence of intermediate reasoning steps before providing the final code.
+
+**Repo-level Prompting**: Providing the model with context from an entire software repository rather than just a single file, allowing it to understand cross-file dependencies.
+
+**Retrieval-Augmented Generation (RAG)**: A technique where the model retrieves relevant code snippets from an external database or repository to supplement its internal knowledge before generating code.
+
+### Applications and Systems
+
+**Software Engineering Agent (SWE-agent)**: Autonomous or semi-autonomous systems that use CodeLLMs to solve complex software engineering tasks, such as fixing bugs or implementing features.
+
+**Language Server Protocol (LSP)**: A protocol used to integrate CodeLLMs into IDEs, providing features like autocompletion, "go to definition," and real-time error checking.
