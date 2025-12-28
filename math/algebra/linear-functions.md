@@ -54,6 +54,67 @@ If you multiply or divide both sides of an inequality by a negative number, you 
 
 Adding or subtracting numbers does not change the sign, even if the numbers are negative.
 
+### Substitution & Elimination
+
+**Elimination**
+
+$$\begin{cases} 3x + 4y = 7 \\ 2x + 3y = 5 \end{cases}$$
+
+Multiply the top by $$2$$ and the bottom by $$-3$$:
+
+$$\begin{cases} 6x + 8y = 14 \\ -6x - 9y = -15 \end{cases}$$
+
+$$-y = -1 \implies y = 1$$
+
+$$2x + 3(1) = 5 \implies 2x = 2 \implies x = 1$$
+
+$$(1, 1)$$
+
+***
+
+**Substitution**
+
+$$\begin{cases} 2x - 3y = -2 \\ 4x + y = 24 \end{cases}$$
+
+Isolate $$y$$ in the second equation: $$y = 24 - 4x$$
+
+Substitute into the first: $$2x - 3(24 - 4x) = -2$$
+
+$$2x - 72 + 12x = -2$$
+
+$$14x = 70 \implies x = 5$$
+
+Substitute: $$y = 24 - 4(5) \implies y = 4$$
+
+$$(5, 4)$$
+
+### Inverse Functions
+
+The $$-1$$ in $$f^{-1}(x)$$ is not an exponent. It doesn't mean $$\frac{1}{f(x)}$$. It is simply a special symbol used to label the inverse
+
+Find the inverse of $$f(x) = 2x + 3$$
+
+1.  Replace $$f(x)$$ with $$y$$
+
+    $$y = 2x + 3$$
+2.  Swap $$x$$ and $$y$$
+
+    $$x = 2y + 3$$
+3.  Solve for the new $$y$$
+
+    $$x - 3 = 2y$$\
+    $$\frac{x - 3}{2} = y$$
+4.  Replace $$y$$ with $$f^{-1}(x)$$
+
+    $$f^{-1}(x) = \frac{x - 3}{2}$$
+
+To prove the answer is correct, use Function Composition. If you plug the inverse into the original, they should "cancel out" to leave just $$x$$:
+
+$$f(f^{-1}(x)) = 2\left(\frac{x - 3}{2}\right) + 3$$
+
+1. The $$2$$s cancel: $$(x - 3) + 3$$
+2. The $$3$$s cancel: $$x$$ > Result: If you get $$x$$, your inverse is perfect.
+
 ### Matrix
 
 *   Quantity Matrix ($$Q$$): Rows = Locations, Columns = Items
@@ -65,3 +126,4 @@ Adding or subtracting numbers does not change the sign, even if the numbers are 
 * ($$Q \times P$$):
   * Downtown: $$(50 \times 3) + (80 \times 2) = 150 + 160 = \$310$$
   * Uptown: $$(30 \times 3) + (100 \times 2) = 90 + 200 = \$290$$
+

@@ -49,3 +49,35 @@ $$2^4 = 16$$, then $$y = 4$$. So, $$\log_2(16) = 4$$.
 * The Reference Points: $$\ln(1) = 0$$ (because $$e^0 = 1$$) and $$\ln(e) = 1$$ (because $$e^1 = e$$).
 
 **Arithmetic & Geometric Sequences and Summation (**$$\Sigma$$**)**
+
+### General Transformations
+
+**General transformation** is used to describe how a "parent" graph is moved, stretched, or flipped on a coordinate plane.
+
+$$f(x) = a \cdot b^{x-h} + k$$
+
+The **Vertical** Shift ($$k$$)
+
+* The value of $$k$$ controls the Horizontal Asymptote (the invisible floor).
+* If $$k$$ is positive ($$+3$$): The entire graph slides up 3 units. Your "floor" moves from $$y=0$$ to $$y=3$$.
+* If $$k$$ is negative ($$-5$$): The entire graph slides down 5 units. Your "floor" is now at $$y=-5$$.
+
+The **Horizontal** $$h$$ value sits in the exponent with $$x$$. This transformation moves the graph in the opposite direction of the sign you see.
+
+* If you see $$(x - 3)$$: The graph moves Right 3 units.
+* If you see $$(x + 2)$$: The graph moves Left 2 units.
+* Why is it backward? To get the same output ($$y$$) as the original graph, you now have to use an $$x$$ value that is 3 units larger to "cancel out" the $$-3$$.
+
+The **Vertical Stretch/Compression** $$a$$ value (the number in front) acts like you are grabbing the graph and pulling it taller or squishing it flatter.
+
+* If $$|a| > 1$$: The graph gets "steep" faster (Vertical Stretch).
+* If $$0 < |a| < 1$$: The graph looks flatter (Vertical Compression).
+* If $$a$$ is negative ($$-a$$): The graph flips over the x-axis. Instead of exploding upward, it explodes downward.
+
+$$f(x) = 2^{x-3} + 1$$:
+
+1. Identify $$k$$: The asymptote is at $$y = 1$$. Draw a dashed line there first.
+2. Identify $$h$$: The graph is moved Right 3.
+3.  Find Y-Intercept: Plug in $$x = 0$$ to find exactly where it hits the y-axis.
+
+    $$f(0) = 2^{0-3} + 1 = 2^{-3} + 1 = \frac{1}{8} + 1 = 1.125$$

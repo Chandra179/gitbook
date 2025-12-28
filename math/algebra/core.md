@@ -2,15 +2,15 @@
 
 ### **Terms**
 
-<table><thead><tr><th width="128.2000732421875">Terms</th><th width="184.79998779296875">Name</th><th>Example</th></tr></thead><tbody><tr><td>0</td><td>Zero Polynomial</td><td><span class="math">0</span></td></tr><tr><td>1</td><td>Monomial</td><td><span class="math">7x^3</span></td></tr><tr><td>2</td><td>Binomial</td><td><span class="math">x - 5</span></td></tr><tr><td>3</td><td>Trinomial</td><td><span class="math">x^2 + 2x + 1</span></td></tr><tr><td>4+</td><td>Polynomial</td><td><span class="math">x^3 + 3x^2 - x + 10</span></td></tr></tbody></table>
+<table><thead><tr><th width="128.2000732421875">Terms</th><th width="177.199951171875">Name</th><th>Example</th></tr></thead><tbody><tr><td>0</td><td>Zero Polynomial</td><td><span class="math">0</span></td></tr><tr><td>1</td><td>Monomial</td><td><span class="math">7x^3</span></td></tr><tr><td>2</td><td>Binomial</td><td><span class="math">x - 5</span></td></tr><tr><td>3</td><td>Trinomial</td><td><span class="math">x^2 + 2x + 1</span></td></tr><tr><td>4+</td><td>Polynomial</td><td><span class="math">x^3 + 3x^2 - x + 10</span></td></tr></tbody></table>
 
 ### **Exponential**
 
-<table><thead><tr><th width="207.800048828125">Rule Name</th><th width="260.800048828125">Mathematical Definition</th><th>Example</th></tr></thead><tbody><tr><td>Product Rule</td><td><span class="math">x^a \cdot x^b = x^{a+b}</span></td><td><span class="math">x^4 \cdot x^5 = x^{4+5} = x^9</span></td></tr><tr><td>Quotient Rule</td><td><span class="math">\frac{x^a}{x^b} = x^{a-b}</span></td><td><span class="math">\frac{x^7}{x^3} = x^{7-3} = x^4</span></td></tr><tr><td>Power of a Power</td><td><span class="math">(x^a)^b = x^{a \cdot b}</span></td><td><span class="math">(x^3)^2 = x^6</span></td></tr><tr><td>Negative Exponent</td><td><span class="math">x^{-a} = \frac{1}{x^a}</span></td><td><span class="math">x^{-2} = \frac{1}{x^2}</span></td></tr><tr><td>Zero Exponent</td><td><span class="math">x^0 = 1</span> (where <span class="math">x \neq 0</span>)</td><td><span class="math">1,250^0 = 1</span></td></tr></tbody></table>
+<table><thead><tr><th width="207.800048828125">Rule Name</th><th width="237.2000732421875">Mathematical Definition</th><th>Example</th></tr></thead><tbody><tr><td>Product Rule</td><td><span class="math">x^a \cdot x^b = x^{a+b}</span></td><td><span class="math">x^4 \cdot x^5 = x^{4+5} = x^9</span></td></tr><tr><td>Quotient Rule</td><td><span class="math">\frac{x^a}{x^b} = x^{a-b}</span></td><td><span class="math">\frac{x^7}{x^3} = x^{7-3} = x^4</span></td></tr><tr><td>Power of a Power</td><td><span class="math">(x^a)^b = x^{a \cdot b}</span></td><td><span class="math">(x^3)^2 = x^6</span></td></tr><tr><td>Negative Exponent</td><td><span class="math">x^{-a} = \frac{1}{x^a}</span></td><td><span class="math">x^{-2} = \frac{1}{x^2}</span></td></tr><tr><td>Zero Exponent</td><td><span class="math">x^0 = 1</span> (where <span class="math">x \neq 0</span>)</td><td><span class="math">1,250^0 = 1</span></td></tr></tbody></table>
 
 ### **Radical**
 
-<table><thead><tr><th width="172.5999755859375">Radical Form</th><th width="254.59991455078125">Exponent Form</th><th>Logic</th></tr></thead><tbody><tr><td><span class="math">\sqrt{x}</span></td><td><span class="math">x^{1/2}</span></td><td>The "invisible" root is 2.</td></tr><tr><td><span class="math">\sqrt[3]{x}</span></td><td><span class="math">x^{1/3}</span></td><td>The root is 3.</td></tr><tr><td><span class="math">\sqrt[3]{x^2}</span></td><td><span class="math">x^{2/3}</span></td><td>The power is 2, the root is 3.</td></tr><tr><td><span class="math">(\sqrt[4]{x})^5</span></td><td><span class="math">x^{5/4}</span></td><td>The power is 5, the root is 4.</td></tr></tbody></table>
+<table><thead><tr><th width="172.5999755859375">Radical Form</th><th width="165.7999267578125">Exponent Form</th><th>Logic</th></tr></thead><tbody><tr><td><span class="math">\sqrt{x}</span></td><td><span class="math">x^{1/2}</span></td><td>The "invisible" root is 2.</td></tr><tr><td><span class="math">\sqrt[3]{x}</span></td><td><span class="math">x^{1/3}</span></td><td>The root is 3.</td></tr><tr><td><span class="math">\sqrt[3]{x^2}</span></td><td><span class="math">x^{2/3}</span></td><td>The power is 2, the root is 3.</td></tr><tr><td><span class="math">(\sqrt[4]{x})^5</span></td><td><span class="math">x^{5/4}</span></td><td>The power is 5, the root is 4.</td></tr></tbody></table>
 
 ### **Factoring** &#x20;
 
@@ -82,3 +82,13 @@ $$\text{Probability} = \binom{n}{k} \cdot a^k \cdot b^{n-k}$$
 3. Multiply them together: $$6 \cdot 0.0025 \cdot 0.9025 = 0.0135375$$
 
 The probability of finding exactly 2 defective bulbs in a sample of 4 is approximately 1.35%.
+
+### Transformation
+
+<table><thead><tr><th width="166.5999755859375">Function</th><th width="262">Parent Shape</th><th>Transformation Equation</th></tr></thead><tbody><tr><td>Linear</td><td>Straight Line</td><td><span class="math">f(x) = a(x - h) + k</span></td></tr><tr><td>Quadratic</td><td>Parabola (U)</td><td><span class="math">f(x) = a(x - h)^2 + k</span></td></tr><tr><td>Absolute Value</td><td>V-Shape</td><td><span class="math">f(x) = a</span></td></tr><tr><td>Exponential</td><td>The "L" Curve</td><td><span class="math">f(x) = a \cdot b^{(x - h)} + k</span></td></tr><tr><td>Logarithmic</td><td>The "Sideways" Curve</td><td><span class="math">f(x) = a \cdot \log_b(x - h) + k</span></td></tr><tr><td>Rational</td><td>The "Split" Curves</td><td><span class="math">f(x) = \frac{a}{x - h} + k</span></td></tr></tbody></table>
+
+### Function Composition
+
+$$f(g(x))$$ is called a composite function
+
+the output of $$g(x)$$ becomes the input for $$f(x)$$
