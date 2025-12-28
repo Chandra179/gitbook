@@ -2,6 +2,11 @@
 
 <figure><img src="../../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
 
+Opposite = height\
+Hypotenuse = diagonal\
+Adjacent = flat line\
+$$(\theta)$$ = angle degrees
+
 ### Sine ($$\sin$$)
 
 $$\sin(\theta) = \frac{\text{Opposite}}{\text{Hypotenuse}}$$
@@ -9,6 +14,7 @@ $$\sin(\theta) = \frac{\text{Opposite}}{\text{Hypotenuse}}$$
 * What it finds: The Height (Vertical).
 * Use this when you know the Diagonal length and the angle.
 * Real World Example: A kid is flying a kite. He let out 100 feet of string (Hypotenuse). The string is at a $$30^\circ$$ angle. How high is the kite?
+* to find the Height, you move the Diagonal to the other side:
 * $$\text{Height} = 100 \times \sin(30^\circ)$$
 * $$100 \times 0.5 = \mathbf{50 \text{ feet high}}$$.
 
@@ -71,4 +77,67 @@ $$\sec(\theta) = \frac{\text{Hypotenuse}}{\text{Adjacent}}$$ (The flip of Cosine
 * Real World Example: A lighthouse is 100 feet tall. It spots a boat at a $$10^\circ$$ angle from the top. How far away is the boat on the water?
 * $$\text{Distance} = 100 \times \cot(10^\circ)$$
 * The Answer: $$100 \times 5.67 = \mathbf{567 \text{ feet away}}$$.
+
+***
+
+### The Square Cut (The $$45^\circ$$ Angles)
+
+Imagine a square where the sides are 1 unit long. We cut it diagonally to create a right triangle.
+
+#### Use Pythagoras to find the Diagonal
+
+* Base ($$a$$): 1
+* Height ($$b$$): 1
+* Diagonal ($$c$$): ?
+
+$$1^2 + 1^2 = c^2$$
+
+$$1 + 1 = c^2$$
+
+$$c = \sqrt{2} \approx 1.414$$
+
+#### The $$45^\circ$$ Trig Results
+
+* $$\sin(45^\circ)$$: $$\frac{\text{Opposite}}{\text{Hypotenuse}} = \frac{1}{\sqrt{2}} \approx \mathbf{0.707}$$
+* $$\cos(45^\circ)$$: $$\frac{\text{Adjacent}}{\text{Hypotenuse}} = \frac{1}{\sqrt{2}} \approx \mathbf{0.707}$$
+* $$\tan(45^\circ)$$: $$\frac{\text{Opposite}}{\text{Adjacent}} = \frac{1}{1} = \mathbf{1}$$
+* $$\csc(45^\circ)$$: $$\frac{\text{Hypotenuse}}{\text{Opposite}} = \frac{\sqrt{2}}{1} \approx \mathbf{1.414}$$
+* $$\sec(45^\circ)$$: $$\frac{\text{Hypotenuse}}{\text{Adjacent}} = \frac{\sqrt{2}}{1} \approx \mathbf{1.414}$$
+* $$\cot(45^\circ)$$: $$\frac{\text{Adjacent}}{\text{Opposite}} = \frac{1}{1} = \mathbf{1}$$
+
+***
+
+### The Equilateral Cut (The $$30^\circ$$ and $$60^\circ$$ Angles)
+
+Imagine a triangle where all sides are 2 units long. We chop it in half vertically.
+
+#### Use Pythagoras to find the Vertical Height
+
+* Base ($$a$$): 1 (since the 2-unit base was cut in half)
+* Diagonal ($$c$$): 2 (the original side)
+* Height ($$b$$): ?
+
+$$1^2 + b^2 = 2^2$$
+
+$$1 + b^2 = 4$$
+
+$$b^2 = 3 \rightarrow b = \sqrt{3} \approx 1.732$$
+
+#### The $$30^\circ$$ Results (Looking from the top corner)
+
+* $$\sin(30^\circ)$$: $$\frac{1}{2} = \mathbf{0.5}$$
+* $$\cos(30^\circ)$$: $$\frac{\sqrt{3}}{2} \approx \mathbf{0.866}$$
+* $$\tan(30^\circ)$$: $$\frac{1}{\sqrt{3}} \approx \mathbf{0.577}$$
+* $$\csc(30^\circ)$$: $$\frac{2}{1} = \mathbf{2}$$
+* $$\sec(30^\circ)$$: $$\frac{2}{\sqrt{3}} \approx \mathbf{1.155}$$
+* $$\cot(30^\circ)$$: $$\frac{\sqrt{3}}{1} \approx \mathbf{1.732}$$
+
+#### The $$60^\circ$$ Results (Looking from the bottom corner)
+
+* $$\sin(60^\circ)$$: $$\frac{\sqrt{3}}{2} \approx \mathbf{0.866}$$
+* $$\cos(60^\circ)$$: $$\frac{1}{2} = \mathbf{0.5}$$
+* $$\tan(60^\circ)$$: $$\frac{\sqrt{3}}{1} \approx \mathbf{1.732}$$
+* $$\csc(60^\circ)$$: $$\frac{2}{\sqrt{3}} \approx \mathbf{1.155}$$
+* $$\sec(60^\circ)$$: $$\frac{2}{1} = \mathbf{2}$$
+* $$\cot(60^\circ)$$: $$\frac{1}{\sqrt{3}} \approx \mathbf{0.577}$$
 
