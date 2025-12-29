@@ -184,21 +184,78 @@ $$\begin{bmatrix} 2 & 3 \\ 5 & -1 \end{bmatrix} \begin{bmatrix} x \\ y \end{bmat
 
 **LU Decomposition (**$$A = LU$$**)**
 
-This is the matrix version of Gaussian Elimination.
+This is the matrix version of Gaussian Elimination. L stands for Lower Triangular, and U stands for Upper Triangular.
 
-* L stands for Lower Triangular, and U stands for Upper Triangular.
-* Once you factor $$A$$ into $$L$$ and $$U$$, you can solve $$Ax = b$$ for 1,000 different values of $$b$$ almost instantly. It is much faster than re-running elimination every time.
+$$A = \begin{bmatrix} 2 & 3 \\ 8 & 15 \end{bmatrix}$$
+
+Identify the Pivot. The first pivot is $$2$$ (at position Row 1, Column 1).
+
+Eliminate the value below the pivot.
+
+We need to turn that $$8$$ into a $$0$$. We do this by subtracting a multiple of Row 1 from Row 2.
+
+* Multiplier ($$l_{21}$$): $$8 / 2 = 4$$.
+* Operation: $$R_2 \to R_2 - (4 \times R_1)$$
+
+$$U = \begin{bmatrix} 2 & 3 \\ 8 - (4 \times 2) & 15 - (4 \times 3) \end{bmatrix} = \begin{bmatrix} 2 & 3 \\ 0 & 3 \end{bmatrix}$$
+
+The $$L$$ matrix is the "memory" of the elimination. Its job is to store the multipliers you used.
+
+1.  Start with the Identity: $$L$$ always starts as an Identity Matrix (1s on the diagonal, 0s elsewhere).
+
+    $$\begin{bmatrix} 1 & 0 \\ ? & 1 \end{bmatrix}$$
+2.  Insert the Multiplier: In Phase 1, we used the multiplier 4 to eliminate the value in Row 2, Column 1. We place that 4 in the exact same spot in $$L$$.
+
+    $$L = \begin{bmatrix} 1 & 0 \\ \mathbf{4} & 1 \end{bmatrix}$$
+
+Why is it 0 in the top right? Because we never use Row 2 to eliminate Row 1. We only work "downward," so only the "lower" half of the matrix gets values
+
+Instead of solving $$Ax = b$$, which is slow, we solve two tiny, easy problems.
+
+Imagine $$b = \begin{bmatrix} 7 \\ 31 \end{bmatrix}$$. We want to find $$x$$ in $$LUx = b$$.
+
+Step 1: Solve $$Ly = b$$ (Forward Substitution)
+
+$$\begin{bmatrix} 1 & 0 \\ 4 & 1 \end{bmatrix} \begin{bmatrix} y_1 \\ y_2 \end{bmatrix} = \begin{bmatrix} 7 \\ 31 \end{bmatrix}$$
+
+* Row 1: $$1y_1 = 7 \implies \mathbf{y_1 = 7}$$
+* Row 2: $$4y_1 + 1y_2 = 31 \implies 4(7) + y_2 = 31 \implies 28 + y_2 = 31 \implies \mathbf{y_2 = 3}$$
+
+Step 2: Solve $$Ux = y$$ (Back Substitution)
+
+$$\begin{bmatrix} 2 & 3 \\ 0 & 3 \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} = \begin{bmatrix} 7 \\ 3 \end{bmatrix}$$
+
+* Row 2: $$3x_2 = 3 \implies \mathbf{x_2 = 1}$$
+* Row 1: $$2x_1 + 3x_2 = 7 \implies 2x_1 + 3(1) = 7 \implies 2x_1 = 4 \implies \mathbf{x_1 = 2}$$
+
+Final Answer: $$x = \begin{bmatrix} 2 \\ 1 \end{bmatrix}$$.
+
+***
 
 **QR Decomposition (**$$A = QR$$**)**
 
 This breaks a matrix into an Orthogonal matrix ($$Q$$) and an Upper Triangular matrix ($$R$$). Computers love orthogonal matrices because they don't lose precision during calculations. This is the standard way to solve Least Squares problems (finding the best-fit line in Data Science).
 
+$$A = \begin{bmatrix} 1 & 1 \\ 1 & 0 \end{bmatrix}$$
+
+1.  Find $$Q$$: We use the Gram-Schmidt process to make the columns of $$A$$ orthonormal.
+
+    After normalizing, we get $$Q = \begin{bmatrix} 1/\sqrt{2} & 1/\sqrt{2} \\ 1/\sqrt{2} & -1/\sqrt{2} \end{bmatrix}$$
+2.  Find $$R$$: $$R$$ is calculated as $$Q^T A$$.
+
+    $$R = \begin{bmatrix} \sqrt{2} & 1/\sqrt{2} \\ 0 & 1/\sqrt{2} \end{bmatrix}$$
+
+***
+
 **Singular Value Decomposition (**$$A = U\Sigma V^T$$**)**
 
-It factors any matrix into three parts that represent its rotation, scaling, and rotation.
+SVD is a way of breaking down a complex table of data (a matrix) into its most basic, essential building blocks.
 
-* Compression: You can throw away the small values in $$\Sigma$$ to shrink a high-res image into a tiny file while keeping it recognizable.
-  * PCA (Principal Component Analysis): Finding the most important patterns in a massive dataset.
+* $$U$$ (The "Who/What"): It identifies the categories or "latent features" in your data. (e.g., In a movie database, it might find categories like "Sci-Fi fans" or "Rom-Com fans").
+* $$\Sigma$$ (The "How Much"): It tells you the importance of each category. The first value is always the biggest "story" in your data; the last values are usually just random noise.
+* $$V^T$$ (The "Connection"): It shows how the original items in your data relate to those new categories. (e.g., Which specific movies belong to the "Sci-Fi" category).
+
+main purpose is to squint data, see hidden pattern, denoising
 
 ***
 
@@ -214,9 +271,25 @@ To solve the equation we use&#x20;
 
 $$I = \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}$$
 
+### Permutation Matrix
+
+A permutation matrix $$P$$ of size $$n \times n$$ has exactly one entry of 1 in each row and each column, with all other entries being 0.
+
+For example, a $$3 \times 3$$ permutation matrix might look like this:
+
+$$P = \begin{bmatrix} 0 & 1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 1 \end{bmatrix}$$
+
 ### Matrix Elimination
 
 simplifying a complex fraction. make the matrix clean
+
+#### Cost Of Elimination
+
+| Phase               | Operation Count (Approx) | Complexity |
+| ------------------- | ------------------------ | ---------- |
+| Forward Elimination | $$\frac{2}{3}n^3$$       | $$O(n^3)$$ |
+| Back-Substitution   | $$n^2$$                  | $$O(n^2)$$ |
+| Total Solve Cost    | $$\frac{2}{3}n^3 + n^2$$ | $$O(n^3)$$ |
 
 #### **Matrix Inverse**
 
@@ -275,3 +348,41 @@ Now we turn the rows back into equations
 3. Substitute y: $$x + 2(2) = 5 \implies x + 4 = 5 \implies \mathbf{x = 1}$$
 
 Solution: $$x = 1, y = 2$$
+
+### Matrix Inner Product
+
+is a way to take two matrices of the same size and produce a single scalar value. Any valid matrix inner product must satisfy four rules:
+
+* Symmetry: $$\langle A, B \rangle = \langle B, A \rangle$$
+* Linearity: $$\langle cA, B \rangle = c \langle A, B \rangle$$
+* Additivity: $$\langle A + B, C \rangle = \langle A, C \rangle + \langle B, C \rangle$$
+* Positivity: $$\langle A, A \rangle \ge 0$$, and it only equals 0 if $$A$$ is a zero matrix.
+
+**The Frobenius Inner Product**
+
+For two real-valued matrices $$A$$ and $$B$$ of size $$m \times n$$, the inner product (denoted as $$\langle A, B \rangle_F$$) is calculated by multiplying corresponding elements and summing them up.
+
+There are three ways to write the same operation:
+
+1. Element-wise Sum: $$\langle A, B \rangle = \sum_{i,j} A_{ij} B_{ij}$$
+2. Using Trace: $$\langle A, B \rangle = \text{tr}(A^T B)$$
+3. If you "flatten" both matrices into long vectors, their inner product is exactly the same as the standard vector dot product.
+
+Just like the vector dot product tells us about the "relationship" between two arrows in space, the matrix inner product tells us about the relationship between two data structure:
+
+* **Measuring Similarity**: It tells us how "aligned" two matrices are. If the inner product is high, the matrices are similar; if it's zero, the matrices are orthogonal.
+*   **Defining "Length" (Norm)**: The inner product of a matrix with itself gives the square of its "size," known as the Frobenius Norm:
+
+    $$\|A\|_F = \sqrt{\langle A, A \rangle}$$
+* **Projection**: In machine learning and signal processing, we use inner products to "project" a data matrix onto a set of basis matrices (like in SVD or JPEG compression).
+* **Optimization**: Many loss functions in deep learning (like the cost of weights) are calculated using these types of inner products.
+
+Suppose we have two $$2 \times 2$$ matrices:
+
+$$A = \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}, \quad B = \begin{bmatrix} 5 & 6 \\ 7 & 8 \end{bmatrix}$$
+
+The inner product is:
+
+$$\langle A, B \rangle = (1 \times 5) + (2 \times 6) + (3 \times 7) + (4 \times 8)$$
+
+$$\langle A, B \rangle = 5 + 12 + 21 + 32 = \mathbf{70}$$

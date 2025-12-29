@@ -24,6 +24,10 @@
 
 **Instruction Tuning**: A form of SFT where the model is trained on datasets formatted as instructions and desired responses to improve instruction-following capability.
 
+**Adaptive Entropy-Controlled Policy Optimization (AEPO)**, a new algorithm that dynamically manages the exploration-exploitation trade-off, enabling stable training on progressively longer sequences. And **Task-balanced sampling and task-specific advantage estimation** to mitigate reward bias. [https://arxiv.org/pdf/2512.12967](https://arxiv.org/pdf/2512.12967)
+
+**Atomic-Capability Data Synthesis**: Instead of training on general text, the team decomposed deep research into fundamental "atomic" skills (like planning, cross-source verification, and report writing). They then **synthesized targeted training data** for each skill, aiming to teach the model an expert-like cognitive process. [https://arxiv.org/pdf/2512.20491](https://arxiv.org/pdf/2512.20491)
+
 ### Reinforcement Learning and Alignment Techniques
 
 **Reinforcement Learning from Human Feedback (RLHF)**: A method to align model outputs with human preferences by training a reward model based on human rankings of code quality.

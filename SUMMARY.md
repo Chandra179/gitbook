@@ -18,6 +18,7 @@
 * [ReactJS](reactjs.md)
 * [Math](math/README.md)
   * [Algebra](math/algebra/README.md)
+    * [Page](math/algebra/page.md)
     * [Core](math/algebra/core.md)
     * [Linear Functions](math/algebra/linear-functions.md)
     * [Quadratic Functions](math/algebra/quadratic-functions.md)
