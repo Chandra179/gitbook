@@ -386,3 +386,31 @@ The inner product is:
 $$\langle A, B \rangle = (1 \times 5) + (2 \times 6) + (3 \times 7) + (4 \times 8)$$
 
 $$\langle A, B \rangle = 5 + 12 + 21 + 32 = \mathbf{70}$$
+
+### Nullspace
+
+The Nullspace is the "Garbage Can" of a matrix. It consists of all the input vectors that the matrix "squashes" into zero.
+
+$$Ax = 0$$
+
+If $$x$$ is in the nullspace, multiplying it by $$A$$ completely destroys its information, turning it into a vector of zeros
+
+If the Nullspace is empty (only contains the zero vector): The matrix is "perfect." Every unique input gives a unique output. You can reverse the process (Invert the matrix).
+
+If the Nullspace has "stuff" in it: You have a problem. Multiple different inputs can produce the same output.
+
+### Matrix Rank
+
+rank of a matrix is a single number that tells you how much "real" information is inside that matrix.
+
+* Linearly Independent: This means a row is "unique." You cannot create it by adding or scaling the other rows.
+* Linearly Dependent: This means a row is a "copycat." For example, if Row 2 is just Row 1 multiplied by 10, Row 2 is dependent and doesn't count toward the rank.
+
+Look at this matrix:
+
+$$A = \begin{bmatrix} 1 & 2 \\ 2 & 4 \end{bmatrix}$$
+
+* Row 1: $$[1, 2]$$
+* Row 2: $$[2, 4]$$
+
+Notice that Row 2 is just $$2 \times$$ Row 1. It adds no new information to the system. Because there is only one unique row, the Rank = 1.
