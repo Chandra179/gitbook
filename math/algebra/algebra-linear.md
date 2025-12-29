@@ -414,3 +414,57 @@ $$A = \begin{bmatrix} 1 & 2 \\ 2 & 4 \end{bmatrix}$$
 * Row 2: $$[2, 4]$$
 
 Notice that Row 2 is just $$2 \times$$ Row 1. It adds no new information to the system. Because there is only one unique row, the Rank = 1.
+
+### Span, Subspace, Nullspace, Columnspace, Rank
+
+We will use 3D vectors where the numbers represent the amount of Cyan, Magenta, and Yellow ($$C, M, Y$$).
+
+$$A = \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 1 \\ 0 & 0 & 0 \end{bmatrix}$$
+
+Row 1: Cyan Slot
+
+Row 2: Yellow Slot
+
+Row 3: Magenta Slot
+
+**The Span & Column Space**
+
+Col 1 (Cyan): $$\begin{bmatrix} 1 \\ 0 \\ 0 \end{bmatrix}$$
+
+Col 2 (Yellow A): $$\begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}$$
+
+Col 3 (Yellow B): $$\begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix}$$ (Oops! A duplicate of Col 2)
+
+The Column Space is the Span of these three vectors. It represents every color this printer can make. Since we only have Cyan and Yellow ingredients, the span is "Every mix of Cyan and Yellow."
+
+**The Vector Subspace (The "Result")**
+
+Because we have no Magenta ingredient (the middle row of our result will always be 0 for the first and third components in a different setup, or specifically here, the third row is always 0), we are stuck in a 2D Subspace.
+
+We can make $$\begin{bmatrix} 1 \\ 1 \\ 0 \end{bmatrix}$$ (Green).
+
+We can never make $$\begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}$$ (Pure Magenta) because no combination of our columns can put a number in that bottom slot.
+
+**The Rank (The "Unique Info")**
+
+Look at the columns again.
+
+* Column 1 is unique.
+* Column 2 is unique.
+* Column 3 is just a copy of Column 2.
+
+Since there are only 2 independent directions, the Rank = 2. Even though we have 3 cartridges, the printer only "sees" 2 dimensions of color.
+
+**The Nullspace (The "Waste")**
+
+The Nullspace is the set of instructions $$(x_1, x_2, x_3)$$ that tells the printer to use ink, but results in zero color on the page ($$Ax = 0$$).
+
+Since Column 2 and Column 3 are identical, watch what happens if we use this instruction:
+
+$$x = \begin{bmatrix} 0 \\ 1 \\ -1 \end{bmatrix}$$
+
+This tells the printer: "Use 0 Cyan, 1 unit of Yellow A, and -1 unit of Yellow B."
+
+$$1\begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix} - 1\begin{bmatrix} 0 \\ 1 \\ 0 \end{bmatrix} = \begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix}$$
+
+The ink cancels out! This vector $$\begin{bmatrix} 0 \\ 1 \\ -1 \end{bmatrix}$$ is in the Nullspace. It represents a redundant command.
