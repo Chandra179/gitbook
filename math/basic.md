@@ -499,4 +499,168 @@ $$f(x) = \frac{5}{x-3}$$
 
 **Graph of functions**
 
-If $$f$$ is a function with domain $$A$$, then the graph of $$f$$ is the set of ordered pairs: $$\{(x, f(x)) \mid x \in A\}$$ plotted in a coordinate plane. In other words, the graph of $$f$$ is the set of all points $$(x, y)$$ such that $$y = f(x)$$.
+If $$f$$ is a function with domain $$A$$, then the graph of $$f$$ is the set of ordered pairs: $$\{(x, f(x)) \mid x \in A\}$$ plotted in a coordinate plane. In other words, the graph of $$f$$ is the set of all points $$(x, y)$$ such that $$y = f(x)$$
+
+<figure><img src="../.gitbook/assets/domain_and_range_of_graph.png" alt="" width="563"><figcaption></figcaption></figure>
+
+#### Average Rate of Change of a Function
+
+$$\text{AROC} = \frac{f(b) - f(a)}{b - a}$$
+
+In simple terms:
+
+$$\frac{\text{Change in Output}}{\text{Change in Input}} = \frac{\Delta y}{\Delta x}$$
+
+$$\text{AROC} = \frac{\text{Change in Distance}}{\text{Change in Time}} = \text{Average Speed}$$
+
+#### Transformation of Functions
+
+**Transformation of functions** is a set of mathematical operations that change the position, size, or orientation of a graph without losing its fundamental "family" shape.
+
+$$y = a \cdot f(b(x - h)) + k$$
+
+$$a$$ (Vertical Stretch, Compression, and Reflection):
+
+* If $$|a| > 1$$: The graph is stretched vertically (becomes steeper).
+* If $$0 < |a| < 1$$: The graph is compressed vertically (becomes flatter).
+* If $$a$$ is negative: The graph is reflected across the $$x$$-axis (flips upside down).
+
+$$k$$ (Vertical Shift):
+
+* If $$k > 0$$: The graph moves up $$k$$ units.
+* If $$k < 0$$: The graph moves down $$k$$ units.
+
+Vertical/Horizontal Shifting: $$f(x) \pm c$$ or $$f(x \pm c)$$
+
+Reflecting: $$-f(x)$$ (over x-axis) or $$f(-x)$$ (over y-axis)
+
+Stretching/Shrinking: $$cf(x)$$ or $$f(cx)$$
+
+#### Combining Functions
+
+$$f(g(x))$$
+
+Let’s use $$f(x) = x + 5$$ and $$g(x) = 2x$$.
+
+If I ask for $$(f \circ g)(3)$$:
+
+1. Start with the inside: $$g(3) = 2 \cdot 3 = \mathbf{6}$$.
+2. Move to the outside: Put that 6 into $$f$$.
+3. $$f(6) = 6 + 5 = \mathbf{11}$$.
+
+## Polynomial and Rational functions
+
+**Polynomial**
+
+Question: Current: $$\$20$$ price, $$60$$ units sold. Change: $$+\$1$$ price $$\rightarrow$$ $$-2$$ units sold.&#x20;
+
+Find $$x$$ (price increases) for Max Revenue ($$R$$)
+
+$$revenue = price \times quantity$$
+
+$$R(x) = (20 + 1x)(60 - 2x)$$
+
+$$R(x) = 1200 - 40x + 60x - 2x^2$$
+
+$$R(x) = -2x^2 + 20x + 1200$$
+
+Finding the Maximum ($$x = \frac{-b}{2a}$$):
+
+$$a = -2, \quad b = 20$$
+
+$$x = \frac{-(20)}{2(-2)}$$
+
+$$x = \frac{-20}{-4}$$
+
+$$x = 5$$
+
+$$\text{Optimal Price} = 20 + 5 = \$25$$
+
+$$\text{Units Sold} = 60 - 2(5) = 50$$
+
+$$R_{max} = 25 \times 50 = \$1,250$$
+
+#### Long Division Polynomial
+
+<figure><img src="../.gitbook/assets/long_div_polynomial.png" alt="" width="563"><figcaption></figcaption></figure>
+
+#### Synthetic Division
+
+<figure><img src="../.gitbook/assets/sythetic_division.png" alt="" width="375"><figcaption></figcaption></figure>
+
+#### Factor Theorem
+
+Factor Theorem is a specialized version of the Polynomial Remainder Theorem. It provides a quick way to determine if a linear binomial is a factor of a polynomial without performing long division.
+
+Question: Is $$(x - 1)$$ a factor of $$x^3 - 6x^2 + 11x - 6$$?
+
+1. The Test Value: Since we are testing $$(x - 1)$$, our value is $$1$$.
+2.  The Calculation:
+
+    $$f(1) = (1)^3 - 6(1)^2 + 11(1) - 6$$\
+    $$f(1) = 1 - 6 + 11 - 6$$\
+    $$f(1) = 0$$
+3. The Verdict: Because we got 0, $$(x - 1)$$ is a factor. It divides the big equation perfectly with no leftovers.
+
+#### Rational Function
+
+$$f(x) = \frac{P(x)}{Q(x)}$$
+
+where $$P(x)$$ and $$Q(x)$$ are polynomials, and $$Q(x) \neq 0$$.
+
+A company produces custom sneakers. They have a fixed monthly cost (rent, machines) of $5,000 and a variable cost (materials, labor) of $30 per pair.
+
+If they produce $$x$$ pairs of sneakers, the total cost is:
+
+$$T(x) = 5000 + 30x$$
+
+The Average Cost per pair ($$A(x)$$) is a rational function:
+
+$$A(x) = \frac{5000 + 30x}{x}$$
+
+<figure><img src="../.gitbook/assets/vertical_horizontal_asymptote.png" alt=""><figcaption></figcaption></figure>
+
+* Vertical Asymptote ($$x=0$$): You can't calculate the average cost for 0 sneakers (division by zero). As production gets closer to zero, the average cost per unit skyrockets.
+* Horizontal Asymptote ($$y=30$$): As production increases to very large numbers, the $5,000 fixed cost is spread so thin that it becomes negligible. The average cost "levels off" toward the variable cost of $30.
+
+**The Factor Theorem for Rational Functions**
+
+In a rational function, we are usually looking for zeros (where the graph hits the x-axis).
+
+* The Rule: $$(x - c)$$ is a factor of the rational function if and only if it is a factor of the numerator $$P(x)$$, and $$c$$ does not make the denominator $$Q(x)$$ zero
+* If $$f(c) = \frac{P(c)}{Q(c)} = 0$$, then $$P(c)$$ must be $$0$$.
+
+$$f(x) = \frac{x^2 - 9}{x + 5}$$
+
+* Test $$(x - 3)$$: Plug in $$3$$.
+* $$f(3) = \frac{3^2 - 9}{3 + 5} = \frac{0}{8} = 0$$.
+* Verdict: $$(x - 3)$$ is a factor of the function
+
+***
+
+When you divide polynomials in a rational function, sometimes a factor appears in both the top and bottom. This is a special case of division called Point Discontinuity.
+
+If you have:
+
+$$f(x) = \frac{(x - 2)(x + 3)}{(x - 2)}$$
+
+* Divide/Cancel: You can divide $$(x-2)$$ by $$(x-2)$$, which equals $$1$$.
+* The Result: The function simplifies to $$f(x) = x + 3$$.
+* The Catch: Even though the $$(x-2)$$ divided out, the original function is still "undefined" at $$x=2$$. This creates a Hole in the graph at that exact spot.
+
+***
+
+**Long Division and Asymptotes**
+
+If you use Polynomial Long Division on a rational function where the top power is higher than the bottom, the Quotient tells you the end behavior (the Slant Asymptote).
+
+$$f(x) = \frac{x^2 + 3x + 5}{x + 1}$$
+
+Using Long Division:
+
+$$\begin{array}{rll} \phantom{x+1} & x + 2 \\ x+1 & \overline{\smash{)} x^2 + 3x + 5 } \\ & \underline{-(x^2 + x)} \\ & \phantom{0000} 2x + 5 \\ & \phantom{000} \underline{-(2x + 2)} \\ & \phantom{0000000} 3 & \text{(Remainder)} \end{array}$$
+
+* The Equation: $$f(x) = (x + 2) + \frac{3}{x+1}$$
+* quotient is the answer to a division problem = $$x + 2$$
+* Since the remainder is 3 (not zero), we know $$(x+1)$$ is not a factor of the numerator.
+* The Graphing Connection: As $$x$$ gets huge, the fraction $$\frac{3}{x+1}$$ disappears, and the graph starts to look exactly like the line $$y = x + 2$$.
