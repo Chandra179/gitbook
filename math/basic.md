@@ -1,6 +1,8 @@
-# Basic
+# Precalculus
 
-#### **Number**
+## **Fundamental**
+
+### **Number**
 
 **Real number**
 
@@ -93,15 +95,27 @@ Total Cost = $$\$50 + \$30 + \$10 + \$6 = \mathbf{\$96}$$
 
 ***
 
-#### **Intervals**
+### **Discriminant**
+
+$$\mathbf{D = b^2 - 4ac}$$
+
+$$3x^2 + 5x + 1 = 0$$
+
+* $$a$$: The number in front of $$x^2$$ (In this case, 3).
+* $$b$$: The number in front of $$x$$ (In this case, 5).
+* $$c$$: The "constant" number at the end (In this case, 1).
+
+$$25 - 12 = \mathbf{13}$$
+
+### **Intervals**
 
 <figure><img src="../.gitbook/assets/interval_notation.png" alt=""><figcaption></figcaption></figure>
 
-#### **Absolute Value**
+### **Absolute Value**
 
 <figure><img src="../.gitbook/assets/prop_absolute_value.png" alt=""><figcaption></figcaption></figure>
 
-#### **Integer Exponents**
+### **Integer Exponents**
 
 <figure><img src="../.gitbook/assets/laws_of_exponent.png" alt=""><figcaption></figcaption></figure>
 
@@ -117,7 +131,7 @@ A product of identical numbers is usually written in exponential notation
 
 ***
 
-#### **Radicals**
+### **Radicals**
 
 The number inside the root _must_ be a result of something being raised to the power of $$n$$
 
@@ -151,7 +165,7 @@ The key takeaway is that the absolute value signs are essential when simplifying
 
 ***
 
-#### Product Formulas
+### Product Formulas
 
 <figure><img src="../.gitbook/assets/product_formulas.png" alt=""><figcaption></figcaption></figure>
 
@@ -179,7 +193,7 @@ $$(2m - 1)^3 = 8m^3 - 12m^2 + 6m - 1$$
 
 ***
 
-#### Rational Expressions
+### Rational
 
 A rational expression is simply a fraction (a ratio) where both the numerator (top) and the denominator (bottom) are polynomials. It is also sometimes referred to as an algebraic fraction.
 
@@ -190,3 +204,299 @@ $$\frac{\cancel{(x + 2)}(x + 3)}{(x - 2)\cancel{(x + 2)}} = \frac{x + 3}{x - 2}$
 A rational expression can be written in the form $$\frac{P(x)}{Q(x)}$$, where $$P(x)$$ and $$Q(x)$$ are polynomials.
 
 denominator, $$Q(x)$$, cannot be equal to zero. Division by zero is undefined
+
+#### Rational Exponent
+
+$$a^{\frac{m}{n}} = \sqrt[n]{a^m} = (\sqrt[n]{a})^m$$
+
+$$8^{\frac{2}{3}} =$$$$(\sqrt[3]{8})^2$$ = $$2^2$$ = $$4$$
+
+### Equations
+
+<figure><img src="../.gitbook/assets/prop_equality.png" alt=""><figcaption></figcaption></figure>
+
+its always a straight line, so the of degree power (exponent) is 1
+
+* $$y = mx + b$$
+* $$ax + by = c$$
+
+the exponent is greater than 1
+
+* $$y = 3x^2 - 4x + 1$$
+* $$x^3 + y = 7$$
+
+Quadratic equations are essential for modeling paths, areas, and optimization problems. They are defined by the standard form $$ax^2 + bx + c = 0$$, where $$x$$ is the unknown, and $$a$$, $$b$$, and $$c$$ are known coefficients.
+
+#### Quadratic Formula
+
+Must degree of 2
+
+$$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
+
+With the formula, you just plug in $$a=3$$, $$b=5$$, and $$c=-4$$ directly, avoiding all the complicated steps:
+
+$$x = \frac{-5 \pm \sqrt{5^2 - 4(3)(-4)}}{2(3)}$$
+
+We use quadratic functions whenever a relationship involves squaring a value, ex: Projectile Motion (Physics), Optimization (Business & Engineering)
+
+### Complex Number
+
+Real number + imaginary number
+
+$$a + bi$$
+
+The Real Part ($$a$$): These are normal numbers like $$5$$, $$-3$$
+
+The Imaginary Part ($$bi$$): This is a real number multiplied by $$i$$
+
+<figure><img src="../.gitbook/assets/complex_number_table.png" alt=""><figcaption></figcaption></figure>
+
+Imagine you are controlling a drone.
+
+* The Real part ($$a$$) is how far East the drone is.
+* The Imaginary part ($$bi$$) is how far North the drone is.
+
+You want to fly your drone to a specific landmark. You know that:
+
+1. The drone is currently at $$3 + 4i$$ (3 miles East, 4 miles North).
+2. The landmark is located at $$5 - 2i$$ (5 miles East, 2 miles South).
+
+If you want the drone to fly in a straight line from its current spot to the landmark, what is the "path" (the difference) it needs to take?
+
+To find the path, we subtract the current position from the destination:
+
+$$(5 - 2i) - (3 + 4i)$$
+
+* East/West change: $$5 - 3 = 2$$ (Go 2 miles further East)
+* North/South change: $$-2i - 4i = -6i$$ (Go 6 miles South)
+
+The Path: The drone needs to move $$2 - 6i$$
+
+If you want to tell that drone to "turn 90 degrees," you don't need a complicated formula; you just multiply its position by $$i$$.
+
+* Current position: $$3 + 4i$$
+* Rotate 90°: $$(3 + 4i) \times i = 3i + 4i^2$$
+* Since $$i^2 = -1$$, this becomes $$-4 + 3i$$.
+
+<figure><img src="../.gitbook/assets/flip_imaginary.png" alt="" width="375"><figcaption></figcaption></figure>
+
+<table><thead><tr><th width="162.20001220703125">Power</th><th width="175.79998779296875">Simplified</th><th>Rule</th></tr></thead><tbody><tr><td><span class="math">i^1</span></td><td><span class="math">i</span></td><td>Remainder of 1</td></tr><tr><td><span class="math">i^2</span></td><td><span class="math">-1</span></td><td>Remainder of 2</td></tr><tr><td><span class="math">i^3</span></td><td><span class="math">-i</span></td><td>Remainder of 3</td></tr><tr><td><span class="math">i^4</span></td><td><span class="math">1</span></td><td>Remainder of 0 (no remainder)</td></tr></tbody></table>
+
+**The 180-Degree "Flip"**
+
+Think of the number line. If you are at 1 and you multiply by $$-1$$, you "flip" over to $$-1$$.
+
+* Geometrically, this is a 180-degree rotation around the center (zero).
+* If you multiply by $$-1$$ again, you flip back to 1. Another 180 degrees.
+* Total rotation for two steps: $$180^\circ + 180^\circ = 360^\circ$$ (a full circle).
+
+Now, look at the math definition: $$i \times i = -1$$ This means that doing the "multiply by $$i$$" action twice is the exact same thing as "multiplying by $$-1$$" once.
+
+If "multiplying by $$-1$$" is a 180-degree turn, then "multiplying by $$i$$" must be half of that turn to make the math work. Half of 180 degrees is 90 degrees.
+
+### Factoring
+
+**Greatest Common Factor (GCF)**
+
+This is always the first step. You look for the largest number or variable that divides evenly into every single term.
+
+&#x20;$$3x^2 + 6x = 3x(x + 2)$$
+
+***
+
+**Factoring by Grouping**
+
+Used mostly when you have four terms. You split the expression into two pairs, factor out the GCF of each pair, and then look for a common binomial.
+
+&#x20;$$x^3 + 2x^2 + 5x + 10 \rightarrow x^2(x+2) + 5(x+2) = (x^2+5)(x+2)$$
+
+***
+
+**Difference of Squares**
+
+Used for two terms that are both perfect squares being subtracted.
+
+* &#x20;$$a^2 - b^2 = (a - b)(a + b)$$
+* The _sum_ of squares ($$a^2 + b^2$$) cannot be factored using real numbers.
+
+***
+
+**Factoring Trinomials**
+
+&#x20;($$x^2 + bx + c$$)
+
+Used for three terms where the $$x^2$$ coefficient is 1. You look for two numbers that multiply to $$c$$ and add to $$b$$.
+
+$$x^2 + 5x + 6 = (x + 2)(x + 3)$$ (Because $$2 \times 3 = 6$$ and $$2 + 3 = 5$$)
+
+***
+
+**Factor by Grouping**
+
+Group the first two terms and the last two terms. Find the GCF for each pair.
+
+$$(2x^2 + 1x) + (6x + 3)$$
+
+* The GCF of $$(2x^2 + 1x)$$ is $$x$$. Result: $$x(2x + 1)$$
+* The GCF of $$(6x + 3)$$ is $$3$$. Result: $$3(2x + 1)$$
+
+Notice that $$(2x + 1)$$ is now common to both parts. "Pull it out" as one factor.
+
+$$(2x + 1)(x + 3)$$
+
+***
+
+**Sum or Difference of Cubes**
+
+Used for two terms that are perfect cubes.
+
+* Sum: $$a^3 + b^3 = (a + b)(a^2 - ab + b^2)$$
+* Difference: $$a^3 - b^3 = (a - b)(a^2 + ab + b^2)$$
+
+### Guidelines for Modeling with Equations
+
+1. Identify the Variable. **Identify the quantity** that the problem asks you to find. This quantity can usually be determined by a careful reading of the question that is posed at the end of the problem. Then introduce notation for the variable (call it x or some other letter).
+2. Translate from **Words to Algebra**. Read each sentence in the problem again, and express all the quantities mentioned in the problem in terms of the variable you defined in Step 1. To organize this information, it is sometimes helpful to draw a diagram or make a table.
+3. Set Up the Model. Find the crucial fact in the problem that gives a relationship between the expressions you listed in Step 2. Set up an equation (or model) that expresses this relationship.
+4. Solve the Equation and Check Your Answer. Solve the equation, check your answer, and state your answer as a sentence.
+
+A car rental company charges $30 a day and 15¢ a mile for renting a car. A tourist rents\
+a car for two days, and the bill comes to $108. How many miles was the car driven?
+
+* Let $$x$$ = the number of miles driven.
+* Daily cost: The company charges $$\$30$$ per day. Since the car was rented for 2 days, the cost is $$2 \times 30 = 60$$.
+* Mileage cost: The company charges $$15¢$$ (or $$\$0.15$$) per mile. For $$x$$ miles, the cost is $$0.15x$$.
+* Total Bill: The problem states the final bill comes to $$\$108$$.
+* $$\text{Daily Cost} + \text{Mileage Cost} = \text{Total Bill}$$
+* $$60 + 0.15x = 108$$
+
+### Inequalities
+
+<figure><img src="../.gitbook/assets/inequalities_rules.png" alt=""><figcaption></figcaption></figure>
+
+A linear inequality is one where the variable has a power of 1. When you graph these, they always form a straight line that divides the plane into two regions.
+
+* $$ax + b < c$$ or $$y > mx + b$$
+* $$2x + 3 \leq 7$$
+
+> Subtract 3: $$2x \leq 4$$
+>
+> Divide by 2: $$x \leq 2$$
+
+A nonlinear inequality contains a variable with a power other than 1 (like $$x^2$$, $$x^3$$), or variables multiplied together, or variables in a denominator.
+
+* Quadratic ($$x^2$$), Rational ($$\frac{1}{x}$$), or Absolute Value ($$|x|$$).
+* $$x^2 - 4 > 0$$
+
+> Find the "critical points" where $$x^2 - 4 = 0$$. This happens at $$x = 2$$ and $$x = -2$$.
+>
+> Test the intervals:
+>
+> * If $$x = 0$$ (between -2 and 2): $$0^2 - 4 > 0$$ is False.
+> * If $$x = 3$$ (greater than 2): $$3^2 - 4 > 0$$ is True.
+> *   If $$x = -3$$ (less than -2): $$(-3)^2 - 4 > 0$$ is True.
+>
+>     The solution is $$x < -2$$ or $$x > 2$$.
+
+### Coordinate Plane, Graphs of Equations, Line, Circles
+
+<figure><img src="../.gitbook/assets/coordinate_plane.png" alt="" width="563"><figcaption></figcaption></figure>
+
+**Distance formula** $$d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$$
+
+* The Subtraction $$(x_2 - x_1)$$: This is just a math way of saying "how many steps did I walk sideways?" If you start at $$x=2$$ and end at $$x=5$$, you walked $$5 - 2 = 3$$ steps.
+* The Squaring $$(...)^2$$: This comes directly from Pythagoras ($$a^2 + b^2 = c^2$$). Squaring also makes sure that even if you walk "backwards" (negative numbers), the result becomes positive, because distance is always positive.
+* The Plus Sign $$(+)$$: We add the "sideways steps" squared and the "upward steps" squared together, just like $$a^2 + b^2$$.
+* The Square Root $$(\sqrt{\dots})$$: In the Pythagorean theorem, we have $$c^2$$. To get just $$c$$ (the distance), we have to "undo" the square by taking the square root.
+
+**Example**
+
+<figure><img src="../.gitbook/assets/coorplane_example.png" alt="" width="375"><figcaption></figcaption></figure>
+
+The goal is to find which point is closer to $$A(5, 3)$$. To do that, we find the distance to $$P(1, -2)$$ and the distance to $$Q(8, 9)$$.
+
+Distance from $$A(5, 3)$$ to $$P(1, -2)$$
+
+* Step 1 (Subtract): $$5 - 1 = 4$$ and $$3 - (-2) = 5$$
+* Step 2 (Square): $$4^2 = 16$$ and $$5^2 = 25$$
+* Step 3 (Add): $$16 + 25 = 41$$
+* Step 4 (Root): The distance is $$\sqrt{41} \approx \mathbf{6.40}$$
+
+Distance from $$A(5, 3)$$ to $$Q(8, 9)$$
+
+* Step 1 (Subtract): $$5 - 8 = -3$$ and $$3 - 9 = -6$$
+* Step 2 (Square): $$(-3)^2 = 9$$ and $$(-6)^2 = 36$$
+* Step 3 (Add): $$9 + 36 = 45$$
+* Step 4 (Root): The distance is $$\sqrt{45} \approx \mathbf{6.71}$$
+
+Since $$\sqrt{41}$$ is a smaller number than $$\sqrt{45}$$, Point $$P$$ is closer to $$A$$ than Point $$Q$$ is.
+
+***
+
+<figure><img src="../.gitbook/assets/midpoint_distance.png" alt="" width="563"><figcaption></figcaption></figure>
+
+**Midpoint formula** finds the coordinates of the point that lies exactly halfway between two endpoints.
+
+$$M = \left( \frac{x_1 + x_2}{2}, \frac{y_1 + y_2}{2} \right)$$
+
+**Circle equation standard Form (Center-Radius Form)**
+
+This is the most common and useful form because it tells you the center and the radius at a glance.
+
+$$(x - h)^2 + (y - k)^2 = r^2$$
+
+* $$(h, k)$$: The coordinates of the center.
+* $$r$$: The radius of the circle.
+* $$(x, y)$$: Any point on the edge of the circle.
+
+#### **Intercept**
+
+<figure><img src="../.gitbook/assets/intercept.png" alt=""><figcaption></figcaption></figure>
+
+#### Lines
+
+slope is the measure of steepness
+
+$$slope = rise/sun$$
+
+$$m = \frac{y_2 - y_1}{x_2 - x_1}$$
+
+* Numerator ($$y_2 - y_1$$): This is the Rise. It tells you how much the line goes up or down.
+* Denominator ($$x_2 - x_1$$): This is the Run. It tells you how much the line goes left or right.
+
+<figure><img src="../.gitbook/assets/slope_of_line.png" alt=""><figcaption></figcaption></figure>
+
+#### Circle Equation
+
+<figure><img src="../.gitbook/assets/circle_eq.png" alt=""><figcaption></figcaption></figure>
+
+point-slope equation: $$y - y_1 = m(x - x_1)$$
+
+**Parallel Lines**: Two non-vertical lines are parallel if they have the same slope ($$m_1 = m_2$$).
+
+**Perpendicular line** is a line that intersects another line at a perfect 90° angle (also known as a right angle). Two lines with slopes m1 and m2 are perpendicular if and only if m1m2 = -1,\
+that is, their slopes are negative reciprocals: $$m_2 = -\frac{1}{m_1}$$
+
+## Functions
+
+**Range notation**
+
+Range of $$f = \{f(x) \mid x \in A\}$$ _(The set of all_ $$f(x)$$ _values such that_ $$x$$ _is an element of the domain_ $$A$$_.)_
+
+**Domain of function**
+
+$$f(x) = \frac{5}{x-3}$$
+
+* $$x - 3 = 0 \rightarrow x = 3$$
+* Domain: $$x \neq 3$$ (or $$(-\infty, 3) \cup (3, \infty)$$)
+
+**4 ways to represent a function**
+
+* verbally (by a description in words)
+* algebraically (by an explicit formula)
+* visually (by a graph)
+* numerically (by a table of values)
+
+**Graph of functions**
+
+If $$f$$ is a function with domain $$A$$, then the graph of $$f$$ is the set of ordered pairs: $$\{(x, f(x)) \mid x \in A\}$$ plotted in a coordinate plane. In other words, the graph of $$f$$ is the set of all points $$(x, y)$$ such that $$y = f(x)$$.

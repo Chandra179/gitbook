@@ -15,7 +15,7 @@ $$m = \frac{y_2 - y_1}{x_2 - x_1}$$
 
 $$y=mx+b$$
 
-When you know the slope and where the line hits the y-axis (the y-intercept), or when you need to graph a line quickly.
+Use this when you know the slope ($$m$$) and exactly where the line hits the vertical axis, called the y-intercept ($$b$$)
 
 $$m = -\frac{1}{2}$$ and $$b = 4$$
 
@@ -27,7 +27,7 @@ $$m = -\frac{1}{2}$$ and $$b = 4$$
 
 $$y - y_1 = m(x - x_1)$$
 
-Use it when you have a slope and any point (not necessarily the y-intercept)
+Use this when you have one point $$(x_1, y_1)$$ and the slope ($$m$$), but you don't know where the line crosses the $$y$$-axis.
 
 Write the equation of a line that has a slope of $$3$$ and passes through the point $$(4, -1)$$.
 
@@ -45,6 +45,16 @@ Find the x-intercept and y-intercept for the line $$3x + 4y = 12$$.
 * To find the x-intercept, set $$y=0$$ ⇒ $$3x + 4(0) = 12 \rightarrow 3x = 12 \rightarrow x = 4$$.
 * To find the y-intercept, set $$x=0$$ ⇒ $$3(0) + 4y = 12 \rightarrow 4y = 12 \rightarrow y = 3$$.
 * The line hits the x-axis at $$(4, 0)$$ and the y-axis at $$(0, 3)$$.
+
+<figure><img src="../../.gitbook/assets/image (3).png" alt="" width="563"><figcaption></figcaption></figure>
+
+* We had two points: $$(5, 5)$$ and $$(8, 1)$$. We calculated the slope $$m = -\frac{4}{3}$$.
+*   Point-Slope: We plugged the point $$(5, 5)$$ into the Point-Slope formula:
+
+    $$y - 5 = -\frac{4}{3}(x - 5)$$.
+*   Slope-Intercept: we move the $$-5$$ to the other side to get the Slope-Intercept version:
+
+    $$y = -\frac{4}{3}x + \frac{35}{3}$$.
 
 ### Linear Inequalities
 

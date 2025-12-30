@@ -53,35 +53,22 @@ Instead of manually multiplying $$(x + y)$$ by itself ten times which would take
 
 <p align="center"><span class="math">(a + b)^n = \sum_{k=0}^{n} \binom{n}{k} a^{n-k} b^k</span></p>
 
+* $$n$$ is the power
 * $$\binom{n}{k}$$ (Binomial Coefficient): This is the "n choose k" combination. It tells you the number in front of each term. You can find these using factorials or Pascal’s Triangle.
 * $$a^{n-k}$$: The power of the first term starts at $$n$$ and decreases by 1 for each term.
 * $$b^k$$: The power of the second term starts at 0 and increases by 1 for each term.
 * $$n + 1$$ Terms: There will always be one more term than the power you started with (e.g., $$(x+y)^3$$ has 4 terms).
 
-Suppose a factory produces light bulbs, and historical data shows that 5% (0.05) of all bulbs produced are defective. An inspector randomly selects a sample of 4 bulbs for testing. We want to find the probability of finding exactly 2 defective bulbs in that sample.
+$$(x + 2)^3$$
 
-To use the theorem, we define our binomial terms ($$a + b$$):
+Since $$n = 3$$, there will be $$3 + 1 = 4$$ terms
 
-* $$a = 0.05$$ (The probability of a "Success" – in this case, a defective bulb).
-* $$b = 0.95$$ (The probability of a "Failure" – a working bulb).
-* $$n = 4$$ (The total number of trials or bulbs sampled).
-* $$k = 2$$ (The specific term we want: exactly 2 defective bulbs).
+* Term 1 ($$k=0$$): $$\binom{3}{0} x^3 (2)^0 = 1 \cdot x^3 \cdot 1 = \mathbf{x^3}$$
+* Term 2 ($$k=1$$): $$\binom{3}{1} x^2 (2)^1 = 3 \cdot x^2 \cdot 2 = \mathbf{6x^2}$$
+* Term 3 ($$k=2$$): $$\binom{3}{2} x^1 (2)^2 = 3 \cdot x \cdot 4 = \mathbf{12x}$$
+* Term 4 ($$k=3$$): $$\binom{3}{3} x^0 (2)^3 = 1 \cdot 1 \cdot 8 = \mathbf{8}$$
 
-We don't need the whole expansion $$(0.05 + 0.95)^4$$ we only need the specific term where the power of $$a$$ is 2. The formula for a specific term is:
-
-$$\text{Probability} = \binom{n}{k} \cdot a^k \cdot b^{n-k}$$
-
-1.  The Coefficient $$\binom{4}{2}$$: Use Pascal's Triangle or the formula $$\frac{n!}{k!(n-k)!}$$.
-
-    $$\binom{4}{2} = \frac{4 \cdot 3}{2 \cdot 1} = 6$$
-
-    (There are 6 different ways or sequences to get exactly 2 defective bulbs out of 4).
-2. The Probabilities:
-   * $$a^k = (0.05)^2 = 0.0025$$
-   * $$b^{n-k} = (0.95)^2 = 0.9025$$
-3. Multiply them together: $$6 \cdot 0.0025 \cdot 0.9025 = 0.0135375$$
-
-The probability of finding exactly 2 defective bulbs in a sample of 4 is approximately 1.35%.
+$$(x + 2)^3 = x^3 + 6x^2 + 12x + 8$$
 
 ### Transformation
 

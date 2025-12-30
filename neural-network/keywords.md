@@ -64,12 +64,6 @@
 
 **Retrieval-Augmented Generation (RAG)**: A technique where the model retrieves relevant code snippets from an external database or repository to supplement its internal knowledge before generating code.
 
-### Applications and Systems
-
-**Software Engineering Agent (SWE-agent)**: Autonomous or semi-autonomous systems that use CodeLLMs to solve complex software engineering tasks, such as fixing bugs or implementing features.
-
-**Language Server Protocol (LSP)**: A protocol used to integrate CodeLLMs into IDEs, providing features like autocompletion, "go to definition," and real-time error checking.
-
 ### Five Pillars of Reasoning
 
 [https://arxiv.org/pdf/2512.14691](https://arxiv.org/pdf/2512.14691)

@@ -1,10 +1,18 @@
-# Algebra Linear
+# Linear Algebra
 
 1D Vector: A single value (a scalar).
 
 2D Vector: A coordinate pair $$[x, y]$$ used to position a pixel on a screen.
 
-n-Dimensional Vector: A list of 1,000 numbers representing a user's preferences in a Netflix recommendation algorithm.
+$$Ax = b$$
+
+**Left Hand Side**
+
+The Left Hand Side ($$\mathbf{A}\mathbf{x}$$) represents the transformation. It’s the combination of your variables ($$x_1, x_2, \dots$$) and your coefficients. In geometry, this side describes the "span" or the space you are working in \[4.1].
+
+**Right Hand Side**
+
+The Right Hand Side ($$\mathbf{b}$$) represents the target. It is a fixed vector or constant. To find a solution, the target vector must land somewhere within the space described by the LHS \[4.1].
 
 ***
 
