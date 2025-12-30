@@ -548,6 +548,24 @@ If I ask for $$(f \circ g)(3)$$:
 2. Move to the outside: Put that 6 into $$f$$.
 3. $$f(6) = 6 + 5 = \mathbf{11}$$.
 
+#### Quadratic Functions
+
+**Vertex form** is a specific way of writing the equation of a quadratic function (a parabola) that makes it very easy to identify its highest or lowest point, known as the vertex.
+
+$$y = a(x - h)^2 + k$$
+
+$$y = (x - 5)^2 + 3$$
+
+1. Look at the $$h$$ (inside the parentheses): It says $$-5$$. In math world, the inside is "opposite land," so instead of going left toward negative numbers, we move right 5.
+2. Look at the $$k$$ (at the end): It says $$+3$$. This is straightforward—it moves up 3.
+3. vertex moved from $$(0,0)$$ to $$(5, 3)$$.
+
+$$(\dots)^2$$ matters
+
+The square is what creates that "U" shape. Because any number squared (positive or negative) becomes positive, the graph mirrors itself on both sides, creating a valley or a hill.
+
+***
+
 ## Polynomial and Rational functions
 
 **Polynomial**
