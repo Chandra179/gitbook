@@ -18,7 +18,7 @@ The Right Hand Side ($$\mathbf{b}$$) represents the target. It is a fixed vector
 
 ### Linear Combination
 
-<figure><img src="../../.gitbook/assets/vector_addition.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/vector_addition (1).png" alt=""><figcaption></figcaption></figure>
 
 Scalar Multiplication
 

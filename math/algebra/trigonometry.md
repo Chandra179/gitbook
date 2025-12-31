@@ -1,6 +1,6 @@
 # Trigonometry
 
-<figure><img src="../../.gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/trigonometry.png" alt=""><figcaption></figcaption></figure>
 
 Opposite = height\
 Hypotenuse = diagonal\
@@ -70,7 +70,7 @@ $$\sec(\theta) = \frac{\text{Hypotenuse}}{\text{Adjacent}}$$ (The flip of Cosine
 
 ### Cotangent ($$\cot$$)
 
-&#x20;$$\cot(\theta) = \frac{\text{Adjacent}}{\text{Opposite}}$$ (The flip of Tangent)
+$$\cot(\theta) = \frac{\text{Adjacent}}{\text{Opposite}}$$ (The flip of Tangent)
 
 * What it finds: The Flat distance.
 * Use this when you know the Height and want to find the ground distance.
@@ -140,4 +140,3 @@ $$b^2 = 3 \rightarrow b = \sqrt{3} \approx 1.732$$
 * $$\csc(60^\circ)$$: $$\frac{2}{\sqrt{3}} \approx \mathbf{1.155}$$
 * $$\sec(60^\circ)$$: $$\frac{2}{1} = \mathbf{2}$$
 * $$\cot(60^\circ)$$: $$\frac{1}{\sqrt{3}} \approx \mathbf{0.577}$$
-

@@ -46,7 +46,7 @@ Find the x-intercept and y-intercept for the line $$3x + 4y = 12$$.
 * To find the y-intercept, set $$x=0$$ ⇒ $$3(0) + 4y = 12 \rightarrow 4y = 12 \rightarrow y = 3$$.
 * The line hits the x-axis at $$(4, 0)$$ and the y-axis at $$(0, 3)$$.
 
-<figure><img src="../../.gitbook/assets/image (4).png" alt="" width="563"><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/circle_problem (1).png" alt="" width="563"><figcaption></figcaption></figure>
 
 * We had two points: $$(5, 5)$$ and $$(8, 1)$$. We calculated the slope $$m = -\frac{4}{3}$$.
 *   Point-Slope: We plugged the point $$(5, 5)$$ into the Point-Slope formula:
@@ -124,4 +124,3 @@ $$f(f^{-1}(x)) = 2\left(\frac{x - 3}{2}\right) + 3$$
 
 1. The $$2$$s cancel: $$(x - 3) + 3$$
 2. The $$3$$s cancel: $$x$$ > Result: If you get $$x$$, your inverse is perfect.
-

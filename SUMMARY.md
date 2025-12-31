@@ -27,7 +27,7 @@
     * [Trigonometry](math/algebra/trigonometry.md)
     * [Conic Sections](math/algebra/conic-sections.md)
     * [Linear Algebra](math/algebra/linear-algebra.md)
-  * [Precalculus](math/basic.md)
+  * [Precalculus](math/precalculus.md)
   * [Problem](math/problem.md)
 * [System Design](system-design/README.md)
   * [\[Template\] High Level Design](system-design/template-high-level-design.md)
