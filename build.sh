@@ -33,7 +33,7 @@ fi
 
 # Copy content directories
 # Check if directories exist before copying to avoid errors
-for dir in general golang math rag system-design; do
+for dir in general golang math rag system-design neural-network; do
     if [ -d "$dir" ]; then
         cp -r "$dir" "dist/$dir"
     fi
