@@ -564,7 +564,102 @@ $$(\dots)^2$$ matters
 
 The square is what creates that "U" shape. Because any number squared (positive or negative) becomes positive, the graph mirrors itself on both sides, creating a valley or a hill.
 
+### One to One function & Inverse
+
+A function $$f$$ is one-to-one (or injective) if it never takes the same value twice:
+
+> If $$x_1 \neq x_2$$, then $$f(x_1) \neq f(x_2)$$.
+
+**The Horizontal Line Test (HLT)**
+
+The easiest way to tell if a function is one-to-one is to look at its graph.
+
+* Pass: If every horizontal line intersects the graph at most once, the function is one-to-one.
+* Fail: If any horizontal line touches the graph more than once, it is NOT one-to-one (and has no inverse)
+
 ***
+
+**Inverse**
+
+If a function $$f$$ is one-to-one, it has an inverse function $$f^{-1}$$. The inverse "undoes" what the original function did.
+
+* If $$f(x) = y$$, then $$f^{-1}(y) = x$$.
+* Domain & Range Swap: The domain of $$f$$ becomes the range of $$f^{-1}$$, and the range of $$f$$ becomes the domain of $$f^{-1}$$.
+
+To find the inverse formula, follow these four steps:
+
+1. Replace $$f(x)$$ with $$y$$.
+2. Interchange $$x$$ and $$y$$ (swap them).
+3. Solve the new equation for $$y$$.
+4. Replace $$y$$ with $$f^{-1}(x)$$.
+
+Example: Find the inverse of $$f(x) = 2x + 3$$.
+
+1. $$y = 2x + 3$$
+2. $$x = 2y + 3$$
+3. $$x - 3 = 2y \implies y = \frac{x-3}{2}$$
+4. $$f^{-1}(x) = \frac{x-3}{2}$$
+
+notice  from + to minus 3 and from multiplication of 2x become x/2
+
+***
+
+#### Bird Flight&#x20;
+
+A bird is released from point A on an island, 5 miles from the nearest point B\
+on a straight shoreline. The bird flies to a point C on the shoreline and then flies along the\
+shoreline to its nesting area D (see the figure). Suppose the bird requires 10 kcal/mi of\
+energy to fly over land and 14 kcal/mi to fly over water.
+
+<figure><img src="../.gitbook/assets/image.png" alt="" width="375"><figcaption></figcaption></figure>
+
+The bird's journey consists of two segments: flying over water (from A to C) and flying over land (from C to D).
+
+1.  Distance over Water ($$AC$$):
+
+    The path from $$A$$ to $$C$$ forms the hypotenuse of a right-angled triangle $$ABC$$.
+
+    * The height ($$A$$) is 5 miles.
+    *   The base ($$BC$$) is $$x$$ miles.
+
+        Using the Pythagorean theorem:
+
+        $$\text{Distance}_{AC} = \sqrt{x^2 + 5^2} = \sqrt{x^2 + 25}$$
+
+        Since energy over water is $$14 \text{ kcal/mi}$$, the energy used for this segment is:
+
+        $$14\sqrt{x^2 + 25}$$
+2.  Distance over Land ($$CD$$):
+
+    The total distance from point $$B$$ to the nesting area $$D$$ is $$12 \text{ miles}$$. Since the distance $$BC$$ is $$x$$, the remaining distance over land is:
+
+    $$\text{Distance}_{CD} = 12 - x$$
+
+    Since energy over land is $$10 \text{ kcal/mi}$$, the energy used for this segment is:
+
+    $$10(12 - x)$$
+
+Total Energy $$E(x)$$:
+
+$$E(x) = 14\sqrt{x^2 + 25} + 10(12 - x)$$
+
+***
+
+#### (b) Minimizing Energy Expenditure
+
+To find the value of $$ $x$ $$ that minimizes $$ $E(x)$ $$, we need to find the derivative $$ $E'(x)$ $$ and set it to zero.
+
+1\. Differentiate $E(x)$:
+
+\$$E'(x) = 14 \cdot \frac{1}{2}(x^2 + 25)^{-1/2} \cdot (2x) - 10\$$\$$E'(x) = \frac{14x}{\sqrt{x^2 + 25\}} - 10\$$
+
+2\. Solve for $x$ where $E'(x) = 0$:
+
+\$$\frac{14x}{\sqrt{x^2 + 25\}} = 10\$$\$$14x = 10\sqrt{x^2 + 25}\$$
+
+Divide both sides by 2 and square both sides:
+
+\$$(7x)^2 = (5\sqrt{x^2 + 25})^2\$$\$$49x^2 = 25(x^2 + 25)\$$\$$49x^2 = 25x^2 + 625\$$\$$24x^2 = 625\$$\$$x^2 = \frac{625}{24}\$$\$$x = \sqrt{\frac{625}{24\}} = \frac{25}{\sqrt{24\}} \approx 5.10 \text{ miles}\$$
 
 ## Polynomial and Rational functions
 
