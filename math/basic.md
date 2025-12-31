@@ -503,7 +503,7 @@ If $$f$$ is a function with domain $$A$$, then the graph of $$f$$ is the set of 
 
 <figure><img src="../.gitbook/assets/domain_and_range_of_graph.png" alt="" width="563"><figcaption></figcaption></figure>
 
-#### Average Rate of Change of a Function
+### Average Rate of Change of a Function
 
 $$\text{AROC} = \frac{f(b) - f(a)}{b - a}$$
 
@@ -513,7 +513,7 @@ $$\frac{\text{Change in Output}}{\text{Change in Input}} = \frac{\Delta y}{\Delt
 
 $$\text{AROC} = \frac{\text{Change in Distance}}{\text{Change in Time}} = \text{Average Speed}$$
 
-#### Transformation of Functions
+### Transformation of Functions
 
 **Transformation of functions** is a set of mathematical operations that change the position, size, or orientation of a graph without losing its fundamental "family" shape.
 
@@ -536,7 +536,7 @@ Reflecting: $$-f(x)$$ (over x-axis) or $$f(-x)$$ (over y-axis)
 
 Stretching/Shrinking: $$cf(x)$$ or $$f(cx)$$
 
-#### Combining Functions
+### Combining Functions
 
 $$f(g(x))$$
 
@@ -548,7 +548,7 @@ If I ask for $$(f \circ g)(3)$$:
 2. Move to the outside: Put that 6 into $$f$$.
 3. $$f(6) = 6 + 5 = \mathbf{11}$$.
 
-#### Quadratic Functions
+### Quadratic Functions
 
 **Vertex form** is a specific way of writing the equation of a quadratic function (a parabola) that makes it very easy to identify its highest or lowest point, known as the vertex.
 
@@ -620,7 +620,41 @@ Question: Is $$(x - 1)$$ a factor of $$x^3 - 6x^2 + 11x - 6$$?
     $$f(1) = 0$$
 3. The Verdict: Because we got 0, $$(x - 1)$$ is a factor. It divides the big equation perfectly with no leftovers.
 
-#### Rational Function
+#### Polynomial Inequality
+
+finding the set of values for $$x$$ that make a polynomial expression greater than, less than, or equal to zero
+
+It typically takes one of the following forms:
+
+* $$P(x) > 0$$
+* $$P(x) < 0$$
+* $$P(x) \geq 0$$
+* $$P(x) \leq 0$$
+
+Set the polynomial to zero and factor:
+
+$$x^3 - 4x^2 - x + 4 \leq 0$$
+
+$$x^2(x - 4) - 1(x - 4) = 0$$
+
+$$(x^2 - 1)(x - 4) = 0$$
+
+$$(x - 1)(x + 1)(x - 4) = 0$$
+
+Critical values are: $$x = -1, 1, 4$$.
+
+These roots create four intervals on the number line: $$(-\infty, -1]$$, $$[-1, 1]$$, $$[1, 4]$$, and $$[4, \infty)$$. (We use brackets because the inequality is $$\leq$$).
+
+* Test $$x = -2$$: $$(-)(-)(-) = \text{negative}$$ (Matches $$\leq 0$$)
+* Test $$x = 0$$: $$(-)(+)(-) = \text{positive}$$
+* Test $$x = 2$$: $$(+)(+)(-) = \text{negative}$$ (Matches $$\leq 0$$)
+* Test $$x = 5$$: $$(+)(+)(+) = \text{positive}$$
+
+The intervals where the expression is less than or equal to zero are:
+
+$$(-\infty, -1] \cup [1, 4]$$
+
+### Rational Function
 
 $$f(x) = \frac{P(x)}{Q(x)}$$
 
@@ -641,7 +675,7 @@ $$A(x) = \frac{5000 + 30x}{x}$$
 * Vertical Asymptote ($$x=0$$): You can't calculate the average cost for 0 sneakers (division by zero). As production gets closer to zero, the average cost per unit skyrockets.
 * Horizontal Asymptote ($$y=30$$): As production increases to very large numbers, the $5,000 fixed cost is spread so thin that it becomes negligible. The average cost "levels off" toward the variable cost of $30.
 
-**The Factor Theorem for Rational Functions**
+#### **Factor Theorem for Rational Functions**
 
 In a rational function, we are usually looking for zeros (where the graph hits the x-axis).
 
@@ -682,3 +716,25 @@ $$\begin{array}{rll} \phantom{x+1} & x + 2 \\ x+1 & \overline{\smash{)} x^2 + 3x
 * quotient is the answer to a division problem = $$x + 2$$
 * Since the remainder is 3 (not zero), we know $$(x+1)$$ is not a factor of the numerator.
 * The Graphing Connection: As $$x$$ gets huge, the fraction $$\frac{3}{x+1}$$ disappears, and the graph starts to look exactly like the line $$y = x + 2$$.
+
+#### Rational Inequality
+
+Solve: $$\frac{x-5}{x+1} \geq 0$$
+
+* Numerator: $$x - 5 = 0 \implies \mathbf{x = 5}$$
+*   Denominator: $$x + 1 = 0 \implies \mathbf{x = -1}$$
+
+    These two numbers create three intervals: $$(-\infty, -1), (-1, 5), and (5, \infty)$$.
+
+| Interval          | Test Point (x) | Calculation                           | Result   | Sign             |
+| ----------------- | -------------- | ------------------------------------- | -------- | ---------------- |
+| $$(-\infty, -1)$$ | $$-2$$         | $$\frac{-2-5}{-2+1} = \frac{-7}{-1}$$ | $$7$$    | Positive (+)     |
+| $$(-1, 5)$$       | $$0$$          | $$\frac{0-5}{0+1} = \frac{-5}{1}$$    | $$-5$$   | Negative ($$-$$) |
+| $$(5, \infty)$$   | $$6$$          | $$\frac{6-5}{6+1} = \frac{1}{7}$$     | $$0.14$$ | Positive (+)     |
+
+We want the intervals where the result is $$\geq 0$$ (Positive).
+
+* We include $$5$$ because it makes the numerator zero (and the inequality allows $$\geq$$).
+* We exclude $$-1$$ because it makes the denominator zero (undefined).
+
+Solution: $$(-\infty, -1) \cup [5, \infty)$$
