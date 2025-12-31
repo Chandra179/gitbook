@@ -609,7 +609,9 @@ notice  from + to minus 3 and from multiplication of 2x become x/2
 A bird is released from point A on an island, 5 miles from the nearest point B\
 on a straight shoreline. The bird flies to a point C on the shoreline and then flies along the\
 shoreline to its nesting area D (see the figure). Suppose the bird requires 10 kcal/mi of\
-energy to fly over land and 14 kcal/mi to fly over water.
+energy to fly over land and 14 kcal/mi to fly over water.&#x20;
+
+energy used = energy per mile x miles flown
 
 <figure><img src="../.gitbook/assets/image.png" alt="" width="375"><figcaption></figcaption></figure>
 
@@ -642,24 +644,6 @@ The bird's journey consists of two segments: flying over water (from A to C) and
 Total Energy $$E(x)$$:
 
 $$E(x) = 14\sqrt{x^2 + 25} + 10(12 - x)$$
-
-***
-
-#### (b) Minimizing Energy Expenditure
-
-To find the value of $$ $x$ $$ that minimizes $$ $E(x)$ $$, we need to find the derivative $$ $E'(x)$ $$ and set it to zero.
-
-1\. Differentiate $E(x)$:
-
-\$$E'(x) = 14 \cdot \frac{1}{2}(x^2 + 25)^{-1/2} \cdot (2x) - 10\$$\$$E'(x) = \frac{14x}{\sqrt{x^2 + 25\}} - 10\$$
-
-2\. Solve for $x$ where $E'(x) = 0$:
-
-\$$\frac{14x}{\sqrt{x^2 + 25\}} = 10\$$\$$14x = 10\sqrt{x^2 + 25}\$$
-
-Divide both sides by 2 and square both sides:
-
-\$$(7x)^2 = (5\sqrt{x^2 + 25})^2\$$\$$49x^2 = 25(x^2 + 25)\$$\$$49x^2 = 25x^2 + 625\$$\$$24x^2 = 625\$$\$$x^2 = \frac{625}{24}\$$\$$x = \sqrt{\frac{625}{24\}} = \frac{25}{\sqrt{24\}} \approx 5.10 \text{ miles}\$$
 
 ## Polynomial and Rational functions
 
