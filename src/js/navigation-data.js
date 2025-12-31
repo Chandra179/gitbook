@@ -56,8 +56,7 @@ const navigationData = [
                     { name: 'Trigonometry', slug: 'trigonometry' },
                 ]
             },
-            { name: 'Precalculus', slug: 'basic' },
-            { name: 'Precalculus II', slug: 'basic2' },
+            { name: 'Precalculus', slug: 'precalculus' },
             { name: 'Problem', slug: 'problem' },
         ]
     },
@@ -79,9 +78,11 @@ const navigationData = [
         ]
     },
     {
-        name: 'Neural Network',
+        name: 'AI',
         slug: 'neural-network',
-        standalone: true
+        pages: [
+            { name: 'Keywords', slug: 'keywords' },
+        ]
     },
     {
         name: 'Knowledge Graph',
