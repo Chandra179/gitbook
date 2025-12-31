@@ -6,7 +6,7 @@
 
 **Real number**
 
-<figure><img src="../.gitbook/assets/linear_number_line.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/linear_number_line.png" alt=""><figcaption></figcaption></figure>
 
 there is no real number that, when multiplied by itself, results in a negative number. The expression $$\sqrt{-9}$$ asks the question: What real number, when multiplied by itself (squared), equals $$-9$$?
 
@@ -82,7 +82,7 @@ Total Cost = $$\$50 + \$30 + \$10 + \$6 = \mathbf{\$96}$$
 
 #### Fractions
 
-<figure><img src="../.gitbook/assets/prop_of_fractions.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/prop_of_fractions.png" alt=""><figcaption></figcaption></figure>
 
 ***
 
@@ -109,15 +109,15 @@ $$25 - 12 = \mathbf{13}$$
 
 ### **Intervals**
 
-<figure><img src="../.gitbook/assets/interval_notation.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/interval_notation.png" alt=""><figcaption></figcaption></figure>
 
 ### **Absolute Value**
 
-<figure><img src="../.gitbook/assets/prop_absolute_value.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/prop_absolute_value.png" alt=""><figcaption></figcaption></figure>
 
 ### **Integer Exponents**
 
-<figure><img src="../.gitbook/assets/laws_of_exponent.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/laws_of_exponent.png" alt=""><figcaption></figcaption></figure>
 
 A product of identical numbers is usually written in exponential notation
 
@@ -135,7 +135,7 @@ A product of identical numbers is usually written in exponential notation
 
 The number inside the root _must_ be a result of something being raised to the power of $$n$$
 
-<figure><img src="../.gitbook/assets/prop_of_roots.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/prop_of_roots.png" alt=""><figcaption></figcaption></figure>
 
 The expression to simplify is $$\sqrt[4]{81x^8y^4}$$.
 
@@ -167,7 +167,7 @@ The key takeaway is that the absolute value signs are essential when simplifying
 
 ### Product Formulas
 
-<figure><img src="../.gitbook/assets/product_formulas.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/product_formulas.png" alt=""><figcaption></figcaption></figure>
 
 $$(3x + 4)(3x - 4) = (3x)^2 - (4)^2$$
 
@@ -213,7 +213,7 @@ $$8^{\frac{2}{3}} =$$$$(\sqrt[3]{8})^2$$ = $$2^2$$ = $$4$$
 
 ### Equations
 
-<figure><img src="../.gitbook/assets/prop_equality.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/prop_equality.png" alt=""><figcaption></figcaption></figure>
 
 its always a straight line, so the of degree power (exponent) is 1
 
@@ -227,18 +227,6 @@ the exponent is greater than 1
 
 Quadratic equations are essential for modeling paths, areas, and optimization problems. They are defined by the standard form $$ax^2 + bx + c = 0$$, where $$x$$ is the unknown, and $$a$$, $$b$$, and $$c$$ are known coefficients.
 
-#### Quadratic Formula
-
-Must degree of 2
-
-$$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
-
-With the formula, you just plug in $$a=3$$, $$b=5$$, and $$c=-4$$ directly, avoiding all the complicated steps:
-
-$$x = \frac{-5 \pm \sqrt{5^2 - 4(3)(-4)}}{2(3)}$$
-
-We use quadratic functions whenever a relationship involves squaring a value, ex: Projectile Motion (Physics), Optimization (Business & Engineering)
-
 ### Complex Number
 
 Real number + imaginary number
@@ -249,7 +237,7 @@ The Real Part ($$a$$): These are normal numbers like $$5$$, $$-3$$
 
 The Imaginary Part ($$bi$$): This is a real number multiplied by $$i$$
 
-<figure><img src="../.gitbook/assets/complex_number_table.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/complex_number_table.png" alt=""><figcaption></figcaption></figure>
 
 Imagine you are controlling a drone.
 
@@ -278,7 +266,7 @@ If you want to tell that drone to "turn 90 degrees," you don't need a complicate
 * Rotate 90°: $$(3 + 4i) \times i = 3i + 4i^2$$
 * Since $$i^2 = -1$$, this becomes $$-4 + 3i$$.
 
-<figure><img src="../.gitbook/assets/flip_imaginary.png" alt="" width="375"><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/flip_imaginary.png" alt="" width="375"><figcaption></figcaption></figure>
 
 <table><thead><tr><th width="162.20001220703125">Power</th><th width="175.79998779296875">Simplified</th><th>Rule</th></tr></thead><tbody><tr><td><span class="math">i^1</span></td><td><span class="math">i</span></td><td>Remainder of 1</td></tr><tr><td><span class="math">i^2</span></td><td><span class="math">-1</span></td><td>Remainder of 2</td></tr><tr><td><span class="math">i^3</span></td><td><span class="math">-i</span></td><td>Remainder of 3</td></tr><tr><td><span class="math">i^4</span></td><td><span class="math">1</span></td><td>Remainder of 0 (no remainder)</td></tr></tbody></table>
 
@@ -301,14 +289,6 @@ If "multiplying by $$-1$$" is a 180-degree turn, then "multiplying by $$i$$" mus
 This is always the first step. You look for the largest number or variable that divides evenly into every single term.
 
 &#x20;$$3x^2 + 6x = 3x(x + 2)$$
-
-***
-
-**Factoring by Grouping**
-
-Used mostly when you have four terms. You split the expression into two pairs, factor out the GCF of each pair, and then look for a common binomial.
-
-&#x20;$$x^3 + 2x^2 + 5x + 10 \rightarrow x^2(x+2) + 5(x+2) = (x^2+5)(x+2)$$
 
 ***
 
@@ -372,7 +352,7 @@ a car for two days, and the bill comes to $108. How many miles was the car drive
 
 ### Inequalities
 
-<figure><img src="../.gitbook/assets/inequalities_rules.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/inequalities_rules.png" alt=""><figcaption></figcaption></figure>
 
 A linear inequality is one where the variable has a power of 1. When you graph these, they always form a straight line that divides the plane into two regions.
 
@@ -400,7 +380,7 @@ A nonlinear inequality contains a variable with a power other than 1 (like $$x^2
 
 ### Coordinate Plane, Graphs of Equations, Line, Circles
 
-<figure><img src="../.gitbook/assets/coordinate_plane.png" alt="" width="563"><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/coordinate_plane.png" alt="" width="563"><figcaption></figcaption></figure>
 
 **Distance formula** $$d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$$
 
@@ -411,7 +391,7 @@ A nonlinear inequality contains a variable with a power other than 1 (like $$x^2
 
 **Example**
 
-<figure><img src="../.gitbook/assets/coorplane_example.png" alt="" width="375"><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/coorplane_example.png" alt="" width="375"><figcaption></figcaption></figure>
 
 The goal is to find which point is closer to $$A(5, 3)$$. To do that, we find the distance to $$P(1, -2)$$ and the distance to $$Q(8, 9)$$.
 
@@ -433,7 +413,7 @@ Since $$\sqrt{41}$$ is a smaller number than $$\sqrt{45}$$, Point $$P$$ is close
 
 ***
 
-<figure><img src="../.gitbook/assets/midpoint_distance.png" alt="" width="563"><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/midpoint_distance.png" alt="" width="563"><figcaption></figcaption></figure>
 
 **Midpoint formula** finds the coordinates of the point that lies exactly halfway between two endpoints.
 
@@ -451,7 +431,7 @@ $$(x - h)^2 + (y - k)^2 = r^2$$
 
 #### **Intercept**
 
-<figure><img src="../.gitbook/assets/intercept.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/intercept.png" alt=""><figcaption></figcaption></figure>
 
 #### Lines
 
@@ -464,11 +444,11 @@ $$m = \frac{y_2 - y_1}{x_2 - x_1}$$
 * Numerator ($$y_2 - y_1$$): This is the Rise. It tells you how much the line goes up or down.
 * Denominator ($$x_2 - x_1$$): This is the Run. It tells you how much the line goes left or right.
 
-<figure><img src="../.gitbook/assets/slope_of_line.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/slope_of_line.png" alt=""><figcaption></figcaption></figure>
 
 #### Circle Equation
 
-<figure><img src="../.gitbook/assets/circle_eq.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/circle_eq.png" alt=""><figcaption></figcaption></figure>
 
 point-slope equation: $$y - y_1 = m(x - x_1)$$
 
@@ -478,6 +458,8 @@ point-slope equation: $$y - y_1 = m(x - x_1)$$
 that is, their slopes are negative reciprocals: $$m_2 = -\frac{1}{m_1}$$
 
 ## Functions
+
+General properties for functions
 
 **Range notation**
 
@@ -501,7 +483,7 @@ $$f(x) = \frac{5}{x-3}$$
 
 If $$f$$ is a function with domain $$A$$, then the graph of $$f$$ is the set of ordered pairs: $$\{(x, f(x)) \mid x \in A\}$$ plotted in a coordinate plane. In other words, the graph of $$f$$ is the set of all points $$(x, y)$$ such that $$y = f(x)$$
 
-<figure><img src="../.gitbook/assets/domain_and_range_of_graph.png" alt="" width="563"><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/domain_and_range_of_graph.png" alt="" width="563"><figcaption></figcaption></figure>
 
 ### Average Rate of Change of a Function
 
@@ -547,22 +529,6 @@ If I ask for $$(f \circ g)(3)$$:
 1. Start with the inside: $$g(3) = 2 \cdot 3 = \mathbf{6}$$.
 2. Move to the outside: Put that 6 into $$f$$.
 3. $$f(6) = 6 + 5 = \mathbf{11}$$.
-
-### Quadratic Functions
-
-**Vertex form** is a specific way of writing the equation of a quadratic function (a parabola) that makes it very easy to identify its highest or lowest point, known as the vertex.
-
-$$y = a(x - h)^2 + k$$
-
-$$y = (x - 5)^2 + 3$$
-
-1. Look at the $$h$$ (inside the parentheses): It says $$-5$$. In math, the inside is "opposite land," so instead of going left toward negative numbers, we move right 5.
-2. Look at the $$k$$ (at the end): It says $$+3$$. This is straightforward—it moves up 3.
-3. vertex moved from $$(0,0)$$ to $$(5, 3)$$.
-
-$$(\dots)^2$$ matters
-
-The square is what creates that "U" shape. Because any number squared (positive or negative) becomes positive, the graph mirrors itself on both sides, creating a valley or a hill.
 
 ### One to One function & Inverse
 
@@ -613,7 +579,7 @@ energy to fly over land and 14 kcal/mi to fly over water.&#x20;
 
 energy used = energy per mile x miles flown
 
-<figure><img src="../.gitbook/assets/image.png" alt="" width="375"><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image.png" alt="" width="375"><figcaption></figcaption></figure>
 
 The bird's journey consists of two segments: flying over water (from A to C) and flying over land (from C to D).
 
@@ -645,7 +611,53 @@ Total Energy $$E(x)$$:
 
 $$E(x) = 14\sqrt{x^2 + 25} + 10(12 - x)$$
 
+## Quadratic Functions
+
+The formula finds the $$x$$-intercepts (the roots) of the equation $$ax^2 + bx + c = 0$$:
+
+$$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
+
+**Vertex form** identify its highest or lowest point minima and maxima
+
+$$y = a(x - h)^2 + k$$
+
+$$y = 2(x - 3)^2 + 5$$
+
+Extract the Vertex $$(h, k)$$
+
+Look at the numbers in the spots for $$h$$ and $$k$$.
+
+* Inside the parentheses, we see $$(x - 3)$$. Since the formula has a minus, $$h = 3$$.
+* Outside, we see $$+ 5$$. So $$k = 5$$.
+* The vertex is at $$(3, 5)$$.
+
+The vertex $$(3, 5)$$ is just a single dot in space. But a parabola can be:
+
+* Skinny (like a needle)
+* Wide (like a bowl)
+
+Our $$a$$ is $$2$$.
+
+* Because it’s positive, it’s a "U" shape.
+* Because it’s greater than $$1$$, it’s a "Skinny" U (it grows twice as fast).
+
+$$(h, k)$$: This is the Vertex (the peak or valley).
+
+* $$h$$ is the horizontal "address" (the $$x$$).
+* $$k$$ is the vertical "address" (the height, or $$y$$).
+* $$a$$: This is the "Shape Master."
+  * If $$a$$ is positive, it’s a U.
+  * If $$a$$ is negative, it’s an n.
+
+The Minus Sign ($$-h$$): This is the "Pusher." Because it is _inside_ the parentheses with $$x$$, it works backward from what you expect. If you see $$(x - 3)$$, it actually pushed the graph right to $$+3$$.
+
+$$(\dots)^2$$&#x20;
+
+The square is what creates that "U" shape. Because any number squared (positive or negative) becomes positive, the graph mirrors itself on both sides, creating a valley or a hill.
+
 ## Polynomial and Rational functions
+
+polynomial can have up to $$n-1$$ turning points, it have local and globlal minima and maxima
 
 **Polynomial**
 
@@ -679,11 +691,11 @@ $$R_{max} = 25 \times 50 = \$1,250$$
 
 #### Long Division Polynomial
 
-<figure><img src="../.gitbook/assets/long_div_polynomial.png" alt="" width="563"><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/long_div_polynomial.png" alt="" width="563"><figcaption></figcaption></figure>
 
 #### Synthetic Division
 
-<figure><img src="../.gitbook/assets/sythetic_division.png" alt="" width="375"><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/sythetic_division.png" alt="" width="375"><figcaption></figcaption></figure>
 
 #### Factor Theorem
 
@@ -749,7 +761,7 @@ The Average Cost per pair ($$A(x)$$) is a rational function:
 
 $$A(x) = \frac{5000 + 30x}{x}$$
 
-<figure><img src="../.gitbook/assets/vertical_horizontal_asymptote.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/vertical_horizontal_asymptote.png" alt=""><figcaption></figcaption></figure>
 
 * Vertical Asymptote ($$x=0$$): You can't calculate the average cost for 0 sneakers (division by zero). As production gets closer to zero, the average cost per unit skyrockets.
 * Horizontal Asymptote ($$y=30$$): As production increases to very large numbers, the $5,000 fixed cost is spread so thin that it becomes negligible. The average cost "levels off" toward the variable cost of $30.
@@ -817,3 +829,29 @@ We want the intervals where the result is $$\geq 0$$ (Positive).
 * We exclude $$-1$$ because it makes the denominator zero (undefined).
 
 Solution: $$(-\infty, -1) \cup [5, \infty)$$
+
+## Exponential Functions
+
+$$f(x) = a \cdot b^x$$
+
+* $$a$$: The initial value (the y-intercept).
+* $$b$$: The base (growth or decay factor).
+  * If $$b > 1$$, it is Exponential Growth.
+  * If $$0 < b < 1$$, it is Exponential Decay.
+
+**The Growth/Decay Rate Form**
+
+$$f(t) = a(1 \pm r)^t$$
+
+* $$r$$: The percentage rate of change (written as a decimal).
+* $$+$$: Used for growth (e.g., $$1 + 0.05$$ for 5% growth).
+* $$-$$: Used for decay (e.g., $$1 - 0.05$$ for 5% loss).
+
+**natural exponential function** is a specific type of exponential function where the base is the mathematical constant $$e$$ (often called Euler's Number) is an irrational constant, similar to $$\pi$$. Its value is approximately
+
+$$f(x) = e^x$$
+
+$$e \approx 2.71828$$
+
+It was discovered by studying compound interest. If you had $1 and a bank gave you 100% interest, but they compounded it every single tiny fraction of a second (continuously), you wouldn't get infinite money—you would end up with exactly $2.718... ($$e$$) at the end of the year
+
