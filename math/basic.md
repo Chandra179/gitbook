@@ -556,7 +556,7 @@ $$y = a(x - h)^2 + k$$
 
 $$y = (x - 5)^2 + 3$$
 
-1. Look at the $$h$$ (inside the parentheses): It says $$-5$$. In math world, the inside is "opposite land," so instead of going left toward negative numbers, we move right 5.
+1. Look at the $$h$$ (inside the parentheses): It says $$-5$$. In math, the inside is "opposite land," so instead of going left toward negative numbers, we move right 5.
 2. Look at the $$k$$ (at the end): It says $$+3$$. This is straightforward—it moves up 3.
 3. vertex moved from $$(0,0)$$ to $$(5, 3)$$.
 
