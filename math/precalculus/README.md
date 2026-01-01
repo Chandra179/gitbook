@@ -974,6 +974,8 @@ In normal math, you have the angle and find the height. But here, you have the "
 * Step 4: You ask your calculator: _"Which angle gives me a Sine of 0.8?"_
 * $$\sin^{-1}(0.8)$$ = 53 degrees.
 
+\<table>\<thead>\<tr>\<th width="137.4">Function\</th>\<th>Inverse Logic\</th>\<th>Domain (Input Ratio)\</th>\<th>Range (Output Angle)\</th>\</tr>\</thead>\<tbody>\<tr>\<td>$$ $\sin^{-1}(x)$ $$\</td>\<td>$$ $\sin y = x$ $$\</td>\<td>$$ $[-1, 1]$ $$\</td>\<td>$$ $[-\frac{\pi}{2}, \frac{\pi}{2}]$ $$\</td>\</tr>\<tr>\<td>$$ $\cos^{-1}(x)$ $$\</td>\<td>$$ $\cos y = x$ $$\</td>\<td>$$ $[-1, 1]$ $$\</td>\<td>$$ $[0, \pi]$ $$\</td>\</tr>\<tr>\<td>$$ $\tan^{-1}(x)$ $$\</td>\<td>$$ $\tan y = x$ $$\</td>\<td>$$ $(-\infty, \infty)$ $$\</td>\<td>$$ $(-\frac{\pi}{2}, \frac{\pi}{2})$ $$\</td>\</tr>\</tbody>\</table>
+
 modelling harmonic motion
 
 damped harmonic function
