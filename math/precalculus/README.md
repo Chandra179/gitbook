@@ -1,6 +1,6 @@
 # Precalculus
 
-## **Fundamental**
+**Fundamental**
 
 ### **Number**
 
@@ -885,6 +885,11 @@ $$e^y = x \iff \ln(x) = y$$
 
 ## Trigonometric Functions
 
+The trigonometric functions can be defined in two different but equivalent ways:\
+as functions of real numbers (Chapter 5) or as functions of angles (Chapter 6). The\
+two approaches are independent of each other, so either Chapter 5 or Chapter 6\
+may be studied first.
+
 ### **Unit circle**
 
 Because it is a circle with radius $$r = 1$$, its equation is derived from the Pythagorean theorem:
@@ -973,8 +978,6 @@ In normal math, you have the angle and find the height. But here, you have the "
 * Step 3: $$8 \div 10 = 0.8$$.
 * Step 4: You ask your calculator: _"Which angle gives me a Sine of 0.8?"_
 * $$\sin^{-1}(0.8)$$ = 53 degrees.
-
-\<table>\<thead>\<tr>\<th width="137.4">Function\</th>\<th>Inverse Logic\</th>\<th>Domain (Input Ratio)\</th>\<th>Range (Output Angle)\</th>\</tr>\</thead>\<tbody>\<tr>\<td>$$ $\sin^{-1}(x)$ $$\</td>\<td>$$ $\sin y = x$ $$\</td>\<td>$$ $[-1, 1]$ $$\</td>\<td>$$ $[-\frac{\pi}{2}, \frac{\pi}{2}]$ $$\</td>\</tr>\<tr>\<td>$$ $\cos^{-1}(x)$ $$\</td>\<td>$$ $\cos y = x$ $$\</td>\<td>$$ $[-1, 1]$ $$\</td>\<td>$$ $[0, \pi]$ $$\</td>\</tr>\<tr>\<td>$$ $\tan^{-1}(x)$ $$\</td>\<td>$$ $\tan y = x$ $$\</td>\<td>$$ $(-\infty, \infty)$ $$\</td>\<td>$$ $(-\frac{\pi}{2}, \frac{\pi}{2})$ $$\</td>\</tr>\</tbody>\</table>
 
 modelling harmonic motion
 
