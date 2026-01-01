@@ -859,7 +859,7 @@ It was discovered by studying compound interest. If you had $1 and a bank gave y
 
 ### Logarithmic
 
-The most fundamental formula for a logarithm relates the logarithmic form to its exponential form:<sup>3</sup>
+The most fundamental formula for a logarithm relates the logarithmic form to its exponential form:
 
 <a class="button secondary"></a>$$\log_b(x) = y \iff b^y = x$$
 
@@ -883,7 +883,7 @@ Because it is the inverse of the exponential function $$e^x$$, the relationship 
 
 $$e^y = x \iff \ln(x) = y$$
 
-## Trigonometric Functions
+## Trigonometric Functions (Unit Circle)
 
 The trigonometric functions can be defined in two different but equivalent ways:\
 as functions of real numbers (Chapter 5) or as functions of angles (Chapter 6). The\
@@ -904,13 +904,13 @@ a **terminal point** is the exact $$(x, y)$$ coordinate where an angle "ends" on
 
 <figure><img src="../../.gitbook/assets/circle_reference_number.png" alt=""><figcaption></figcaption></figure>
 
-### **Reference Number**
+#### **Reference Number**
 
 <figure><img src="../../.gitbook/assets/reference_number.png" alt=""><figcaption></figcaption></figure>
 
 Reference Number (often denoted as $$\bar{t}$$ or $$t$$) is a "shortcut" tool. It is the shortest distance along the unit circle between a terminal point and the x-axis
 
-### **Trigonometric Functions of Real Numbers**
+### **Trigonometric Functions of Real Numbers (Circular Trigonometry)**
 
 On the unit circle, the primary functions are defined as:
 
@@ -932,7 +932,11 @@ These functions are the "flipped" versions of the primary ones:
 
 <table><thead><tr><th width="137.39996337890625">Function</th><th>Domain (Input)</th><th>Range (Output)</th></tr></thead><tbody><tr><td><span class="math">\sin(x)</span></td><td>All Real Numbers <span class="math">(-\infty, \infty)</span></td><td><span class="math">[-1, 1]</span></td></tr><tr><td><span class="math">\cos(x)</span></td><td>All Real Numbers <span class="math">(-\infty, \infty)</span></td><td><span class="math">[-1, 1]</span></td></tr><tr><td><span class="math">\tan(x)</span></td><td>All <span class="math">x \neq \frac{\pi}{2} + n\pi</span> (Odd multiples of <span class="math">90^\circ</span>)</td><td><span class="math">(-\infty, \infty)</span></td></tr><tr><td><span class="math">\csc(x)</span></td><td>All <span class="math">x \neq n\pi</span> (Multiples of <span class="math">180^\circ</span>)</td><td><span class="math">(-\infty, -1] \cup [1, \infty)</span></td></tr><tr><td><span class="math">\sec(x)</span></td><td>All <span class="math">x \neq \frac{\pi}{2} + n\pi</span> (Odd multiples of <span class="math">90^\circ</span>)</td><td><span class="math">(-\infty, -1] \cup [1, \infty)</span></td></tr><tr><td><span class="math">\cot(x)</span></td><td>All <span class="math">x \neq n\pi</span> (Multiples of <span class="math">180^\circ</span>)</td><td><span class="math">(-\infty, \infty)</span> </td></tr></tbody></table>
 
-### **Reciprocal and Quotient Identities**
+### **Identities**
+
+Use identities for Simplification, Solving trigonometric equation, etc..
+
+**Reciprocal and Quotient Identities**
 
 These define how the six functions relate to one another:
 
@@ -964,6 +968,15 @@ $$f(x) = (\sin^2 x + 2\sin x \cos x + \cos^2 x) - 2\sin x \cos x$$
 
 Result: $$f(x) = 1$$
 
+Beyond the basics, there are several dozen "advanced" identities used in calculus, physics, and complex engineering:
+
+* Even/Odd Identities (6): Based on the symmetry of the circle (e.g., $$\sin(-x) = -\sin x$$).
+* Cofunction Identities (6): Relating sines to cosines of complementary angles (e.g., $$\sin(\frac{\pi}{2} - x) = \cos x$$).
+* Sum and Difference (6): Formulas for $$\sin(A \pm B)$$, etc.
+* Double-Angle (5+): Formulas for $$\sin(2x)$$, $$\cos(2x)$$, and $$\tan(2x)$$.
+* Half-Angle (3): Formulas for $$\sin(\frac{x}{2})$$, etc.
+* Product-to-Sum & Sum-to-Product (8): Used heavily in audio and signal processing.
+
 ### Inverse trigonometric function
 
 Imagine you have a 10-foot long ladder. You lean it against a wall.
@@ -979,6 +992,9 @@ In normal math, you have the angle and find the height. But here, you have the "
 * Step 4: You ask your calculator: _"Which angle gives me a Sine of 0.8?"_
 * $$\sin^{-1}(0.8)$$ = 53 degrees.
 
-modelling harmonic motion
+modelling harmonic motion, damped harmonic function
 
-damped harmonic function
+## Analytic Trigonometry
+
+<table><thead><tr><th width="173">Priority</th><th>Chapter</th><th>CS Subject Area</th></tr></thead><tbody><tr><td>CRITICAL</td><td>Chapter 9</td><td>Linear Algebra, AI, Graphics, Databases</td></tr><tr><td>CRITICAL</td><td>Chapter 11</td><td>Algorithms, Discrete Math, Complexity</td></tr><tr><td>REQUIRED</td><td>Chapter 5 &#x26; 7</td><td>Calculus (Optimization in ML)</td></tr><tr><td>OPTIONAL</td><td>Chapter 10</td><td>Game Engines, Computer Vision, Robotics</td></tr><tr><td>OPTIONAL</td><td>Chapter 8</td><td>Digital Signal Processing (Audio/Video)</td></tr></tbody></table>
+
