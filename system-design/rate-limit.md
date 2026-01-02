@@ -2,11 +2,12 @@
 
 Before building, we must define the boundaries of the system:
 
-* Scale: Support from 1,000 to 1,000,000+ concurrent users.
-* Direction: \* Inbound: Protecting our public APIs from users.
+* Support from 1,000 to 1,000,000+ concurrent users.
+* Direction:
+  * Inbound: Protecting our public APIs from users.
   * Outbound: Throttling calls to external 3rd party APIs to avoid contract violations.
-* User Tiers: Differentiation between Free and Paid users (tiered limits).
-* Identity: Unique identification via `user_id`, `API_key`, or `IP_address`.
+* Differentiation between Free and Paid users (tiered limits).
+* Unique identification via `user_id`, `API_key`, or `IP_address`.
 
 #### Multi-Layer Architecture
 
@@ -33,6 +34,4 @@ Consistency:&#x20;
 
 To handle massive spikes and system failures, we implement the following:
 
-**Thundering Herd Protection**: When returning a `429 Too Many Requests` error, add a Random Delay (Jitter) of 1–2 seconds to the `Retry-After` header. This prevents a million users from retrying at the exact same millisecond.
-
-**Load Shedding**: If CPU usage is high or Cache Memory is at maximum capacity, the system should prioritize health over accuracy. Ex: drop lower-priority traffic (e.g., analytics) to save critical paths (e.g., checkout).
+**Thundering Herd Protection**: When returning a `429 Too Many Requests` error, add a Random Delay (Jitter) of 1–2 seconds to the `Retry-After` header. This prevents a million users from retrying at the exact same millisecond

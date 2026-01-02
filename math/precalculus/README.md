@@ -579,7 +579,7 @@ energy to fly over land and 14 kcal/mi to fly over water.&#x20;
 
 energy used = energy per mile x miles flown
 
-<figure><img src="../../.gitbook/assets/image.png" alt="" width="375"><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/image (1).png" alt="" width="375"><figcaption></figcaption></figure>
 
 The bird's journey consists of two segments: flying over water (from A to C) and flying over land (from C to D).
 
