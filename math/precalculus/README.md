@@ -996,5 +996,7 @@ modelling harmonic motion, damped harmonic function
 
 ## Analytic Trigonometry
 
+we study algebraic properties of thesefunctions, that is, simplifying and factoring expressions and solving equations that involve trigonometric functions.
+
 <table><thead><tr><th width="173">Priority</th><th>Chapter</th><th>CS Subject Area</th></tr></thead><tbody><tr><td>CRITICAL</td><td>Chapter 9</td><td>Linear Algebra, AI, Graphics, Databases</td></tr><tr><td>CRITICAL</td><td>Chapter 11</td><td>Algorithms, Discrete Math, Complexity</td></tr><tr><td>REQUIRED</td><td>Chapter 5 &#x26; 7</td><td>Calculus (Optimization in ML)</td></tr><tr><td>OPTIONAL</td><td>Chapter 10</td><td>Game Engines, Computer Vision, Robotics</td></tr><tr><td>OPTIONAL</td><td>Chapter 8</td><td>Digital Signal Processing (Audio/Video)</td></tr></tbody></table>
 
