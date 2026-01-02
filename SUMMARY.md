@@ -35,6 +35,7 @@
   * [Consistent Hashing](system-design/consistent-hashing.md)
   * [ID Generator](system-design/id-generator.md)
   * [Clock Skew & Time Sync](system-design/clock-skew-and-time-sync.md)
+  * [Rate Limit](system-design/rate-limit.md)
 * [AI](neural-network/README.md)
   * [Keywords](neural-network/keywords.md)
 * [Knowledge Graph](knowledge-graph.md)
