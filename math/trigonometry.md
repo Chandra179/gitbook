@@ -7,7 +7,7 @@ Hypotenuse = diagonal\
 Adjacent = flat line\
 $$(\theta)$$ = angle degrees
 
-### Sine & Arcsin
+## Sine & Arcsin
 
 $$\sin(\theta) = \frac{\text{Opposite}}{\text{Hypotenuse}}$$
 
@@ -30,7 +30,7 @@ $$a^2 + b^2 = c^2 \quad \rightarrow \quad \text{Adjacent} = \sqrt{\text{Hypotenu
 
 ***
 
-### Cosine
+## Cosine & Arccos
 
 $$\cos(\theta) = \frac{\text{Adjacent}}{\text{Hypotenuse}}$$
 
@@ -40,9 +40,13 @@ $$\cos(\theta) = \frac{\text{Adjacent}}{\text{Hypotenuse}}$$
 * $$\text{Distance} = 12 \times \cos(60^\circ)$$
 * $$12 \times 0.5 = \mathbf{6 \text{ feet from the wall}}$$.
 
+$$\theta = \arccos\left(\frac{\text{Adjacent}}{\text{Hypotenuse}}\right)$$
+
+$$\text{If } \cos(y) = x, \text{ then } y = \arccos(x)$$
+
 ***
 
-### Tangent
+## Tangent
 
 $$\tan(\theta) = \frac{\text{Opposite}}{\text{Adjacent}}$$
 
@@ -54,7 +58,7 @@ $$\tan(\theta) = \frac{\text{Opposite}}{\text{Adjacent}}$$
 
 ***
 
-### Cosecant
+## Cosecant
 
 $$\csc(\theta) = \frac{\text{Hypotenuse}}{\text{Opposite}}$$ (The flip of Sine)
 
@@ -66,7 +70,7 @@ $$\csc(\theta) = \frac{\text{Hypotenuse}}{\text{Opposite}}$$ (The flip of Sine)
 
 ***
 
-### Secant
+## Secant
 
 $$\sec(\theta) = \frac{\text{Hypotenuse}}{\text{Adjacent}}$$ (The flip of Cosine)
 
@@ -78,7 +82,7 @@ $$\sec(\theta) = \frac{\text{Hypotenuse}}{\text{Adjacent}}$$ (The flip of Cosine
 
 ***
 
-### Cotangent
+## Cotangent
 
 $$\cot(\theta) = \frac{\text{Adjacent}}{\text{Opposite}}$$ (The flip of Tangent)
 
@@ -90,7 +94,7 @@ $$\cot(\theta) = \frac{\text{Adjacent}}{\text{Opposite}}$$ (The flip of Tangent)
 
 ***
 
-### **Unit circle**
+## **Unit circle**
 
 Because it is a circle with radius $$r = 1$$, its equation is derived from the Pythagorean theorem:
 
@@ -155,7 +159,7 @@ $$(\cos \theta)^2 + (\sin \theta)^2 = 1$$
 3. $$(\cos \theta)^2 = 1 - 0.36$$, which equals $$0.64$$.
 4. To find $$\cos \theta$$, you take the square root of $$0.64$$. This gives you two possible answers: $$0.8$$ or $$-0.8$$.
 
-### **Trigonometric Functions of Real Numbers**
+## **Trigonometric Functions of Real Numbers**
 
 On the unit circle, the primary functions are defined as:
 
@@ -173,7 +177,7 @@ These functions are the "flipped" versions of the primary ones:
 
 <figure><img src="../.gitbook/assets/special_value_trigonometric_func.png" alt=""><figcaption></figcaption></figure>
 
-### **Domain of trigonometric function**
+## **Domain of trigonometric function**
 
 imagine a "laser pointer" rotating from the center of the circle, there are two specific moments where the Tangent or other value simply doesn't exist.
 
@@ -195,7 +199,7 @@ you cannot divide by zero. At this exact angle, the Tangent "breaks" and becomes
 
 [https://www.desmos.com/calculator/ajd5qthpcw](https://www.desmos.com/calculator/ajd5qthpcw)
 
-### **Identities**
+## **Identities**
 
 Use identities to rewrite complex expressions in a simpler form
 
@@ -240,7 +244,7 @@ Beyond the basics, there are several dozen "advanced" identities used in calculu
 * Half-Angle (3): Formulas for $$\sin(\frac{x}{2})$$, etc.
 * Product-to-Sum & Sum-to-Product (8): Used heavily in audio and signal processing.
 
-### Inverse trigonometric function
+## Inverse trigonometric function
 
 Imagine you have a 10-foot long ladder. You lean it against a wall.
 
@@ -253,6 +257,14 @@ In normal math, you have the angle and find the height. But here, you have the "
 * Step 2: Height divided by Ladder is called Sine.
 * Step 3: $$8 \div 10 = 0.8$$.
 * Step 4: You ask your calculator: _"Which angle gives me a Sine of 0.8?"_
-* $$\sin^{-1}(0.8)$$ = 53 degrees.
+* $$\sin^{-1}(0.8)$$ = 53 degrees
 
-modelling harmonic motion, damped harmonic function
+## Inverse Identities
+
+## The Law of Sines and the Law of Cosines
+
+## Double-Angle and Half-Angle Formulas
+
+Double-Angle and Half-Angle formulas are essential tools in trigonometry that allow you to find the sine, cosine, or tangent of an angle that has been doubled ($$2\theta$$) or halved ($$\frac{\theta}{2}$$).
+
+## Addition and Subtraction Formulas
