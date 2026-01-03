@@ -96,19 +96,11 @@ Because it is a circle with radius $$r = 1$$, its equation is derived from the P
 
 $$x^2 + y^2 = 1$$
 
-Any point $$(x, y)$$ that lies on the boundary of this circle must satisfy that equation.
+Because the Hypotenuse ($$H$$) is 1, the SOH CAH TOA formulas turn into direct values:
 
-<figure><img src="../.gitbook/assets/circle_terminal_point.png" alt=""><figcaption></figcaption></figure>
+$$\text{Opposite} = H \times \sin(\theta) = 1 \times \sin(\theta) = \mathbf{\sin(\theta)}$$
 
-a **terminal point** is the exact $$(x, y)$$ coordinate where an angle "ends" on the unit circle
-
-<figure><img src="../.gitbook/assets/circle_reference_number.png" alt=""><figcaption></figcaption></figure>
-
-#### **Reference Number**
-
-<figure><img src="../.gitbook/assets/reference_number.png" alt=""><figcaption></figcaption></figure>
-
-Reference Number (often denoted as $$\bar{t}$$ or $$t$$) is a "shortcut" tool. It is the shortest distance along the unit circle between a terminal point and the x-axis
+$$\text{Adjacent} = H \times \cos(\theta) = 1 \times \cos(\theta) = \mathbf{\cos(\theta)}$$
 
 <figure><img src="../.gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
 
@@ -121,6 +113,26 @@ radian is a measurement of the angle (the "opening" between two lines
 **Arc length**&#x20;
 
 Arc length is the distance along the curved edge (the "crust" of the pizza slice).
+
+**Coterminal Angle**
+
+Keep subtracting full circles ($$360^\circ$$) until we get a number we recognize between $$0^\circ$$ and $$360^\circ$$.
+
+* First Lap: $$900^\circ - 360^\circ = 540^\circ$$ (Still bigger than a circle).
+* Second Lap: $$540^\circ - 360^\circ = \mathbf{180^\circ}$$.
+
+**Reference Angle**
+
+How far is the angle from the x-axis?&#x20;
+
+| Where is your angle?       | The Formula            | Logic                                      |
+| -------------------------- | ---------------------- | ------------------------------------------ |
+| Q1 ($$0$$-$$90^\circ$$)    | No formula needed.     | The angle is its own reference!            |
+| Q2 ($$90$$-$$180^\circ$$)  | $$180 - \text{Angle}$$ | How many degrees _before_ the $$18$$ line? |
+| Q3 ($$180$$-$$270^\circ$$) | $$\text{Angle} - 180$$ | How many degrees _past_ the $$180$$ line?  |
+| Q4 ($$270$$-$$360^\circ$$) | $$360 - \text{Angle}$$ | How many degrees _until_ the $$360$$ line? |
+
+***
 
 <figure><img src="../.gitbook/assets/circle_sine_cosine_example.png" alt="" width="375"><figcaption></figcaption></figure>
 
@@ -173,10 +185,11 @@ $$\tan \theta = \frac{\sin \theta}{\cos \theta}$$
 
 As you rotate the radius, you are building that rectangle we talked about earlier.
 
-* At $$90^\circ$$ (The top edge): Your point is at $$(0, 1)$$. The horizontal width ($$x$$) is zero.
-* The Math: $$\tan(90^\circ) = \frac{1}{0}$$.
+At $$90^\circ$$ (The top edge): Your point is at $$(0, 1)$$. The horizontal width ($$x$$) is zero.
 
-<figure><img src="../.gitbook/assets/image.png" alt="" width="563"><figcaption></figcaption></figure>
+The Math: $$\tan(90^\circ) = \frac{1}{0}$$.
+
+<figure><img src="../.gitbook/assets/unit_circle_wave.png" alt="" width="563"><figcaption></figcaption></figure>
 
 you cannot divide by zero. At this exact angle, the Tangent "breaks" and becomes undefined.
 
@@ -184,7 +197,7 @@ you cannot divide by zero. At this exact angle, the Tangent "breaks" and becomes
 
 ### **Identities**
 
-Use identities for Simplification, Solving trigonometric equation, etc..
+Use identities to rewrite complex expressions in a simpler form
 
 **Reciprocal and Quotient Identities**
 

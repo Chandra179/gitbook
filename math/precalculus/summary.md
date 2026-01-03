@@ -52,3 +52,9 @@ _These properties apply to all the function families listed (Linear, Quadratic, 
 * Holes (Removable Discontinuities): Occur when factors cancel out.
 * Domain Restrictions: Specifically caused by zeros in the denominator.
 * Branches: The separate "curves" created by asymptotes.
+
+***
+
+### Trigonometric Functions
+
+* Identity

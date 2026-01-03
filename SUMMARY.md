@@ -31,4 +31,5 @@
   * [Distributed Task Scheduler](system-design/distributed-task-scheduler.md)
 * [AI](neural-network/README.md)
   * [Keywords](neural-network/keywords.md)
+  * [AI Agents](neural-network/ai-agents.md)
 * [Knowledge Graph](knowledge-graph.md)
