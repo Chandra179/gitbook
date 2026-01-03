@@ -20,7 +20,7 @@ $$\sin(\theta) = \frac{\text{Opposite}}{\text{Hypotenuse}}$$
 
 If you already have the **hypotenuse** and the **opposite** (vertical) side, you are usually trying to find one of two things: the Angle or the Adjacent (horizontal) side.
 
-**Inverse Sine** (also called $$arcsi$$ or $$\sin^{-1}$$)
+#### arcsin
 
 $$\theta = \arcsin\left(\frac{\text{Opposite}}{\text{Hypotenuse}}\right)$$
 
@@ -40,13 +40,15 @@ $$\cos(\theta) = \frac{\text{Adjacent}}{\text{Hypotenuse}}$$
 * $$\text{Distance} = 12 \times \cos(60^\circ)$$
 * $$12 \times 0.5 = \mathbf{6 \text{ feet from the wall}}$$.
 
+#### Arccos
+
 $$\theta = \arccos\left(\frac{\text{Adjacent}}{\text{Hypotenuse}}\right)$$
 
 $$\text{If } \cos(y) = x, \text{ then } y = \arccos(x)$$
 
 ***
 
-## Tangent
+## Tangent & Arctan
 
 $$\tan(\theta) = \frac{\text{Opposite}}{\text{Adjacent}}$$
 
@@ -55,6 +57,17 @@ $$\tan(\theta) = \frac{\text{Opposite}}{\text{Adjacent}}$$
 * Real World Example: You are standing 50 feet away from a tree. You look at the top at a $$45^\circ$$ angle. How tall is the tree?
 * $$\text{Height} = 50 \times \tan(45^\circ)$$
 * $$50 \times 1 = \mathbf{50 \text{ feet tall}}$$.
+
+#### Arctan or $$\tan^{-1}$$
+
+$$\theta = \arctan\left(\frac{\text{Opposite}}{\text{Adjacent}}\right)$$
+
+* It finds the Angle of elevation or depression.
+* Use this when  you have the width and height, but no diagonal.
+* Example: You are building a wheelchair ramp. The ramp must rise 2 feet (Opposite) over a horizontal distance of 24 feet (Adjacent). What is the angle of the ramp?
+  * $$\tan(\theta) = \frac{2}{24} = 0.0833$$
+  * $$\theta = \arctan(0.0833)$$
+  * $$\theta \approx \mathbf{4.76^\circ}$$.
 
 ***
 
@@ -261,10 +274,133 @@ In normal math, you have the angle and find the height. But here, you have the "
 
 ## Inverse Identities
 
+**Composition Identities (Undoing the function)**
+
+If you take the Sine of an Arcsine, they cancel out, leaving just the number.
+
+* $$\sin(\arcsin(x)) = x$$
+* $$\cos(\arccos(x)) = x$$
+* $$\tan(\arctan(x)) = x$$
+
+**Complementary Identities**
+
+Since the two non-right angles in a right triangle always add up to $$90^\circ (\frac{\pi}{2}$$ radians), their inverse functions are linked.
+
+* $$\arcsin(x) + \arccos(x) = \frac{\pi}{2}$$
+* $$\arctan(x) + arccot(x) = \frac{\pi}{2}$$
+* $$\text{sec}^{-1}(x) + \csc^{-1}(x) = \frac{\pi}{2}$$
+
+**Negative Argument Identities**
+
+What happens if you plug a negative number into the inverse?
+
+* $$\arcsin(-x) = -\arcsin(x)$$ (The negative moves outside)
+* $$\arctan(-x) = -\arctan(x)$$ (The negative moves outside)
+* $$\arccos(-x) = \pi - \arccos(x)$$ (Special Case: You must subtract from 180 degrees)
+
 ## The Law of Sines and the Law of Cosines
+
+These two laws allow you to solve triangles that are not right-angled triangles (Oblique Triangles).
+
+#### The Law of Sines
+
+Use this when you know a "pair" (an angle and the side opposite to it) and one other piece of information.
+
+$$\frac{a}{\sin A} = \frac{b}{\sin B} = \frac{c}{\sin C}$$
+
+Two fire towers are 10 miles apart. Tower A spots a fire at a $$40^\circ$$ angle. Tower B spots the fire at a $$60^\circ$$ angle. How far is the fire from Tower A?
+
+1. Find the third angle: $$180^\circ - 40^\circ - 60^\circ = 80^\circ$$ (Angle C).
+2. Set up the ratio: $$\frac{x}{\sin(60^\circ)} = \frac{10}{\sin(80^\circ)}$$
+3. Solve: $$x = \frac{10 \times 0.866}{0.985} \approx \mathbf{8.79 \text{ miles}}$$.
+
+#### The Law of Cosines
+
+Use this when you don't have a matching pair. Usually when you have SSS (Side-Side-Side) or SAS (Side-Angle-Side). This is basically the Pythagorean Theorem adjusted for non-90-degree angles.
+
+$$c^2 = a^2 + b^2 - 2ab \cos(C)$$
+
+Real World Example: You walk 3 miles North, turn $$120^\circ$$, and walk 4 miles. How far are you from your starting point?
+
+* $$c^2 = 3^2 + 4^2 - 2(3)(4)\cos(120^\circ)$$
+* $$c^2 = 9 + 16 - 24(-0.5)$$
+* $$c^2 = 25 + 12 = 37$$
+* $$c = \sqrt{37} \approx \mathbf{6.08 \text{ miles}}$$.
 
 ## Double-Angle and Half-Angle Formulas
 
-Double-Angle and Half-Angle formulas are essential tools in trigonometry that allow you to find the sine, cosine, or tangent of an angle that has been doubled ($$2\theta$$) or halved ($$\frac{\theta}{2}$$).
+These are used to simplify calculus problems or calculate exact values for angles without a calculator.
+
+#### Double-Angle Formulas
+
+Used to find the value of $$2\theta$$ when you know $$\theta$$.
+
+* Sine: $$\sin(2\theta) = 2\sin\theta\cos\theta$$
+* Cosine: $$\cos(2\theta) = \cos^2\theta - \sin^2\theta$$
+  * _Alt form:_ $$2\cos^2\theta - 1$$
+  * _Alt form:_ $$1 - 2\sin^2\theta$$
+* Tangent: $$\tan(2\theta) = \frac{2\tan\theta}{1 - \tan^2\theta}$$
+
+#### Half-Angle Formulas
+
+Used to find the value of $$\frac{\theta}{2}$$ when you know $$\theta$$. The $$\pm$$ depends on which quadrant the new half-angle lands in.
+
+* Sine: $$\sin\left(\frac{\theta}{2}\right) = \pm\sqrt{\frac{1 - \cos\theta}{2}}$$
+* Cosine: $$\cos\left(\frac{\theta}{2}\right) = \pm\sqrt{\frac{1 + \cos\theta}{2}}$$
+* Tangent: $$\tan\left(\frac{\theta}{2}\right) = \frac{1 - \cos\theta}{\sin\theta}$$
 
 ## Addition and Subtraction Formulas
+
+These allow you to calculate the sine or cosine of a sum of two angles. This is useful for finding the exact value of angles like $$75^\circ$$ (which is just $$45^\circ + 30^\circ$$).
+
+#### The Formulas
+
+* Sine:
+  * $$\sin(A + B) = \sin A \cos B + \cos A \sin B$$
+  * $$\sin(A - B) = \sin A \cos B - \cos A \sin B$$
+* Cosine: (Remember: signs flip!)
+  * $$\cos(A + B) = \cos A \cos B - \sin A \sin B$$
+  * $$\cos(A - B) = \cos A \cos B + \sin A \sin B$$
+* Tangent:
+  * $$\tan(A + B) = \frac{\tan A + \tan B}{1 - \tan A \tan B}$$
+
+## Transformation of Trigonometric Functions
+
+The standard sine wave $$y = \sin(x)$$ can be stretched, squished, and moved. The general formula is:
+
+$$y = A \sin(B(x - C)) + D$$
+
+#### Amplitude ($$A$$)
+
+* What it does: Vertical Stretch.
+* Visual: Controls the height of the wave peaks.
+* Physics: In sound, this is Volume (Loudness).
+* Formula: $$|A|$$ is the distance from the center line to the peak.
+
+#### Period ($$B$$)
+
+* What it does: Horizontal Squish/Stretch.
+* Visual: How fast the wave repeats.
+* Physics: In sound, this is Frequency (Pitch). High $$B$$ = High Pitch.
+* Formula: The new Period is $$\frac{2\pi}{B}$$.
+
+#### Phase Shift ($$C$$)
+
+* What it does: Horizontal Shift.
+* Visual: Moving the start of the wave Left or Right.
+* Physics: This is Timing. (e.g., Does the sound start now, or 1 second later?)
+
+#### Vertical Shift ($$D$$)
+
+* What it does: Vertical Shift.
+* Visual: Moving the entire wave Up or Down.
+* Math: It changes the "center line" (midline) of the oscillation.
+
+Example:
+
+$$y = 3 \sin(2(x - \pi)) + 5$$
+
+* Amplitude: 3 (The wave goes 3 units up and down from the center).
+* Period: $$ $\frac{2\pi}{2} = \pi$ $$ (It oscillates twice as fast as normal).
+* Phase Shift: Right by $$ $\pi$ $$.
+* Vertical Shift: Up 5 (The center line is now at $$ $y=5$ $$).
