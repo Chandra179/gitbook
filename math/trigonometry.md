@@ -257,21 +257,6 @@ Beyond the basics, there are several dozen "advanced" identities used in calculu
 * Half-Angle (3): Formulas for $$\sin(\frac{x}{2})$$, etc.
 * Product-to-Sum & Sum-to-Product (8): Used heavily in audio and signal processing.
 
-## Inverse trigonometric function
-
-Imagine you have a 10-foot long ladder. You lean it against a wall.
-
-1. You want the top of the ladder to touch a window that is exactly 8 feet high.
-2. The Question: How much do you need to tilt the ladder? (What is the angle between the ladder and the ground?)
-
-In normal math, you have the angle and find the height. But here, you have the "result" (the height) and you need to find the "cause" (the angle).
-
-* Step 1: You know the ladder length (10) and the height (8).
-* Step 2: Height divided by Ladder is called Sine.
-* Step 3: $$8 \div 10 = 0.8$$.
-* Step 4: You ask your calculator: _"Which angle gives me a Sine of 0.8?"_
-* $$\sin^{-1}(0.8)$$ = 53 degrees
-
 ## Inverse Identities
 
 **Composition Identities (Undoing the function)**
