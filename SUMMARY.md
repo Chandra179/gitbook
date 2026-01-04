@@ -30,6 +30,7 @@
   * [Rate Limit](system-design/rate-limit.md)
   * [Distributed Task Scheduler](system-design/distributed-task-scheduler.md)
   * [Distributed Cache](system-design/distributed-cache.md)
+  * [Notification System](system-design/notification-system.md)
 * [AI](neural-network/README.md)
   * [Keywords](neural-network/keywords.md)
   * [AI Agents](neural-network/ai-agents.md)

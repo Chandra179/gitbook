@@ -2,11 +2,21 @@
 
 ### **Core**
 
-**Scalable**, handling growth, vertical & horizontal scaling
+**Scalable**
 
-**Reliability and availability** ensure your system stays operational. This involves redundancy, failover mechanisms, and concepts like uptime percentages (99.9% vs 99.99% makes a real difference).
+handling growth, vertical & horizontal scaling
 
-**Performance,** latency and throughput. how fast your system responds and how much work it can handle. You'll optimize these through caching, efficient databases, and smart architectural choices.
+**Reliability and availability**
+
+ensure your system stays operational. This involves redundancy, failover mechanisms, and concepts like uptime percentages (99.9% vs 99.99% makes a real difference).
+
+**Performance**
+
+latency and throughput. how fast your system responds and how much work it can handle. You'll optimize these through caching, efficient databases, and smart architectural choices.
+
+**Fault tolerance**
+
+retry mechanism, fallback
 
 ### Building Blocks
 
