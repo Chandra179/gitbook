@@ -9,6 +9,8 @@ Before building, we must define the boundaries of the system:
 * Differentiation between Free and Paid users (tiered limits).
 * Unique identification via `user_id`, `API_key`, or `IP_address`.
 
+<figure><img src="../.gitbook/assets/rate_limit_high_level.png" alt="" width="505"><figcaption></figcaption></figure>
+
 #### Multi-Layer Architecture
 
 We use a "Defense in Depth" strategy by placing limits at different levels:
