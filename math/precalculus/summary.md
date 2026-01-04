@@ -33,10 +33,10 @@ _These are the universal lenses used to analyze any graph. While every function 
 
 #### Polynomial Functions
 
-* Degree ($$ $n$ $$): The highest exponent, which dictates the maximum number of roots and turning points.
+* Degree ($$n$$): The highest exponent, which dictates the maximum number of roots and turning points.
 * End Behavior: Determined by the Degree and Leading Coefficient (e.g., "up-up" or "down-up").
 * Multiplicity: Determines if the graph crosses the x-axis (odd multiplicity) or bounces (even multiplicity).
-* Turning Points: Can have up to $$ $n-1$ $$ turning points.
+* Turning Points: Can have up to $$n-1$$ turning points.
 * Inflection Points: Specific locations where the concavity switches from "up" to "down."
 
 ***
@@ -58,4 +58,4 @@ _These are the universal lenses used to analyze any graph. While every function 
 * Midline (Vertical Shift): The horizontal center line ($$y=d$$) that the wave oscillates around.
 * Domain Restrictions: Essential for defining Inverse Trig functions (Arccosine, Arcsine, etc.).
 * Asymptotes: Periodic vertical breaks found in $$\tan, \cot, \sec,$$ and $$\csc$$.
-* Identities: Mathematical "exchange rates" (like $$\sin^2\theta + \cos^2\theta = 1$$) used to simplify complex waves.
+* Identities & Inverse identities: Mathematical "exchange rates" (like $$\sin^2\theta + \cos^2\theta = 1$$) used to simplify complex waves.

@@ -30,6 +30,7 @@
   * [Clock Skew & Time Sync](system-design/clock-skew-and-time-sync.md)
   * [Rate Limit](system-design/rate-limit.md)
   * [Distributed Task Scheduler](system-design/distributed-task-scheduler.md)
+  * [Distributed Cache](system-design/distributed-cache.md)
 * [AI](neural-network/README.md)
   * [Keywords](neural-network/keywords.md)
   * [AI Agents](neural-network/ai-agents.md)
