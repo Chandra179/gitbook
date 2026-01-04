@@ -39,24 +39,20 @@ const navigationData = [
     },
     {
         name: 'Math',
+        isFolder: true,
         slug: 'math',
         pages: [
             {
-                name: 'Algebra',
-                slug: 'algebra',
+                name: 'Precalculus',
+                slug: 'precalculus',
                 isFolder: true,
                 pages: [
-                    { name: 'Core', slug: 'core' },
-                    { name: 'Linear Functions', slug: 'linear-functions' },
-                    { name: 'Quadratic Functions', slug: 'quadratic-functions' },
-                    { name: 'Polynomial Functions', slug: 'polynomial-functions' },
-                    { name: 'Rational Functions', slug: 'rational-functions' },
-                    { name: 'Logarithmic & Exponential Functions', slug: 'logarithmic-and-exponential-functions' },
-                    { name: 'Conic Sections', slug: 'conic-sections' },
-                    { name: 'Trigonometry', slug: 'trigonometry' },
+                    { name: 'Summary', slug: 'summary' },
                 ]
             },
-            { name: 'Precalculus', slug: 'precalculus' },
+            { name: 'Trigonometry', slug: 'trigonometry' },
+            { name: 'Sequence, Series, Limit', slug: 'sequence-series-limit' },
+            { name: 'Linear Algebra', slug: 'linear-algebra' },
             { name: 'Problem', slug: 'problem' },
         ]
     },
@@ -74,7 +70,9 @@ const navigationData = [
             { name: 'Clock Skew and Time Sync', slug: 'clock-skew-and-time-sync' },
             { name: 'Consistent Hashing', slug: 'consistent-hashing' },
             { name: 'ID Generator', slug: 'id-generator' },
-            { name: 'Template High Level Design', slug: 'template-high-level-design' }
+            { name: 'Rate Limit', slug: 'rate-limit' },
+            { name: 'Distributed Task Scheduler', slug: 'distributed-task-scheduler' },
+            { name: 'Distributed Cache', slug: 'distributed-cache' },
         ]
     },
     {

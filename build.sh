@@ -9,18 +9,14 @@ if [ ! -d "node_modules" ]; then
     npm install
 fi
 
-# Clean dist directory
 rm -rf dist
 mkdir -p dist
 
-# Build Tailwind CSS
 echo "Building CSS..."
 npm run build:css
 
-# Copy index.html
 cp src/index.html dist/index.html
 
-# Copy assets
 cp -r src/css dist/css
 cp -r src/js dist/js
 
@@ -33,7 +29,7 @@ fi
 
 # Copy content directories
 # Check if directories exist before copying to avoid errors
-for dir in general golang math rag system-design neural-network; do
+for dir in general golang math rag system-design neural-network precalculus; do
     if [ -d "$dir" ]; then
         cp -r "$dir" "dist/$dir"
     fi
@@ -45,7 +41,6 @@ files=(
     "README.md"
     "p2p-chat.md"
     "reactjs.md"
-    "study-and-project-group-matcher.md"
     "neural-network.md"
     "knowledge-graph.md"
 )

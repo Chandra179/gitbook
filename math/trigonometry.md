@@ -119,7 +119,7 @@ $$\text{Opposite} = H \times \sin(\theta) = 1 \times \sin(\theta) = \mathbf{\sin
 
 $$\text{Adjacent} = H \times \cos(\theta) = 1 \times \cos(\theta) = \mathbf{\cos(\theta)}$$
 
-<figure><img src="../.gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/circle_degrees.png" alt=""><figcaption></figcaption></figure>
 
 The radius ending at (0, 1) on the positive vertical axis has a **90 degrees** angle with the positive horizontal axis.
 
