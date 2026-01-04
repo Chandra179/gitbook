@@ -288,7 +288,7 @@ If "multiplying by $$-1$$" is a 180-degree turn, then "multiplying by $$i$$" mus
 
 This is always the first step. You look for the largest number or variable that divides evenly into every single term.
 
-&#x20;$$3x^2 + 6x = 3x(x + 2)$$
+$$3x^2 + 6x = 3x(x + 2)$$
 
 ***
 
@@ -296,14 +296,14 @@ This is always the first step. You look for the largest number or variable that 
 
 Used for two terms that are both perfect squares being subtracted.
 
-* &#x20;$$a^2 - b^2 = (a - b)(a + b)$$
+* $$a^2 - b^2 = (a - b)(a + b)$$
 * The _sum_ of squares ($$a^2 + b^2$$) cannot be factored using real numbers.
 
 ***
 
 **Factoring Trinomials**
 
-&#x20;($$x^2 + bx + c$$)
+($$x^2 + bx + c$$)
 
 Used for three terms where the $$x^2$$ coefficient is 1. You look for two numbers that multiply to $$c$$ and add to $$b$$.
 
@@ -380,7 +380,7 @@ A nonlinear inequality contains a variable with a power other than 1 (like $$x^2
 
 ### Coordinate Plane, Graphs of Equations, Line, Circles
 
-<figure><img src="../../.gitbook/assets/coordinate_plane.png" alt="" width="563"><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/coordinate_plane (1).png" alt="" width="563"><figcaption></figcaption></figure>
 
 **Distance formula** $$d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$$
 
@@ -566,16 +566,16 @@ Example: Find the inverse of $$f(x) = 2x + 3$$.
 3. $$x - 3 = 2y \implies y = \frac{x-3}{2}$$
 4. $$f^{-1}(x) = \frac{x-3}{2}$$
 
-notice  from + to minus 3 and from multiplication of 2x become x/2
+notice from + to minus 3 and from multiplication of 2x become x/2
 
 ***
 
-#### Bird Flight&#x20;
+#### Bird Flight
 
 A bird is released from point A on an island, 5 miles from the nearest point B\
 on a straight shoreline. The bird flies to a point C on the shoreline and then flies along the\
 shoreline to its nesting area D (see the figure). Suppose the bird requires 10 kcal/mi of\
-energy to fly over land and 14 kcal/mi to fly over water.&#x20;
+energy to fly over land and 14 kcal/mi to fly over water.
 
 energy used = energy per mile x miles flown
 
@@ -651,7 +651,7 @@ $$(h, k)$$: This is the Vertex (the peak or valley).
 
 The Minus Sign ($$-h$$): This is the "Pusher." Because it is _inside_ the parentheses with $$x$$, it works backward from what you expect. If you see $$(x - 3)$$, it actually pushed the graph right to $$+3$$.
 
-$$(\dots)^2$$&#x20;
+$$(\dots)^2$$
 
 The square is what creates that "U" shape. Because any number squared (positive or negative) becomes positive, the graph mirrors itself on both sides, creating a valley or a hill.
 
@@ -661,7 +661,7 @@ polynomial can have up to $$n-1$$ turning points, it have local and globlal mini
 
 **Polynomial**
 
-Question: Current: $$\$20$$ price, $$60$$ units sold. Change: $$+\$1$$ price $$\rightarrow$$ $$-2$$ units sold.&#x20;
+Question: Current: $$\$20$$ price, $$60$$ units sold. Change: $$+\$1$$ price $$\rightarrow$$ $$-2$$ units sold.
 
 Find $$x$$ (price increases) for Max Revenue ($$R$$)
 
@@ -861,7 +861,7 @@ It was discovered by studying compound interest. If you had $1 and a bank gave y
 
 The most fundamental formula for a logarithm relates the logarithmic form to its exponential form:
 
-<a class="button secondary"></a>$$\log_b(x) = y \iff b^y = x$$
+$$\log_b(x) = y \iff b^y = x$$
 
 * $$b$$ (Base): Must be positive ($$b > 0$$) and not equal to $$1$$.
 * $$x$$ (Argument): Must be a positive real number ($$x > 0$$).
@@ -884,4 +884,3 @@ Because it is the inverse of the exponential function $$e^x$$, the relationship 
 $$e^y = x \iff \ln(x) = y$$
 
 ##
-

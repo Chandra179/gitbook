@@ -18,7 +18,7 @@ The Right Hand Side ($$\mathbf{b}$$) represents the target. It is a fixed vector
 
 ### Linear Combination
 
-<figure><img src="../../.gitbook/assets/vector_addition.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/vector_addition (1).png" alt=""><figcaption></figcaption></figure>
 
 Scalar Multiplication
 
@@ -40,7 +40,7 @@ $$\begin{bmatrix} 4 \\ 6 \end{bmatrix} + \begin{bmatrix} 1 \\ -2 \end{bmatrix} =
 
 ### Dot Product
 
-dot product is a single number that reveals the relationship between two vectors.&#x20;
+dot product is a single number that reveals the relationship between two vectors.
 
 $$\vec{A} = [3, 4]$$ and $$\vec{B} = [1, 2]$$
 
@@ -54,7 +54,7 @@ This tells you how intense or strong the data is. example: In music: It’s the 
 
 **Schwarz Inequality**
 
-&#x20;$$|v \cdot w| \leq \|v\| \|w\|$$
+$$|v \cdot w| \leq \|v\| \|w\|$$
 
 ***
 
@@ -97,7 +97,7 @@ This "normalizes" data so you can compare different vectors fairly, regardless o
 
 **Triangle Inequality**
 
-<figure><img src="../../.gitbook/assets/triangle_inequality.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/triangle_inequality.png" alt=""><figcaption></figcaption></figure>
 
 It states that the shortest distance between two points is a straight line.
 
@@ -269,11 +269,11 @@ main purpose is to squint data, see hidden pattern, denoising
 
 ### **Augmented Matrix**
 
-Often, when solving these equations by hand (using a method like Gaussian Elimination), we use an Augmented Matrix.&#x20;
+Often, when solving these equations by hand (using a method like Gaussian Elimination), we use an Augmented Matrix.
 
 $$\left[ \begin{array}{cc|c} 2 & 3 & 8 \\ 5 & -1 & 1 \end{array} \right]$$
 
-To solve the equation we use&#x20;
+To solve the equation we use
 
 ### Identity Matrix
 
@@ -301,9 +301,9 @@ simplifying a complex fraction. make the matrix clean
 
 #### **Matrix Inverse**
 
-inverse matrix  is the mathematical "undo" button. Think of a matrix $$A$$ as a function that transforms data (moving a character in a game, encrypting a message, or blurring an image), the inverse $$A^{-1}$$ is the function that reverses that transformation exactly.
+inverse matrix is the mathematical "undo" button. Think of a matrix $$A$$ as a function that transforms data (moving a character in a game, encrypting a message, or blurring an image), the inverse $$A^{-1}$$ is the function that reverses that transformation exactly.
 
-&#x20;($$x = A^{-1}b$$)
+($$x = A^{-1}b$$)
 
 When you multiply a matrix by its inverse, you get the Identity Matrix.
 
