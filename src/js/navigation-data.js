@@ -44,6 +44,7 @@ const navigationData = [
             {
                 name: 'Precalculus',
                 slug: 'precalculus',
+                isFolder: true,
                 pages: [
                     { name: 'Summary', slug: 'summary' },
                 ]

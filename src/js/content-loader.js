@@ -4,6 +4,36 @@ class ContentLoader {
         this.onContentLoaded = null;
     }
 
+    isPageFolder(category, pagePath) {
+        const categoryData = this.navigationData.find(cat => cat.slug === category);
+        if (!categoryData || !categoryData.pages) return false;
+
+        // Split the path to handle nested folders (e.g., "precalculus" or "algebra/files")
+        const parts = pagePath.split('/');
+        let currentPages = categoryData.pages;
+
+        for (let i = 0; i < parts.length; i++) {
+            const slug = parts[i];
+            const page = currentPages.find(p => p.slug === slug);
+            
+            if (!page) return false;
+            
+            // If this is the last part, check if it's a folder
+            if (i === parts.length - 1) {
+                return page.isFolder === true;
+            }
+            
+            // If not the last part, move to nested pages
+            if (page.pages) {
+                currentPages = page.pages;
+            } else {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
     async loadContent(category, page, anchor) {
         try {
             const standaloneItem = this.navigationData.find(
@@ -32,7 +62,12 @@ class ContentLoader {
                 }
             } else {
                 // Handle nested paths (e.g., "algebra/files")
-                const filePath = `../${category}/${page}.md`;
+                // Check if the page is a folder
+                const isFolder = this.isPageFolder(category, page);
+                const filePath = isFolder 
+                    ? `../${category}/${page}/README.md`
+                    : `../${category}/${page}.md`;
+                
                 const response = await fetch(filePath);
 
                 if (!response.ok) {

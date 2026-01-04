@@ -89,6 +89,12 @@ function portfolioApp() {
             this.router.navigateToPage(category, page);
         },
 
+        // NEW: Navigate to folder (loads folder's README.md)
+        navigateToFolder(category, folder) {
+            window.location.hash = `${category}/${folder}`;
+            this.expandedFolders[`${category}/${folder}`] = true;
+        },
+
         // NEW: Navigate to nested page
         navigateToNestedPage(category, folder, page) {
             window.location.hash = `${category}/${folder}/${page}`;
@@ -96,6 +102,11 @@ function portfolioApp() {
 
         isPageActive(category, page) {
             return this.router.isPageActive(category, page);
+        },
+
+        // NEW: Check if folder itself is active (showing its README)
+        isFolderActive(category, folder) {
+            return this.currentPage === `${category}/${folder}`;
         },
 
         // NEW: Check if nested page is active

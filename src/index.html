@@ -251,11 +251,18 @@
                                         <!-- Nested Folder -->
                                         <template x-if="page.isFolder">
                                             <div class="mb-1">
-                                                <!-- Folder Header -->
-                                                <div class="flex items-center justify-between px-6 py-2 rounded-lg hover:bg-gray-50 cursor-pointer"
-                                                    @click="toggleFolder(section.slug, page.slug)">
-                                                    <span class="text-sm text-gray-700 font-medium" x-text="page.name"></span>
-                                                    <svg class="w-3 h-3 text-gray-400 transition-transform duration-200"
+                                                <!-- Folder Header - Now clickable to navigate -->
+                                                <div class="flex items-center justify-between px-6 py-2 rounded-lg hover:bg-gray-50">
+                                                    <!-- Folder name (clickable - navigates to folder README) -->
+                                                    <a :href="`#${section.slug}/${page.slug}`"
+                                                    @click.prevent="navigateToFolder(section.slug, page.slug)"
+                                                    class="flex-1 text-sm font-medium cursor-pointer"
+                                                    :class="isFolderActive(section.slug, page.slug) ? 'text-blue-600' : 'text-gray-700'">
+                                                        <span x-text="page.name"></span>
+                                                    </a>
+                                                    <!-- Chevron icon (only toggles dropdown) -->
+                                                    <svg @click="toggleFolder(section.slug, page.slug)"
+                                                        class="w-3 h-3 text-gray-400 transition-transform duration-200 cursor-pointer hover:text-gray-600"
                                                         :class="isFolderExpanded(section.slug, page.slug) ? 'rotate-180' : ''"
                                                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
