@@ -22,6 +22,7 @@
   * [Trigonometry](math/trigonometry.md)
   * [Linear Algebra](math/linear-algebra.md)
   * [Problem](math/problem.md)
+  * [Sequence, Series, Limit](math/sequence-series-limit.md)
 * [System Design](system-design/README.md)
   * [\[Template\] High Level Design](system-design/template-high-level-design.md)
   * [Consistent Hashing](system-design/consistent-hashing.md)
