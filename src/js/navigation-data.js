@@ -39,13 +39,11 @@ const navigationData = [
     },
     {
         name: 'Math',
-        isFolder: true,
         slug: 'math',
         pages: [
             {
                 name: 'Precalculus',
                 slug: 'precalculus',
-                isFolder: true,
                 pages: [
                     { name: 'Summary', slug: 'summary' },
                 ]
