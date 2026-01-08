@@ -32,6 +32,5 @@
   * [Distributed Cache](system-design/distributed-cache.md)
   * [Notification System](system-design/notification-system.md)
 * [AI](neural-network/README.md)
-  * [Keywords](neural-network/keywords.md)
-  * [AI Agents](neural-network/ai-agents.md)
+  * [AI Agent](neural-network/ai-agents.md)
 * [Knowledge Graph](knowledge-graph.md)

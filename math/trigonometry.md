@@ -63,7 +63,7 @@ $$\tan(\theta) = \frac{\text{Opposite}}{\text{Adjacent}}$$
 $$\theta = \arctan\left(\frac{\text{Opposite}}{\text{Adjacent}}\right)$$
 
 * It finds the Angle of elevation or depression.
-* Use this when  you have the width and height, but no diagonal.
+* Use this when you have the width and height, but no diagonal.
 * Example: You are building a wheelchair ramp. The ramp must rise 2 feet (Opposite) over a horizontal distance of 24 feet (Adjacent). What is the angle of the ramp?
   * $$\tan(\theta) = \frac{2}{24} = 0.0833$$
   * $$\theta = \arctan(0.0833)$$
@@ -127,7 +127,7 @@ The radius ending at (0, 1) on the positive vertical axis has a **90 degrees** a
 
 radian is a measurement of the angle (the "opening" between two lines
 
-**Arc length**&#x20;
+**Arc length**
 
 Arc length is the distance along the curved edge (the "crust" of the pizza slice).
 
@@ -140,7 +140,7 @@ Keep subtracting full circles ($$360^\circ$$) until we get a number we recognize
 
 **Reference Angle**
 
-How far is the angle from the x-axis?&#x20;
+How far is the angle from the x-axis?
 
 | Where is your angle?       | The Formula            | Logic                                      |
 | -------------------------- | ---------------------- | ------------------------------------------ |
@@ -188,13 +188,15 @@ These functions are the "flipped" versions of the primary ones:
 * Secant: $$\sec(\theta) = \frac{1}{x}$$ (where $$x \neq 0$$)
 * Cotangent: $$\cot(\theta) = \frac{x}{y}$$ (where $$y \neq 0$$)
 
+<figure><img src="../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+
 <figure><img src="../.gitbook/assets/special_value_trigonometric_func.png" alt=""><figcaption></figcaption></figure>
 
 ## **Domain of trigonometric function**
 
 imagine a "laser pointer" rotating from the center of the circle, there are two specific moments where the Tangent or other value simply doesn't exist.
 
-<table><thead><tr><th width="137.39996337890625">Function</th><th>Domain (Input)</th><th>Range (Output)</th></tr></thead><tbody><tr><td><span class="math">\sin(x)</span></td><td>All Real Numbers <span class="math">(-\infty, \infty)</span></td><td><span class="math">[-1, 1]</span></td></tr><tr><td><span class="math">\cos(x)</span></td><td>All Real Numbers <span class="math">(-\infty, \infty)</span></td><td><span class="math">[-1, 1]</span></td></tr><tr><td><span class="math">\tan(x)</span></td><td>All <span class="math">x \neq \frac{\pi}{2} + n\pi</span> (Odd multiples of <span class="math">90^\circ</span>)</td><td><span class="math">(-\infty, \infty)</span></td></tr><tr><td><span class="math">\csc(x)</span></td><td>All <span class="math">x \neq n\pi</span> (Multiples of <span class="math">180^\circ</span>)</td><td><span class="math">(-\infty, -1] \cup [1, \infty)</span></td></tr><tr><td><span class="math">\sec(x)</span></td><td>All <span class="math">x \neq \frac{\pi}{2} + n\pi</span> (Odd multiples of <span class="math">90^\circ</span>)</td><td><span class="math">(-\infty, -1] \cup [1, \infty)</span></td></tr><tr><td><span class="math">\cot(x)</span></td><td>All <span class="math">x \neq n\pi</span> (Multiples of <span class="math">180^\circ</span>)</td><td><span class="math">(-\infty, \infty)</span> </td></tr></tbody></table>
+<table><thead><tr><th width="137.39996337890625">Function</th><th>Domain (Input)</th><th>Range (Output)</th></tr></thead><tbody><tr><td><span class="math">\sin(x)</span></td><td>All Real Numbers <span class="math">(-\infty, \infty)</span></td><td><span class="math">[-1, 1]</span></td></tr><tr><td><span class="math">\cos(x)</span></td><td>All Real Numbers <span class="math">(-\infty, \infty)</span></td><td><span class="math">[-1, 1]</span></td></tr><tr><td><span class="math">\tan(x)</span></td><td>All <span class="math">x \neq \frac{\pi}{2} + n\pi</span> (Odd multiples of <span class="math">90^\circ</span>)</td><td><span class="math">(-\infty, \infty)</span></td></tr><tr><td><span class="math">\csc(x)</span></td><td>All <span class="math">x \neq n\pi</span> (Multiples of <span class="math">180^\circ</span>)</td><td><span class="math">(-\infty, -1] \cup [1, \infty)</span></td></tr><tr><td><span class="math">\sec(x)</span></td><td>All <span class="math">x \neq \frac{\pi}{2} + n\pi</span> (Odd multiples of <span class="math">90^\circ</span>)</td><td><span class="math">(-\infty, -1] \cup [1, \infty)</span></td></tr><tr><td><span class="math">\cot(x)</span></td><td>All <span class="math">x \neq n\pi</span> (Multiples of <span class="math">180^\circ</span>)</td><td><span class="math">(-\infty, \infty)</span></td></tr></tbody></table>
 
 Remember that Tangent is the ratio of Vertical ($$y$$) to Horizontal ($$x$$):
 
