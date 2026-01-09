@@ -16,6 +16,8 @@ Find related information from the data we found, it might be related links, cita
 
 How to represent the data we collected? table, pdf, text only, etc...
 
+### Tools
+
 Crawling & Scrapping
 
 Firecrawl, Crawl4AI, ScrapeGraphAI
