@@ -31,6 +31,6 @@
   * [Distributed Task Scheduler](system-design/distributed-task-scheduler.md)
   * [Distributed Cache](system-design/distributed-cache.md)
   * [Notification System](system-design/notification-system.md)
-* [AI](neural-network/README.md)
-  * [AI Agent](neural-network/ai-agents.md)
+* [AI](neural-network.md)
 * [Knowledge Graph](knowledge-graph.md)
+* [Deep Research](deep-research.md)
