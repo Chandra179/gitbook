@@ -12,7 +12,7 @@
 * [Golang](golang/README.md)
   * [Strings](golang/strings.md)
   * [Goroutine](golang/goroutine.md)
-* [RAG](rag/README.md)
+* [Deep Research](rag/README.md)
   * [FAQ](rag/faq.md)
 * [P2P Chat](p2p-chat.md)
 * [ReactJS](reactjs.md)
@@ -33,4 +33,3 @@
   * [Notification System](system-design/notification-system.md)
 * [AI](neural-network.md)
 * [Knowledge Graph](knowledge-graph.md)
-* [Deep Research](deep-research.md)
