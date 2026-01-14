@@ -190,7 +190,30 @@ the model config flexible, we can change it later
 To ensure specific and actionable results, the agent requires a Goal and a Template.
 
 * The query (e.g., "Ancient Roman Economy") + Depth Limit (e.g., 3 levels).
-* The system retrieves a JSON definition from the PostgreSQL `templates` table and uses `pydantic.create_model()` to generate a live Pydantic class at runte
+* The system retrieves a JSON definition from the PostgreSQL `templates` table and uses `pydantic.create_model()` to generate a live Pydantic class at runtime
+
+```json
+schema_json
+{
+  "fields": {
+    "company_name": {
+      "type": "string",
+      "description": "The full legal name of the company, excluding 'Inc.' or 'Ltd.'",
+      "examples": ["Google", "Tesla"]
+    },
+    "valuation": {
+      "type": "float",
+      "description": "Market valuation in billions of USD",
+      "default": 0.0
+    },
+    "risk_level": {
+      "type": "string",
+      "description": "Categorization of investment risk",
+      "enum": ["Low", "Medium", "High", "Critical"]
+    }
+  }
+}
+```
 
 ```sql
 CREATE TABLE research_templates (
