@@ -190,7 +190,17 @@ the model config flexible, we can change it later
 To ensure specific and actionable results, the agent requires a Goal and a Template.
 
 * The query (e.g., "Ancient Roman Economy") + Depth Limit (e.g., 3 levels).
-* The system retrieves a JSON definition from the PostgreSQL `templates` table (e.g., `{"event": "str", "date": "str", "impact": "str"}`) and uses `pydantic.create_model()` to generate a live Pydantic class at runtime.
+* The system retrieves a JSON definition from the PostgreSQL `templates` table and uses `pydantic.create_model()` to generate a live Pydantic class at runte
+
+```sql
+CREATE TABLE research_templates (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT UNIQUE NOT NULL,
+    schema_json JSONB NOT NULL,
+    system_prompt TEXT
+);
+```
+
 * An LLM generates the first 3–5 "Seed Questions" based on the template to kickstart the research.
 
 ### Processing Pipeline
