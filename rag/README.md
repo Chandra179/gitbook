@@ -2,6 +2,54 @@
 
 This document outlines the end-to-end pipeline for a deep research agent, from initial document extraction to recursive discovery and final synthesis.
 
+## Initiation & Dynamic Templating
+
+To ensure specific and actionable results, the agent requires a Goal and a Template.
+
+* Goal & Depth: The user provides a query and a recursion limit (e.g., 3 levels).
+* Template Selection: A router node selects a template from the `research_templates` table.
+* JIT Pydantic Generation: The system pulls the `schema_json` and uses a factory function to create a Pydantic class.
+
+Templates are stored in PostgreSQL to allow for hot-swapping research logic without code changes.
+
+```sql
+CREATE TABLE research_templates (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT UNIQUE NOT NULL,
+    description TEXT, -- Used by the Router LLM to select the template
+    schema_json JSONB NOT NULL,
+    system_prompt TEXT NOT NULL,
+    seed_questions JSONB -- 3–5 base questions to kickstart the research
+);
+```
+
+Different research goals require completely different data shapes. The `schema_json` uses a meta-definition to allow for type validation, descriptions for the LLM, and constraints.
+
+```json
+{
+  "fields": {
+    "sample_size": {
+      "type": "integer",
+      "description": "Total number of participants in the study"
+    },
+    "p_value": {
+      "type": "float",
+      "description": "The statistical significance value reported"
+    },
+    "study_type": {
+      "type": "string",
+      "enum": ["Randomized Controlled Trial", "Observational", "Meta-Analysis"]
+    }
+  }
+}
+```
+
+Each field within the schema is an object that provides "guardrails" and "instructions" to the LLM. It is flexible; while `type` and `description` are standard, we can add custom keys to control agent behavior.
+
+* `type`: Tells the system how to cast the data in Python (e.g., `str`, `int`, `float`, `list`). This prevents "TypeErrors" during data synthesis.
+* `description`: It tells the LLM exactly what to look for and how to interpret the text.
+* `enum`: Creates a closed list of allowed values. This forces the agent to categorize data (e.g., "Low" vs "High") rather than using synonyms that might break later analysis.
+
 ## Data Processing
 
 The system uses a "Structure-Aware" approach to ensure that semantic meaning is preserved during the chunking process.
@@ -131,7 +179,7 @@ If we want to chunk `## Header A.1 <list>`, the "before" context is `<tables>` a
 * `token_count`: The number of tokens in the content
 * `split_sequence`: An index (e.g., "28/40") indicating this is the 28th part out of 40 total chunks created from the same original section or element.
 
-## **Embedding**
+### **Embedding**
 
 We need to store **dense vector** from the embed result, and also create **sparse vector** using SPLADE (Sparse Lexical and Expansion Model). Its needed for Hybrid Search retrieval.
 
@@ -183,69 +231,52 @@ We need to store **dense vector** from the embed result, and also create **spars
 the model config flexible, we can change it later
 {% endhint %}
 
-## Research Agent Architecture
+## Processing Pipeline
 
-### Initiation & Dynamic Templating
+The pipeline follows a "Refine and Validate" approach to ensure that every piece of data stored is accurate and cited.&#x20;
 
-To ensure specific and actionable results, the agent requires a Goal and a Template.
+### **Retrieval**
 
-* The query (e.g., "Ancient Roman Economy") + Depth Limit (e.g., 3 levels).
-* The system retrieves a JSON definition from the PostgreSQL `templates` table and uses `pydantic.create_model()` to generate a live Pydantic class at runtime
+The agent queries the vector store (using the dense and sparse embeddings defined in Data Processing) to find chunks relevant to the current research goal.
 
-```json
-schema_json
-{
-  "fields": {
-    "company_name": {
-      "type": "string",
-      "description": "The full legal name of the company, excluding 'Inc.' or 'Ltd.'",
-      "examples": ["Google", "Tesla"]
-    },
-    "valuation": {
-      "type": "float",
-      "description": "Market valuation in billions of USD",
-      "default": 0.0
-    },
-    "risk_level": {
-      "type": "string",
-      "description": "Categorization of investment risk",
-      "enum": ["Low", "Medium", "High", "Critical"]
-    }
-  }
-}
-```
+**Structured Fact Extraction (The LLM Loop)**
+
+Once a relevant chunk is retrieved, the LLM uses the JIT Pydantic Model (generated during Initiation) to extract information. This transforms the `content` of a chunk into a structured object.
+
+* Schema Enforcement: We use the `Instructor` library to ensure the LLM's output matches the `type`, `enum`, and `description` defined in the template.
+* Context Injection: The LLM is provided with the `section_path` and `parent_section` of the chunk to ensure it understands the global context of the text it is reading.
+
+**Data Storage: `research_facts` table**
+
+Validated facts are saved into a table. This creates a "Structured Knowledge Base" that the agent uses to write the final report without hallucinations.
 
 ```sql
-CREATE TABLE research_templates (
+CREATE TABLE research_facts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name TEXT UNIQUE NOT NULL,
-    schema_json JSONB NOT NULL,
-    system_prompt TEXT
+    session_id UUID NOT NULL,          -- Links facts to the specific Research Goal
+    source_chunk_id UUID,              -- Citation: FK to the Chunk used as evidence
+    fact_data JSONB NOT NULL,          -- The validated key-values (e.g., {"risk": "High"})
+    confidence_score FLOAT,            -- LLM's self-assessment
+    created_at TIMESTAMP DEFAULT NOW()
 );
 ```
 
-* An LLM generates the first 3–5 "Seed Questions" based on the template to kickstart the research.
+* `session_id`: Essential for multi-tenant or multi-session support; ensures facts from "Project A" don't leak into "Project B."
+* `source_chunk_id`: Provides a Source of Truth. Every fact in your database can be traced back to a specific UUID in the vector store, allowing for 100% verifiable citations.
+* `fact_data`: The `JSONB` payload containing the specific attributes defined by the template's `fields`.
 
-### Processing Pipeline
-
-The system cleans raw data through a three-stage process to convert "Raw Data to Fact":
-
-1. Extraction (Docling): Converts HTML, PDF, etc.. into Markdown from the Data Processing section.
-2. Chunking: using structure based chunking from the Data Processing section using Postgres pgvector
-3. The LLM reads the Markdown and populates your Dynamic Pydantic Schema. The result is stored in a `JSONB` column named `extracted_facts`.
-
-### Recursive Discovery & Lead Identification
+## Recursive Discovery & Lead Identification
 
 The agent uses a "Discovery Node" to dig deeper without losing focus. Lead Identification: The agent analyzes `extracted_facts` to find gaps:
 
 * Citations: Extracts links or source mentions.
 * Conceptual Leads: If a concept (e.g., "The Edict of Diocletian") is mentioned without detail, a new Sub-Question Task is created.
 
-### Presentation & Synthesis
+## Presentation & Synthesis
 
 Upon completion (depth limit reached or queue empty), the Synthesis Node compiles the report into Text, it uses an LLM to write a cohesive narrative using the `extracted_facts` as the only source of truth (reducing hallucinations).
 
-### Technical Stack
+## Technical Stack
 
 * Search: SearXNG (for free, privacy-focused multi-engine search).
 * Scraping: Crawl4AI (fast, AI-ready Markdown output).
@@ -253,6 +284,6 @@ Upon completion (depth limit reached or queue empty), the Synthesis Node compile
 * Storage: PostgreSQL + `pgvector` (for the "everything" database).
 * Queue: Redis (for managing prioritized research tasks).
 
-### Reference
+## Reference
 
 [https://www.oreilly.com/library/view/a-simple-guide/9781633435858/](https://www.oreilly.com/library/view/a-simple-guide/9781633435858/)
