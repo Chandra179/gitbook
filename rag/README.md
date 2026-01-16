@@ -52,15 +52,38 @@ Each field within the schema is an object that provides "guardrails" and "instru
 
 ## Data Acquisition
 
-Once the Goal is set and the Template is selected, the agent enters the Discovery Phase. This layer focuses on identifying, fetching, and normalizing raw data before it hits the processing pipeline.
+After **Initiation & Dynamic Templating** completes, the system has:
 
-#### Multi-Source Search & Aggregation
+* A research goal from the user
+* A selected template with its `seed_questions` (3-5 base questions)
+* A JIT Pydantic model ready for extraction
 
-Find relevant documents and URLs using SearXNG to gather a list of candidate URLs based on the `seed_questions` from researh\_templates
+### Search
 
-#### Web Crawling & Scraping
+The system takes each seed question (e.g., "What are the efficacy rates of treatment X?", "What sample sizes were used?", "What were the reported side effects?") and uses **SearXNG** (a meta-search engine that aggregates results from multiple search engines) to find relevant web pages and documents and store it to `search_results`
 
-Use Crawl4ai
+```sql
+CREATE TABLE search_results (
+    id UUID PRIMARY KEY,
+    seed_question TEXT,
+    url TEXT NOT NULL,
+    relevance_score FLOAT
+);
+```
+
+### **Crawling**
+
+After we got the `search_results` we do crawl using (Crawl4AI) for each of urls. The output will be Raw HTML content for web pages or PDFs, Failed URLs are marked with error messages.
+
+```sql
+CREATE TABLE raw_documents (
+    id UUID PRIMARY KEY,
+    source_url TEXT NOT NULL,
+    content_type TEXT,  -- 'html', 'pdf', 'docx'
+    raw_content BYTEA,  -- Binary storage for PDFs or raw HTML
+    crawl_status TEXT   -- 'success', 'failed', 'timeout'
+);
+```
 
 ## Data Processing
 
