@@ -50,9 +50,21 @@ Each field within the schema is an object that provides "guardrails" and "instru
 * `description`: It tells the LLM exactly what to look for and how to interpret the text.
 * `enum`: Creates a closed list of allowed values. This forces the agent to categorize data (e.g., "Low" vs "High") rather than using synonyms that might break later analysis.
 
+## Data Acquisition
+
+Once the Goal is set and the Template is selected, the agent enters the Discovery Phase. This layer focuses on identifying, fetching, and normalizing raw data before it hits the processing pipeline.
+
+#### Multi-Source Search & Aggregation
+
+Find relevant documents and URLs using SearXNG to gather a list of candidate URLs based on the `seed_questions` from researh\_templates
+
+#### Web Crawling & Scraping
+
+Use Crawl4ai
+
 ## Data Processing
 
-The system uses a "Structure-Aware" approach to ensure that semantic meaning is preserved during the chunking process.
+Once we collect the data (html, pdf, etc..) to markdown we process the content
 
 ### Content Extraction
 
