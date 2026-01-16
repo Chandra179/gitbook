@@ -4,11 +4,7 @@ This document outlines the end-to-end pipeline for a deep research agent, from i
 
 ## Initiation & Dynamic Templating
 
-The agent requires a clear goal and a structured template to extract specific, actionable results.
-
-### **User Input**
-
-* **Research Query**: The question or topic to investigate
+The agent requires a clear goal and a structured template to extract specific, actionable results. User input will be a question or a topic
 
 ### **Template System**
 
@@ -51,6 +47,8 @@ The `schema_json` defines what fields to extract and provides guardrails for the
 
 ### Research Sessions
 
+Track each research run from start to finish.
+
 ```sql
 CREATE TABLE research_sessions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -75,8 +73,6 @@ CREATE TABLE research_sessions (
     error_message TEXT
 );
 ```
-
-Track each research run from start to finish.
 
 ## Search & URL Collection
 
