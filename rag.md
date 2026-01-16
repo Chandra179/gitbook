@@ -49,6 +49,35 @@ The `schema_json` defines what fields to extract and provides guardrails for the
 * `type`: Tells the system how to cast the data in Python (e.g., `str`, `int`, `float`, `list`). This prevents "TypeErrors" during data synthesis.
 * `description`: It tells the LLM exactly what to look for and how to interpret the text.
 
+### Research Sessions
+
+```sql
+CREATE TABLE research_sessions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    query TEXT NOT NULL,
+    template_id UUID REFERENCES research_templates(id) NOT NULL,
+    
+    -- Status tracking
+    status TEXT NOT NULL DEFAULT 'started',
+    -- 'started', 'searching', 'crawling', 'processing', 'extracting', 'completed', 'failed'
+    
+    -- Progress metrics
+    total_urls_found INTEGER DEFAULT 0,
+    urls_crawled INTEGER DEFAULT 0,
+    facts_extracted INTEGER DEFAULT 0,
+    
+    -- Timestamps
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    completed_at TIMESTAMP,
+    
+    -- Error tracking
+    error_message TEXT
+);
+```
+
+Track each research run from start to finish.
+
 ## Search & URL Collection
 
 ### Search Strategy
@@ -92,15 +121,15 @@ Only URLs scoring above a threshold (e.g., 50/100) are crawled.
 ```sql
 CREATE TABLE search_results (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    session_id UUID REFERENCES research_sessions(id) NOT NULL,
     seed_question TEXT NOT NULL,
     url TEXT NOT NULL,
-    normalized_url TEXT NOT NULL,      -- Deduplicated URL
-    url_hash TEXT UNIQUE,               -- For duplicate detection
-    relevance_score FLOAT NOT NULL,     -- 0-100 score
-    domain TEXT,                        -- Extracted domain
-    crawl_priority INTEGER,             -- 1 (high) to 5 (low)
-    status TEXT DEFAULT 'pending',      -- 'pending', 'crawled', 'skipped'
-    created_at TIMESTAMP DEFAULT NOW(),
+    normalized_url TEXT NOT NULL,
+    url_hash TEXT,
+    relevance_score FLOAT NOT NULL,
+    domain TEXT,
+    status TEXT DEFAULT 'pending',  -- 'pending', 'crawled', 'skipped', 'failed'
+    created_at TIMESTAMP DEFAULT NOW()
 );
 ```
 
@@ -111,12 +140,13 @@ Use **Crawl4AI** to fetch content from high-priority URLs:
 ```sql
 CREATE TABLE raw_documents (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    search_result_id UUID REFERENCES search_results(id),
+    search_result_id UUID REFERENCES search_results(id) NOT NULL,
     content_type TEXT NOT NULL,     -- 'html', 'pdf', 'docx'
     raw_content BYTEA NOT NULL,     -- Binary storage
     content_hash TEXT UNIQUE,       -- Detect duplicate content
     crawl_status TEXT NOT NULL,     -- 'success', 'failed', 'timeout'
-    error_message TEXT
+    error_message TEXT,
+    crawled_at TIMESTAMP DEFAULT NOW()
 );
 ```
 
@@ -297,10 +327,25 @@ Query the vector store using the research question to find relevant chunks. Use 
 ```sql
 CREATE TABLE research_facts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    source_chunk_id UUID NOT NULL,     -- Citation to vector store
-    source_url TEXT,                    -- Original URL for user reference
-    fact_data JSONB NOT NULL,           -- Extracted structured data
-    confidence_score FLOAT              -- LLM self-assessment (0-1
+    session_id UUID REFERENCES research_sessions(id) NOT NULL,
+    
+    -- Vector store reference (Qdrant chunk ID)
+    source_chunk_id TEXT NOT NULL,
+    
+    -- PostgreSQL reference for traceability
+    source_document_id UUID REFERENCES raw_documents(id),
+    source_url TEXT NOT NULL,
+    
+    -- Which seed question led to this fact
+    seed_question TEXT,
+    
+    -- Extracted structured data matching template schema
+    fact_data JSONB NOT NULL,
+    
+    -- LLM confidence assessment (0-1)
+    confidence_score FLOAT CHECK (confidence_score >= 0 AND confidence_score <= 1),
+    
+    created_at TIMESTAMP DEFAULT NOW()
 );
 ```
 
@@ -308,13 +353,9 @@ Example `fact_data`&#x20;
 
 ```json
 {
-  "source_chunk_id": "550e8400-e29b-41d4-a716-446655440000",
-  "source_url": "https://example.com/study-2024",
-  "fact_data": {
-    "sample_size": 1247,
-    "p_value": 0.032,
-    "study_type": "RCT"
-  },
-  "confidence_score": 0.89
+  "sample_size": 1247,
+  "p_value": 0.032,
+  "study_type": "RCT",
+  "methodology": "Double-blind randomized controlled trial"
 }
 ```
