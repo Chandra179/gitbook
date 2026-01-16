@@ -9,7 +9,6 @@ The agent requires a clear goal and a structured template to extract specific, a
 ### **User Input**
 
 * **Research Query**: The question or topic to investigate
-* **Recursion Depth**: How many levels deep to search (e.g., 3 levels)
 
 ### **Template System**
 
@@ -194,7 +193,7 @@ Next we do chunking. Each the text, paragraphs, code, tables have their own stra
 
 If the chunk size is bigger than the `token limits` we should split it into a new chunk. Also adds `context overlap` before and after the current chunk for better retrieval. example:
 
-<figure><img src="../.gitbook/assets/chunk_overlap.png" alt=""><figcaption></figcaption></figure>
+<figure><img src=".gitbook/assets/chunk_overlap.png" alt=""><figcaption></figcaption></figure>
 
 ```md
 # Header A
@@ -319,26 +318,3 @@ Example `fact_data`&#x20;
   "confidence_score": 0.89
 }
 ```
-
-## Recursive Discovery & Lead Identification
-
-The agent uses a "Discovery Node" to dig deeper without losing focus. Lead Identification: The agent analyzes `extracted_facts` to find gaps:
-
-* Citations: Extracts links or source mentions.
-* Conceptual Leads: If a concept (e.g., "The Edict of Diocletian") is mentioned without detail, a new Sub-Question Task is created.
-
-## Presentation & Synthesis
-
-Upon completion (depth limit reached or queue empty), the Synthesis Node compiles the report into Text, it uses an LLM to write a cohesive narrative using the `extracted_facts` as the only source of truth (reducing hallucinations).
-
-## Technical Stack
-
-* Search: SearXNG (for free, privacy-focused multi-engine search).
-* Scraping: Crawl4AI (fast, AI-ready Markdown output).
-* Logic: Instructor + Pydantic (for strictly structured data).
-* Storage: PostgreSQL + `pgvector` (for the "everything" database).
-* Queue: Redis (for managing prioritized research tasks).
-
-## Reference
-
-[https://www.oreilly.com/library/view/a-simple-guide/9781633435858/](https://www.oreilly.com/library/view/a-simple-guide/9781633435858/)
