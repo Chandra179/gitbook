@@ -231,11 +231,7 @@ We need to store **dense vector** from the embed result, and also create **spars
 the model config flexible, we can change it later
 {% endhint %}
 
-## Processing Pipeline
-
-The pipeline follows a "Refine and Validate" approach to ensure that every piece of data stored is accurate and cited.&#x20;
-
-### **Retrieval**
+## **Retrieval** Pipeline
 
 The agent queries the vector store (using the dense and sparse embeddings defined in Data Processing) to find chunks relevant to the current research goal.
 
