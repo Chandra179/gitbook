@@ -1,29 +1,34 @@
 # Deep Research
 
-This document outlines the end-to-end pipeline for a deep research agent, from initial document extraction to recursive discovery and final synthesis.
+This document outlines the end-to-end pipeline for a deep research agent, from initial search to final structured knowledge extraction.
 
 ## Initiation & Dynamic Templating
 
-To ensure specific and actionable results, the agent requires a Goal and a Template.
+The agent requires a clear goal and a structured template to extract specific, actionable results.
 
-* Goal & Depth: The user provides a query and a recursion limit (e.g., 3 levels).
-* Template Selection: A router node selects a template from the `research_templates` table.
-* JIT Pydantic Generation: The system pulls the `schema_json` and uses a factory function to create a Pydantic class.
+### **User Input**
 
-Templates are stored in PostgreSQL to allow for hot-swapping research logic without code changes.
+* **Research Query**: The question or topic to investigate
+* **Recursion Depth**: How many levels deep to search (e.g., 3 levels)
+
+### **Template System**
+
+Templates define what data to extract and how to structure it. They're stored in PostgreSQL for easy updates without code changes.
 
 ```sql
 CREATE TABLE research_templates (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT UNIQUE NOT NULL,
-    description TEXT, -- Used by the Router LLM to select the template
-    schema_json JSONB NOT NULL,
+    description TEXT NOT NULL,  -- Router LLM uses this to select the right template
+    schema_json JSONB NOT NULL, -- Defines the data structure to extract
     system_prompt TEXT NOT NULL,
-    seed_questions JSONB -- 3–5 base questions to kickstart the research
+    seed_questions JSONB NOT NULL -- 3-5 starting questions
 );
 ```
 
-Different research goals require completely different data shapes. The `schema_json` uses a meta-definition to allow for type validation, descriptions for the LLM, and constraints.
+### **Schema Definition**
+
+The `schema_json` defines what fields to extract and provides guardrails for the LLM
 
 ```json
 {
@@ -35,84 +40,101 @@ Different research goals require completely different data shapes. The `schema_j
     "p_value": {
       "type": "float",
       "description": "The statistical significance value reported"
-    },
-    "study_type": {
-      "type": "string",
-      "enum": ["Randomized Controlled Trial", "Observational", "Meta-Analysis"]
     }
   }
 }
 ```
 
-Each field within the schema is an object that provides "guardrails" and "instructions" to the LLM. It is flexible; while `type` and `description` are standard, we can add custom keys to control agent behavior.
+**Key Components**
 
 * `type`: Tells the system how to cast the data in Python (e.g., `str`, `int`, `float`, `list`). This prevents "TypeErrors" during data synthesis.
 * `description`: It tells the LLM exactly what to look for and how to interpret the text.
-* `enum`: Creates a closed list of allowed values. This forces the agent to categorize data (e.g., "Low" vs "High") rather than using synonyms that might break later analysis.
 
-## Data Acquisition
+## Search & URL Collection
 
-After **Initiation & Dynamic Templating** completes, the system has:
+### Search Strategy
 
-* A research goal from the user
-* A selected template with its `seed_questions` (3-5 base questions)
-* A JIT Pydantic model ready for extraction
+The system uses **SearXNG** (meta-search aggregator) to find relevant sources for each seed question.
 
-### Search
+### URL Deduplication
 
-The system takes each seed question (e.g., "What are the efficacy rates of treatment X?", "What sample sizes were used?", "What were the reported side effects?") and uses **SearXNG** (a meta-search engine that aggregates results from multiple search engines) to find relevant web pages and documents and store it to `search_results`
+Before crawling, URLs are normalized and deduplicated to avoid processing the same content multiple times
+
+1. **Normalize URLs**: Remove tracking parameters, convert to lowercase, standardize protocols
+
+```
+https://Example.com/page?utm_source=google → https://example.com/page
+```
+
+2. **Content Hash Check**: For already-crawled URLs, store a hash of the content to detect duplicates with different URLs
+
+```
+example.com/article/123 
+example.com/print/article/123  → Same content, different URLs
+```
+
+3. **Domain Limits**: Restrict results per domain to ensure diversity (e.g., max 5 URLs from same domain)
+
+### Relevance Scoring
+
+Each URL is scored for relevance before crawling to prioritize high-quality sources:
+
+**Scoring Factors:**
+
+* **Query Match** (0-40 points): How well the URL/title matches the seed question
+* **Domain Authority** (0-30 points): Trustworthiness of the source (.edu, .gov, known publishers)
+* **Freshness** (0-15 points): Recency of publication
+* **Content Type** (0-15 points): Preference for research papers, reports over forum posts
+
+Only URLs scoring above a threshold (e.g., 50/100) are crawled.
+
+### Storage
 
 ```sql
 CREATE TABLE search_results (
-    id UUID PRIMARY KEY,
-    seed_question TEXT,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    seed_question TEXT NOT NULL,
     url TEXT NOT NULL,
-    relevance_score FLOAT
+    normalized_url TEXT NOT NULL,      -- Deduplicated URL
+    url_hash TEXT UNIQUE,               -- For duplicate detection
+    relevance_score FLOAT NOT NULL,     -- 0-100 score
+    domain TEXT,                        -- Extracted domain
+    crawl_priority INTEGER,             -- 1 (high) to 5 (low)
+    status TEXT DEFAULT 'pending',      -- 'pending', 'crawled', 'skipped'
+    created_at TIMESTAMP DEFAULT NOW(),
 );
 ```
 
 ### **Crawling**
 
-After we got the `search_results` we do crawl using (Crawl4AI) for each of urls. The output will be Raw HTML content for web pages or PDFs, Failed URLs are marked with error messages.
+Use **Crawl4AI** to fetch content from high-priority URLs:
 
 ```sql
 CREATE TABLE raw_documents (
-    id UUID PRIMARY KEY,
-    source_url TEXT NOT NULL,
-    content_type TEXT,  -- 'html', 'pdf', 'docx'
-    raw_content BYTEA,  -- Binary storage for PDFs or raw HTML
-    crawl_status TEXT   -- 'success', 'failed', 'timeout'
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    search_result_id UUID REFERENCES search_results(id),
+    content_type TEXT NOT NULL,     -- 'html', 'pdf', 'docx'
+    raw_content BYTEA NOT NULL,     -- Binary storage
+    content_hash TEXT UNIQUE,       -- Detect duplicate content
+    crawl_status TEXT NOT NULL,     -- 'success', 'failed', 'timeout'
+    error_message TEXT
 );
 ```
 
-## Data Processing
+**Key Features:**
 
-Once we collect the data (html, pdf, etc..) to markdown we process the content
+* `content_hash`: Detects identical content from different URLs
+* `search_result_id`: Links back to the original search query for traceability
 
-### Content Extraction
+## Content Processing
 
-Use Docling to extract content from PDFs into Markdown format, ensuring all elements (including images and tables) are preserved.
+### Extraction
+
+Use Docling to extract content from PDFs or HTML into Markdown format, ensuring all elements (including images and tables) are preserved.
 
 ### Structure-Aware Chunking
 
-To do Structure aware chunking we need to build a Markdown tree using an **Abstract Syntax Tree (AST)** first to detect the opening and closing of elements in markdown&#x20;
-
-for example: table is opened when is tagged as `table_open` and close as `table_close`
-
-* `table_open` (The container)
-  * `thead_open` (The header section)
-    * `tr_open` (The header row)
-      * `th_open` / `inline` / `th_close` (Each header cell)
-    * `tr_close`
-  * `thead_close`
-  * `tbody_open` (The body section)
-    * `tr_open` (A data row)
-      * `td_open` / `inline` / `td_close` (Each data cell)
-    * `tr_close`
-  * `tbody_close`
-* `table_close`
-
-then using markdown-it python to build AST into JSON object like this:
+Parse Markdown into an Abstract Syntax Tree (AST) using **markdown-it.**&#x20;
 
 ```json
 [
@@ -268,33 +290,35 @@ the model config flexible, we can change it later
 
 ## **Retrieval** Pipeline
 
-The agent queries the vector store (using the dense and sparse embeddings defined in Data Processing) to find chunks relevant to the current research goal.
+Query the vector store using the research question to find relevant chunks. Use the LLM with the Pydantic model (from the template) to extract structured facts:
 
-**Structured Fact Extraction (The LLM Loop)**
-
-Once a relevant chunk is retrieved, the LLM uses the JIT Pydantic Model (generated during Initiation) to extract information. This transforms the `content` of a chunk into a structured object.
-
-* Schema Enforcement: We use the `Instructor` library to ensure the LLM's output matches the `type`, `enum`, and `description` defined in the template.
-* Context Injection: The LLM is provided with the `section_path` and `parent_section` of the chunk to ensure it understands the global context of the text it is reading.
-
-**Data Storage: `research_facts` table**
-
-Validated facts are saved into a table. This creates a "Structured Knowledge Base" that the agent uses to write the final report without hallucinations.
+* **Schema Enforcement**: `Instructor` library ensures output matches template
+* **Context Injection**: Provide `section_path` and `parent_section` for accurate interpretation
 
 ```sql
 CREATE TABLE research_facts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    session_id UUID NOT NULL,          -- Links facts to the specific Research Goal
-    source_chunk_id UUID,              -- Citation: FK to the Chunk used as evidence
-    fact_data JSONB NOT NULL,          -- The validated key-values (e.g., {"risk": "High"})
-    confidence_score FLOAT,            -- LLM's self-assessment
-    created_at TIMESTAMP DEFAULT NOW()
+    source_chunk_id UUID NOT NULL,     -- Citation to vector store
+    source_url TEXT,                    -- Original URL for user reference
+    fact_data JSONB NOT NULL,           -- Extracted structured data
+    confidence_score FLOAT              -- LLM self-assessment (0-1
 );
 ```
 
-* `session_id`: Essential for multi-tenant or multi-session support; ensures facts from "Project A" don't leak into "Project B."
-* `source_chunk_id`: Provides a Source of Truth. Every fact in your database can be traced back to a specific UUID in the vector store, allowing for 100% verifiable citations.
-* `fact_data`: The `JSONB` payload containing the specific attributes defined by the template's `fields`.
+Example `fact_data`&#x20;
+
+```json
+{
+  "source_chunk_id": "550e8400-e29b-41d4-a716-446655440000",
+  "source_url": "https://example.com/study-2024",
+  "fact_data": {
+    "sample_size": 1247,
+    "p_value": 0.032,
+    "study_type": "RCT"
+  },
+  "confidence_score": 0.89
+}
+```
 
 ## Recursive Discovery & Lead Identification
 
