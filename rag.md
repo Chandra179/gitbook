@@ -287,7 +287,7 @@ We need to store **dense vector** from the embed result, and also create **spars
 the model config flexible, we can change it later
 {% endhint %}
 
-## **Retrieval** Pipeline
+## **Collecting Facts**
 
 Query the vector store using the research question to find relevant chunks. Use the LLM with the Pydantic model (from the template) to extract structured facts:
 
