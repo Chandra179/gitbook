@@ -1,10 +1,8 @@
 # Table of contents
 
-* [My Blog](README.md)
+* [Experience](README.md)
 * [General](general/README.md)
-  * [Bits & Bytes](general/bits-and-bytes.md)
-  * [Character Encoding](general/character-encoding.md)
-  * [NAT & P2P Traversal](general/nat-and-p2p-traversal.md)
+  * [Computing](general/bits-and-bytes.md)
   * [API Design Guidelines](general/api-design-guidelines.md)
   * [Database](general/database.md)
   * [Kafka](general/kafka.md)
@@ -30,5 +28,6 @@
   * [Distributed Task Scheduler](system-design/distributed-task-scheduler.md)
   * [Distributed Cache](system-design/distributed-cache.md)
   * [Notification System](system-design/notification-system.md)
-* [AI](neural-network.md)
+* [AI](neural-network/README.md)
+  * [AI Agents](neural-network/ai-agents.md)
 * [Knowledge Graph](knowledge-graph.md)

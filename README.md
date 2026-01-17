@@ -1,8 +1,6 @@
-# My Blog
+# Experience
 
-Software engineer 4 years experience in Fintech, distributed system, workflow automation
-
-## Experience
+4 years experience in Fintech, distributed system, workflow automation
 
 ### BFI finance
 
@@ -22,8 +20,9 @@ Software engineer 4 years experience in Fintech, distributed system, workflow au
 
 ### Project
 
-* Golang SDK : project template for golang, modular approach. [https://github.com/Chandra179/go-sdk](https://github.com/Chandra179/go-sdk)
+* Golang SDK : project template for golang. [https://github.com/Chandra179/go-sdk](https://github.com/Chandra179/go-sdk)
+* Deep Research: [https://github.com/Chandra179/bwired](https://github.com/Chandra179/bwired)
 
 ### Tech stack
 
-* Golang, Temporal, Docker, Javascript, Kubernetes, ArgoCD, Redis, RabbitMQ, Nats, GCP
+* Golang, Temporal, Docker, Javascript, Kubernetes, ArgoCD, Redis, RabbitMQ, Nats, GCP, Python

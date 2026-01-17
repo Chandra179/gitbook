@@ -1,7 +1,5 @@
 # Consistent Hashing
 
-**Data Partitioning (Sharding)** means splitting data across multiple servers instead of storing everything on one machine.&#x20;
-
 Imagine we have 1,000,000 users and 3 servers:
 
 * Server A → Users 1 – 333,333
