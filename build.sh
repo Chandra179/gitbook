@@ -41,7 +41,7 @@ files=(
     "README.md"
     "p2p-chat.md"
     "reactjs.md"
-    "neural-network.md"
+    "deep-research.md"
     "knowledge-graph.md"
 )
 

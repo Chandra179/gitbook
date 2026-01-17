@@ -21,12 +21,10 @@ const navigationData = [
         name: 'General',
         slug: 'general',
         pages: [
-            { name: 'Bits and Bytes', slug: 'bits-and-bytes' }, 
+            { name: 'Computing', slug: 'computing' }, 
             { name: 'API Design Guidelines', slug: 'api-design-guidelines' },
-            { name: 'Character Encoding', slug: 'character-encoding' },
             { name: 'Database', slug: 'database' },
-            { name: 'Kafka', slug: 'kafka' },
-            { name: 'NAT and P2P Traversal', slug: 'nat-and-p2p-traversal' }
+            { name: 'Kafka', slug: 'kafka' }
         ]
     },
     {
@@ -52,14 +50,13 @@ const navigationData = [
             { name: 'Trigonometry', slug: 'trigonometry' },
             { name: 'Sequence, Series, Limit', slug: 'sequence-series-limit' },
             { name: 'Linear Algebra', slug: 'linear-algebra' },
-            { name: 'Problem', slug: 'problem' },
         ]
     },
     {
-        name: 'RAG',
-        slug: 'rag',
+        name: 'AI',
+        slug: 'ai',
         pages: [
-            { name: 'FAQ', slug: 'faq' },
+            { name: 'AI Agent', slug: 'ai-agents' },
         ]
     },
     {
@@ -75,11 +72,9 @@ const navigationData = [
         ]
     },
     {
-        name: 'AI',
-        slug: 'neural-network',
-        pages: [
-            { name: 'Keywords', slug: 'keywords' },
-        ]
+        name: 'Deep Research',
+        slug: 'deep-research',
+        standalone: true
     },
     {
         name: 'Knowledge Graph',
