@@ -10,6 +10,7 @@
 * [Golang](golang/README.md)
   * [Strings](golang/strings.md)
   * [Goroutine](golang/goroutine.md)
+  * [Compiler](golang/compiler.md)
   * [Garbage Collector](golang/garbage-collector.md)
   * [Test Container](golang/test-container.md)
 * [Deep Research](deep-research.md)
