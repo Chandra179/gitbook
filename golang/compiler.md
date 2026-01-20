@@ -110,7 +110,11 @@ This is the core of the "Type Safety" Go is known for. The compiler walks the tr
 
 ## IR Construction (Noding)
 
-Location: `cmd/compile/internal/noder`
+Location:&#x20;
+
+* `cmd/compile/internal/types` (compiler types)
+* `cmd/compile/internal/ir` (compiler AST)
+* `cmd/compile/internal/noder` (create compiler AST)
 
 The compiler has two things on its desk:
 
@@ -119,19 +123,19 @@ The compiler has two things on its desk:
 
 Noding is the process of smashing these two things together to create a single, unified "Node" tree that the rest of the compiler can use.
 
-**1. Serialization (Writing the IR)**
+**Serialization (Writing the IR)**
 
 The compiler takes the `syntax tree` and the `types2` information and "pickles" (serializes) them into a compact binary format called Unified IR.
 
 * Why? Because this binary format is much easier for the computer to move around than the complex syntax tree.
 
-**2. Deserialization (Reading the IR)**
+**Deserialization (Reading the IR)**
 
 The compiler immediately reads that binary data back. While reading, it constructs the `ir.Node` tree.
 
 * The Transformation: It turns `syntax.AssignStmt` (which is just about grammar) into `ir.AssignStmt` (which is about execution).
 
-**3. Lowering and Implicit Logic**
+**Lowering and Implicit Logic**
 
 This is the most important part of Noding. The compiler adds things that weren't in your source code but are required for the program to work:
 
@@ -159,7 +163,7 @@ Notice the difference:
 
 Several optimization passes are performed on the IR representation: dead code elimination, (early) devirtualization, function call inlining, and escape analysis. For example
 
-**1. Inlining (`cmd/compile/internal/inline`)**
+**Inlining (`cmd/compile/internal/inline`)**
 
 This is often the most impactful optimization.
 
@@ -167,13 +171,13 @@ This is often the most impactful optimization.
 * The Process: If you have a small function like `func IsPositive(x int) bool { return x > 0 }`, the compiler replaces the _call_ to that function with the actual _logic_ inside the function.
 * The Benefit: It saves the time it takes to push arguments onto the stack and jump to a new memory address.
 
-**2. Devirtualization (`cmd/compile/internal/devirtualize`)**
+**Devirtualization (`cmd/compile/internal/devirtualize`)**
 
 * The Goal: Turn "interface" calls into "direct" calls.
 * The Process: If the compiler can prove that an interface variable always contains a specific concrete type (e.g., you are calling `Write` on an interface, but the compiler sees it's _always_ a `os.File`), it rewrites the IR to call the `os.File.Write` method directly.
 * The Benefit: It bypasses the "itabs" (interface tables) lookups, which is much faster.
 
-**3. Escape Analysis (`cmd/compile/internal/escape`)**
+**Escape Analysis (`cmd/compile/internal/escape`)**
 
 * The Goal: Decide where memory should live.
 * The Process: The compiler looks at the IR nodes to see if a variable's address is passed outside the function.
@@ -185,9 +189,11 @@ and many more...
 
 ## Walk
 
+* `cmd/compile/internal/walk` (order of evaluation, desugaring)
+
 The final pass over the IR representation is “walk,” which serves two purposes:
 
-**1. Order of Evaluation (The "Order" part)**
+**Order of Evaluation (The "Order" part)**
 
 It decomposes complex statements into individual, simpler statements, introducing temporary variables and respecting order of evaluation. This step is also referred to as “order.” In Go, you can write complex single lines of code. The CPU, however, can only do one tiny thing at a time.
 
@@ -198,7 +204,7 @@ It decomposes complex statements into individual, simpler statements, introducin
   3. `f(temp1, temp2)`
 * Result: It ensures the program follows the Go spec's rules for exactly what happens in what order.
 
-**2. Desugaring (The "Runtime" part)**
+**Desugaring (The "Runtime" part)**
 
 "Syntactic Sugar" refers to features that make life easy for humans but don't exist in hardware. CPUs don't know what a `map`, a `channel`, or a `select` statement is.
 
@@ -213,6 +219,9 @@ It is called "Walk" because the compiler walks the IR tree one last time. As it 
 ## Generic SSA
 
 In this phase, IR is converted into Static Single Assignment (SSA) form, a lower-level intermediate representation with specific properties that make it easier to implement optimizations and to eventually generate machine code from it.
+
+* `cmd/compile/internal/ssa` (SSA passes and rules)
+* `cmd/compile/internal/ssagen` (converting IR to SSA)
 
 ### What is SSA?
 
@@ -234,18 +243,62 @@ x_3 = 5
 
 Why do this? It makes it incredibly easy for the compiler to see that `x_2` is never actually used, so the math `1 + 2` can be deleted entirely. For example
 
-**1. The Conversion (`ssagen`)**
+**The Conversion (`ssagen`)**
 
 The compiler "walks" your simplified IR and builds a Control Flow Graph (CFG). Instead of a list of lines, your code becomes a series of "blocks" connected by arrows (jumps).
 
-**2. Intrinsics (The "Fast Track")**
+**Intrinsics (The "Fast Track")**
 
 If you use a function like `math.Sqrt(x)`, the compiler doesn't actually call a Go function. It swaps that node for a single, high-speed CPU instruction (like `SQRTSD` on Intel).
 
-**3. Generic Rewrite Rules (Architecture Independent)**
+**Generic Rewrite Rules (Architecture Independent)**
 
 Before the compiler worries about whether you are on an iPhone (ARM) or a PC (Intel), it applies "Generic" rules that work everywhere.
 
 * Lowering `copy`: It turns the `copy()` function into raw memory-move instructions.
 * Algebraic Simplification: If the code says `x * 1`, the SSA pass simply deletes the `* 1`. If it sees `x << 0`, it deletes the shift.
 * Nil Check Elimination: If the compiler can prove you already checked if a pointer is nil (or if it was just created), it removes all subsequent nil checks for that pointer.
+
+## Generating Machine Code
+
+The machine-dependent phase of the compiler begins with the “lower” pass, which rewrites generic values into their machine-specific variants. For example, on amd64 memory operands are possible, so many load-store operations may be combined.
+
+* `cmd/compile/internal/ssa` (SSA lowering and arch-specific passes)
+* `cmd/internal/obj` (machine code generation)
+
+### "Lowering" Pass
+
+In the previous phase, we had "Generic SSA" (like `Add64`). In this phase, the Lower pass looks at your target `GOARCH` (like `amd64` or `arm64`) and rewrites the code.
+
+* Example (amd64): On an Intel/AMD chip, you can add a value directly from memory to a register in one instruction.
+  * _Generic:_ `Load` then `Add`.
+  * _Lowered:_ `ADDQ (SP), AX` (One instruction).
+* Example (arm64): ARM chips usually require you to load memory into a register _before_ doing math. The lower pass ensures the code respects these "rules of the house."
+
+#### Machine-Specific Optimizations
+
+Once the code is "lowered," the compiler runs more optimizations that are only possible now that it knows the CPU type:
+
+* Value Moving: It moves values closer to where they are used so the CPU can keep them in its high-speed "L1 cache" or registers longer.
+* Dead Code Elimination (Again): Now that the compiler has expanded high-level Go into many small machine instructions, some of those machine instructions might turn out to be useless. It cleans them up one last time.
+
+#### The "Housekeeping" (Stack & GC)
+
+This part is unique to Go’s high-performance runtime:
+
+* Stack Frame Layout: The compiler decides exactly where `variable x` sits on the stack relative to the "Stack Pointer."
+* Pointer Liveness (The GC Secret): This is critical. The compiler creates a "map" for the Garbage Collector (GC). It says: _"If the GC runs at this exact instruction, the values in registers RAX and RBX are pointers and must not be deleted!"_ Without this, Go's memory safety would break.
+
+#### From SSA to `obj.Prog`
+
+At the very end of the SSA phase, the compiler converts the "Graph" of blocks into a linear list of `obj.Prog` structures.
+
+* An `obj.Prog` is a "Portable Assembly" instruction. It’s not quite 0s and 1s yet, but it looks like `MOVQ`, `ADDQ`, or `PUSHQ`.
+
+#### `cmd/internal/obj` (The Assembler)
+
+The compiler hands that list of instructions to the Assembler.
+
+* The Assembler translates `ADDQ` into the actual hexadecimal machine code (e.g., `0x48 0x01...`).
+* It writes the Object File (`.a` or `.o`).
+* The Bonus Data: It attaches the "Reflect data" (so `reflect.TypeOf` works) and "Dwarf info" (so debuggers like Delve can show you your source code while you debug).
