@@ -302,3 +302,85 @@ The compiler hands that list of instructions to the Assembler.
 * The Assembler translates `ADDQ` into the actual hexadecimal machine code (e.g., `0x48 0x01...`).
 * It writes the Object File (`.a` or `.o`).
 * The Bonus Data: It attaches the "Reflect data" (so `reflect.TypeOf` works) and "Dwarf info" (so debuggers like Delve can show you your source code while you debug).
+
+## Export
+
+Go compiler "saves its work" so that other packages don't have to re-calculate everything from scratch. In a large project, you don't want the compiler to re-read the source code of `fmt` every time you import it. Instead, the compiler reads a pre-compiled Export Data file.
+
+#### The "Package Memo" (What is saved)
+
+When Package P is compiled, it creates Export Data for any Package Q that imports it. This file is a complete summary containing:
+
+* Definitions: All exported types, variables, and constants.
+* Logic (IR): The internal code for functions that might be inlined or generic functions that need to be created with new types later.
+* Analysis Results: The results of Escape Analysis, so the importer knows how the package handles memory.
+
+#### The "Unified" Format
+
+Go uses a "Unified" binary format to store this data.
+
+* Object Graph: It serializes the complex web of types and relationships into a bitstream.
+* Indexing & Lazy Loading: The file has an index. The compiler doesn't read the whole file; it only "lazy decodes" the specific parts (symbols) that the importing package actually uses.
+
+#### "Deep" vs. "Shallow" Summaries
+
+This refers to how much information about _indirect_ dependencies is included.
+
+* Deep Summary (Compiler default): Package B's export data includes everything from its dependency, Package C.
+  * Benefit: The compiler only needs to open files for direct imports.
+  * Trade-off: File sizes grow larger as you move up the import chain (redundant data).
+* Shallow Summary (Used by `gopls`): Only contains info for that specific package.
+  * Benefit: Much smaller files and faster for IDE tools.
+  * Trade-off: The tool must have access to the export files of _every_ dependency in the entire tree.
+
+## Tools
+
+```go
+// Print optimization info, including inlining and escape analysis
+go build -gcflags=-m=2
+
+// Print bounds check (BCE) info to see if the compiler is adding safety checks 
+go build -gcflags=-d=ssa/check_bce/debug
+
+// Print the internal parse tree after type checking is finished 
+go build -gcflags=-W
+
+// Generate an interactive ssa.html file for a specific function named Foo 
+GOSSAFUNC=Foo go build
+
+// Print the final machine assembly code for the package 
+go build -gcflags=-S
+
+// Print the timing of each compiler phase to a text file for benchmarking 
+go tool compile -bench=out.txt x.go
+
+// Force the compiler to panic and show a stack trace on the first error found 
+go tool compile -h file.go
+
+// Enable additional, stricter checks for unsafe pointer usage 
+go build -gcflags=-d=checkptr=2
+
+// List all available general compiler flags 
+go tool compile -h
+
+// List all available debug flags for the -d flag 
+go tool compile -d help
+
+// List all flags related specifically to the SSA optimization passes 
+go tool compile -d ssa/help
+
+// Run all tests located in the compiler's top-level test directory 
+go test cmd/internal/testdir
+
+// Save a copy of the current, working toolchain to prevent bootstrap failure 
+toolstash save
+
+// Restore the saved known-good compiler and install the current working version 
+toolstash restore && go install cmd/compile
+
+// Build and compare the current compiler's output against the saved version 
+go build -toolexec "toolstash -cmp" -a -v std
+
+// Compare benchmark results to see if your changes improved performance 
+benchstat old.txt new.txt
+```
