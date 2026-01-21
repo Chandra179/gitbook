@@ -4,100 +4,33 @@ This document outlines the end-to-end pipeline for a deep research agent, from i
 
 ## Initiation & Dynamic Templating
 
-The agent requires a clear goal and a structured template to extract specific, actionable results. User input will be a question or a topic
-
-### **Template System**
-
-Templates define what data to extract and how to structure it. They're stored in PostgreSQL for easy updates without code changes.
-
-```sql
-CREATE TABLE research_templates (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name TEXT UNIQUE NOT NULL,
-    description TEXT NOT NULL,  -- Router LLM uses this to select the right template
-    schema_json JSONB NOT NULL, -- Defines the data structure to extract
-    system_prompt TEXT NOT NULL,
-    seed_questions JSONB NOT NULL -- 3-5 starting questions
-);
-```
-
-### **Schema Definition**
-
-The `schema_json` defines what fields to extract and provides guardrails for the LLM
+The agent requires a clear goal and a structured template to extract specific, actionable results. User input will be a question or a topic. Templates define what data to extract and how to structure it. They're hardcoded in JSON for now:
 
 ```json
 {
-  "fields": {
-    "sample_size": {
-      "type": "integer",
-      "description": "Total number of participants in the study"
-    },
-    "p_value": {
-      "type": "float",
-      "description": "The statistical significance value reported"
-    }
-  }
 }
-```
-
-**Key Components**
-
-* `type`: Tells the system how to cast the data in Python (e.g., `str`, `int`, `float`, `list`). This prevents "TypeErrors" during data synthesis.
-* `description`: It tells the LLM exactly what to look for and how to interpret the text.
-
-### Research Sessions
-
-Track each research run from start to finish.
-
-```sql
-CREATE TABLE research_sessions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    query TEXT NOT NULL,
-    template_id UUID REFERENCES research_templates(id) NOT NULL,
-    
-    -- Status tracking
-    status TEXT NOT NULL DEFAULT 'started',
-    -- 'started', 'searching', 'crawling', 'processing', 'extracting', 'completed', 'failed'
-    
-    -- Progress metrics
-    total_urls_found INTEGER DEFAULT 0,
-    urls_crawled INTEGER DEFAULT 0,
-    facts_extracted INTEGER DEFAULT 0,
-    
-    -- Timestamps
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW(),
-    completed_at TIMESTAMP,
-    
-    -- Error tracking
-    error_message TEXT
-);
 ```
 
 ## Search & URL Collection
 
-### Search Strategy
-
 The system uses **SearXNG** (meta-search aggregator) to find relevant sources for each seed question.
 
-### URL Deduplication
+### Config
 
-Before crawling, URLs are normalized and deduplicated to avoid processing the same content multiple times
-
-1. **Normalize URLs**: Remove tracking parameters, convert to lowercase, standardize protocols
+**Normalize URLs**: Remove tracking parameters, convert to lowercase, standardize protocols
 
 ```
 https://Example.com/page?utm_source=google → https://example.com/page
 ```
 
-2. **Content Hash Check**: For already-crawled URLs, store a hash of the content to detect duplicates with different URLs
+**Content Hash Check**: For already-crawled URLs, store a hash of the content to detect duplicates with different URLs
 
 ```
 example.com/article/123 
 example.com/print/article/123  → Same content, different URLs
 ```
 
-3. **Domain Limits**: Restrict results per domain to ensure diversity (e.g., max 5 URLs from same domain)
+**Domain Limits**: Restrict results per domain to ensure diversity (e.g., max 5 URLs from same domain)
 
 ### Relevance Scoring
 
@@ -112,44 +45,9 @@ Each URL is scored for relevance before crawling to prioritize high-quality sour
 
 Only URLs scoring above a threshold (e.g., 50/100) are crawled.
 
-### Storage
-
-```sql
-CREATE TABLE search_results (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    session_id UUID REFERENCES research_sessions(id) NOT NULL,
-    seed_question TEXT NOT NULL,
-    url TEXT NOT NULL,
-    normalized_url TEXT NOT NULL,
-    url_hash TEXT,
-    relevance_score FLOAT NOT NULL,
-    domain TEXT,
-    status TEXT DEFAULT 'pending',  -- 'pending', 'crawled', 'skipped', 'failed'
-    created_at TIMESTAMP DEFAULT NOW()
-);
-```
-
-### **Crawling**
+## **Crawling**
 
 Use **Crawl4AI** to fetch content from high-priority URLs:
-
-```sql
-CREATE TABLE raw_documents (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    search_result_id UUID REFERENCES search_results(id) NOT NULL,
-    content_type TEXT NOT NULL,     -- 'html', 'pdf', 'docx'
-    raw_content BYTEA NOT NULL,     -- Binary storage
-    content_hash TEXT UNIQUE,       -- Detect duplicate content
-    crawl_status TEXT NOT NULL,     -- 'success', 'failed', 'timeout'
-    error_message TEXT,
-    crawled_at TIMESTAMP DEFAULT NOW()
-);
-```
-
-**Key Features:**
-
-* `content_hash`: Detects identical content from different URLs
-* `search_result_id`: Links back to the original search query for traceability
 
 ## Content Processing
 

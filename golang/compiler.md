@@ -1,5 +1,7 @@
 # Compiler
 
+<figure><img src="../.gitbook/assets/image (1).png" alt="" width="375"><figcaption></figcaption></figure>
+
 ## Parsing
 
 source code is tokenized (lexical analysis), parsed (syntax analysis), and a syntax tree is constructed for each source file.
