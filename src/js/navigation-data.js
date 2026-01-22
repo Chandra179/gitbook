@@ -21,7 +21,7 @@ const navigationData = [
         name: 'General',
         slug: 'general',
         pages: [
-            { name: 'CPU', slug: 'computing' }, 
+            { name: 'CPU', slug: 'cpu' }, 
             { name: 'Computing', slug: 'computing' }, 
             { name: 'API Design Guidelines', slug: 'api-design-guidelines' },
             { name: 'Database', slug: 'database' },
@@ -32,6 +32,7 @@ const navigationData = [
         name: 'Golang',
         slug: 'golang',
         pages: [
+            { name: 'Compiler', slug: 'compiler' },
             { name: 'Goroutine', slug: 'goroutine' },
             { name: 'Strings', slug: 'strings' }
         ]
