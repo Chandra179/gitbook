@@ -21,6 +21,7 @@ const navigationData = [
         name: 'General',
         slug: 'general',
         pages: [
+            { name: 'CPU', slug: 'computing' }, 
             { name: 'Computing', slug: 'computing' }, 
             { name: 'API Design Guidelines', slug: 'api-design-guidelines' },
             { name: 'Database', slug: 'database' },
