@@ -12,6 +12,7 @@
 * **Consumer Group ID**: The "identity" or team name for your consumers. It determines how messages are shared:
   * Same Group ID: Consumers work as a single team. Kafka divides the Partitions among them so each message is processed exactly once (No duplicates).
   * Unique Group ID: Every group acts as a separate department, receiving its own complete copy of every message (Fan-out).
+  * The Group ID is Cluster-wide, not Broker-wide.
 * **Partition Max (Scale)**: The number of partitions per topic limits your maximum parallelism. If a topic has 3 partitions, only 3 consumers in the same Group ID can work simultaneously; any extra consumers will sit idle.
 
 #### **Cluster**
@@ -57,3 +58,4 @@ A single ordered log within a topic. Each partition is immutable and append-only
 * Offset Commit: The act of saving the last processed record’s position to ensure reliable recovery. All consumers in the same Group ID share the same bookmark for a partition.
 * Consumer Lag: The difference between the latest partition offset and the consumer’s committed offset — a measure of how "behind" a consumer is.
 * If you have 1 partition and 2 consumers in the same group, Kafka gives the partition to Consumer A and leaves Consumer B idle. A single partition is only ever assigned to one consumer at a time
+* idempotent consumer, atomic transactions
