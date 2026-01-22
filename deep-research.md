@@ -7,15 +7,12 @@ This document outlines the end-to-end pipeline for a deep research agent, from i
 The agent requires a clear goal and a structured template to extract specific, actionable results. User input will be a question or a topic. Templates define what data to extract and how to structure it. They're hardcoded in JSON for now:
 
 ```json
-{
-}
+{}
 ```
 
 ## Search & URL Collection
 
 The system uses **SearXNG** (meta-search aggregator) to find relevant sources for each seed question.
-
-### Config
 
 **Normalize URLs**: Remove tracking parameters, convert to lowercase, standardize protocols
 

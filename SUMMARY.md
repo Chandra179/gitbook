@@ -34,4 +34,3 @@
   * [Notification System](system-design/notification-system.md)
 * [AI](ai/README.md)
   * [AI Agents](ai/ai-agents.md)
-* [Smart Videos](knowledge-graph.md)
