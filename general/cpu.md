@@ -14,11 +14,9 @@ This component sits between the CPU and RAM. It "sees" the address on the bus, f
 
 ***
 
-## CPU store/retrieve
-
 The CPU doesn't "decide" where things go on its own; it follows three main guides:
 
-#### **The Instruction Set (The "What")**
+### **The Instruction Set**
 
 When a programmer writes code, it is compiled into machine code. An instruction might look like this in assembly:
 
@@ -28,7 +26,7 @@ MOV EAX, [0x4001]
 
 This literally tells the CPU: "Go to memory address 0x4001, grab whatever is there, and put it in the EAX register." The "where" is hardcoded into the program's instructions.
 
-#### **Registers ("Where am I?")**
+### **Registers**
 
 **Program Counter (PC)**
 
@@ -48,7 +46,7 @@ We deal with offsets. Instead of using one giant number, the CPU often uses a Ba
 
 ## Memory
 
-### Memory Regions
+#### Memory Regions
 
 Even though RAM is one long physical strip, the Operating System divides it into specific regions for every running program to keep things organized.
 
@@ -83,16 +81,11 @@ In a typical memory layout, the Stack and the Heap are placed at opposite ends o
 * The Stack starts at a high address and grows down.
 * The Heap starts at a lower address and grows up. This design ensures they have the maximum amount of space to grow before they potentially crash into each other.
 
-#### Why this matters for your notes:
-
-* Stack Pointer: Your note on the SP makes more sense when you explain it's managing the "top" of the Stack region.
-* Memory Width: A 64-bit system allows for a much "taller" memory space, meaning the Stack and Heap have much more room to grow before a "Stack Overflow" occurs.
-
-**Memory Width (12, 24, 32, 64 bits)**
+#### **Memory Width (12, 24, 32, 64 bits)**
 
 Usually, when we talk about 32-bit or 64-bit systems, we are talking about the width of the registers and the address bus. A 64-bit CPU can "address" much more memory ($$2^{64}$$ bytes) than a 32-bit CPU ($$2^{32}$$ bytes, or 4GB).
 
-**Virtual Memory**
+#### **Virtual Memory**
 
 This is a crucial "lie" the Operating System tells the CPU. Every program thinks it has access to the entire memory range (e.g., from address `0` to Max). The MMU (Memory Management Unit) intercepts these "virtual" addresses and maps them to "physical" addresses in the actual RAM chips.
 
