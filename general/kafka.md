@@ -1,6 +1,6 @@
 # Kafka
 
-#### **Big Picture**
+### **Big Picture**
 
 **Cluster**: The entire server infrastructure; a group of Brokers working together to provide high availability and scalability.
 
@@ -25,23 +25,23 @@
 
 **Partition Max (Scale)**: The number of partitions per topic limits your maximum parallelism. If a topic has 3 partitions, only 3 consumers in the same Group ID can work simultaneously; any extra consumers will sit idle.
 
-#### **Cluster**
+### **Cluster**
 
 A set of Kafka brokers working together.
 
-#### **Broker**
+### **Broker**
 
 A Kafka server that stores data and serves client requests. A cluster typically has multiple brokers. Each broker handles some partitions and can be either a leader or follower for them.
 
-#### **Controller**
+### **Controller**
 
 One broker in the cluster acts as the controller. It manages partition leadership, reassignments, and handles broker failures.
 
-#### **Topics**
+### **Topics**
 
 A logical stream of data identified by a name. Topics are divided into partitions for scalability and parallelism.
 
-#### **Producers**
+### **Producers**
 
 It writes messages into Kafka topics.
 
@@ -53,7 +53,7 @@ How do we know which Partition it goes to?
 * Round-robin → spreads messages evenly across partitions.
 * Custom partitioner → application-defined placement logic.
 
-#### **Partition**
+### **Partition**
 
 A single ordered log within a topic. Each partition is immutable and append-only.&#x20;
 
@@ -69,3 +69,25 @@ A single ordered log within a topic. Each partition is immutable and append-only
 * Consumer Lag: The difference between the latest partition offset and the consumer’s committed offset — a measure of how "behind" a consumer is.
 * If you have 1 partition and 2 consumers in the same group, Kafka gives the partition to Consumer A and leaves Consumer B idle. A single partition is only ever assigned to one consumer at a time
 * idempotent consumer, atomic transactions
+
+### Performance&#x20;
+
+**Throughput**&#x20;
+
+* How to increase it: Add more Partitions (more lanes) and use larger Batches (bigger trucks).
+* The Metric: Usually measured in Megabytes per second (MB/s) or Messages per second (msg/s).
+
+**Latency**
+
+* End-to-End Latency: The sum of (Producer Batching Time) + (Network Trip) + (Broker Disk Write) + (Consumer Processing Time).
+* The Trade-off: Reducing latency (making it "Real-Time") often requires lowering your batch sizes, which can reduce your overall maximum throughput.
+
+**Bottlenecks**
+
+* The Producer Bottleneck: When the network or CPU can’t keep up with the data your app is generating.
+* The Partition Bottleneck: When a single partition is overwhelmed by too many messages (often caused by a "Hot Key").
+* The Consumer Bottleneck: The most common clog. This happens when your business logic (database writes, API calls) is slower than the incoming message rate.
+
+The Golden Rule of Kafka Scaling
+
+> If your system hits a bottleneck, do not try to make a single thread faster. Instead, increase Throughput by adding more Partitions and Consumers to process the data in parallel.
