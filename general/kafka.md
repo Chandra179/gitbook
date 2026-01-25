@@ -91,3 +91,7 @@ A single ordered log within a topic. Each partition is immutable and append-only
 The Golden Rule of Kafka Scaling
 
 > If your system hits a bottleneck, do not try to make a single thread faster. Instead, increase Throughput by adding more Partitions and Consumers to process the data in parallel.
+
+### Reference
+
+[https://www.interdb.jp/pg/](https://www.interdb.jp/pg/)

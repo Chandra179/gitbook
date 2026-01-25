@@ -33,10 +33,10 @@ In a high-throughput environment, Isolation mostly relaxed because perfect isola
 
 Cardinality refers to the number of _unique_ values contained in a specific column relative to the total number of rows in the table. A column with "High Cardinality" contains mostly unique values (e.g., `User_ID`, `Email`, `UUID`), while a column with "Low Cardinality" contains very few unique values repeated many times (e.g., `Gender`, `Is_Active`, `Status`).
 
-Impact on Index Effectiveness: Cardinality is the primary metric the Database Optimizer uses to decide whether to use an index or ignore it.
+Cardinality is the primary metric the Database Optimizer uses to decide whether to use an index or ignore it.
 
-* High Cardinality: Indexes are extremely effective here. The B-Tree structure can rapidly narrow down millions of rows to the specific one you need.
-* Low Cardinality: Indexes are often ignored. If you index a `Status` column (Active/Inactive) and query for "Active" users (where 90% of users are active), using the index is actually slower than a full table scan. This is because the database would have to jump back and forth between the index and the table data (random I/O) for 90% of the records. A sequential read of the whole table (Full Table Scan) is much faster in this scenario.
+* **High Cardinality**: Indexes are extremely effective here. The B-Tree structure can rapidly narrow down millions of rows to the specific one you need.
+* **Low Cardinality**: Indexes are often ignored. If you index a `Status` column (Active/Inactive) and query for "Active" users (where 90% of users are active), using the index is actually slower than a full table scan. This is because the database would have to jump back and forth between the index and the table data (random I/O) for 90% of the records. A sequential read of the whole table (Full Table Scan) is much faster in this scenario.
 
 ***
 
