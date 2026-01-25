@@ -2,24 +2,32 @@
 
 #### **Big Picture**
 
-* **Cluster**: The entire server infrastructure; a group of Brokers working together to provide high availability and scalability.
-* **Broker**: A physical server or container within the cluster that stores and manages data. A cluster usually has multiple brokers so if one fails, the system stays online.
-* **Topic**: A logical name or "folder" where you send and categorize data (e.g., `user-signups` or `payments`).
-* **Partition**: The actual physical "slice" of a Topic. Partitions are distributed across different Brokers to allow multiple producers and consumers to work at the same time.
-* **Offset**: A unique, sequential "line number" or bookmark assigned to every message inside a Partition.
-* **Producer**: Your application that publishes data to a Topic. It uses a Balancer (like `LeastBytes` or `Hash`) to decide which partition the message lands in.
-* **Consumer**: Your application that reads data from a Topic.
-* **Consumer Group ID**: The "identity" or team name for your consumers. It determines how messages are shared:
-  * Same Group ID: Consumers work as a single team. Kafka divides the Partitions among them so each message is processed exactly once (No duplicates).
-  * Unique Group ID: Every group acts as a separate department, receiving its own complete copy of every message (Fan-out).
-  * A Group ID is a unique identifier for a consumer group across the entire Kafka cluster.&#x20;
-  * A consumer group can subscribe to one topic today and a completely different one tomorrow.
-  * A single Group ID can actually subscribe to multiple topics simultaneous
-* **Partition Max (Scale)**: The number of partitions per topic limits your maximum parallelism. If a topic has 3 partitions, only 3 consumers in the same Group ID can work simultaneously; any extra consumers will sit idle.
+**Cluster**: The entire server infrastructure; a group of Brokers working together to provide high availability and scalability.
+
+**Broker**: A physical server or container within the cluster that stores and manages data. A cluster usually has multiple brokers so if one fails, the system stays online.
+
+**Topic**: A logical name or "folder" where you send and categorize data (e.g., `user-signups` or `payments`).
+
+**Partition**: The actual physical "slice" of a Topic. Partitions are distributed across different Brokers to allow multiple producers and consumers to work at the same time.
+
+**Offset**: A unique, sequential "line number" or bookmark assigned to every message inside a Partition.
+
+**Producer**: Your application that publishes data to a Topic. It uses a Balancer (like `LeastBytes` or `Hash`) to decide which partition the message lands in.
+
+**Consumer**: Your application that reads data from a Topic.
+
+**Consumer Group ID**: The "identity" or team name for your consumers. It determines how messages are shared:
+
+* Unique Group ID: Every group acts as a separate department, receiving its own complete copy of every message (Fan-out).
+* A consumer group can subscribe to one topic today and a completely different one tomorrow.
+* A single Group ID can actually subscribe to multiple topics simultaneous
+* If you use the same Group ID for two completely different applications (e.g., an email service and a billing service) that happen to read from the same topic, they will fight each other for messages. Kafka will try to load-balance the partitions between them, and each message will only go to one of those services.
+
+**Partition Max (Scale)**: The number of partitions per topic limits your maximum parallelism. If a topic has 3 partitions, only 3 consumers in the same Group ID can work simultaneously; any extra consumers will sit idle.
 
 #### **Cluster**
 
-* Cluster: A set of Kafka brokers working together.
+A set of Kafka brokers working together.
 
 #### **Broker**
 
