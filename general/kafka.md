@@ -12,7 +12,9 @@
 * **Consumer Group ID**: The "identity" or team name for your consumers. It determines how messages are shared:
   * Same Group ID: Consumers work as a single team. Kafka divides the Partitions among them so each message is processed exactly once (No duplicates).
   * Unique Group ID: Every group acts as a separate department, receiving its own complete copy of every message (Fan-out).
-  * The Group ID is Cluster-wide, not Broker-wide and its tied to `topic`
+  * A Group ID is a unique identifier for a consumer group across the entire Kafka cluster.&#x20;
+  * A consumer group can subscribe to one topic today and a completely different one tomorrow.
+  * A single Group ID can actually subscribe to multiple topics simultaneous
 * **Partition Max (Scale)**: The number of partitions per topic limits your maximum parallelism. If a topic has 3 partitions, only 3 consumers in the same Group ID can work simultaneously; any extra consumers will sit idle.
 
 #### **Cluster**
