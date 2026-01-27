@@ -2,6 +2,35 @@
 
 This document outlines the end-to-end pipeline for a deep research agent, from initial search to final structured knowledge extraction.
 
+## Search
+
+The system uses **SearXNG** (meta-search aggregator) to find relevant sources for each seed question.
+
+```json
+{
+  "query": "machine learning tutorials",
+  "number_of_results": 137000,
+  "results": [
+    {
+      "title": "Machine Learning Tutorial - GeeksforGeeks",
+      "url": "https://www.geeksforgeeks.org/machine-learning/machine-learning/",
+      "content": "26 Dec 2025 — Machine Learning is mainly divided into three core types: Supervised, Unsupervised and Reinforcement Learning along with two additional types, Semi-Supervised ...",
+      "engine": "google",
+      "score": 4.0,
+      "category": "general"
+    },
+    {
+      "title": "The Ultimate Machine Learning Tutorial for 2026 | Learn Machine Learning",
+      "url": "https://www.simplilearn.com/tutorials/machine-learning-tutorial",
+      "content": "5 days ago — This Machine Learning tutorial helps you to understand what is machine learning, its applications, and how to become a machine learning engineer.",
+      "engine": "brave",
+      "score": 2.4,
+      "category": "general"
+    },
+  ]
+}
+```
+
 ## Initiation & Dynamic Templating
 
 The agent requires a clear goal and a structured template to extract specific, actionable results. User input will be a question or a topic. Templates define what data to extract and how to structure it. They're hardcoded in JSON for now:
@@ -9,42 +38,6 @@ The agent requires a clear goal and a structured template to extract specific, a
 ```json
 {}
 ```
-
-## Search & URL Collection
-
-The system uses **SearXNG** (meta-search aggregator) to find relevant sources for each seed question.
-
-**Normalize URLs**: Remove tracking parameters, convert to lowercase, standardize protocols
-
-```
-https://Example.com/page?utm_source=google → https://example.com/page
-```
-
-**Content Hash Check**: For already-crawled URLs, store a hash of the content to detect duplicates with different URLs
-
-```
-example.com/article/123 
-example.com/print/article/123  → Same content, different URLs
-```
-
-**Domain Limits**: Restrict results per domain to ensure diversity (e.g., max 5 URLs from same domain)
-
-### Relevance Scoring
-
-Each URL is scored for relevance before crawling to prioritize high-quality sources:
-
-**Scoring Factors:**
-
-* **Query Match** (0-40 points): How well the URL/title matches the seed question
-* **Domain Authority** (0-30 points): Trustworthiness of the source (.edu, .gov, known publishers)
-* **Freshness** (0-15 points): Recency of publication
-* **Content Type** (0-15 points): Preference for research papers, reports over forum posts
-
-Only URLs scoring above a threshold (e.g., 50/100) are crawled.
-
-## **Crawling**
-
-Use **Crawl4AI** to fetch content from high-priority URLs:
 
 ## Content Processing
 
