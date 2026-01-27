@@ -1,31 +1,42 @@
 # OTA
 
-**Inventory Sourcing**: Connecting to Global Distribution Systems (GDS) and third-party APIs to aggregate flights, hotels, and car rentals.
+#### The Supply & Marketplace Domain
 
-**Pricing & Revenue Management**: Implementing dynamic pricing algorithms to adjust rates based on demand, seasonality, and competitor data.
+This domain is responsible for getting data into the system, cleaning it, and making it searchable. It is the "Inventory" layer.
 
-**Product Search & Discovery**: Providing high-speed search filters to help users find specific travel products across millions of data points.
+* Inventory Sourcing: Connecting to GDS and third-party APIs.
+* Hotel Mapping & Deduplication: Creating the "Master Record" from multiple suppliers.
+* Content Management & Asset Pipelines: Managing images and descriptions via CDNs.
+* Supply Chain & Extranet Management: Direct partner portals for inventory management.
+* Product Search & Discovery: High-speed filtering and search infrastructure.
+* Bot Mitigation & Cost Control: Protecting search infrastructure from scrapers.
 
-**Bot Mitigation & Cost Control**: Identifying and blocking scrapers to avoid paying "search fees" to vendors for non-human traffic.
+#### The Growth & Commercial Domain
 
-**User Identity & Personalization**: Storing traveler profiles, passport details (PII), and preferences to enable fast, "one-click" bookings.
+This domain focuses on pricing strategy, competitiveness, and maximizing the value of every user.
 
-**Booking & Inventory Locking**: Managing "soft locks" on rooms or seats to prevent double-booking during the checkout process.
+* Pricing & Revenue Management: Dynamic pricing and demand algorithms.
+* Market Intelligence & Rate Shopping: Competitor price monitoring.
+* Loyalty & Retention: Managing points, tiers, and member discounts.
+* Subscription Services: Recurring billing and "wholesale" access models.
+* Ancillary Upselling: Cross-selling insurance, transfers, and upgrades.
 
-**Payment Orchestration**: Processing multi-currency transactions while ensuring PCI-DSS compliance and fraud detection.
+#### The Transaction & Checkout Domain
 
-**Loyalty & Retention**: Managing reward points, membership tiers (e.g., Genius levels), and "member-only" discounted rates.
+This is the mission-critical "hot path" where money and inventory meet. Engineering here focuses on high consistency and security.
 
-**Fulfillment & Ticketing**: Interfacing with vendor APIs to issue legal e-tickets and generate digital vouchers for the user.
+* User Identity & Personalization: Profile storage and PII management.
+* Booking & Inventory Locking: Preventing double-bookings via "soft locks."
+* Payment Orchestration: Multi-currency processing and PCI compliance.
+* Risk & Fraud Scoring: Real-time fraud detection to prevent chargebacks.
+* Operational Queue Management: Handling asynchronous vendor confirmations.
 
-**Ancillary Upselling**: Selling "add-ons" like travel insurance, airport transfers, or seat upgrades to increase the total booking value.
+#### The Fulfillment & Operations Domain
 
-**Post-Booking Servicing**: Automating cancellations, date changes, and refund workflows through self-service portals to reduce call center costs.
+This domain handles everything that happens after the user pays—legalities, payouts, and customer support.
 
-**Hotel Mapping & Deduplication**: Merging duplicate listings from different suppliers into a single "Master Record" for a clean user interface.
-
-**B2B Settlement**: Generating Virtual Credit Cards (VCC) to pay individual hotels and suppliers securely after a user books.
-
-**Financial Reconciliation**: Maintaining an immutable ledger to track commissions, tax compliance, and multi-party payouts.
-
-**Subscription Services**: Managing recurring billing and "wholesale" access for premium members to guarantee long-term predictable revenue.
+* Fulfillment & Ticketing: Issuing e-tickets and digital vouchers via vendor APIs.
+* Post-Booking Servicing: Automated cancellations, changes, and refunds.
+* B2B Settlement: Paying suppliers via Virtual Credit Cards (VCC).
+* Financial Reconciliation: Immutable ledgers for commissions and payouts.
+* Regulatory & Tax Compliance Engine: Calculating region-specific taxes (VAT/GST) and data residency.
