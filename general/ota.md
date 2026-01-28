@@ -1,6 +1,6 @@
 # OTA
 
-#### The Supply & Marketplace Domain
+#### Supply & Marketplace Domain
 
 This domain is responsible for getting data into the system, cleaning it, and making it searchable. It is the "Inventory" layer.
 
@@ -11,7 +11,7 @@ This domain is responsible for getting data into the system, cleaning it, and ma
 * Product Search & Discovery: High-speed filtering and search infrastructure.
 * Bot Mitigation & Cost Control: Protecting search infrastructure from scrapers.
 
-#### The Growth & Commercial Domain
+#### Growth & Commercial Domain
 
 This domain focuses on pricing strategy, competitiveness, and maximizing the value of every user.
 
@@ -21,7 +21,7 @@ This domain focuses on pricing strategy, competitiveness, and maximizing the val
 * Subscription Services: Recurring billing and "wholesale" access models.
 * Ancillary Upselling: Cross-selling insurance, transfers, and upgrades.
 
-#### The Transaction & Checkout Domain
+#### Transaction & Checkout Domain
 
 This is the mission-critical "hot path" where money and inventory meet. Engineering here focuses on high consistency and security.
 
@@ -31,7 +31,7 @@ This is the mission-critical "hot path" where money and inventory meet. Engineer
 * Risk & Fraud Scoring: Real-time fraud detection to prevent chargebacks.
 * Operational Queue Management: Handling asynchronous vendor confirmations.
 
-#### The Fulfillment & Operations Domain
+#### Fulfillment & Operations Domain
 
 This domain handles everything that happens after the user pays—legalities, payouts, and customer support.
 

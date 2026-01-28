@@ -14,7 +14,6 @@
   * [Garbage Collector](golang/garbage-collector.md)
   * [Strings](golang/strings.md)
   * [Goroutine](golang/goroutine.md)
-  * [Test Container](golang/test-container.md)
 * [Deep Research](deep-research.md)
 * [P2P Chat](p2p-chat.md)
 * [ReactJS](reactjs.md)
