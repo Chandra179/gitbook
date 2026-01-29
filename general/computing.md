@@ -4,6 +4,17 @@ description: if a topics getting to large move it into new page
 
 # Computing
 
+## Repository
+
+{% embed url="https://github.com/Chandra179/bhelper" %}
+
+CLI based calculation
+
+* Character Analyzer
+* Timezone Analyzer
+* Time Converter
+* Collision Analyzer
+
 ## Bits & Bytes
 
 A **bit** is the smallest unit of information in computer — **0 or 1**.
@@ -225,3 +236,7 @@ TURN is an extension of STUN that acts as a fallback when STUN fails (most commo
 * The peer sends all its traffic _to_ the TURN server's Relayed Transport Address.
 * The TURN server receives the data and relays it to the first client.
 * All communication for the duration of the session flows through the TURN server
+
+## Other
+
+A/B testing, Content enrichment, Re-ranking, Fraud detection with (graph nodes)
