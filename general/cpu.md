@@ -36,7 +36,7 @@ It holds the address of the _next_ instruction. Once an instruction is fetched, 
 
 This holds the address of the "top" of the stack. When you call a function, the CPU looks at the SP to know exactly where to write the return address.
 
-**Segmentation and Offsets (The "Math")**
+**Segmentation and Offsets**
 
 We deal with offsets. Instead of using one giant number, the CPU often uses a Base Address (the start of a memory region) + an Offset (how far into that region to look).
 
@@ -87,7 +87,7 @@ Usually, when we talk about 32-bit or 64-bit systems, we are talking about the w
 
 #### **Virtual Memory**
 
-This is a crucial "lie" the Operating System tells the CPU. Every program thinks it has access to the entire memory range (e.g., from address `0` to Max). The MMU (Memory Management Unit) intercepts these "virtual" addresses and maps them to "physical" addresses in the actual RAM chips.
+Every program thinks it has access to the entire memory range (e.g., from address `0` to Max). The MMU (Memory Management Unit) intercepts these "virtual" addresses and maps them to "physical" addresses in the actual RAM chips.
 
 ## Execution Cycle
 

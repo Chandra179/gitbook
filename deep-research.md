@@ -1,6 +1,6 @@
-# Deep Research
+# Web Intelligence
 
-This document outlines the end-to-end pipeline for a deep research agent, from initial search to final structured knowledge extraction.
+This document outlines the end-to-end pipeline for connecting knowledge from web, from initial search to final structured knowledge extraction.
 
 ## Search
 
@@ -29,14 +29,6 @@ The system uses **SearXNG** (meta-search aggregator) to find relevant sources fo
     },
   ]
 }
-```
-
-## Initiation & Dynamic Templating
-
-The agent requires a clear goal and a structured template to extract specific, actionable results. User input will be a question or a topic. Templates define what data to extract and how to structure it. They're hardcoded in JSON for now:
-
-```json
-{}
 ```
 
 ## Content Processing
@@ -149,7 +141,50 @@ If we want to chunk `## Header A.1 <list>`, the "before" context is `<tables>` a
 * `token_count`: The number of tokens in the content
 * `split_sequence`: An index (e.g., "28/40") indicating this is the 28th part out of 40 total chunks created from the same original section or element.
 
-### **Embedding**
+## Building Knowledge
+
+Use knowledge graph to build knowledge map
+
+### NER
+
+```python
+# 1. Define "Map Categories"
+entities = Literal["PERSON", "COMPANY", "TECHNOLOGY", "LOCATION"]
+relations = Literal["WORKS_AT", "DEVELOPED_BY", "COMPETES_WITH", "LOCATED_IN"]
+
+# 2. Define the "Rules of the Road" (Which entity can do what)
+validation_schema = {
+    "PERSON": ["WORKS_AT"],
+    "COMPANY": ["COMPETES_WITH", "LOCATED_IN"],
+    "TECHNOLOGY": ["DEVELOPED_BY"]
+}
+
+# 3. Create the Extractor
+kg_extractor = SchemaLLMPathExtractor(
+    possible_entities=entities,
+    possible_relations=relations,
+    kg_validation_schema=validation_schema,
+    strict=True  # Force the LLM to ignore noise like 'Click Here'
+)
+```
+
+### Entity Resolution
+
+LlamaIndex automatically merges nodes that have the exact same name. If "Tesla" appears in Chunk A and Chunk B, it becomes one single node.
+
+```python
+from llama_index.core import PropertyGraphIndex
+from llama_index.embeddings.openai import OpenAIEmbedding
+
+index = PropertyGraphIndex(
+    nodes, # Your existing JSON chunks
+    kg_extractors=[kg_extractor],
+    embed_model=OpenAIEmbedding(), # This enables semantic entity resolution
+    show_progress=True
+)
+```
+
+## **Embedding**
 
 We need to store **dense vector** from the embed result, and also create **sparse vector** using SPLADE (Sparse Lexical and Expansion Model). Its needed for Hybrid Search retrieval.
 
@@ -201,45 +236,3 @@ We need to store **dense vector** from the embed result, and also create **spars
 the model config flexible, we can change it later
 {% endhint %}
 
-## **Collecting Facts**
-
-Query the vector store using the research question to find relevant chunks. Use the LLM with the Pydantic model (from the template) to extract structured facts:
-
-* **Schema Enforcement**: `Instructor` library ensures output matches template
-* **Context Injection**: Provide `section_path` and `parent_section` for accurate interpretation
-
-```sql
-CREATE TABLE research_facts (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    session_id UUID REFERENCES research_sessions(id) NOT NULL,
-    
-    -- Vector store reference (Qdrant chunk ID)
-    source_chunk_id TEXT NOT NULL,
-    
-    -- PostgreSQL reference for traceability
-    source_document_id UUID REFERENCES raw_documents(id),
-    source_url TEXT NOT NULL,
-    
-    -- Which seed question led to this fact
-    seed_question TEXT,
-    
-    -- Extracted structured data matching template schema
-    fact_data JSONB NOT NULL,
-    
-    -- LLM confidence assessment (0-1)
-    confidence_score FLOAT CHECK (confidence_score >= 0 AND confidence_score <= 1),
-    
-    created_at TIMESTAMP DEFAULT NOW()
-);
-```
-
-Example `fact_data`&#x20;
-
-```json
-{
-  "sample_size": 1247,
-  "p_value": 0.032,
-  "study_type": "RCT",
-  "methodology": "Double-blind randomized controlled trial"
-}
-```
