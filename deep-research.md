@@ -143,9 +143,7 @@ If we want to chunk `## Header A.1 <list>`, the "before" context is `<tables>` a
 
 ## Building Knowledge
 
-Use knowledge graph to build knowledge map
-
-### NER
+Convert chunk result from previous sectiton into LlamaIndex `TextNode` objects, like this
 
 ```python
 # 1. Define "Map Categories"
@@ -166,23 +164,31 @@ kg_extractor = SchemaLLMPathExtractor(
     kg_validation_schema=validation_schema,
     strict=True  # Force the LLM to ignore noise like 'Click Here'
 )
-```
 
-### Entity Resolution
+nodes = []
+for chunk in custom_chunks:
+    node = TextNode(
+        text=chunk["content"],
+        id_=chunk["id"],
+        metadata={
+            "chunk_type": chunk["chunk_type"],
+            "section_path": chunk["section_path"],
+            "document_id": chunk["document_id"],
+            "split_sequence": chunk["split_sequence"]
+        }
+    )
+    nodes.append(node)
 
-LlamaIndex automatically merges nodes that have the exact same name. If "Tesla" appears in Chunk A and Chunk B, it becomes one single node.
-
-```python
-from llama_index.core import PropertyGraphIndex
-from llama_index.embeddings.openai import OpenAIEmbedding
-
+# 4. Build the Index using your nodes and the strict kg_extractor
 index = PropertyGraphIndex(
-    nodes, # Your existing JSON chunks
+    nodes=nodes,
+    embed_model=OpenAIEmbedding(),
     kg_extractors=[kg_extractor],
-    embed_model=OpenAIEmbedding(), # This enables semantic entity resolution
     show_progress=True
 )
 ```
+
+LlamaIndex automatically merges nodes that have the exact same name. If "Tesla" appears in Chunk A and Chunk B, it becomes one single node.
 
 ## **Embedding**
 
