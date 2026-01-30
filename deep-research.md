@@ -35,7 +35,7 @@ The system uses **SearXNG** (meta-search aggregator) to find relevant sources fo
 
 ### Extraction
 
-Use Docling to extract content from PDFs or HTML into Markdown format, ensuring all elements (including images and tables) are preserved.
+Use Docling to extract content from PDFs or HTML into Markdown format, ensuring all elements (including images and tables) are preserved. When visiting URLs protected by anti-bot measures, we must use stealth libraries like `undetected-chromedriver` for Selenium or `playwright-stealth` for Playwright to avoid detection.
 
 ### Structure-Aware Chunking
 
