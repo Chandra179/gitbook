@@ -1,7 +1,3 @@
----
-description: if a topics getting to large move it into new page
----
-
 # Computing
 
 ## Repository

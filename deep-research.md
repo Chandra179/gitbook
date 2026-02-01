@@ -143,52 +143,14 @@ If we want to chunk `## Header A.1 <list>`, the "before" context is `<tables>` a
 
 ## Building Knowledge
 
-Convert chunk result from previous sectiton into LlamaIndex `TextNode` objects, like this
+Use FalkorDB for graph database, add it to docker-compose.yml, then create new folder (kgraph) in internal, then create new files in api for new endpoint to read markdown files from export folder, and api to accept filepath markdown file only and build the knowledge graph using this step below:
 
-```python
-# 1. Define "Map Categories"
-entities = Literal["PERSON", "COMPANY", "TECHNOLOGY", "LOCATION"]
-relations = Literal["WORKS_AT", "DEVELOPED_BY", "COMPETES_WITH", "LOCATED_IN"]
+**Deduplication**
 
-# 2. Define the "Rules of the Road" (Which entity can do what)
-validation_schema = {
-    "PERSON": ["WORKS_AT"],
-    "COMPANY": ["COMPETES_WITH", "LOCATED_IN"],
-    "TECHNOLOGY": ["DEVELOPED_BY"]
-}
-
-# 3. Create the Extractor
-kg_extractor = SchemaLLMPathExtractor(
-    possible_entities=entities,
-    possible_relations=relations,
-    kg_validation_schema=validation_schema,
-    strict=True  # Force the LLM to ignore noise like 'Click Here'
-)
-
-nodes = []
-for chunk in custom_chunks:
-    node = TextNode(
-        text=chunk["content"],
-        id_=chunk["id"],
-        metadata={
-            "chunk_type": chunk["chunk_type"],
-            "section_path": chunk["section_path"],
-            "document_id": chunk["document_id"],
-            "split_sequence": chunk["split_sequence"]
-        }
-    )
-    nodes.append(node)
-
-# 4. Build the Index using your nodes and the strict kg_extractor
-index = PropertyGraphIndex(
-    nodes=nodes,
-    embed_model=OpenAIEmbedding(),
-    kg_extractors=[kg_extractor],
-    show_progress=True
-)
-```
-
-LlamaIndex automatically merges nodes that have the exact same name. If "Tesla" appears in Chunk A and Chunk B, it becomes one single node.
+* Step 1: String Normalization: (Zero RAM) Lowercase everything, remove "Inc," "Ltd," and extra spaces.
+* Step 2: Semantic Blocking: Use a tiny local model like `all-MiniLM-L6-v2` (only uses \~200MB RAM) to group similar-sounding names together into "blocks."
+* Step 3: Targeted Merging: Only use an LLM to compare nodes _within_ a block if they have a similarity score between 0.7 and 0.9.
+* Step 4: "SAME\_AS" Edges: Instead of physically merging nodes (which is hard to undo), many Redditors suggest just creating a `SAME_AS` edge between them. During retrieval, your code treats those two nodes as one.
 
 ## **Embedding**
 
