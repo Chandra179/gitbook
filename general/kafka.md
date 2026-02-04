@@ -65,8 +65,72 @@ A single ordered log within a topic. Each partition is immutable and append-only
 * Subscriber: Application that reads messages from Kafka topics.
 * group.id: Identifies a consumer group. Consumers in the same group share the partitions of a topic.
 * \_\_consumer\_offsets: An internal topic where committed offsets (read positions) are stored.
-* Offset Commit: The act of saving the last processed record’s position to ensure reliable recovery. All consumers in the same Group ID share the same bookmark for a partition.
+*   Offset Commit: The act of saving the last processed record’s position to ensure reliable recovery. All consumers in the same Group ID share the same bookmark for a partition.<br>
+
+    ```
+    Messages in Kafka topic: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+    Consumer processes: 0, 1, 2, 3, 4
+    Consumer commits: offset 5 (meaning "I'm done up to 4")
+    Consumer crashes 💥
+
+    On restart:
+    - WITH commits: Starts from offset 5 → [5, 6, 7, 8, 9]
+    - WITHOUT commits: Starts from beginning → [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] (duplicates!)
+    ```
 * Consumer Lag: The difference between the latest partition offset and the consumer’s committed offset — a measure of how "behind" a consumer is.
+*   Consumer group<br>
+
+    **Without consumer group (each instance gets ALL messages):**
+
+    go
+
+    ```go
+    // Service Instance 1
+    client1, _ := kgo.NewClient(
+        kgo.SeedBrokers(brokers...),
+        kgo.ConsumeTopics("orders"),
+        // NO consumer group
+    )
+
+    // Service Instance 2  
+    client2, _ := kgo.NewClient(
+        kgo.SeedBrokers(brokers...),
+        kgo.ConsumeTopics("orders"),
+        // NO consumer group
+    )
+
+    // Result: BOTH instances receive ALL messages from "orders" topic
+    // Message 1 → Instance 1 ✅
+    // Message 1 → Instance 2 ✅ (duplicate!)
+    // Message 2 → Instance 1 ✅
+    // Message 2 → Instance 2 ✅ (duplicate!)
+    ```
+
+    **With consumer group (partitions are distributed):**
+
+    go
+
+    ```go
+    // Service Instance 1
+    client1, _ := kgo.NewClient(
+        kgo.SeedBrokers(brokers...),
+        kgo.ConsumeTopics("orders"),
+        kgo.ConsumerGroup("order-processor-group"),  // ← Same group
+    )
+
+    // Service Instance 2
+    client2, _ := kgo.NewClient(
+        kgo.SeedBrokers(brokers...),
+        kgo.ConsumeTopics("orders"),
+        kgo.ConsumerGroup("order-processor-group"),  // ← Same group
+    )
+
+    // Result: Kafka splits partitions between instances
+    // Instance 1 gets: Partition 0, Partition 1
+    // Instance 2 gets: Partition 2, Partition 3
+    // Each message goes to ONLY ONE instance ✅
+    ```
 * If you have 1 partition and 2 consumers in the same group, Kafka gives the partition to Consumer A and leaves Consumer B idle. A single partition is only ever assigned to one consumer at a time
 * idempotent consumer, atomic transactions
 
