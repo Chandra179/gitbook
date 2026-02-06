@@ -14,6 +14,7 @@ class Router {
 
     handleRoute() {
         let hash = window.location.hash.slice(1) || 'README';
+        console.log('[DIAGNOSTIC] handleRoute called, raw hash:', window.location.hash);
 
         let anchor = '';
         if (hash.includes('#')) {
@@ -23,6 +24,7 @@ class Router {
         }
 
         this.currentPage = hash;
+        console.log('[DIAGNOSTIC] handleRoute: currentPage set to:', this.currentPage);
 
         const standaloneItem = this.navigationData.find(
             item => item.standalone && item.slug === hash

@@ -76,12 +76,7 @@ const navigationData = [
     },
     {
         name: 'Web Intelligence',
-        slug: 'deep-research',
-        standalone: true
-    },
-    {
-        name: 'Knowledge Graph',
-        slug: 'knowledge-graph',
+        slug: 'web-intelligence',
         standalone: true
     },
 ];

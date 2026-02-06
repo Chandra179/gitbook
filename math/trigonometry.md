@@ -188,7 +188,7 @@ These functions are the "flipped" versions of the primary ones:
 * Secant: $$\sec(\theta) = \frac{1}{x}$$ (where $$x \neq 0$$)
 * Cotangent: $$\cot(\theta) = \frac{x}{y}$$ (where $$y \neq 0$$)
 
-<figure><img src="../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/degrees_and_radian.png" alt=""><figcaption></figcaption></figure>
 
 <figure><img src="../.gitbook/assets/special_value_trigonometric_func.png" alt=""><figcaption></figcaption></figure>
 

@@ -53,10 +53,12 @@ function portfolioApp() {
         },
 
         async loadContent(category, page, anchor) {
+            console.log('[DIAGNOSTIC] loadContent called:', { category, page, anchor });
             this.tocGenerator.clear();
             this.loading = true;
             await this.contentLoader.loadContent(category, page, anchor);
             this.loading = false;
+            console.log('[DIAGNOSTIC] content property accessed:', typeof this.content);
         },
 
         postRenderActions(anchor) {
@@ -91,13 +93,19 @@ function portfolioApp() {
 
         // NEW: Navigate to folder (loads folder's README.md)
         navigateToFolder(category, folder) {
-            window.location.hash = `${category}/${folder}`;
+            const hash = `${category}/${folder}`;
+            console.log('[DIAGNOSTIC] navigateToFolder: Setting hash to', hash);
+            window.location.hash = hash;
             this.expandedFolders[`${category}/${folder}`] = true;
+            console.log('[DIAGNOSTIC] navigateToFolder: Router currentPage =', this.router.getCurrentPage());
         },
 
         // NEW: Navigate to nested page
         navigateToNestedPage(category, folder, page) {
-            window.location.hash = `${category}/${folder}/${page}`;
+            const hash = `${category}/${folder}/${page}`;
+            console.log('[DIAGNOSTIC] navigateToNestedPage: Setting hash to', hash);
+            window.location.hash = hash;
+            console.log('[DIAGNOSTIC] navigateToNestedPage: Router currentPage =', this.router.getCurrentPage());
         },
 
         isPageActive(category, page) {
