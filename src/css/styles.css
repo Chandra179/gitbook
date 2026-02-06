@@ -3,7 +3,6 @@
 /* Import modular stylesheets in order of specificity */
 @import url('./base.css');
 @import url('./prose.css');
-@import url('./components.css');
 @import url('./timeline.css');
 @import url('./math.css');
 
@@ -11,7 +10,7 @@
 Organization:
 1. base.css - Global settings, smooth scrolling, loader
 2. prose.css - All markdown/content styling
-3. components.css - UI components (nav, TOC, search, tabs)
+3. base.css - UI components (nav, TOC, search, tabs)
 4. timeline.css - Timeline list styling
 5. math.css - KaTeX math rendering styles
 
