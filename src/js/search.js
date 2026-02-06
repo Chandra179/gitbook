@@ -82,9 +82,7 @@ class Search {
 
                 // Start new section
                 const title = headerMatch[2];
-                const anchor = title.toLowerCase()
-                    .replace(/[^a-z0-9]+/g, '-')
-                    .replace(/(^-|-$)/g, '');
+                const anchor = generateSlug(title);
                 currentSection = {
                     title: title,
                     content: '',

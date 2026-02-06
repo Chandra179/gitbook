@@ -332,6 +332,9 @@
 
     <!-- CRITICAL: Load JavaScript modules in correct order -->
     
+    <!-- 0. Load utilities first (used by other modules) -->
+    <script src="./js/utils.js"></script>
+    
     <!-- 1. Load module classes first (they define classes used by app.js) -->
     <script src="./js/router.js"></script>
     <script src="./js/search.js"></script>

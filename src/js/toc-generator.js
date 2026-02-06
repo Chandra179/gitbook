@@ -13,10 +13,7 @@ class TOCGenerator {
 
         headers.forEach(header => {
             if (!header.id) {
-                const id = header.textContent
-                    .toLowerCase()
-                    .replace(/[^a-z0-9]+/g, '-')
-                    .replace(/(^-|-$)/g, '');
+                const id = generateSlug(header.textContent);
                 header.id = id;
             }
         });
