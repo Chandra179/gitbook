@@ -33,6 +33,7 @@ const navigationData = [
         slug: 'golang',
         pages: [
             { name: 'Compiler', slug: 'compiler' },
+            { name: 'Garbage Collector', slug: 'garbage-collector' },
             { name: 'Goroutine', slug: 'goroutine' },
             { name: 'Strings', slug: 'strings' }
         ]
@@ -74,7 +75,7 @@ const navigationData = [
         ]
     },
     {
-        name: 'Deep Research',
+        name: 'Web Intelligence',
         slug: 'deep-research',
         standalone: true
     },
