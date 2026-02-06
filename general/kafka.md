@@ -79,11 +79,7 @@ A single ordered log within a topic. Each partition is immutable and append-only
     - WITHOUT commits: Starts from beginning → [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] (duplicates!)
     ```
 * Consumer Lag: The difference between the latest partition offset and the consumer’s committed offset — a measure of how "behind" a consumer is.
-*   Consumer group<br>
-
-    **Without consumer group (each instance gets ALL messages):**
-
-    go
+*   **Without consumer group (each instance gets ALL messages):**
 
     ```go
     // Service Instance 1
@@ -106,10 +102,7 @@ A single ordered log within a topic. Each partition is immutable and append-only
     // Message 2 → Instance 1 ✅
     // Message 2 → Instance 2 ✅ (duplicate!)
     ```
-
-    **With consumer group (partitions are distributed):**
-
-    go
+*   **With consumer group (partitions are distributed):**
 
     ```go
     // Service Instance 1
