@@ -70,16 +70,20 @@ Generates table of contents from page headers with smooth scrolling.
 2. Add the page to `navigation-data.js`:
 
 ```javascript
-const navigationData = {
-    categories: [
-        {
-            title: 'Your Category',
-            items: [
-                { title: 'Your Page', path: 'your-page' }
-            ]
-        }
-    ]
-};
+const navigationData = [
+    {
+        name: 'Introduction',
+        slug: 'README',
+        standalone: true
+    },
+    {
+        name: 'Your Category',
+        slug: 'your-category',
+        pages: [
+            { name: 'Your Page', slug: 'your-page' }
+        ]
+    }
+];
 ```
 
 3. Navigate to `#your-page` to view it
