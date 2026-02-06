@@ -4,7 +4,8 @@ function portfolioApp() {
         loading: true,
         isSearchOpen: false,
         expandedSections: {},
-        expandedFolders: {}, // NEW: Track expanded nested folders
+        expandedFolders: {},
+        content: '',
 
         router: null,
         search: null,
@@ -53,12 +54,10 @@ function portfolioApp() {
         },
 
         async loadContent(category, page, anchor) {
-            console.log('[DIAGNOSTIC] loadContent called:', { category, page, anchor });
             this.tocGenerator.clear();
             this.loading = true;
             await this.contentLoader.loadContent(category, page, anchor);
             this.loading = false;
-            console.log('[DIAGNOSTIC] content property accessed:', typeof this.content);
         },
 
         postRenderActions(anchor) {
@@ -91,33 +90,27 @@ function portfolioApp() {
             this.router.navigateToPage(category, page);
         },
 
-        // NEW: Navigate to folder (loads folder's README.md)
+        // Navigate to folder (loads folder's README.md)
         navigateToFolder(category, folder) {
-            const hash = `${category}/${folder}`;
-            console.log('[DIAGNOSTIC] navigateToFolder: Setting hash to', hash);
-            window.location.hash = hash;
+            this.router.navigate(`${category}/${folder}`);
             this.expandedFolders[`${category}/${folder}`] = true;
-            console.log('[DIAGNOSTIC] navigateToFolder: Router currentPage =', this.router.getCurrentPage());
         },
 
-        // NEW: Navigate to nested page
+        // Navigate to nested page
         navigateToNestedPage(category, folder, page) {
-            const hash = `${category}/${folder}/${page}`;
-            console.log('[DIAGNOSTIC] navigateToNestedPage: Setting hash to', hash);
-            window.location.hash = hash;
-            console.log('[DIAGNOSTIC] navigateToNestedPage: Router currentPage =', this.router.getCurrentPage());
+            this.router.navigate(`${category}/${folder}/${page}`);
         },
 
         isPageActive(category, page) {
             return this.router.isPageActive(category, page);
         },
 
-        // NEW: Check if folder itself is active (showing its README)
+        // Check if folder itself is active (showing its README)
         isFolderActive(category, folder) {
             return this.currentPage === `${category}/${folder}`;
         },
 
-        // NEW: Check if nested page is active
+        // Check if nested page is active
         isNestedPageActive(category, folder, page) {
             return this.currentPage === `${category}/${folder}/${page}`;
         },
@@ -153,7 +146,7 @@ function portfolioApp() {
             return this.expandedSections[slug] || false;
         },
 
-        // NEW: Toggle nested folders
+        // Toggle nested folders
         toggleFolder(category, folder) {
             const key = `${category}/${folder}`;
             this.expandedFolders[key] = !this.expandedFolders[key];

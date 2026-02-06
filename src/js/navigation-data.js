@@ -78,6 +78,6 @@ const navigationData = [
         name: 'Web Intelligence',
         slug: 'web-intelligence',
         standalone: true
-    },
+    }
 ];
 
