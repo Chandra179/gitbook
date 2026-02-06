@@ -1,27 +1,130 @@
-# Experience
+# GitBook Documentation Site
 
-4 years experience in Fintech, distributed system, workflow automation
+A client-side documentation/portfolio site built with vanilla JavaScript, Alpine.js, and Markdown.
 
-### BFI finance
+## Features
 
-* Designed integration with third-party (KYC, OCR, fraud detection, credit scoring, liveness, forgery) APIs with full error‑handling logic (timeouts, error responses, schema changes)
-* Improved loan application system from single to multi-collateral loan architecture, allowing borrowers to combine multiple assets under one financing agreement
-* Securing mobile apps with Token based authentication and RBAC authorization
-* Automated manual loan approval workflows into a data-driven orchestrated system, reducing operational effort and failure rates.
-* Integrated distributed tracing and structured logging for service level (Otel + Datadog) for easier debugging and monitoring
+- **Markdown-based content** - Write content in standard Markdown files
+- **Client-side search** - Full-text search across all content
+- **Table of contents** - Auto-generated TOC from page headers
+- **Math rendering** - KaTeX support for mathematical expressions
+- **Syntax highlighting** - Code blocks with Highlight.js
+- **Responsive design** - Works on desktop and mobile
 
-### M+ Software
+## Architecture
 
-* Integrated multiple payment options to streamline transaction processing and improve system stability
-* Managed ERP version migration to ensure smooth system compatibility and feature continuity
-* Maintained ERP order dashboard and client landing pages to enhance user experience and operational efficiency.
+### Tech Stack
 
-### Project
+- **Vanilla JavaScript** - No build step required
+- **Alpine.js** - Lightweight reactivity framework
+- **Marked.js** - Markdown parsing
+- **KaTeX** - Math rendering
+- **Highlight.js** - Syntax highlighting
+- **Tailwind CSS** - Utility-first styling
 
-* Golang SDK : project template for golang. [https://github.com/Chandra179/go-sdk](https://github.com/Chandra179/go-sdk)
-* Web Intelligence: [https://github.com/Chandra179/bwired](https://github.com/Chandra179/bwired)
-* Daily Helper: [https://github.com/Chandra179/bhelper](https://github.com/Chandra179/bhelper)
+### File Structure
 
-### Tech stack
+```
+src/
+├── index.html          # Main entry point
+├── css/
+│   ├── base.css       # Base styles and components
+│   ├── styles.css     # Custom styles
+│   ├── input.css      # Tailwind input
+│   ├── output.css     # Compiled Tailwind output
+│   ├── prose.css      # Typography styles
+│   ├── math.css       # Math rendering styles
+│   └── timeline.css   # Timeline component styles
+└── js/
+    ├── app.js         # Alpine.js app initialization
+    ├── config.js      # Tailwind configuration
+    ├── utils.js       # Shared utility functions
+    ├── router.js      # Hash-based routing
+    ├── content-loader.js  # Markdown file loading
+    ├── renderer.js    # Post-render processing
+    ├── search.js      # Search indexing and querying
+    ├── toc-generator.js   # Table of contents generation
+    ├── marked-extensions.js  # Custom marked extensions
+    └── navigation-data.js    # Site navigation structure
+```
 
-* Golang, Temporal, Docker, Javascript, Kubernetes, ArgoCD, Redis, RabbitMQ, Nats, GCP, Python
+### Core Components
+
+#### Router (`js/router.js`)
+Handles hash-based navigation. Maps URL hashes to content files.
+
+#### ContentLoader (`js/content-loader.js`)
+Fetches markdown files from the server and converts them to HTML.
+
+#### Search (`js/search.js`)
+Indexes all content pages and provides full-text search functionality.
+
+#### TOCGenerator (`js/toc-generator.js`)
+Generates table of contents from page headers with smooth scrolling.
+
+## Usage
+
+### Adding New Pages
+
+1. Create a new `.md` file in your content directory
+2. Add the page to `navigation-data.js`:
+
+```javascript
+const navigationData = {
+    categories: [
+        {
+            title: 'Your Category',
+            items: [
+                { title: 'Your Page', path: 'your-page' }
+            ]
+        }
+    ]
+};
+```
+
+3. Navigate to `#your-page` to view it
+
+### Content Format
+
+Pages support standard Markdown plus:
+
+- **Math expressions**: `$inline$` or `$$block$$`
+- **Code blocks**: triple backticks with language
+- **Tables**: standard Markdown tables
+- **Callouts**: use blockquotes with emoji
+
+## Development
+
+### Prerequisites
+
+- Any static file server (Python, Node.js, or simply open index.html)
+
+### Running Locally
+
+```bash
+# Using Python
+python -m http.server 8000
+
+# Using Node.js
+npx serve src/
+
+# Then open http://localhost:8000
+```
+
+### Tailwind CSS
+
+The project uses Tailwind CSS. To rebuild styles after changes:
+
+```bash
+npx tailwindcss -i src/css/input.css -o src/css/output.css --watch
+```
+
+## Browser Support
+
+- Chrome/Edge 88+
+- Firefox 85+
+- Safari 14+
+
+## License
+
+[Your License Here]
