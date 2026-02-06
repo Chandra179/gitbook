@@ -3,6 +3,7 @@ function portfolioApp() {
         mobileMenuOpen: false,
         loading: true,
         isSearchOpen: false,
+        searchQuery: '',
         expandedSections: {},
         expandedFolders: {},
         content: '',
