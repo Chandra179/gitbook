@@ -1,3 +1,8 @@
+// App configuration
+const APP_CONFIG = {
+    INITIALIZATION_DELAY_MS: 100
+};
+
 function portfolioApp() {
     return {
         mobileMenuOpen: false,
@@ -75,7 +80,7 @@ function portfolioApp() {
                 } else {
                     window.scrollTo(0, 0);
                 }
-            }, 100);
+            }, APP_CONFIG.INITIALIZATION_DELAY_MS);
         },
 
         navigate(path) {

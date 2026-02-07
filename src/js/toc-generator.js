@@ -1,3 +1,8 @@
+// TOC configuration
+const TOC_CONFIG = {
+    ROOT_MARGIN: '-100px 0px -66%'
+};
+
 class TOCGenerator {
     constructor(contentElementId = 'content', tocElementId = 'toc') {
         this.contentElementId = contentElementId;
@@ -82,7 +87,7 @@ class TOCGenerator {
                     if (activeLink) activeLink.classList.add('active');
                 }
             });
-        }, { rootMargin: '-100px 0px -66%' });
+        }, { rootMargin: TOC_CONFIG.ROOT_MARGIN });
 
         const content = document.getElementById(this.contentElementId);
         if (!content) return;

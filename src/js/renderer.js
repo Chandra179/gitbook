@@ -1,3 +1,8 @@
+// Timeline configuration
+const TIMELINE_CONFIG = {
+    MIN_ITEMS_FOR_GRID: 3
+};
+
 class Renderer {
     constructor(contentElementId = 'content') {
         this.contentElementId = contentElementId;
@@ -59,7 +64,7 @@ class Renderer {
                 /\b(19|20)\d{2}\b/.test(li.textContent)
             );
 
-            if (hasYears && list.children.length >= 3) {
+            if (hasYears && list.children.length >= TIMELINE_CONFIG.MIN_ITEMS_FOR_GRID) {
                 list.classList.add('timeline-list');
             }
         });
