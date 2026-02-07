@@ -9,39 +9,55 @@ class Renderer {
     }
 
     renderMath() {
-        if (typeof renderMathInElement === 'undefined') return;
+        if (typeof renderMathInElement === 'undefined') {
+            console.warn('KaTeX auto-render not loaded - math rendering disabled');
+            return;
+        }
 
         const content = document.getElementById(this.contentElementId);
         if (!content) return;
 
-        // 1. Auto-render delimiters ($$ and $)
-        renderMathInElement(content, {
-            delimiters: [
-                { left: '$$', right: '$$', display: false },
-                { left: '$', right: '$', display: false },
-                { left: '\\[', right: '\\]', display: true },
-                { left: '\\(', right: '\\)', display: false }
-            ],
-            throwOnError: false
-        });
+        try {
+            // 1. Auto-render delimiters ($$ and $)
+            renderMathInElement(content, {
+                delimiters: [
+                    { left: '$$', right: '$$', display: false },
+                    { left: '$', right: '$', display: false },
+                    { left: '\\[', right: '\\]', display: true },
+                    { left: '\\(', right: '\\)', display: false }
+                ],
+                throwOnError: false
+            });
 
-        // 2. Explicitly render elements with class="math"
-        const mathElements = content.querySelectorAll('.math');
-        mathElements.forEach(el => {
-            try {
-                katex.render(el.textContent, el, {
-                    throwOnError: false,
-                    displayMode: false
-                });
-            } catch (e) {
-                console.error('KaTeX rendering error for .math element:', e);
-            }
-        });
+            // 2. Explicitly render elements with class="math"
+            const mathElements = content.querySelectorAll('.math');
+            mathElements.forEach(el => {
+                try {
+                    if (typeof katex !== 'undefined') {
+                        katex.render(el.textContent, el, {
+                            throwOnError: false,
+                            displayMode: false
+                        });
+                    }
+                } catch (e) {
+                    console.error('KaTeX rendering error for .math element:', e);
+                }
+            });
+        } catch (error) {
+            console.error('Error rendering math:', error);
+        }
     }
 
     renderCodeBlocks() {
-        if (typeof hljs !== 'undefined') {
+        if (typeof hljs === 'undefined') {
+            console.warn('Highlight.js not loaded - syntax highlighting disabled');
+            return;
+        }
+
+        try {
             hljs.highlightAll();
+        } catch (error) {
+            console.error('Error highlighting code:', error);
         }
     }
 
