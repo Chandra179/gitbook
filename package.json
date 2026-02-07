@@ -1,20 +1,25 @@
 {
-  "name": "gitbook",
+  "name": "gitbook-docs",
   "version": "1.0.0",
-  "description": "Software engineer 4 years experience in Fintech, distributed system, workflow automation",
-  "main": "index.js",
+  "description": "Client-side documentation site with markdown support",
+  "main": "src/index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build:css": "tailwindcss -i ./src/css/input.css -o ./src/css/output.css --minify"
+    "dev": "npx serve src/",
+    "build:css": "tailwindcss -i ./src/css/input.css -o ./src/css/output.css --minify",
+    "build:css:watch": "tailwindcss -i ./src/css/input.css -o ./src/css/output.css --watch"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Chandra179/gitbook.git"
   },
-  "keywords": [],
+  "keywords": [
+    "documentation",
+    "markdown",
+    "gitbook",
+    "static-site"
+  ],
   "author": "",
-  "license": "ISC",
-  "type": "commonjs",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Chandra179/gitbook/issues"
   },
@@ -23,5 +28,11 @@
     "autoprefixer": "^10.4.22",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.1"
+  },
+  "dependencies": {
+    "alpinejs": "^3.14.8",
+    "highlight.js": "^11.9.0",
+    "katex": "^0.16.9",
+    "marked": "^11.1.1"
   }
 }
