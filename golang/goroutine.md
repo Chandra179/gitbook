@@ -1,134 +1,100 @@
 # Goroutine
 
-## GPM scheduler
+### GPM Scheduler
 
-<figure><img src="../.gitbook/assets/gpm.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="https://2576044272-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F4G3qEfKKNTPjJ3BFGqg8%2Fuploads%2F7GttrHbCyk2Cj3tER1Dv%2Fimage.png?alt=media&#x26;token=cab3a4f2-1346-4c3d-aed9-bec9219dcf0e" alt=""><figcaption><p>Go GPM Architecture</p></figcaption></figure>
 
-* **G (Goroutine)** → the task itself (like a cooking order). You create a goroutine whenever you want to run a function concurrently. Example: `G1`, `G2`, `G3`.
-* **P (Processor)** → the scheduler’s “cooking station.” It decides which goroutine should run on which OS thread. Example: `P1`, `P2`.
-* **M (Machine / OS Thread)** → the chef who executes the task. Example: `M1`, `M2`.
+* **G (Goroutine)** → The task itself. **Physically, a `g` struct in RAM** (heap). It contains a private stack (starting at \~2KB) and a "Program Counter" (a bookmark of the next line of code).
+* **P (Processor)** → The scheduler’s “cooking station.” A logical resource that holds the context for executing Go code.
+* **M (Machine / OS Thread)** → The chef (physical/OS thread) who executes the task.
 
-#### **Work Stealing (Load Balancing):**
+**Work Stealing (Load Balancing)**
 
-* Each P has a Local Run Queue.
-* If P1 runs out of Gs, it doesn't go idle. It checks the Global Run Queue.
-* If that is empty, it attempts to steal half the Gs from P2’s queue.
-* _Result:_ All CPU cores stay saturated efficiently.
+* Each P has a **Local Run Queue** (a list of memory pointers to Goroutines waiting in RAM).
+* If P1 runs out of Gs, it checks the **Global Run Queue**.
+* If empty, it attempts to **steal half** of P2’s local queue.
+* _Result:_ Keeps all CPU cores saturated without expensive OS-level context switches.
 
-#### **Syscall Handoff (Preventing Blocking):**
+**Syscall Handoff (Preventing Blocking)**
 
-* If a Goroutine (G1) makes a blocking syscall (e.g., file I/O), the thread (M1) blocks.
-* The Scheduler detaches P1 from M1 and moves P1 to a new (or sleeping) thread (M2).
-* P1 continues executing other goroutines (G2, G3).
-* When the syscall finishes, M1 tries to re-acquire a P.
-* _Result:_ Thousands of syscalls don’t starve your CPU.
-
-## Channels in Go <a href="#id-7e3b" id="id-7e3b"></a>
-
-#### **Unbuffered channel** <a href="#bb03" id="bb03"></a>
-
-* Send (`ch <- v`) blocks until another goroutine is ready to receive (`<-ch`)
-* Receive blocks until another goroutine sends
-* The sender and receiver synchronize at the channel
-
-```go
-ch := make(chan string) // unbuffered
-ch <- "apple"           // ❌ blocks immediately (no receiver)
-```
-
-```go
-ch := make(chan string)
-
-go func() {
-    msg := <-ch
-    fmt.Println("received:", msg)
-}()
-
-ch <- "apple" // blocks until receiver is ready
-```
-
-#### **Buffered channel** <a href="#id-63b6" id="id-63b6"></a>
-
-* Created with `make(chan T, n)`
-* Capacity `n` allows sends to succeed without a receiver until the buffer is full
-* Receiving only blocks when buffer is empty
-
-```go
-func main() {
-    ch := make(chan string, 2)
-
-    ch <- "apple"   
-    ch <- "banana"  
-    ch <- "cherry"  // blocks (buffer full)
-}
-```
-
-```go
-ch := make(chan string, 2)
-
-go func() {
-    for v := range ch {
-        fmt.Println("received:", v)
-    }
-}()
-
-ch <- "apple"
-ch <- "banana"
-ch <- "cherry" // waits until receiver drains a slot
-```
+* If **G1** makes a blocking syscall (e.g., file I/O), the thread **M1** blocks.
+* The Scheduler detaches **P1** from **M1** and moves it to a new/idle thread (**M2**).
+* **P1** continues executing other queued goroutines (**G2, G3**) on the new thread.
+* _Result:_ Thousands of blocking syscalls won't starve your CPU.
 
 ***
 
-## What happens to blocking channel operation? <a href="#id-6ffe" id="id-6ffe"></a>
+### Channels
 
-* The goroutine is **suspended** — removed from the run queue.
-* It is placed in the channel’s **send queue (`sendq`)** or **receive queue (`recvq`)**.
-* Once the corresponding send or receive happens, the goroutine is **resumed**.
-
-**Note:** No extra data is stored for the goroutine; only a reference in the channel queue.
-
-<figure><img src="https://miro.medium.com/v2/resize:fit:1094/1*sJ9y0EHlDqpmj7gnWrnL3w.png" alt="" height="436" width="700"><figcaption></figcaption></figure>
+* **Unbuffered:** `make(chan T)`. No storage. Send/Receive must synchronize (rendezvous).
+* **Buffered:** `make(chan T, n)`. Has a "waiting room" of size `n`. Sends only block when the buffer is full.
 
 #### **Channel Internals (`hchan`)**
 
-Each channel keeps:
+When you create a channel, Go allocates an `hchan` struct in **RAM**. This is the "manager" that coordinates goroutines.
 
-* `buf` → circular buffer (holds values for buffered channels)
-* `sendq` → queue of goroutines waiting to send
-* `recvq` → queue of goroutines waiting to receive
-* `lock` → mutex for concurrent access
+Each channel maintains:
 
-Summar&#x79;**:**
+* **`buf`** → Circular buffer (the actual RAM storage for buffered values).
+* **`sendq` & `recvq`** → Linked lists in RAM storing **pointers** to blocked goroutines.
+* **`lock`** → A mutex ensuring thread-safe access to the channel.
 
-* **Buffered channels:** store values in `buf` until full; blocked senders go into `sendq`
-* **Unbuffered channels:** no buffer; every send waits for a receive (and vice versa)
+#### **Lifecycle of a Blocked Operation**
 
-## Closures in goroutine <a href="#fec9" id="fec9"></a>
+When a Goroutine (G) hits a blocking operation (e.g., receiving from an empty channel):
 
-goroutines inside loops capturing the loop variable
+1. **Suspension:** The G is removed from the **P's Local Run Queue**. Status changes from `running` to `waiting`.
+2. **Enqueued:** A pointer to this G is placed in the channel’s `recvq` or `sendq`.
+3. **RAM Persistence:** The G’s stack and variables stay in RAM. **No extra data is created**; the G is simply "parked" while the CPU moves on to other work.
+4. **Resumption:** When a matching send/receive occurs, the scheduler moves the G pointer back to a **Local Run Queue** to resume.
+
+<figure><img src="https://miro.medium.com/v2/resize:fit:1094/1*sJ9y0EHlDqpmj7gnWrnL3w.png" alt="" height="436" width="700"><figcaption><p>Channel Memory Layout</p></figcaption></figure>
+
+## Closures <a href="#fec9" id="fec9"></a>
+
+**The Scheduling Delay**
+
+A common point of confusion is why goroutines don't execute immediately. When you call `go func()`, you aren't running the function "now"—you are giving a task to the Go Scheduler.
+
+The loop is running in the `main` goroutine, which already "owns" an OS Thread (M). Because the loop is extremely fast and doesn't "block" (wait for I/O), the computer prefers to finish the loop instructions before switching to the new tasks. Consequently, the new goroutines sit in the Local Run Queue while the loop finishes.
+
+**In Go 1.21 and older**
+
+The closure captures the reference (memory address) of the loop variable `n`. Since the `main` goroutine usually finishes the loop before the scheduler picks up the new goroutines, they all wake up, look at the same memory address, and see the final value of the loop.
 
 ```go
 numbers := []int{1, 2, 3}
 
 for _, n := range numbers {
+    // Each G holds a pointer to the SAME 'n'
     go func() {
-        fmt.Println(n)
+        fmt.Println(n) 
     }()
 }
-// Might print 3, 3, 3 (loop completes before goroutines run)
+// Likely output: 3, 3, 3
 ```
 
-The closure captures the loop variable itself, not its value at each iteration. This means that the loop may have already completed before the goroutine has a chance to execute, causing the goroutine to read the final value of the loop variable. To fix this, you can pass the variable as an argument:
+**In Go 1.22 and newer**
+
+The Go team changed the language semantics so that the loop variable `n` is instance-per-iteration. Now, each pass through the loop creates a brand new memory address for `n`. Even if the goroutines are delayed in the queue, they each point to a unique "snapshot" of the value.
+
+* Output: `1, 2, 3` (in random order).
+
+***
+
+**The Fix**
 
 ```go
 for _, n := range numbers {
+    // By passing 'n' as 'val', we copy the current value immediately
     go func(val int) {
         fmt.Println(val)
-    }(n) // Passing 'n' by value
+    }(n) 
 }
 ```
 
-Since each goroutine has its own unique copy of the value, it doesn’t matter when the goroutine actually runs. It will always use the value that was passed to it, not the final value of the loop variable.
+1. The value is "captured" the moment the `go` statement is executed, not when the goroutine eventually runs.
+2. Since each goroutine has its own unique copy of the value on its own stack, it doesn’t matter if the `main` loop has moved on or finished.
 
 ## Select Statement
 
