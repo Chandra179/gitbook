@@ -13,34 +13,54 @@ class Router {
     }
 
     handleRoute() {
-        let hash = window.location.hash.slice(1) || 'README';
+        try {
+            let hash = window.location.hash.slice(1) || 'README';
 
-        let anchor = '';
-        if (hash.includes('#')) {
-            const parts = hash.split('#');
-            hash = parts[0];
-            anchor = parts[1];
-        }
+            // Validate hash format - only allow alphanumeric, hyphens, underscores, and slashes
+            if (!/^[a-zA-Z0-9-_/]*$/.test(hash)) {
+                console.warn('Invalid hash format:', hash);
+                hash = 'README';
+            }
 
-        this.currentPage = hash;
+            // Sanitize hash to prevent directory traversal
+            hash = hash.replace(/\.\./g, '');
 
-        const standaloneItem = this.navigationData.find(
-            item => item.standalone && item.slug === hash
-        );
+            let anchor = '';
+            if (hash.includes('#')) {
+                const parts = hash.split('#');
+                hash = parts[0];
+                anchor = parts[1];
+            }
 
-        if (standaloneItem) {
+            this.currentPage = hash;
+
+            const standaloneItem = this.navigationData.find(
+                item => item.standalone && item.slug === hash
+            );
+
+            if (standaloneItem) {
+                this.currentCategory = null;
+                this.updateBreadcrumb(hash, null);
+            } else {
+                // Parse category and page from hash (format: category/subfolder/page)
+                const parts = hash.split('/');
+                this.currentCategory = parts[0];
+                const page = parts.slice(1).join('/') || null; // Join remaining parts
+                this.updateBreadcrumb(this.currentCategory, page);
+            }
+
+            if (this.onRouteChange) {
+                this.onRouteChange(this.currentCategory || hash, anchor);
+            }
+        } catch (error) {
+            console.error('Router error:', error);
+            // Fallback to README on error
+            this.currentPage = 'README';
             this.currentCategory = null;
-            this.updateBreadcrumb(hash, null);
-        } else {
-            // Parse category and page from hash (format: category/subfolder/page)
-            const parts = hash.split('/');
-            this.currentCategory = parts[0];
-            const page = parts.slice(1).join('/') || null; // Join remaining parts
-            this.updateBreadcrumb(this.currentCategory, page);
-        }
-
-        if (this.onRouteChange) {
-            this.onRouteChange(this.currentCategory || hash, anchor);
+            this.breadcrumb = 'README';
+            if (this.onRouteChange) {
+                this.onRouteChange('README', '');
+            }
         }
     }
 
