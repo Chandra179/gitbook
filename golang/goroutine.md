@@ -26,8 +26,49 @@
 
 ### Channels
 
-* **Unbuffered:** `make(chan T)`. No storage. Send/Receive must synchronize (rendezvous).
-* **Buffered:** `make(chan T, n)`. Has a "waiting room" of size `n`. Sends only block when the buffer is full.
+**Unbuffered:** `make(chan T)`. No storage. Send/Receive must synchronize (rendezvous).
+
+```go
+ch := make(chan string) // unbuffered
+ch <- "apple"           // ❌ blocks immediately (no receiver)
+```
+
+```go
+ch := make(chan string)
+
+go func() {
+    msg := <-ch
+    fmt.Println("received:", msg)
+}()
+
+ch <- "apple" // blocks until receiver is ready
+```
+
+**Buffered:** `make(chan T, n)`. Has a "waiting room" of size `n`. Sends only block when the buffer is full.
+
+```go
+func main() {
+    ch := make(chan string, 2)
+
+    ch <- "apple"   
+    ch <- "banana"  
+    ch <- "cherry"  // blocks (buffer full)
+}
+```
+
+```go
+ch := make(chan string, 2)
+
+go func() {
+    for v := range ch {
+        fmt.Println("received:", v)
+    }
+}()
+
+ch <- "apple"
+ch <- "banana"
+ch <- "cherry" // waits until receiver drains a slot
+```
 
 #### **Channel Internals (`hchan`)**
 
