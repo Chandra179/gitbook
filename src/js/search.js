@@ -1,3 +1,13 @@
+// Search configuration constants
+const SEARCH_CONFIG = {
+    MAX_QUERY_LENGTH: 100,
+    MAX_RESULTS: 10,
+    SNIPPET_LENGTH: 100,
+    SNIPPET_CONTEXT_BEFORE: 40,
+    SNIPPET_CONTEXT_AFTER: 60,
+    DEBOUNCE_MS: 300
+};
+
 class Search {
     constructor(navigationData) {
         this.navigationData = navigationData;
@@ -126,7 +136,7 @@ class Search {
             return [];
         }
 
-        if (this.searchQuery.length > 100) {
+        if (this.searchQuery.length > SEARCH_CONFIG.MAX_QUERY_LENGTH) {
             this.searchResults = [];
             return [];
         }
@@ -140,17 +150,17 @@ class Search {
         this.searchResults = results.map(item => {
             const snippet = this.getSnippet(item.plainText, lowerQuery);
             return { ...item, snippet };
-        }).slice(0, 10);
+        }).slice(0, SEARCH_CONFIG.MAX_RESULTS);
 
         return this.searchResults;
     }
 
     getSnippet(text, query) {
         const index = text.toLowerCase().indexOf(query);
-        if (index === -1) return text.slice(0, 100) + '...';
+        if (index === -1) return text.slice(0, SEARCH_CONFIG.SNIPPET_LENGTH) + '...';
 
-        const start = Math.max(0, index - 40);
-        const end = Math.min(text.length, index + query.length + 60);
+        const start = Math.max(0, index - SEARCH_CONFIG.SNIPPET_CONTEXT_BEFORE);
+        const end = Math.min(text.length, index + query.length + SEARCH_CONFIG.SNIPPET_CONTEXT_AFTER);
 
         return (start > 0 ? '...' : '') +
             text.slice(start, end) +
