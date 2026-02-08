@@ -2,67 +2,41 @@
 
 ### **Big Picture**
 
-**Cluster**: The entire server infrastructure; a group of Brokers working together to provide high availability and scalability.
+**Cluster**
 
-**Broker**: A physical server or container within the cluster that stores and manages data. A cluster usually has multiple brokers so if one fails, the system stays online.
+The entire server infrastructure; a group of Brokers working together to provide high availability and scalability.
 
-**Topic**: A logical name or "folder" where you send and categorize data (e.g., `user-signups` or `payments`).
+**Broker**
 
-**Partition**: The actual physical "slice" of a Topic. Partitions are distributed across different Brokers to allow multiple producers and consumers to work at the same time.
+A physical server or container within the cluster that stores and manages data. Each broker handles some partition and either leader or follower
 
-**Offset**: A unique, sequential "line number" or bookmark assigned to every message inside a Partition.
+**Topic**
 
-**Producer**: Your application that publishes data to a Topic. It uses a Balancer (like `LeastBytes` or `Hash`) to decide which partition the message lands in.
+A logical name or "folder" where you send and categorize data (e.g., `user-signups` or `payments`).
 
-**Consumer**: Your application that reads data from a Topic.
+**Partition**
 
-**Consumer Group ID**: The "identity" or team name for your consumers. It determines how messages are shared:
+The actual physical "slice" of a Topic. Partitions are distributed across different Brokers to allow multiple producers and consumers to work at the same time.
 
-* Unique Group ID: Every group acts as a separate department, receiving its own complete copy of every message (Fan-out).
-* A consumer group can subscribe to one topic today and a completely different one tomorrow.
-* A single Group ID can actually subscribe to multiple topics simultaneous
-* If you use the same Group ID for two completely different applications (e.g., an email service and a billing service) that happen to read from the same topic, they will fight each other for messages. Kafka will try to load-balance the partitions between them, and each message will only go to one of those services.
+**Offset**
 
-**Partition Max (Scale)**: The number of partitions per topic limits your maximum parallelism. If a topic has 3 partitions, only 3 consumers in the same Group ID can work simultaneously; any extra consumers will sit idle.
+A unique, sequential "line number" or bookmark assigned to every message inside a Partition.
 
-### **Cluster**
+**Producer**
 
-A set of Kafka brokers working together.
+Your application that publishes data to a Topic. It uses a Balancer (like `LeastBytes` or `Hash`) to decide which partition the message lands in.
 
-### **Broker**
+How do we know which Partition it goes to?\
+Key-based hash → ensures messages with the same key always land in the same partition.\
+Round-robin → spreads messages evenly across partitions.\
+Custom partitioner → application-defined placement logic.
 
-A Kafka server that stores data and serves client requests. A cluster typically has multiple brokers. Each broker handles some partitions and can be either a leader or follower for them.
+**Idempotent** **Producer**
 
-### **Controller**
+Guarantees exactly-once semantics for writes, ensuring retries won’t create duplicates.
 
-One broker in the cluster acts as the controller. It manages partition leadership, reassignments, and handles broker failures.
+**Consumer**
 
-### **Topics**
-
-A logical stream of data identified by a name. Topics are divided into partitions for scalability and parallelism.
-
-### **Producers**
-
-It writes messages into Kafka topics.
-
-Idempotent Producer: Guarantees exactly-once semantics for writes, ensuring retries won’t create duplicates.
-
-How do we know which Partition it goes to?
-
-* Key-based hash → ensures messages with the same key always land in the same partition.
-* Round-robin → spreads messages evenly across partitions.
-* Custom partitioner → application-defined placement logic.
-
-### **Partition**
-
-A single ordered log within a topic. Each partition is immutable and append-only.&#x20;
-
-* These partitions are spread across the different brokers in the cluster. This is how Kafka handles more data than a single server's hard drive can hold.
-* Because a topic is split into partitions, multiple consumers can read from different brokers at the same time.
-
-#### **Consumers**
-
-* Subscriber: Application that reads messages from Kafka topics.
 * group.id: Identifies a consumer group. Consumers in the same group share the partitions of a topic.
 * \_\_consumer\_offsets: An internal topic where committed offsets (read positions) are stored.
 *   Offset Commit: The act of saving the last processed record’s position to ensure reliable recovery. All consumers in the same Group ID share the same bookmark for a partition.<br>
@@ -127,7 +101,7 @@ A single ordered log within a topic. Each partition is immutable and append-only
 * If you have 1 partition and 2 consumers in the same group, Kafka gives the partition to Consumer A and leaves Consumer B idle. A single partition is only ever assigned to one consumer at a time
 * idempotent consumer, atomic transactions
 
-### Performance&#x20;
+Performance
 
 **Throughput**&#x20;
 
@@ -144,7 +118,5 @@ A single ordered log within a topic. Each partition is immutable and append-only
 * The Producer Bottleneck: When the network or CPU can’t keep up with the data your app is generating.
 * The Partition Bottleneck: When a single partition is overwhelmed by too many messages (often caused by a "Hot Key").
 * The Consumer Bottleneck: The most common clog. This happens when your business logic (database writes, API calls) is slower than the incoming message rate.
-
-The Golden Rule of Kafka Scaling
 
 > If your system hits a bottleneck, do not try to make a single thread faster. Instead, increase Throughput by adding more Partitions and Consumers to process the data in parallel.
