@@ -2,27 +2,23 @@
 
 ### **Big Picture**
 
-**Cluster**
+#### **Cluster**
 
 The entire server infrastructure; a group of Brokers working together to provide high availability and scalability.
 
-**Broker**
+#### **Broker**
 
 A physical server or container within the cluster that stores and manages data. Each broker handles some partition and either leader or follower
 
-**Topic**
+#### **Topic**
 
 A logical name or "folder" where you send and categorize data (e.g., `user-signups` or `payments`).
 
-**Partition**
+#### **Partition**
 
 The actual physical "slice" of a Topic. Partitions are distributed across different Brokers to allow multiple producers and consumers to work at the same time.
 
-**Offset**
-
-A unique, sequential "line number" or bookmark assigned to every message inside a Partition.
-
-**Producer**
+#### **Producer**
 
 Your application that publishes data to a Topic. It uses a Balancer (like `LeastBytes` or `Hash`) to decide which partition the message lands in.
 
@@ -35,7 +31,7 @@ Custom partitioner → application-defined placement logic.
 
 Guarantees exactly-once semantics for writes, ensuring retries won’t create duplicates.
 
-**Consumer**
+#### **Consumer**
 
 * group.id: Identifies a consumer group. Consumers in the same group share the partitions of a topic.
 * \_\_consumer\_offsets: An internal topic where committed offsets (read positions) are stored.
@@ -101,7 +97,7 @@ Guarantees exactly-once semantics for writes, ensuring retries won’t create du
 * If you have 1 partition and 2 consumers in the same group, Kafka gives the partition to Consumer A and leaves Consumer B idle. A single partition is only ever assigned to one consumer at a time
 * idempotent consumer, atomic transactions
 
-Performance
+#### **Performance**
 
 **Throughput**&#x20;
 
