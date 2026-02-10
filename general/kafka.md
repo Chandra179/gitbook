@@ -6,7 +6,10 @@ A group of Brokers working together to provide high availability and scalability
 
 ### **Broker**
 
-A physical server or container within the cluster that stores and manages data. Each broker handles some partition and its either leader or follower
+A physical server or container within the cluster that stores and manages data.
+
+* **Partition Leader**: For every partition, one broker is elected as the "Leader." It handles all read and write requests for that partition.
+* **Partition Follower**: Other brokers acting as "Followers" replicate the leader's data. If the leader fails, a follower automatically steps up to become the new leader.
 
 ### **Topic**
 
@@ -23,6 +26,8 @@ We push message with topic tied to it. Lets say the topic have 3 partition how t
 **Idempotent** **Producer**
 
 Guarantees exactly-once semantics for writes, ensuring retries won’t create duplicates.
+
+***
 
 ### **Consumer**
 
@@ -103,16 +108,30 @@ The difference between the latest partition offset and the consumer’s committe
 
 * If you have 1 partition and 2 consumers in the same group, Kafka gives the partition to Consumer A and leaves Consumer B idle. A single partition is only ever assigned to one consumer at a time
 
+#### Group Coordinator&#x20;
+
+Determine which broker to be Group Coordinator using this formula below:
+
+$$Partition = | \text{Hash(group.id)} | \pmod{N}$$
+
+A specific broker responsible for a consumer group.
+
+* It tracks heartbeats from consumers to make sure they are still alive.
+* It triggers a rebalance if a consumer joins or leaves.
+* It stores the committed offsets for that group.
+
+***
+
 ### **Performance**
 
 **Throughput**&#x20;
 
-* How to increase it: Add more Partitions (more lanes) and use larger Batches (bigger trucks).
-* The Metric: Usually measured in Megabytes per second (MB/s) or Messages per second (msg/s).
+* How to increase it: Add more Partitions and use larger Batches
+* Usually measured in Megabytes per second (MB/s) or Messages per second (msg/s).
 
 **Latency**
 
-* End-to-End Latency: The sum of (Producer Batching Time) + (Network Trip) + (Broker Disk Write) + (Consumer Processing Time).
+* The sum of (Producer Batching Time) + (Network Trip) + (Broker Disk Write) + (Consumer Processing Time).
 * The Trade-off: Reducing latency (making it "Real-Time") often requires lowering your batch sizes, which can reduce your overall maximum throughput.
 
 **Bottlenecks**
