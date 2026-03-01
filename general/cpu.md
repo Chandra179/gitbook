@@ -14,8 +14,6 @@ This component sits between the CPU and RAM. It "sees" the address on the bus, f
 
 ***
 
-The CPU doesn't "decide" where things go on its own; it follows three main guides:
-
 ### **The Instruction Set**
 
 When a programmer writes code, it is compiled into machine code. An instruction might look like this in assembly:

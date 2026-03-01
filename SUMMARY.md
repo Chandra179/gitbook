@@ -8,7 +8,6 @@
   * [Database](general/database.md)
   * [Kafka](general/kafka.md)
   * [Oauth2 & Oidc](general/oauth2-and-oidc.md)
-  * [OTA](general/ota.md)
 * [Golang](golang/README.md)
   * [Compiler](golang/compiler.md)
   * [Garbage Collector](golang/garbage-collector.md)
