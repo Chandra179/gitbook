@@ -1,6 +1,6 @@
 # AI
 
-#### Fundamentals
+### Fundamentals
 
 * Single Perceptron
 * Multilayer Perceptron (MLP)
