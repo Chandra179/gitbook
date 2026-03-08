@@ -10,7 +10,6 @@
   * [Oauth2 & Oidc](general/oauth2-and-oidc.md)
 * [Golang](golang/README.md)
   * [Compiler](golang/compiler.md)
-  * [Garbage Collector](golang/garbage-collector.md)
   * [Goroutine](golang/goroutine.md)
   * [Strings](golang/strings.md)
 * [Web Intelligence](web-intelligence.md)

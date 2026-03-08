@@ -19,7 +19,6 @@
 ### Project
 
 * Golang SDK : project template for golang. [https://github.com/Chandra179/go-sdk](https://github.com/Chandra179/go-sdk)
-* Web Intelligence: [https://github.com/Chandra179/bwired](https://github.com/Chandra179/bwired)
 * Daily Helper: [https://github.com/Chandra179/bhelper](https://github.com/Chandra179/bhelper)
 
 ### Tech stack
