@@ -4,9 +4,9 @@
 
 ### BFI finance
 
-* Designed integration with third-party (KYC, OCR, fraud detection, credit scoring, liveness, forgery) APIs with full error‑handling logic (timeouts, error responses, schema changes)
+* Designed API integration architecture with third-party (KYC, OCR, fraud detection, credit scoring, liveness, forgery) ensuring reliability and fault tolerance
 * Improved loan application system from single to multi-collateral loan architecture, allowing borrowers to combine multiple assets under one financing agreement
-* Securing mobile apps with Token based authentication and RBAC authorization
+* Designed mobile apps authentication & authorization using Token and RBAC authorization
 * Automated manual loan approval workflows into a data-driven orchestrated system, reducing operational effort and failure rates.
 * Integrated distributed tracing and structured logging for service level (Otel + Datadog) for easier debugging and monitoring
 
@@ -18,8 +18,7 @@
 
 ### Project
 
-* Golang SDK : project template for golang. [https://github.com/Chandra179/go-sdk](https://github.com/Chandra179/go-sdk)
-* Daily Helper: [https://github.com/Chandra179/bhelper](https://github.com/Chandra179/bhelper)
+* Project template for golang. [https://github.com/Chandra179/go-sdk](https://github.com/Chandra179/go-sdk)
 
 ### Tech stack
 
