@@ -115,8 +115,5 @@ If you are using the Browserless Docker image, you can pass environment variable
 | `PREBOOT_CHROME`          | `false`               | Don't keep a browser idling in the background.                         |
 | `EXIT_ON_HEALTH_FAILURE`  | `true`                | Kills the container if RAM hangs, allowing Docker to restart it fresh. |
 
-### Architecture
 
-Use `net/http` + `PuerkitoBio/goquery` (for HTML parsing) first, detect content-type/mime-type
 
-1. Go-Rod or Chromedp is technically "native" Go code controlling an external Chromium process via the DevTools Protocol (CDP)

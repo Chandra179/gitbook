@@ -30,4 +30,5 @@
   * [Distributed Cache](system-design/distributed-cache.md)
   * [Notification System](system-design/notification-system.md)
 * [AI](ai.md)
-* [Headless Browser](headless-browser.md)
+* [Headless Browser](headless-browser/README.md)
+  * [Web Scraper Architecture](headless-browser/web-scraper-architecture.md)
