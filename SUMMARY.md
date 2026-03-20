@@ -32,3 +32,4 @@
 * [AI](ai.md)
 * [Headless Browser](headless-browser/README.md)
   * [Web Scraper Architecture](headless-browser/web-scraper-architecture.md)
+  * [Youtube Extraction](headless-browser/youtube-extraction.md)
