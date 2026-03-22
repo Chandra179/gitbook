@@ -56,13 +56,6 @@ const navigationData = [
         ]
     },
     {
-        name: 'AI',
-        slug: 'ai',
-        pages: [
-            { name: 'AI Agent', slug: 'ai-agents' },
-        ]
-    },
-    {
         name: 'System Design',
         slug: 'system-design',
         pages: [
@@ -72,6 +65,15 @@ const navigationData = [
             { name: 'Rate Limit', slug: 'rate-limit' },
             { name: 'Distributed Task Scheduler', slug: 'distributed-task-scheduler' },
             { name: 'Distributed Cache', slug: 'distributed-cache' },
+        ]
+    },
+    {
+        name: 'Web Scraper',
+        slug: 'web-scraper',
+        pages: [
+            { name: 'Headless Browser', slug: 'headless-browser' },
+            { name: 'Infrastructure', slug: 'infrastructure' },
+            { name: 'Youtube Extraction', slug: 'youtube-extraction' },
         ]
     },
     {
