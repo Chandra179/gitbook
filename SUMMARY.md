@@ -31,7 +31,7 @@
   * [Notification System](system-design/notification-system.md)
 * [AI](ai.md)
 * [Web Scraper](web-scraper/README.md)
-  * [Architecture](web-scraper/architecture.md)
+  * [Untitled](web-scraper/untitled.md)
   * [Youtube Extraction](web-scraper/youtube-extraction.md)
   * [Infrastructure](web-scraper/infrastructure.md)
   * [Headless Browser](web-scraper/headless-browser.md)
