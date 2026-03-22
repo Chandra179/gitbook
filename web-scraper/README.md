@@ -1,4 +1,4 @@
-# Web Scraper Architecture
+# Web Scraper
 
 greenclaw uses a **detect-first, escalate-later** strategy. Before launching a browser, it inspects the content type and attempts the lightest possible extraction method. YouTube URLs bypass the content-type router entirely and use a dedicated extraction path.
 
