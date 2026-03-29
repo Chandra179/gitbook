@@ -1,6 +1,7 @@
 # Table of contents
 
 * [Experience](README.md)
+* [Cognitive Skills](cognitive-skills.md)
 * [General](general/README.md)
   * [CPU](general/cpu.md)
   * [Computing](general/computing.md)
