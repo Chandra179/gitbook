@@ -209,7 +209,7 @@ denominator, $$Q(x)$$, cannot be equal to zero. Division by zero is undefined
 
 $$a^{\frac{m}{n}} = \sqrt[n]{a^m} = (\sqrt[n]{a})^m$$
 
-$$8^{\frac{2}{3}} =$$$$(\sqrt[3]{8})^2$$ = $$2^2$$ = $$4$$
+$$8^{\frac{2}{3}} =(\sqrt[3]{8})^2$$ = $$2^2$$ = $$4$$
 
 ### Equations
 
@@ -882,5 +882,3 @@ Where $$e$$ (Euler's number) is approximately $$2.71828.6$$
 Because it is the inverse of the exponential function $$e^x$$, the relationship is:
 
 $$e^y = x \iff \ln(x) = y$$
-
-##

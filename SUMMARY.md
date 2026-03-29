@@ -17,6 +17,7 @@
 * [P2P Chat](p2p-chat.md)
 * [ReactJS](reactjs.md)
 * [Math](math/README.md)
+  * [Summary](math/summary.md)
   * [Precalculus](math/precalculus/README.md)
     * [Summary](math/precalculus/summary.md)
   * [Trigonometry](math/trigonometry.md)
