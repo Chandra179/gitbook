@@ -4,11 +4,11 @@
 
 ### BFI finance
 
-* Designed API integration architecture with third-party (KYC, OCR, fraud detection, credit scoring, liveness, forgery) ensuring reliability and fault tolerance
-* Improved loan application system from single to multi-collateral loan architecture, allowing borrowers to combine multiple assets under one financing agreement
-* Designed mobile apps authentication & authorization using Token and RBAC authorization
+* Design API integration architecture with high reliability and fault tolerance
+* Revamp loan application system from single to multi-collateral loan architecture, allowing multiple product under 1 order
+* Design authentication & authorization system (cookie and RBAC)
 * Automated manual loan approval workflows into a data-driven orchestrated system, reducing operational effort and failure rates.
-* Integrated distributed tracing and structured logging for service level (Otel + Datadog) for easier debugging and monitoring
+* Enabling distributed tracing and structured logging for service level (Otel + Datadog) for easier debugging and monitoring
 
 ### M+ Software
 
