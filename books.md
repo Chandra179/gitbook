@@ -45,3 +45,31 @@
 **"Adaptive Systems with Domain-Driven Design, Wardley Mapping, and Team Topologies" by Susanne Kaiser (2025/2026)**: This is the "Grand Unified Theory" book for the titles you mentioned. It connects the strategy (Wardley Mapping), the logic (DDD), and the organization (Team Topologies). It’s the "how-to" manual for the "Architecture for Flow" philosophy you found interesting
 
 **"Software Architecture: The Hard Parts" by Neal Ford & Mark Richards**: If you liked Hohpe's high-level view, this book provides the "low-level" trade-off analysis. It uses a very logical, almost mathematical approach to deciding between microservices and monoliths, data partitioning, and service granularity.
+
+
+
+| **Book Title**                          | **Author**            | **ISBN-10**        |
+| --------------------------------------- | --------------------- | ------------------ |
+| Antifragile                             | Nassim Nicholas Taleb | 0141030308         |
+| The Great Mental Models (Vol. 1)        | Shane Parrish         | 1999449002         |
+| Infinite Powers                         | Steven Strogatz       | 1328479591         |
+| How Emotions Are Made                   | Lisa Feldman Barrett  | 0544133315         |
+| The Visual Display of Quantitative Info | Edward Tufte          | 0961392142         |
+| The Misbehavior of Markets              | Benoit Mandelbrot     | 0465043890         |
+| Lords of Finance                        | Liaquat Ahamed        | 0143116803         |
+| Gödel, Escher, Bach                     | Douglas Hofstadter    | 0465026567         |
+| The Order of Time                       | Carlo Rovelli         | 073521129X         |
+| The Software Architect Elevator         | Gregor Hohpe          | 1492077542         |
+| Architecture for Flow                   | James Urquhart        | 1098150438         |
+| The Selfish Gene                        | Richard Dawkins       | 0198788606         |
+| Complexity: A Guided Tour               | Melanie Mitchell      | 0195124413         |
+| Unit Testing: Principles...             | Vladimir Khorikov     | 1617296279         |
+| Making Sense of Chaos                   | J. Doyne Farmer       | 024145422X         |
+| The Light Eaters                        | Zoë Schlanger         | 0063073852         |
+| Six Math Essentials                     | Terence Tao           | _N/A (979 Prefix)_ |
+| This Time Is Different                  | Reinhart & Rogoff     | 0691152648         |
+| Manias, Panics, and Crashes             | Charles Kindleberger  | 1137525742         |
+| Logical Foundations of CPS              | André Platzer         | 3319635871         |
+| Theory of Economic Complexity           | César A. Hidalgo      | 0262045551         |
+| Adaptive Systems with DDD...            | Susanne Kaiser        | 109813517X         |
+| Software Architecture: Hard Parts       | Ford & Richards       | 1492086894         |
