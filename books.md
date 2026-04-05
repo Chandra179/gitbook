@@ -37,3 +37,11 @@
 **"This Time Is Different: Eight Centuries of Financial Folly" by Carmen Reinhart & Kenneth Rogoff**: You liked _Lords of Finance_ and _The Misbehavior of Markets_; this book provides the data-heavy "backend" to those narratives. it proves that despite our "modern" systems, human financial bubbles follow a mathematically predictable cycle of arrogance
 
 **"Manias, Panics, and Crashes" by Charles P. Kindleberger**: This is the "system design" manual for financial disasters. It maps out the anatomy of a crisis as a series of feedback loops, which will appeal to your interest in system dynamics.
+
+**"Logical Foundations of Cyber-Physical Systems" by André Platzer**: This is for the engineer who wants to see how formal logic (like in _GEB_) is applied to real-world "curvy" physics (like in _Calculus_). It’s about the logic required to ensure a self-driving car or a robot doesn't crash—bridging the gap between the abstract and the physical.
+
+**"The Theory of Economic Complexity" by César A. Hidalgo (Revised 2026)**: Hidalgo is a leader in using data science to map how countries develop. He views the economy as a massive information-processing network. It’s a very satisfying read for a software engineer because it treats "economic growth" as the result of a system's ability to process complex information
+
+**"Adaptive Systems with Domain-Driven Design, Wardley Mapping, and Team Topologies" by Susanne Kaiser (2025/2026)**: This is the "Grand Unified Theory" book for the titles you mentioned. It connects the strategy (Wardley Mapping), the logic (DDD), and the organization (Team Topologies). It’s the "how-to" manual for the "Architecture for Flow" philosophy you found interesting
+
+**"Software Architecture: The Hard Parts" by Neal Ford & Mark Richards**: If you liked Hohpe's high-level view, this book provides the "low-level" trade-off analysis. It uses a very logical, almost mathematical approach to deciding between microservices and monoliths, data partitioning, and service granularity.
