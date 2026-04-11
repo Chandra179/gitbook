@@ -15,7 +15,6 @@
     max-width: 100%;
     overflow-x: auto;
     overflow-y: hidden;
-    display: block;
     padding-bottom: 0.25em; /* space for scrollbar */
 }
 
