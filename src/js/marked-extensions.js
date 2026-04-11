@@ -1,43 +1,53 @@
 function initializeMarkedExtensions() {
-    // Custom extension to protect LaTeX math from markdown parsing
-    // This captures $$...$$ and $...$ and outputs them as raw text
-    // so that KaTeX auto-render can pick them up later without mangling
+    // Block-level extension: catches $$...$$ that forms an entire paragraph (display math)
+    // This prevents wide formulas from rendering as inline elements and overflowing the page.
+    const blockMathExtension = {
+        name: 'blockMath',
+        level: 'block',
+        start(src) {
+            return src.match(/^\$\$/)?.index;
+        },
+        tokenizer(src, tokens) {
+            const match = /^\$\$([\s\S]+?)\$\$[ \t]*(?:\n|$)/.exec(src);
+            if (match) {
+                return {
+                    type: 'blockMath',
+                    raw: match[0],
+                    text: match[1].trim()
+                };
+            }
+            return undefined;
+        },
+        renderer(token) {
+            // Render as \[...\] so KaTeX auto-render picks it up as display math
+            return `<p>\\[${token.text}\\]</p>\n`;
+        }
+    };
 
-    const mathExtension = {
+    // Inline extension: catches $$...$$ within text (e.g. inside list items or mid-paragraph)
+    const inlineMathExtension = {
         name: 'math',
         level: 'inline',
         start(src) {
             return src.match(/\$/)?.index;
         },
         tokenizer(src, tokens) {
-            // Match $$...$$ (display/inline depending on config)
-            const doubleDollar = /^\$\$([\s\S]+?)\$\$/;
-            const doubleMatch = doubleDollar.exec(src);
-
-            if (doubleMatch) {
+            const match = /^\$\$([\s\S]+?)\$\$/.exec(src);
+            if (match) {
                 return {
                     type: 'math',
-                    raw: doubleMatch[0],
-                    text: doubleMatch[1],
-                    display: true // We'll let renderMathInElement decide, but this marks it
+                    raw: match[0],
+                    text: match[1],
+                    display: false
                 };
             }
-
-            // Match $...$ (inline)
-            // We need to be careful not to match normal text like "Costs $5 and $10"
-            // So we usually require no spaces around the content or specific patterns
-            // But for now, let's stick to $$ as that's what the user is using mostly
-            // If they use $, we can add support.
-            // The user's example used $$ for everything.
-
             return undefined;
         },
         renderer(token) {
-            // Return the raw LaTeX wrapped in delimiters for KaTeX to find
-            // We return it exactly as is: $$...$$
+            // Return raw $$...$$ for KaTeX auto-render (inline mode)
             return token.raw;
         }
     };
 
-    marked.use({ extensions: [mathExtension] });
+    marked.use({ extensions: [blockMathExtension, inlineMathExtension] });
 }

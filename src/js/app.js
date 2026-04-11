@@ -89,7 +89,7 @@ function portfolioApp() {
                         });
                     });
                 } else {
-                    window.scrollTo(0, 0);
+                    requestAnimationFrame(() => window.scrollTo(0, 0));
                 }
             });
             observer.observe(contentEl, { childList: true, subtree: true });
