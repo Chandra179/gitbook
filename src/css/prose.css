@@ -5,6 +5,8 @@
     color: #374151;
     max-width: 500ch;
     overflow-x: hidden;
+    overflow-wrap: break-word;
+    word-break: break-word;
     min-width: 0;
 }
 
@@ -135,6 +137,8 @@
     position: relative;
     margin-top: 1.7142857em;
     margin-bottom: 1.7142857em;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .code-block-wrapper pre {
