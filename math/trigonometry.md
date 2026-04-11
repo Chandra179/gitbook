@@ -1,6 +1,6 @@
 # Trigonometry
 
-<figure><img src="../.gitbook/assets/trigonometry.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="/.gitbook/assets/trigonometry.png" alt=""><figcaption></figcaption></figure>
 
 Opposite = height\
 Hypotenuse = diagonal\
@@ -121,7 +121,7 @@ $$\text{Opposite} = H \times \sin(\theta) = 1 \times \sin(\theta) = \mathbf{\sin
 
 $$\text{Adjacent} = H \times \cos(\theta) = 1 \times \cos(\theta) = \mathbf{\cos(\theta)}$$
 
-<figure><img src="../.gitbook/assets/circle_degrees.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="/.gitbook/assets/circle_degrees.png" alt=""><figcaption></figcaption></figure>
 
 The radius ending at (0, 1) on the positive vertical axis has a **90 degrees** angle with the positive horizontal axis.
 
@@ -153,7 +153,7 @@ How far is the angle from the x-axis?
 
 ***
 
-<figure><img src="../.gitbook/assets/circle_sine_cosine_example.png" alt="" width="375"><figcaption></figcaption></figure>
+<figure><img src="/.gitbook/assets/circle_sine_cosine_example.png" alt="" width="375"><figcaption></figcaption></figure>
 
 The "Height": $$\sin \theta = 0.6$$. This tells us that the point on the unit circle is exactly $$0.6$$ units above the center line.
 
@@ -190,9 +190,9 @@ These functions are the "flipped" versions of the primary ones:
 * Secant: $$\sec(\theta) = \frac{1}{x}$$ (where $$x \neq 0$$)
 * Cotangent: $$\cot(\theta) = \frac{x}{y}$$ (where $$y \neq 0$$)
 
-<figure><img src="../.gitbook/assets/degrees_and_radian.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="/.gitbook/assets/degrees_and_radian.png" alt=""><figcaption></figcaption></figure>
 
-<figure><img src="../.gitbook/assets/special_value_trigonometric_func.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="/.gitbook/assets/special_value_trigonometric_func.png" alt=""><figcaption></figcaption></figure>
 
 ## **Domain of trigonometric function**
 
@@ -210,7 +210,7 @@ At $$90^\circ$$ (The top edge): Your point is at $$(0, 1)$$. The horizontal widt
 
 The Math: $$\tan(90^\circ) = \frac{1}{0}$$.
 
-<figure><img src="../.gitbook/assets/unit_circle_wave.png" alt="" width="563"><figcaption></figcaption></figure>
+<figure><img src="/.gitbook/assets/unit_circle_wave.png" alt="" width="563"><figcaption></figcaption></figure>
 
 you cannot divide by zero. At this exact angle, the Tangent "breaks" and becomes undefined.
 

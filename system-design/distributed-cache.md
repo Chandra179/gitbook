@@ -19,7 +19,7 @@ The goal was to design a distributed cache system for a large-scale organization
 
 ### High-Level Architecture
 
-<figure><img src="../.gitbook/assets/distributed_cache.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="/.gitbook/assets/distributed_cache.png" alt=""><figcaption></figcaption></figure>
 
 The system is designed as a distributed cluster of nodes. Because 10 TB cannot fit on a single machine, the data is partitioned (sharded) and replicated.<a class="button secondary"></a>
 

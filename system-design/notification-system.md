@@ -21,7 +21,7 @@
 
 The system uses an Asynchronous Event-Driven approach. By decoupling the trigger from the delivery, we ensure the main application remains responsive.
 
-<figure><img src="../.gitbook/assets/notif_system.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="/.gitbook/assets/notif_system.png" alt=""><figcaption></figcaption></figure>
 
 **Notification API**
 

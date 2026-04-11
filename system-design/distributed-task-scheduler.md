@@ -1,6 +1,6 @@
 # Distributed Task Scheduler
 
-<figure><img src="../.gitbook/assets/distributed_task_scheduler.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="/.gitbook/assets/distributed_task_scheduler.png" alt=""><figcaption></figcaption></figure>
 
 #### Requirements & Scope
 

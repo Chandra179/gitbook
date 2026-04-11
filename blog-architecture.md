@@ -3,7 +3,7 @@
 A client-side SPA for browsing hierarchical markdown documentation, deployed as static files on Cloudflare Workers. No bundler, no framework — Alpine.js for reactivity, marked.js for markdown parsing, KaTeX for math, Highlight.js for code.
 
 
-<figure><img src="./.gitbook/assets/blog-architecture.png" alt=""><figcaption></figcaption></figure>
+<figure><img src=".gitbook/assets/blog-architecture.png" alt=""><figcaption></figcaption></figure>
 
 
 ## Module Map
