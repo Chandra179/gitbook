@@ -13,6 +13,7 @@ function portfolioApp() {
         expandedSections: {},
         expandedFolders: {},
         content: '',
+        _initialPageViewDone: false,
 
         router: null,
         search: null,
@@ -259,6 +260,12 @@ function portfolioApp() {
             this._setMeta('property', 'og:description', description);
             this._setMeta('name', 'twitter:title', title);
             this._setMeta('name', 'twitter:description', description);
+
+            // Notify Cloudflare Web Analytics of SPA page view (skip first load — beacon fires automatically)
+            if (this._initialPageViewDone && window.cfBeacon && typeof window.cfBeacon.send === 'function') {
+                window.cfBeacon.send({ type: 'spa' });
+            }
+            this._initialPageViewDone = true;
         },
 
         toggleDarkMode() {
