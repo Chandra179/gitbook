@@ -177,7 +177,24 @@ function portfolioApp() {
             const url = new URL(link, window.location.origin);
             const path = url.pathname.replace(/^\//, '');
             const anchor = url.hash.replace(/^#/, '');
+            const isSamePage = this.router.getCurrentPage() === path;
+
             history.pushState(null, '', url.pathname + url.hash);
+            this.closeSearch();
+
+            if (isSamePage) {
+                // Already on this page — just scroll to the anchor
+                if (anchor) {
+                    const element = document.getElementById(anchor);
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                } else {
+                    window.scrollTo(0, 0);
+                }
+                return;
+            }
+
             this.router.currentPage = path;
             const parts = path.split('/');
             this.router.currentCategory = parts[0];
@@ -185,7 +202,6 @@ function portfolioApp() {
             if (this.router.onRouteChange) {
                 this.router.onRouteChange(this.router.currentCategory || path, anchor);
             }
-            this.closeSearch();
         },
 
         highlightText(text, query) {
