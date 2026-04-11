@@ -35,7 +35,7 @@ class ContentLoader {
         return false;
     }
 
-    // Rewrite relative <a href> values in rendered HTML to clean root-relative paths.
+    // Rewrite relative <a href> and <img src> values in rendered HTML to clean root-relative paths.
     // e.g. href="summary#algebra" on page /math/ becomes href="/math/summary#algebra"
     rewriteLinks(html, category, page) {
         const basePath = page ? `/${category}/${page}/` : `/${category}/`;
@@ -47,6 +47,12 @@ class ContentLoader {
             // Resolve relative to the logical base path of this page
             const resolved = new URL(href, 'https://x' + basePath);
             link.setAttribute('href', resolved.pathname + resolved.hash);
+        });
+        doc.querySelectorAll('img[src]').forEach(img => {
+            const src = img.getAttribute('src');
+            if (!src || /^https?:\/\//.test(src) || src.startsWith('/') || src.startsWith('data:')) return;
+            const resolved = new URL(src, 'https://x' + basePath);
+            img.setAttribute('src', resolved.pathname);
         });
         return doc.body.innerHTML;
     }
