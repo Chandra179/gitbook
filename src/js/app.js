@@ -39,10 +39,11 @@ function portfolioApp() {
             this.renderer = new Renderer();
 
             this.router.onRouteChange = (category, anchor) => {
-                const page = this.router.getCurrentPage().includes('/') 
+                const page = this.router.getCurrentPage().includes('/')
                     ? this.router.getCurrentPage().split('/').slice(1).join('/')
                     : null;
                 this.loadContent(category, page, anchor);
+                this.updateSEOMeta();
             };
 
             this.contentLoader.onContentLoaded = (html, anchor) => {
@@ -67,7 +68,9 @@ function portfolioApp() {
         },
 
         postRenderActions(anchor) {
-            setTimeout(() => {
+            const contentEl = document.getElementById('content');
+            const observer = new MutationObserver(() => {
+                observer.disconnect();
                 this.tocGenerator.addIdsToHeaders();
                 this.tocGenerator.generate();
                 this.renderer.renderAll();
@@ -80,7 +83,8 @@ function portfolioApp() {
                 } else {
                     window.scrollTo(0, 0);
                 }
-            }, APP_CONFIG.INITIALIZATION_DELAY_MS);
+            });
+            observer.observe(contentEl, { childList: true, subtree: true });
         },
 
         navigate(path) {
@@ -136,7 +140,9 @@ function portfolioApp() {
         },
 
         navigateToSearchResult(link) {
-            window.location.hash = link;
+            // link is already "#category/page#anchor" — strip leading "#" before assigning to hash
+            const hash = link.startsWith('#') ? link.slice(1) : link;
+            window.location.hash = hash;
             this.closeSearch();
         },
 
@@ -177,6 +183,33 @@ function portfolioApp() {
 
         get searchResults() {
             return this.search ? this.search.getResults() : [];
-        }
+        },
+
+        updateSEOMeta() {
+            const breadcrumb = this.router.getBreadcrumb();
+            const siteName = 'Chan179';
+            const baseDescription = 'Technical notes and learning resources on Math, Golang, System Design, ML, and more.';
+
+            const isHome = !this.router.getCurrentPage() || this.router.getCurrentPage() === 'README';
+            const title = isHome ? `${siteName} — Technical Notes` : `${breadcrumb} — ${siteName}`;
+            const description = isHome ? baseDescription : `Notes on ${breadcrumb}. ${baseDescription}`;
+
+            document.title = title;
+            this._setMeta('name', 'description', description);
+            this._setMeta('property', 'og:title', title);
+            this._setMeta('property', 'og:description', description);
+            this._setMeta('name', 'twitter:title', title);
+            this._setMeta('name', 'twitter:description', description);
+        },
+
+        _setMeta(attr, key, value) {
+            let el = document.querySelector(`meta[${attr}="${key}"]`);
+            if (!el) {
+                el = document.createElement('meta');
+                el.setAttribute(attr, key);
+                document.head.appendChild(el);
+            }
+            el.setAttribute('content', value);
+        },
     };
 }

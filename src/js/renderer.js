@@ -54,8 +54,13 @@ class Renderer {
             return;
         }
 
+        const content = document.getElementById(this.contentElementId);
+        if (!content) return;
+
         try {
-            hljs.highlightAll();
+            content.querySelectorAll('pre code').forEach(block => {
+                hljs.highlightElement(block);
+            });
         } catch (error) {
             console.error('Error highlighting code:', error);
         }

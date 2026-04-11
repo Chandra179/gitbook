@@ -4,7 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chan179</title>
+    <title>Chan179 — Technical Notes</title>
+    <meta name="description" content="Technical notes and learning resources on Math, Golang, System Design, ML, and more.">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Chan179">
+    <meta property="og:title" content="Chan179 — Technical Notes">
+    <meta property="og:description" content="Technical notes and learning resources on Math, Golang, System Design, ML, and more.">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Chan179 — Technical Notes">
+    <meta name="twitter:description" content="Technical notes and learning resources on Math, Golang, System Design, ML, and more.">
 
     <!-- Tailwind CSS (Local Build) -->
     <link href="./css/output.css" rel="stylesheet">
@@ -141,7 +153,7 @@
                         </div>
                         <input type="text" x-model="searchQuery" @input.debounce.300ms="performSearch()"
                             @focus="isSearchOpen = true" @keydown.escape="closeSearch()"
-                            class="block w-[550px] pl-10 pr-3 py-2 border border-gray-200 rounded-lg leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
+                            class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
                             placeholder="Search...">
                     </div>
 

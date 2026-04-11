@@ -1,0 +1,39 @@
+graph TD
+    subgraph Build["Build"]
+        NavGen["Nav Generator"]
+        CSS["Tailwind CSS"]
+    end
+
+    subgraph Edge["Cloudflare Workers"]
+        Static["Static File Server"]
+    end
+
+    subgraph Browser["Browser"]
+        App["App State\n(Alpine.js)"]
+        Router["Router"]
+        ContentLoader["Content Loader"]
+        FullTextSearch["Full-Text Search"]
+
+        subgraph Rendering["Rendering Pipeline"]
+            Markdown["Markdown Parser"]
+            Math["Math (KaTeX)"]
+            Code["Syntax Highlighter"]
+            TOC["TOC + Scroll Tracker"]
+        end
+    end
+
+    Build -->|"deploy"| Static
+    Static -->|"serve assets + markdown"| Browser
+
+    App --> Router
+    App --> ContentLoader
+    App --> FullTextSearch
+    App --> Rendering
+
+    Router -->|"route change"| App
+    ContentLoader -->|"fetch markdown"| Static
+    ContentLoader --> Markdown
+    Markdown --> Math
+    Markdown --> Code
+    Markdown --> TOC
+    FullTextSearch -->|"fetch all markdown at startup"| Static

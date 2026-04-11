@@ -16,7 +16,15 @@ class Router {
         try {
             let hash = window.location.hash.slice(1) || 'README';
 
-            // Validate hash format - only allow alphanumeric, hyphens, underscores, and slashes
+            // Split off the in-page anchor first (format: category/page#section-heading)
+            let anchor = '';
+            if (hash.includes('#')) {
+                const parts = hash.split('#');
+                hash = parts[0];
+                anchor = parts[1];
+            }
+
+            // Validate path — only allow alphanumeric, hyphens, underscores, and slashes
             if (!/^[a-zA-Z0-9-_/]*$/.test(hash)) {
                 console.warn('Invalid hash format:', hash);
                 hash = 'README';
@@ -24,13 +32,6 @@ class Router {
 
             // Sanitize hash to prevent directory traversal
             hash = hash.replace(/\.\./g, '');
-
-            let anchor = '';
-            if (hash.includes('#')) {
-                const parts = hash.split('#');
-                hash = parts[0];
-                anchor = parts[1];
-            }
 
             this.currentPage = hash;
 

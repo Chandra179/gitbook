@@ -2,6 +2,7 @@ class ContentLoader {
     constructor(navigationData) {
         this.navigationData = navigationData;
         this.onContentLoaded = null;
+        this.cache = new Map();
     }
 
     isPageFolder(category, pagePath) {
@@ -40,44 +41,38 @@ class ContentLoader {
                 item => item.standalone && item.slug === category
             );
 
-            let markdown;
-
+            let filePath;
             if (standaloneItem) {
-                // Load standalone page from root directory
-                const response = await fetch(`../${category}.md`);
-                if (!response.ok) {
-                    markdown = `# Page Not Found\n\nThe file \`${category}.md\` could not be loaded.`;
-                } else {
-                    markdown = await response.text();
-                }
+                filePath = `../${category}.md`;
             } else if (!page) {
-                // Just category, load README.md for that category
-                const response = await fetch(`../${category}/README.md`);
-                if (!response.ok) {
-                    const categoryData = this.navigationData.find(cat => cat.slug === category);
-                    const categoryName = categoryData ? categoryData.name : category;
-                    markdown = `# ${categoryName}\n\nREADME file not found for this category.`;
-                } else {
-                    markdown = await response.text();
-                }
+                filePath = `../${category}/README.md`;
             } else {
-                // Handle nested paths (e.g., "algebra/files")
-                // Check if the page is a folder
                 const isFolder = this.isPageFolder(category, page);
-                const filePath = isFolder 
+                filePath = isFolder
                     ? `../${category}/${page}/README.md`
                     : `../${category}/${page}.md`;
-                
-                const response = await fetch(filePath);
+            }
 
+            let html;
+            if (this.cache.has(filePath)) {
+                html = this.cache.get(filePath);
+            } else {
+                const response = await fetch(filePath);
+                let markdown;
                 if (!response.ok) {
-                    markdown = `# Page Not Found\n\nThe file \`${filePath}\` could not be loaded.`;
+                    if (!page && !standaloneItem) {
+                        const categoryData = this.navigationData.find(cat => cat.slug === category);
+                        const categoryName = categoryData ? categoryData.name : category;
+                        markdown = `# ${categoryName}\n\nREADME file not found for this category.`;
+                    } else {
+                        markdown = `# Page Not Found\n\nThe file \`${filePath}\` could not be loaded.`;
+                    }
                 } else {
                     markdown = await response.text();
                 }
+                html = marked.parse(markdown);
+                if (response.ok) this.cache.set(filePath, html);
             }
-
-            const html = marked.parse(markdown);
 
             if (this.onContentLoaded) {
                 this.onContentLoaded(html, anchor);

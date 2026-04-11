@@ -16,8 +16,14 @@ echo "Building CSS..."
 npm run build:css
 
 cp src/index.html dist/index.html
+cp src/sitemap.xml dist/sitemap.xml
+cp src/robots.txt dist/robots.txt
 
 cp -r src/css dist/css
+
+# Generate navigation data from filesystem, then copy JS
+echo "Generating navigation data..."
+node scripts/gen-nav.js
 cp -r src/js dist/js
 
 # Copy .gitbook assets (images)
@@ -27,32 +33,18 @@ if [ -d ".gitbook/assets" ]; then
     cp -r .gitbook/assets dist/.gitbook/assets
 fi
 
-# Copy content directories
-# Check if directories exist before copying to avoid errors
-for dir in general golang math system-design precalculus web-scraper; do
-    if [ -d "$dir" ]; then
+# Copy all content directories (any top-level dir that isn't infrastructure)
+SKIP_DIRS="node_modules dist src scripts .git .gitbook .claude .wrangler"
+for dir in */; do
+    dir="${dir%/}"
+    if [[ ! " $SKIP_DIRS " =~ " $dir " ]]; then
         cp -r "$dir" "dist/$dir"
     fi
 done
 
-# Copy root markdown files
-# Added check to prevent errors if specific files are missing
-files=(
-    "README.md"
-    "p2p-chat.md"
-    "reactjs.md"
-    "web-intelligence.md"
-)
-
-for file in "${files[@]}"; do
-    if [ -f "$file" ]; then
-        cp "$file" dist/
-    else
-        echo "Warning: $file not found, skipping."
-    fi
+# Copy all root-level markdown files
+for file in *.md; do
+    [ -f "$file" ] && cp "$file" dist/
 done
 
 echo "Build complete! Content is in ./dist"
-
-# npx wrangler deploy
-# semgrep scan
