@@ -93,6 +93,10 @@ class ContentLoader {
                     markdown = await response.text();
                 }
                 html = this.rewriteLinks(marked.parse(markdown), category, page);
+                // Convert standalone $$...$$ paragraphs to display math \[...\]
+                // so KaTeX renders them as block-level with overflow-x:auto instead of
+                // wide inline elements that cause horizontal page overflow.
+                html = html.replace(/<p>\$\$([\s\S]+?)\$\$<\/p>/g, (_, formula) => `<p>\\[${formula}\\]</p>`);
                 if (response.ok) this.cache.set(filePath, html);
             }
 

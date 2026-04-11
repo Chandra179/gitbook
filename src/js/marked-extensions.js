@@ -1,30 +1,8 @@
 function initializeMarkedExtensions() {
-    // Block-level extension: catches $$...$$ that forms an entire paragraph (display math)
-    // This prevents wide formulas from rendering as inline elements and overflowing the page.
-    const blockMathExtension = {
-        name: 'blockMath',
-        level: 'block',
-        start(src) {
-            return src.match(/^\$\$/)?.index;
-        },
-        tokenizer(src, tokens) {
-            const match = /^\$\$([\s\S]+?)\$\$[ \t]*(?:\n|$)/.exec(src);
-            if (match) {
-                return {
-                    type: 'blockMath',
-                    raw: match[0],
-                    text: match[1].trim()
-                };
-            }
-            return undefined;
-        },
-        renderer(token) {
-            // Render as \[...\] so KaTeX auto-render picks it up as display math
-            return `<p>\\[${token.text}\\]</p>\n`;
-        }
-    };
-
-    // Inline extension: catches $$...$$ within text (e.g. inside list items or mid-paragraph)
+    // Inline extension: protects $$...$$ from markdown mangling so KaTeX can render it.
+    // Standalone $$...$$ paragraphs are converted to display math \[...\] by
+    // content-loader.js after marked.parse(), so this extension only needs to handle
+    // inline usage (e.g. within list items or mid-paragraph text).
     const inlineMathExtension = {
         name: 'math',
         level: 'inline',
@@ -44,10 +22,9 @@ function initializeMarkedExtensions() {
             return undefined;
         },
         renderer(token) {
-            // Return raw $$...$$ for KaTeX auto-render (inline mode)
             return token.raw;
         }
     };
 
-    marked.use({ extensions: [blockMathExtension, inlineMathExtension] });
+    marked.use({ extensions: [inlineMathExtension] });
 }

@@ -26,7 +26,9 @@ $$\theta = \arcsin\left(\frac{\text{Opposite}}{\text{Hypotenuse}}\right)$$
 
 **Finding Adjacent**
 
-$$a^2 + b^2 = c^2 \quad \rightarrow \quad \text{Adjacent} = \sqrt{\text{Hypotenuse}^2 - \text{Opposite}^2}$$
+$$a^2 + b^2 = c^2$$
+
+$$\text{Adjacent} = \sqrt{\text{Hyp}^2 - \text{Opp}^2}$$
 
 ***
 
