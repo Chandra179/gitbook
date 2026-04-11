@@ -76,10 +76,14 @@ function portfolioApp() {
                 this.renderer.renderAll();
 
                 if (anchor) {
-                    const element = document.getElementById(anchor);
-                    if (element) {
-                        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            const element = document.getElementById(anchor);
+                            if (element) {
+                                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                        });
+                    });
                 } else {
                     window.scrollTo(0, 0);
                 }
