@@ -59,27 +59,3 @@ After Alpine flushes new content to the DOM, a `MutationObserver` fires and runs
 6. Scroll to anchor (if present) or reset to top
 
 `MutationObserver` replaced a fixed `setTimeout` — it fires exactly when Alpine is done, not after a fixed guess.
-
-## Build
-
-`build.sh` orchestrates the full production build:
-
-1. Run `node scripts/gen-nav.js` — scans content directories, produces `src/js/navigation-data.js`
-2. Compile Tailwind CSS (`src/css/input.css` → `src/css/output.css`)
-3. Copy `src/` (HTML, CSS, JS) and all content directories into `dist/`
-
-`scripts/gen-nav.js` rules:
-- Root `.md` files (excluding `README`, `SUMMARY`, `CLAUDE`) → standalone pages, ordered by `ROOT_PAGE_ORDER`
-- Top-level directories with a `README.md` → categories, ordered by `CATEGORY_ORDER`
-- Sub-directories inside a category → folder pages (`isFolder: true`), loaded as `folder/README.md`
-- `.md` files inside a category or sub-folder → regular pages
-- Display names are derived from slugs; overrides live in `NAME_OVERRIDES`
-
-## Deployment
-
-```
-./build.sh           → compiles CSS, generates nav, copies src/ + content dirs to dist/
-npx wrangler deploy  → deploys dist/ to Cloudflare Workers (static file serving)
-```
-
-No server-side logic. The Workers asset binding serves everything in `dist/` statically.
