@@ -6,6 +6,7 @@ const APP_CONFIG = {
 function portfolioApp() {
     return {
         mobileMenuOpen: false,
+        isDark: document.documentElement.classList.contains('dark'),
         loading: true,
         isSearchOpen: false,
         searchQuery: '',
@@ -258,6 +259,12 @@ function portfolioApp() {
             this._setMeta('property', 'og:description', description);
             this._setMeta('name', 'twitter:title', title);
             this._setMeta('name', 'twitter:description', description);
+        },
+
+        toggleDarkMode() {
+            this.isDark = !this.isDark;
+            document.documentElement.classList.toggle('dark', this.isDark);
+            localStorage.setItem('darkMode', this.isDark);
         },
 
         _setMeta(attr, key, value) {
