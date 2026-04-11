@@ -7,6 +7,8 @@
     overflow-x: clip;
     overflow-wrap: break-word;
     word-break: break-word;
+    min-width: 0; 
+    width: 100%;
 }
 
 /* ========== Headings ========== */
@@ -246,6 +248,8 @@
     width: 100%;
     table-layout: auto;
     text-align: left;
+    max-width: 100%; /* Add this! */
+    width: 100%;     /* Add this! */
     margin-top: 2em;
     margin-bottom: 2em;
     font-size: 0.875em;

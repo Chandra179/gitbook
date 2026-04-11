@@ -2,6 +2,7 @@
 
 /* Display Math (Block) */
 .katex-display {
+    box-sizing: border-box; /* Ensures padding doesn't add to width */
     margin: 1em 0;
     overflow-x: auto;
     overflow-y: hidden;

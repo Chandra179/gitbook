@@ -1,3 +1,8 @@
+body {
+    overflow-x: hidden;
+    position: relative;
+    width: 100%;
+}
 /* UI Components - Navigation, TOC, Search, Tabs */
 
 /* ========== Navigation Active States ========== */
