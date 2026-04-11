@@ -1,3 +1,22 @@
+---
+layout:
+  width: default
+  title:
+    visible: true
+  description:
+    visible: true
+  tableOfContents:
+    visible: true
+  outline:
+    visible: true
+  pagination:
+    visible: true
+  metadata:
+    visible: true
+  tags:
+    visible: true
+---
+
 # Trigonometry
 
 <figure><img src="../.gitbook/assets/trigonometry.png" alt=""><figcaption></figcaption></figure>
@@ -390,6 +409,6 @@ Example:
 $$y = 3 \sin(2(x - \pi)) + 5$$
 
 * Amplitude: 3 (The wave goes 3 units up and down from the center).
-* Period: $$ $\frac{2\pi}{2} = \pi$ $$ (It oscillates twice as fast as normal).
-* Phase Shift: Right by $$ $\pi$ $$.
-* Vertical Shift: Up 5 (The center line is now at $$ $y=5$ $$).
+* Period: $$\frac{2\pi}{2} = \pi$$ (It oscillates twice as fast as normal).
+* Phase Shift: Right by $$\pi$$.
+* Vertical Shift: Up 5 (The center line is now at $$y=5$$).
