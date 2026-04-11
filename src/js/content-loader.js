@@ -92,12 +92,19 @@ class ContentLoader {
                 } else {
                     markdown = await response.text();
                 }
+                // Parse markdown and rewrite links
                 html = this.rewriteLinks(marked.parse(markdown), category, page);
-                // Convert standalone $$...$$ paragraphs to display math \[...\]
-                // so KaTeX renders them as block-level with overflow-x:auto instead of
-                // wide inline elements that cause horizontal page overflow.
-                html = html.replace(/<p>\$\$([\s\S]+?)\$\$<\/p>/g, (_, formula) => `<p>\\[${formula}\\]</p>`);
-                if (response.ok) this.cache.set(filePath, html);
+
+                // Magic Step: If a <p> exclusively contains a double-dollar math span, turn it into a centered block.
+                // This will ignore math inside lists or math next to text!
+                html = html.replace(
+                    /<p>\s*(<span class="math-double">[\s\S]+?<\/span>)\s*<\/p>/g, 
+                    (_, spanHtml) => `<div class="katex-display">${spanHtml}</div>`
+                );
+
+                if (response.ok) {
+                    this.cache.set(filePath, html);
+                }
             }
 
             if (this.onContentLoaded) {

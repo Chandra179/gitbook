@@ -75,7 +75,7 @@ $$\theta = \arctan\left(\frac{\text{Opposite}}{\text{Adjacent}}\right)$$
 
 ## Cosecant
 
-$$\csc(\theta) = \frac{\text{Hypotenuse}}{\text{Opposite}}$$ (The flip of Sine)
+$\csc(\theta) = \frac{\text{Hypotenuse}}{\text{Opposite}}$ (The flip of Sine)
 
 * What it finds: The Diagonal length.
 * Use this when you know how high you need to go and want to find the diagonal path.
@@ -87,7 +87,7 @@ $$\csc(\theta) = \frac{\text{Hypotenuse}}{\text{Opposite}}$$ (The flip of Sine)
 
 ## Secant
 
-$$\sec(\theta) = \frac{\text{Hypotenuse}}{\text{Adjacent}}$$ (The flip of Cosine)
+$\sec(\theta) = \frac{\text{Hypotenuse}}{\text{Adjacent}}$ (The flip of Cosine)
 
 * What it finds: The Diagonal length.
 * Use this when you know the flat distance and need to find the diagonal.
@@ -99,7 +99,7 @@ $$\sec(\theta) = \frac{\text{Hypotenuse}}{\text{Adjacent}}$$ (The flip of Cosine
 
 ## Cotangent
 
-$$\cot(\theta) = \frac{\text{Adjacent}}{\text{Opposite}}$$ (The flip of Tangent)
+$\cot(\theta) = \frac{\text{Adjacent}}{\text{Opposite}}$ (The flip of Tangent)
 
 * What it finds: The Flat distance.
 * Use this when you know the Height and want to find the ground distance.
@@ -113,9 +113,9 @@ $$\cot(\theta) = \frac{\text{Adjacent}}{\text{Opposite}}$$ (The flip of Tangent)
 
 Because it is a circle with radius $$r = 1$$, its equation is derived from the Pythagorean theorem:
 
-$$x^2 + y^2 = 1$$
+$x^2 + y^2 = 1$
 
-Because the Hypotenuse ($$H$$) is 1, the SOH CAH TOA formulas turn into direct values:
+Because the Hypotenuse ($H$) is 1, the SOH CAH TOA formulas turn into direct values:
 
 $$\text{Opposite} = H \times \sin(\theta) = 1 \times \sin(\theta) = \mathbf{\sin(\theta)}$$
 
