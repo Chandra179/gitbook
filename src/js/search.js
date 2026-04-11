@@ -21,7 +21,7 @@ class Search {
 
         await Promise.all(this.navigationData.map(section => {
             if (section.standalone) {
-                return fetch(`../${section.slug}.md`)
+                return fetch(`/${section.slug}.md`)
                     .then(r => r.ok ? r.text() : null)
                     .then(text => { if (text) this.indexContent(index, text, section.name, section.slug, section.name); })
                     .catch(e => console.warn('Failed to index', section.slug, e));
@@ -41,7 +41,7 @@ class Search {
                 return this.indexPages(index, page.pages, categorySlug, categoryName, folderPath);
             } else {
                 const pagePath = pathPrefix ? `${pathPrefix}/${page.slug}` : page.slug;
-                const filePath = `../${categorySlug}/${pagePath}.md`;
+                const filePath = `/${categorySlug}/${pagePath}.md`;
                 return fetch(filePath)
                     .then(r => r.ok ? r.text() : null)
                     .then(text => {

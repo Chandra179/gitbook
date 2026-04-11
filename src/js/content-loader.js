@@ -59,14 +59,14 @@ class ContentLoader {
 
             let filePath;
             if (standaloneItem) {
-                filePath = `../${category}.md`;
+                filePath = `/${category}.md`;
             } else if (!page) {
-                filePath = `../${category}/README.md`;
+                filePath = `/${category}/README.md`;
             } else {
                 const isFolder = this.isPageFolder(category, page);
                 filePath = isFolder
-                    ? `../${category}/${page}/README.md`
-                    : `../${category}/${page}.md`;
+                    ? `/${category}/${page}/README.md`
+                    : `/${category}/${page}.md`;
             }
 
             let html;
