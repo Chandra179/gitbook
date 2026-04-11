@@ -380,7 +380,7 @@ A nonlinear inequality contains a variable with a power other than 1 (like $$x^2
 
 ### Coordinate Plane, Graphs of Equations, Line, Circles
 
-<figure><img src="../../.gitbook/assets/coordinate_plane (1).png" alt="" width="563"><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/coordinate_plane (1) (1).png" alt="" width="563"><figcaption></figcaption></figure>
 
 **Distance formula** $$d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$$
 

@@ -9,5 +9,22 @@ Architecture decisions define the rules for how a system should be constructed
 
 Design principle&#x20;
 
-* Design principle is a guideline rather than a hard-and-fast rule.
+* Design principle is a guideline rather than a hard-and-fast rule.&#x20;
+* An architecture decision (rule) could never cover every condition and option for communication between services, so a design principle can be used to provide guidance for the preferred method (in this case, asynchronous messaging) to allow the developer to choose a more appropriate communication protocol (such as REST or gRPC) given a specific circumstance
+
+Expectation of Architect
+
+* Make architecture decisions
+* Continually analyze the architecture
+* Keep current with latest trends
+* Ensure compliance with decisions
+* Diverse exposure and experience
+  * An effective software architect should be aggressive in seeking out opportunities to gain experience in multiple languages, platforms, and technologies. A good way of mastering this expectation is to focus on **technical breadth** rather than technical depth
+  * Technical breadth includes the stuff you know about, but not at a detailed level, combined with the stuff you know a lot about. For example, it is far more valuable for an architect to be familiar with 10 different caching products and the associated pros and cons of each rather than to be an expert in only one of them.
+* Have business domain knowledge
+  * The most successful architects we know are those who have broad, hands-on technical knowledge coupled with a strong knowledge of a particular domain.
+* Possess interpersonal skills
+* Understand and navigate politics
+
+Building Evolutionary Architectures (books)
 
