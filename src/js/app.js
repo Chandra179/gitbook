@@ -140,9 +140,18 @@ function portfolioApp() {
         },
 
         navigateToSearchResult(link) {
-            // link is already "#category/page#anchor" — strip leading "#" before assigning to hash
-            const hash = link.startsWith('#') ? link.slice(1) : link;
-            window.location.hash = hash;
+            // link is "/category/page#anchor" — extract path and anchor
+            const url = new URL(link, window.location.origin);
+            const path = url.pathname.replace(/^\//, '');
+            const anchor = url.hash.replace(/^#/, '');
+            history.pushState(null, '', url.pathname + url.hash);
+            this.router.currentPage = path;
+            const parts = path.split('/');
+            this.router.currentCategory = parts[0];
+            this.router.updateBreadcrumb(parts[0], parts.slice(1).join('/') || null);
+            if (this.router.onRouteChange) {
+                this.router.onRouteChange(this.router.currentCategory || path, anchor);
+            }
             this.closeSearch();
         },
 

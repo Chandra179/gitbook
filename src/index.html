@@ -212,7 +212,7 @@
                     <!-- Standalone Page (no dropdown) -->
                     <template x-if="section.standalone">
                         <div class="mb-6">
-                            <a :href="`#${section.slug}`" @click.prevent="navigate(section.slug)"
+                            <a :href="`/${section.slug}`" @click.prevent="navigate(section.slug)"
                                 class="block px-3 mb-2 text-xs font-semibold uppercase tracking-wider hover:text-gray-900"
                                 :class="currentPage === section.slug ? 'text-blue-600' : 'text-gray-500'"
                                 x-text="section.name">
@@ -225,7 +225,7 @@
                         <div class="mb-6">
                             <!-- Section Header (clickable) -->
                             <div class="flex items-center justify-between px-3 mb-2 group">
-                                <a :href="`#${section.slug}`" @click.prevent="navigateToCategory(section.slug)"
+                                <a :href="`/${section.slug}`" @click.prevent="navigateToCategory(section.slug)"
                                     class="text-xs font-semibold uppercase tracking-wider hover:text-gray-900 flex-1"
                                     :class="isCategoryActive(section.slug) && currentPage === section.slug ? 'text-blue-600' : 'text-gray-500'"
                                     x-text="section.name"></a>
@@ -252,7 +252,7 @@
                                     <div>
                                         <!-- Regular Page (not a folder) -->
                                         <template x-if="!page.isFolder">
-                                            <a :href="`#${section.slug}/${page.slug}`"
+                                            <a :href="`/${section.slug}/${page.slug}`"
                                                 @click.prevent="navigateToPage(section.slug, page.slug)"
                                                 class="nav-link block px-6 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 mb-1"
                                                 :class="isPageActive(section.slug, page.slug) ? 'active' : ''">
@@ -266,7 +266,7 @@
                                                 <!-- Folder Header - Now clickable to navigate -->
                                                 <div class="flex items-center justify-between px-6 py-2 rounded-lg hover:bg-gray-50">
                                                     <!-- Folder name (clickable - navigates to folder README) -->
-                                                    <a :href="`#${section.slug}/${page.slug}`"
+                                                    <a :href="`/${section.slug}/${page.slug}`"
                                                     @click.prevent="navigateToFolder(section.slug, page.slug)"
                                                     class="flex-1 text-sm font-medium cursor-pointer"
                                                     :class="isFolderActive(section.slug, page.slug) ? 'text-blue-600' : 'text-gray-700'">
@@ -292,7 +292,7 @@
                                                     x-transition:leave-end="opacity-0 transform -translate-y-2"
                                                     class="ml-4">
                                                     <template x-for="subpage in page.pages" :key="subpage.slug">
-                                                        <a :href="`#${section.slug}/${page.slug}/${subpage.slug}`"
+                                                        <a :href="`/${section.slug}/${page.slug}/${subpage.slug}`"
                                                             @click.prevent="navigateToNestedPage(section.slug, page.slug, subpage.slug)"
                                                             class="nav-link block px-6 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 mb-1"
                                                             :class="isNestedPageActive(section.slug, page.slug, subpage.slug) ? 'active' : ''">

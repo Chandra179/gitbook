@@ -69,7 +69,7 @@ class Search {
                         title: currentSection.title,
                         category: categoryName,
                         page: pageName,
-                        link: `#${pageLink}${currentSection.anchor ? '#' + currentSection.anchor : ''}`,
+                        link: `/${pageLink}${currentSection.anchor ? '#' + currentSection.anchor : ''}`,
                         plainText: this.stripMarkdown(currentSection.content)
                     });
                 }
@@ -93,7 +93,7 @@ class Search {
                 title: currentSection.title,
                 category: categoryName,
                 page: pageName,
-                link: `#${pageLink}${currentSection.anchor ? '#' + currentSection.anchor : ''}`,
+                link: `/${pageLink}${currentSection.anchor ? '#' + currentSection.anchor : ''}`,
                 plainText: this.stripMarkdown(currentSection.content)
             });
         }
