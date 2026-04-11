@@ -1,6 +1,6 @@
 # P2P Chat
 
-<figure><img src=".gitbook/assets/p2pdiagram.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="/.gitbook/assets/p2pdiagram.png" alt=""><figcaption></figcaption></figure>
 
 ### Connection Strategy
 

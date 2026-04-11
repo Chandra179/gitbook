@@ -27,11 +27,6 @@ const navigationData = [
         standalone: true,
     },
     {
-        name: "Books",
-        slug: "books",
-        standalone: true,
-    },
-    {
         name: "Software Architecture",
         slug: "software-architecture",
         standalone: true,
