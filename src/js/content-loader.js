@@ -35,6 +35,22 @@ class ContentLoader {
         return false;
     }
 
+    // Rewrite relative <a href> values in rendered HTML to clean root-relative paths.
+    // e.g. href="summary#algebra" on page /math/ becomes href="/math/summary#algebra"
+    rewriteLinks(html, category, page) {
+        const basePath = page ? `/${category}/${page}/` : `/${category}/`;
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        doc.querySelectorAll('a[href]').forEach(link => {
+            const href = link.getAttribute('href');
+            if (!href || href.startsWith('#') || /^https?:\/\//.test(href) || href.startsWith('mailto:')) return;
+            // Resolve relative to the logical base path of this page
+            const resolved = new URL(href, 'https://x' + basePath);
+            link.setAttribute('href', resolved.pathname + resolved.hash);
+        });
+        return doc.body.innerHTML;
+    }
+
     async loadContent(category, page, anchor) {
         try {
             const standaloneItem = this.navigationData.find(
@@ -70,7 +86,7 @@ class ContentLoader {
                 } else {
                     markdown = await response.text();
                 }
-                html = marked.parse(markdown);
+                html = this.rewriteLinks(marked.parse(markdown), category, page);
                 if (response.ok) this.cache.set(filePath, html);
             }
 

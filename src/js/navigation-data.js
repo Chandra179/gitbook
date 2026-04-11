@@ -32,6 +32,11 @@ const navigationData = [
         standalone: true,
     },
     {
+        name: "Software Architecture",
+        slug: "software-architecture",
+        standalone: true,
+    },
+    {
         name: "General",
         slug: "general",
         pages: [
@@ -88,9 +93,5 @@ const navigationData = [
             { name: "Notification System", slug: "notification-system" },
             { name: "Rate Limit", slug: "rate-limit" },
         ],
-    },
-    {
-        name: "Diagrams",
-        slug: "diagrams",
     },
 ];
