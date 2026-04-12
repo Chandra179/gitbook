@@ -1,0 +1,3 @@
+# Domain Travel
+
+so the modules that i want to break into markdown is, flight search (how ota search flight interconnectivity with provider like sabrepss what data input we send and what we get), the flight price (fare, tax, discount maybe), is there some caching and runtime data change from the provider, then airport operational (gates, terminal, handling checkin, baggage, passenger documents like passport etc..), then ticketing system (ticket number, ticket issuing format,), airplane data like equipment name, uniqueness data among all global airplanes, whole user journey from start to end, etc..
