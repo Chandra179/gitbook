@@ -147,3 +147,24 @@ These are critical design constraints and considerations that often defy simple 
 | **Privacy**                 | Ability to hide transactions from internal employees, such as DBAs or network architects, via encryption.                   |
 | **Security**                | Requirements for data encryption (at rest and in transit) and remote access protocols.                                      |
 | **Usability/Achievability** | The level of training required for users to meet their goals; treated with the same priority as other architectural issues. |
+
+### Trade-Offs and Least Worst Architecture
+
+Applications can only support a few of the architecture characteristics we’ve listed for a variety of reasons.&#x20;
+
+1. each of the supported characteristics requires design effort and perhaps structural support.&#x20;
+2. the bigger problem lies with the fact that each architecture characteristic often has an impact on others. For example, if an architect wants to improve security, it will almost certainly negatively impact performance
+
+Each architecture characteristic that an architect designs support for potentially complicates the overall design. Thus, architects rarely encounter the situation where they are able to design a system and maximize every single architecture characteristic. More often, the decisions come down to trade-offs between several competing concerns.
+
+## Identifying Architectural Characteristics
+
+translate domain concerns to identify the right architectural characteristics. For example, is scalability the most important concern, or is itfault tolerance, security, or performance? Perhaps the system requires all four characteristics combined. Understanding the **key domain goals and domain situation**
+
+* One tip when collaborating with domain stakeholders to define the driving architec‐\
+  ture characteristics is to work hard to keep the final list as short as possible
+* A common anti-pattern in architecture entails trying to design a generic architecture, one that supports all the architecture characteristics. supporting too many architecture characteristics leads to greater and greater complexity before the archi‐\
+  tect and developers have even started addressing the problem domain, the original\
+  motivation for writing the software. **Don’t obsess** over the number of charateristics,\
+  but rather the motivation to **keep design simple**.
+
