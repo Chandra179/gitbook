@@ -30,4 +30,8 @@ The process of deconstructing a finished product, system, or idea to understand 
 
 * Example: A chef tastes a complex sauce at a famous restaurant and tries to identify the individual spices, the base fats used, and the cooking technique (e.g., reduction vs. thickening) just by analyzing the final flavor profile and texture.
 
+### Domain-Driven Architectural Thinking
+
+You start with the business reality, but you immediately move to the "Abstract" level to identify the technical characteristics (scalability, security, etc.) that will dictate the system's success or failure.
+
 ***

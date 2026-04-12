@@ -1,4 +1,4 @@
-# Software Architecture Fundamentals
+# Software Architecture
 
 Architecture characteristics refers to the “-ilities” that the system must support
 
@@ -191,5 +191,42 @@ Each kata has predefined sections:&#x20;
 * Requirements Domain/domain-level requirements, as an architect might expect from domain users/domain experts
 * Additional context Many of the considerations an architect must make aren’t explicitly expressed inrequirements but rather by implicit knowledge of the problem domain
 
-page 89: Case Study: Silicon Sandwiche
+## Architectural Fitness Functions
 
+In **Evolutionary Architecture**, a **fitness function** is a mechanism used to protect "architectural characteristics" (the -ilities) as a system evolves. It is effectively an automated "guardrail" that prevents architectural drift.
+
+While unit tests verify **business logic**, fitness functions verify **architectural integrity**. They ensure that as you add new features, you don't accidentally break requirements like scalability, security, or maintainability.
+
+| Category      | Description                               | Example                                           |
+| ------------- | ----------------------------------------- | ------------------------------------------------- |
+| **Atomic**    | Targets a single specific characteristic. | Checking for circular dependencies in a package.  |
+| **Holistic**  | Tests multiple interacting attributes.    | Testing if a security patch impacts latency.      |
+| **Triggered** | Runs on a specific event.                 | A CI/CD pipeline check on every pull request.     |
+| **Continual** | Monitors system health in real-time.      | Production alerts for memory leaks or CPU spikes. |
+| **Static**    | Analyzes code without running it.         | Linting or dependency analysis tools.             |
+| **Dynamic**   | Analyzes the system during execution.     | Chaos Engineering or distributed tracing.         |
+
+#### Example
+
+You can write code to enforce architectural rules. For instance, preventing the `Controller` layer from talking directly to the `Persistence` layer:
+
+```java
+noClasses().that().resideInAPackage("..controller..")
+  .should().accessClassesThat().resideInAPackage("..persistence..");
+```
+
+## Architectural Quanta and Granularity
+
+The concept of an **Architecture Quantum** defines the fundamental unit of software architecture. It moves beyond simple code coupling to include everything that binds a system together, such as business logic and data dependencies.
+
+An architecture quantum is an **independently deployable artifact** characterized by **high functional cohesion** and **synchronous connascence**.
+
+#### **The Three Core Components**
+
+* **Independently Deployable** A quantum must include all dependencies (like databases) required to function.
+  * _Monoliths:_ Usually a single quantum because they share one database.
+  * _Microservices:_ Often multiple quanta because each service has its own data store.
+* **High Functional Cohesion** This measures how unified the code is in its purpose. A quantum should focus on a specific business workflow or entity (e.g., a "Customer" component) rather than a "Utility" component filled with unrelated tasks.
+* **Synchronous Connascence** When two services communicate synchronously (waiting for a response), they become architecturally tethered. For the duration of that call, they must share the same operational characteristics (scalability, reliability) to avoid system failure.
+
+> **Key Takeaway:** Identifying the "quanta" in a system allows developers to understand where the architecture can be evolved independently and where it is strictly bound by functional or operational requirements.
