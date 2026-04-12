@@ -168,3 +168,28 @@ translate domain concerns to identify the right architectural characteristics. F
   motivation for writing the software. **Don’t obsess** over the number of charateristics,\
   but rather the motivation to **keep design simple**.
 
+One important thing to note is that agility does not equal time to market. Rather, it is\
+agility + testability + deployability.
+
+### Extracting Architecture Characteristics from Requirements
+
+For example, suppose an architect designs an application that handles class registration for university students. To make the math easy, assume that the school has 1,000 students and 10 hours for registration. Should an architect design a system assuming consistent scale, making the implicit assumption that the students during the registration process will distribute themselves evenly over time?\
+Or, based on knowledge of university students habits and proclivities, should the\
+architect design a system that can handle all 1,000 students attempting to register in\
+the last 10 minutes? Anyone who understands how much students stereotypically procrastinate knows the answer to this question! Rarely will details like this appear in requirements documents, yet they do inform the design decisions
+
+### Architecture Katas
+
+The basic premise of the kata exercise provides architects with a problem stated in domain terms and additional context (things that might not appear in requirements yet impact design).&#x20;
+
+Small teams work for 45 minutes on a design, then show results to the other groups, who vote on who came up with the best architecture. True to its original purpose, architecture katas provide a useful laboratory for aspiring architects.&#x20;
+
+Each kata has predefined sections:&#x20;
+
+* Description The overall domain problem the system is trying to solve&#x20;
+* Users The expected number and/or types of users of the system&#x20;
+* Requirements Domain/domain-level requirements, as an architect might expect from domain users/domain experts
+* Additional context Many of the considerations an architect must make aren’t explicitly expressed inrequirements but rather by implicit knowledge of the problem domain
+
+page 89: Case Study: Silicon Sandwiche
+
