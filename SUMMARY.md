@@ -34,4 +34,4 @@
 * [Books](books.md)
 * [Blog Architecture](blog-architecture.md)
 * [Software Architecture Fundamentals](software-architecture.md)
-* [Domain Travel](domain-travel.md)
+* [Online Travel Agency (OTA) & Flight Distribution](online-travel-agency-ota-and-flight-distribution.md)
