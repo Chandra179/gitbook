@@ -56,7 +56,7 @@ const NAME_OVERRIDES = {
 
 // Root .md files to expose as standalone pages, in order.
 // Files not listed here but found on disk are appended alphabetically.
-const ROOT_PAGE_ORDER = ['README', 'p2p-chat', 'reactjs', 'cognitive-skills', 'blog-architecture'];
+const ROOT_PAGE_ORDER = ['README', 'p2p-chat', 'reactjs', 'cognitive-skills'];
 
 // Top-level content directories, in order.
 // Directories not listed here but found on disk are appended alphabetically.

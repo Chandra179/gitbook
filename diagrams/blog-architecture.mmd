@@ -1,4 +1,17 @@
 graph TD
+    MarkdownFiles["Markdown Content\n(general/ golang/ math/ ...)"]
+
+    subgraph Build["Build (build.sh)"]
+        GenNav["gen-nav.js\n(scans content dirs)"]
+        GenSearch["gen-search-index.js\n(walks .md, splits by heading)"]
+        NavData["navigation-data.js"]
+        SearchIndex["search-index.json"]
+        MarkdownFiles --> GenNav
+        MarkdownFiles --> GenSearch
+        GenNav --> NavData
+        GenSearch --> SearchIndex
+    end
+
     subgraph Edge["Cloudflare Workers"]
         Static["Static Assets"]
     end
@@ -8,14 +21,20 @@ graph TD
         Router["URL Router"]
         ContentLoader["Content Loader"]
         Search["Full-Text Search"]
-        Rendering["Rendering Pipeline\n(Markdown · Math · Code · TOC)"]
+        Rendering["Rendering Pipeline\n(Markdown · Math · Code)"]
+        TOC["TOC Generator\n(IntersectionObserver)"]
     end
 
-    Static -->|"serve assets + markdown"| Browser
+    NavData -->|"bundled"| Static
+    SearchIndex -->|"bundled"| Static
+    MarkdownFiles -->|"served as-is"| Static
+
+    Static -->|"serve assets"| Browser
 
     Router -->|"route change"| App
-    App --> ContentLoader
-    App --> Search
+    App -->|"load page"| ContentLoader
+    App -->|"query"| Search
     ContentLoader -->|"fetch + cache markdown"| Static
-    ContentLoader --> Rendering
-    Search -->|"fetch all markdown at startup"| Static
+    ContentLoader -->|"parsed HTML"| Rendering
+    Rendering -->|"h2/h3 headings"| TOC
+    Search -->|"fetch search-index.json at startup"| Static

@@ -3,49 +3,16 @@ const TIMELINE_CONFIG = {
     MIN_ITEMS_FOR_GRID: 3
 };
 
+// Math rendering note:
+// Math is handled entirely at markdown parse time by the `gitbookMath` marked extension
+// (see marked-extensions.js). It matches GitBook-style $...$ and $$...$$ delimiters and
+// calls katex.renderToString() inline, producing <span class="math-single|math-double"> HTML.
+// KaTeX auto-render (renderMathInElement) is intentionally NOT used — it would conflict with
+// the pre-rendered spans and require a separate auto-render script bundle.
+
 class Renderer {
     constructor(contentElementId = 'content') {
         this.contentElementId = contentElementId;
-    }
-
-    renderMath() {
-        if (typeof renderMathInElement === 'undefined') {
-            console.warn('KaTeX auto-render not loaded - math rendering disabled');
-            return;
-        }
-
-        const content = document.getElementById(this.contentElementId);
-        if (!content) return;
-
-        try {
-            // 1. Auto-render delimiters ($$ and $)
-            renderMathInElement(content, {
-                delimiters: [
-                    { left: '$$', right: '$$', display: false },
-                    { left: '$', right: '$', display: false },
-                    { left: '\\[', right: '\\]', display: true },
-                    { left: '\\(', right: '\\)', display: false }
-                ],
-                throwOnError: false
-            });
-
-            // 2. Explicitly render elements with class="math"
-            const mathElements = content.querySelectorAll('.math');
-            mathElements.forEach(el => {
-                try {
-                    if (typeof katex !== 'undefined') {
-                        katex.render(el.textContent, el, {
-                            throwOnError: false,
-                            displayMode: false
-                        });
-                    }
-                } catch (e) {
-                    console.error('KaTeX rendering error for .math element:', e);
-                }
-            });
-        } catch (error) {
-            console.error('Error rendering math:', error);
-        }
     }
 
     renderCodeBlocks() {
@@ -179,7 +146,6 @@ class Renderer {
 
     renderAll() {
         this.applyTimelineClass();
-        this.renderMath();
         this.renderCodeBlocks();
     }
 }

@@ -21,10 +21,13 @@ cp src/robots.txt dist/robots.txt
 
 cp -r src/css dist/css
 
-# Generate navigation data from filesystem, then copy JS
+# Generate navigation data and search index from filesystem, then copy JS
 echo "Generating navigation data..."
 node scripts/gen-nav.js
+echo "Generating search index..."
+node scripts/gen-search-index.js
 cp -r src/js dist/js
+cp src/search-index.json dist/search-index.json
 
 # Copy .gitbook assets (images)
 mkdir -p dist/.gitbook

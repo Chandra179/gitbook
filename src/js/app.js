@@ -35,7 +35,7 @@ function portfolioApp() {
             });
 
             this.router = new Router(this.navigationData);
-            this.search = new Search(this.navigationData);
+            this.search = new Search();
             this.contentLoader = new ContentLoader(this.navigationData);
             this.tocGenerator = new TOCGenerator();
             this.renderer = new Renderer();
