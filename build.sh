@@ -28,7 +28,6 @@ echo "Generating search index..."
 node scripts/gen-search-index.js
 cp -r src/js dist/js
 cp src/worker.js dist/worker.js
-cp src/sw.js dist/sw.js
 cp src/search-index.json dist/search-index.json
 
 # Copy .gitbook assets (images)
