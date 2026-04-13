@@ -50,21 +50,19 @@ We deal with offsets. Instead of using one giant number, the CPU often uses a Ba
 
 Even though RAM is one long physical strip, the Operating System divides it into specific regions for every running program to keep things organized.
 
-**Stack (Automatic & Fast)**
+**Stack**
 
 Stack handles the immediate, short-term needs of functions.
 
 * Stores local variables, function parameters, and return addresses.
 * Uses LIFO (Last-In, First-Out). When a function is called, a "frame" is pushed on; when it finishes, the frame is popped off.
-* Hardware Link: Controlled directly by the **Stack Pointer (SP) register**. It is incredibly fast because the CPU always knows exactly where the next piece of data goes.
 
-**Heap (Flexible & Large)**
+**Heap**&#x20;
 
 Heap used for data that needs to stay around for a long time or is too big for the stack.
 
 * Stores global variables or data created "on the fly" (like a large image file or a list of users).
 * Logic: Managed manually by the programmer or the language's "Garbage Collector." It has no set order; the OS just finds an empty hole in memory and sticks the data there.
-* Hardware Link: Accessed via Pointers stored in general-purpose registers. It is slower than the stack because the CPU has to "lookup" where the data was stored.
 
 #### Shared Address Space
 
