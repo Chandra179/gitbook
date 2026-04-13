@@ -230,3 +230,19 @@ An architecture quantum is an **independently deployable artifact** characterize
 * **Synchronous Connascence** When two services communicate synchronously (waiting for a response), they become architecturally tethered. For the duration of that call, they must share the same operational characteristics (scalability, reliability) to avoid system failure.
 
 > **Key Takeaway:** Identifying the "quanta" in a system allows developers to understand where the architecture can be evolved independently and where it is strictly bound by functional or operational requirements.
+
+## Component Based Thinking
+
+Architecture Partitioning : layered architecture, modular monolith, DDD
+
+The separation enforced by technical partitioning enables developers to find certain\
+categories of the code base quickly, as it is organized by capabilities. Each partitioning offers different advantages and drawbacks.
+
+domain vs. technical partitioning
+
+Too fine-grained a component design leads to too much communication\
+between components to achieve results. Too coarse-grained components encourage\
+high internal coupling, which leads to difficulties in deployability and testability, as\
+well as modularity-related negative side effects.
+
+the decision is decided by how many architectural characteristics discovered if its single one then will likely using monolith if there are many like bidder and auctioneer can scale independently the use distributed system
