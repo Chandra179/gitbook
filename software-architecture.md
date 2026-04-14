@@ -246,3 +246,21 @@ high internal coupling, which leads to difficulties in deployability and testabi
 well as modularity-related negative side effects.
 
 the decision is decided by how many architectural characteristics discovered if its single one then will likely using monolith if there are many like bidder and auctioneer can scale independently the use distributed system
+
+## The 8 Fallacies of Distributed Computing
+
+**The network is reliable** Assuming that calls to remote services will always succeed, ignoring potential hardware failures, packet loss, or cable cuts.
+
+**Latency is zero** Assuming that moving data across a network is as fast as a local function call, neglecting the physical limits of distance and routing.
+
+**Bandwidth is infinite** Assuming you can send as much data as you want without congestion, which leads to bottlenecks and performance degradation.
+
+**The network is secure** Assuming the internal network is "safe," ignoring the need for encryption, authentication, and zero-trust security models.
+
+**Topology doesn't change** Assuming the network structure (servers, IP addresses, routers) is static, whereas in modern cloud environments, nodes are constantly added or removed.
+
+**There is one administrator** Assuming a single person or team has full control and visibility over the entire network, making troubleshooting complex across different owners.
+
+**Transport cost is zero** Assuming that the resources (CPU, money, time) required to serialize, send, and deserialize data are negligible.
+
+**The network is homogeneous** Assuming every device, OS, and protocol on the network is the same, whereas real-world networks are a mix of legacy and modern systems.

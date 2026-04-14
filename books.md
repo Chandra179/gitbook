@@ -6,8 +6,6 @@
 
 **"Infinite Powers: How Calculus Reveals the Secrets of the Universe" by Steven Strogatz**: Even if you already know calculus, this book changes your perspective on it from a "math requirement" to a universal language for describing change. It frames math as a discovery of the hidden logic in nature.
 
-**"How Emotions Are Made" by Lisa Feldman Barrett**: This challenges the traditional view that emotions are hardwired and universal. Instead, it suggests they are "predictions" constructed by the brain based on past experience—a perspective that aligns well with a "predictive modeling" mindset.
-
 **"The Visual Display of Quantitative Information" by Edward Tufte**: For someone dealing with data, this is the "bible" of communication. It teaches you how to present complex information without "chartjunk." It’s a masterclass in efficiency and clarity.
 
 **"The Misbehavior of Markets" by Benoit Mandelbrot**: The father of fractal geometry takes on finance. He argues that standard economic models (like the Bell Curve) are dangerously wrong because they ignore "wild randomness." It’s a very satisfying read for someone who likes identifying patterns that others miss.
