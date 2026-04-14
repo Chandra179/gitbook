@@ -1,4 +1,4 @@
-# Books
+# Books & Blog
 
 **"Antifragile: Things That Gain from Disorder" by Nassim Nicholas Taleb**: Taleb introduces the concept of "antifragility"—systems that actually get stronger when stressed. For an engineer, this changes how you think about "robustness" and "resilience" in both code and career.
 
@@ -43,3 +43,15 @@
 **"Adaptive Systems with Domain-Driven Design, Wardley Mapping, and Team Topologies" by Susanne Kaiser (2025/2026)**: This is the "Grand Unified Theory" book for the titles you mentioned. It connects the strategy (Wardley Mapping), the logic (DDD), and the organization (Team Topologies). It’s the "how-to" manual for the "Architecture for Flow" philosophy you found interesting
 
 **"Software Architecture: The Hard Parts" by Neal Ford & Mark Richards**: If you liked Hohpe's high-level view, this book provides the "low-level" trade-off analysis. It uses a very logical, almost mathematical approach to deciding between microservices and monoliths, data partitioning, and service granularity.
+
+
+
+[https://github.com/donnemartin/system-design-primer](https://github.com/donnemartin/system-design-primer)\
+[https://medium.com/airbnb-engineering](https://medium.com/airbnb-engineering)\
+[https://arxiv.org/list/cs.SE/recent](https://arxiv.org/list/cs.SE/recent)\
+[https://highscalability.com/](https://highscalability.com/)\
+[https://github.com/simskij/awesome-software-architecture](https://github.com/simskij/awesome-software-architecture)\
+[https://engineering.fb.com/](https://engineering.fb.com/)\
+[https://www.uber.com/us/en/blog/engineering/](https://www.uber.com/us/en/blog/engineering/)\
+[https://medium.com/discord-engineering/all?topic=engineering](https://medium.com/discord-engineering/all?topic=engineering)\
+[https://netflixtechblog.com/](https://netflixtechblog.com/)

@@ -1,7 +1,6 @@
 # Table of contents
 
 * [Experience](README.md)
-* [Cognitive Skills](cognitive-skills.md)
 * [General](general/README.md)
   * [Computing](general/computing.md)
   * [API Design Guidelines](general/api-design-guidelines.md)
@@ -31,7 +30,6 @@
   * [Notification System](system-design/notification-system.md)
 * [Machine Learning](ml/README.md)
   * [Chunking & Embedding](ml/chunking-and-embedding.md)
-* [Books](books.md)
-* [Blog Architecture](blog-architecture.md)
+* [Books & Blog](books.md)
 * [Software Architecture](software-architecture.md)
 * [Online Travel Agency](online-travel-agency.md)
