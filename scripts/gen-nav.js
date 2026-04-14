@@ -27,7 +27,6 @@ const NAME_OVERRIDES = {
     'blog-architecture':           'Blog Architecture',
     'p2p-chat':                    'P2P Chat',
     'reactjs':                     'ReactJS',
-    'cognitive-skills':            'Cognitive Skills',
     'general':                     'General',
     'golang':                      'Golang',
     'math':                        'Math',
