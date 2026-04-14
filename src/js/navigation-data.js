@@ -17,13 +17,8 @@ const navigationData = [
         standalone: true,
     },
     {
-        name: "Cognitive Skills",
-        slug: "cognitive-skills",
-        standalone: true,
-    },
-    {
-        name: "Blog Architecture",
-        slug: "blog-architecture",
+        name: "Online Travel Agency",
+        slug: "online-travel-agency",
         standalone: true,
     },
     {
