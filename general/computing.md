@@ -1,18 +1,35 @@
 # Computing
 
-## CPU
 
-### CPU Addresses Memory
+
+## CPU Addresses Memory
 
 The CPU treats memory like a massive array of numbered slots. Each slot has a unique address (a number).
 
-**The Address Bus**
+#### The Address Bus
 
-This is a physical set of wires connecting the CPU to the RAM. If a CPU wants to read data, it places the binary address of that data onto the address bus.
+This is a physical set of wires connecting the CPU to the RAM. If a CPU wants to read data, it places the binary address of that data onto the address bus. The width of this bus (e.g., 32-bit or 64-bit) determines the maximum amount of memory the CPU can "address" or physically talk to.
 
-**Memory Controller**
+#### Memory Controller
 
-This component sits between the CPU and RAM. It "sees" the address on the bus, finds that specific physical location in the memory chips, and opens the "gate" for that data to flow back to the CPU via the Data Bus.
+This component sits between the CPU and RAM. It "sees" the address on the bus, finds that specific physical location in the memory chips, and opens the "gate" for that data to flow back to the CPU via the Data Bus. In modern systems, this controller is usually integrated directly into the CPU die to reduce latency.
+
+#### The Data Bus
+
+While the Address Bus specifies "where" the data is, the Data Bus is the highway that carries the actual "what." Once the Memory Controller locates the address, the electrical signals representing the data travel across these wires. A wider data bus allows more bits to be transferred in a single clock cycle.
+
+#### On-Chip Memory: Registers and Cache
+
+Before the CPU even reaches out to the RAM via the buses, it utilizes internal memory to speed up execution:
+
+* **Registers:** Located directly inside the CPU cores. These are the fastest memory locations in the system, holding the immediate data the CPU is processing (like the operands for an addition).
+* **L1/L2/L3 Cache:** These are high-speed memory buffers on the CPU chip. They store copies of frequently accessed data from the RAM. Because the "trip" to RAM across the Address Bus is relatively slow, the CPU checks these caches first to save time.
+
+#### The Read/Write Cycle
+
+1. **Address Phase:** The CPU places the target address on the **Address Bus**.
+2. **Control Phase:** The CPU sends a signal (Read or Write) via the **Control Bus**.
+3. **Data Phase:** The **Memory Controller** activates the RAM, and data is either sent to the CPU or received from the CPU via the **Data Bus**.
 
 ***
 

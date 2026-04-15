@@ -19,6 +19,7 @@
 ### Project
 
 * Golang SDK: [https://github.com/Chandra179/gosdk](https://github.com/Chandra179/gosdk)
+* Golang Template: [https://github.com/Chandra179/brook](https://github.com/Chandra179/brook)
 
 ### Tech stack
 
