@@ -1,12 +1,12 @@
 # Table of contents
 
-* [Experience](README.md)
-* [General](general/README.md)
+* [General](README.md)
   * [Computing](general/computing.md)
   * [API Design Guidelines](general/api-design-guidelines.md)
   * [Database](general/database.md)
   * [Kafka](general/kafka.md)
   * [Oauth2 & Oidc](general/oauth2-and-oidc.md)
+  * [Networking](general/networking.md)
 * [Golang](golang/README.md)
   * [Compiler](golang/compiler.md)
   * [Goroutine](golang/goroutine.md)
@@ -33,3 +33,4 @@
 * [Books & Blog](books.md)
 * [Software Architecture](software-architecture.md)
 * [Online Travel Agency](online-travel-agency.md)
+* [Experience](<README (1).md>)
