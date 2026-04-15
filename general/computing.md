@@ -82,7 +82,7 @@ if you have **n bits**, you can represent **2ⁿ unique values**.
 
 **Example**:
 
-generate unique code 10.000/day using base64 with max length code 8
+generate unique code 10.000/day using base64 with max length code 8.
 
 <pre><code><strong>// Base64
 </strong><strong>64⁸ = if its represented to bits become (2^6)^8 = 2^48 
@@ -153,18 +153,11 @@ Notice:
 
 ### UTF-16
 
-Uses 2 or 4 bytes per character
-
-| Character | Code Point | UTF-16 (Hex)                             |
-| --------- | ---------- | ---------------------------------------- |
-| A         | U+0041     | 00 41                                    |
-| ñ         | U+00F1     | 00 F1                                    |
-| 中         | U+4E2D     | 4E 2D                                    |
-| 😄        | U+1F604    | D83D DE04 (two 16-bit “surrogate pairs”) |
+Uses 2 or 4 bytes per character.
 
 ### UTF-32
 
-Always uses 4 bytes per character (fixed length)
+Always uses 4 bytes per character (fixed length).
 
 | Character | Code Point | UTF-32 (Hex) |
 | --------- | ---------- | ------------ |
