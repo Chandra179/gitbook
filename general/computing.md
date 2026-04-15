@@ -170,35 +170,3 @@ Always uses 4 bytes per character (fixed length)
 | --------- | ---------- | ------------ |
 | A         | U+0041     | 00 00 00 41  |
 | 😄        | U+1F604    | 00 01 F6 04  |
-
-### Example
-
-```go
-package main
-
-import "fmt"
-
-func main() {
-    s := "A中😄"
-    for i, r := range s {
-        fmt.Printf("Index: %d | Char: %c | Rune (decimal): %d | Unicode: U+%04X\n", i, r, r, r)
-    }
-
-    runes := []int{}
-    for _, r := range s {
-        runes = append(runes, int(r))
-    }
-    fmt.Println("\nRune slice:", runes)
-}
-
-/*
-==== OUTPUT ====
-
-Index: 0 | Char: A | Rune (decimal): 65 | Unicode: U+0041
-Index: 1 | Char: 中 | Rune (decimal): 20013 | Unicode: U+4E2D
-Index: 4 | Char: 😄 | Rune (decimal): 128516 | Unicode: U+1F604
-
-Rune slice: [65 20013 128516]
-*/
-
-```
