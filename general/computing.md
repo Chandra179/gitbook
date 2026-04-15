@@ -1,115 +1,64 @@
 # Computing
 
+## CPU and Memory Architecture
 
+### Physical Hardware
 
-## CPU Addresses Memory
+<figure><img src="../.gitbook/assets/cpu.png" alt=""><figcaption></figcaption></figure>
 
-The CPU treats memory like a massive array of numbered slots. Each slot has a unique address (a number).
+To interact with RAM, the CPU uses a specific set of hardware components to locate and move data.
 
-#### The Address Bus
+1. **Address Bus (The "Where"):** The CPU sends a specific location number to RAM. The bus width determines the maximum number of "slots" the CPU is capable of seeing.
+2. **Data Bus (The "What"):** The highway that carries the actual bits. Its width determines how much data can be moved in a single "trip," regardless of how big the address was.
+3. **Memory Controller (The "Gatekeeper"):** The intermediate manager. It takes the CPU's request, finds the physical electrical row in the RAM, and handles the timing of the data transfer.
 
-This is a physical set of wires connecting the CPU to the RAM. If a CPU wants to read data, it places the binary address of that data onto the address bus. The width of this bus (e.g., 32-bit or 64-bit) determines the maximum amount of memory the CPU can "address" or physically talk to.
+### On-Chip Memory
 
-#### Memory Controller
+Before reaching out to the relatively "slow" RAM, the CPU utilizes memory located directly on its own chip.
 
-This component sits between the CPU and RAM. It "sees" the address on the bus, finds that specific physical location in the memory chips, and opens the "gate" for that data to flow back to the CPU via the Data Bus. In modern systems, this controller is usually integrated directly into the CPU die to reduce latency.
+#### CPU Cache (L1, L2, L3)
 
-#### The Data Bus
+High-speed buffers that store copies of frequently accessed data from RAM. The CPU checks these first to avoid the time-consuming trip across the Address Bus.
 
-While the Address Bus specifies "where" the data is, the Data Bus is the highway that carries the actual "what." Once the Memory Controller locates the address, the electrical signals representing the data travel across these wires. A wider data bus allows more bits to be transferred in a single clock cycle.
+#### Registers
 
-#### On-Chip Memory: Registers and Cache
+The fastest memory locations in existence, located inside the CPU core.
 
-Before the CPU even reaches out to the RAM via the buses, it utilizes internal memory to speed up execution:
+* **General Purpose:** Holds immediate data being processed (e.g., operands for addition).
+* **Program Counter (PC):** Holds the address of the _next_ instruction to be executed.
+* **Stack Pointer (SP):** Holds the memory address of the "top" of the stack to manage function calls.
 
-* **Registers:** Located directly inside the CPU cores. These are the fastest memory locations in the system, holding the immediate data the CPU is processing (like the operands for an addition).
-* **L1/L2/L3 Cache:** These are high-speed memory buffers on the CPU chip. They store copies of frequently accessed data from the RAM. Because the "trip" to RAM across the Address Bus is relatively slow, the CPU checks these caches first to save time.
+### The Execution Cycle (Fetch-Execute)
 
-#### The Read/Write Cycle
+This is the continuous loop the CPU performs to run a program.
 
-1. **Address Phase:** The CPU places the target address on the **Address Bus**.
-2. **Control Phase:** The CPU sends a signal (Read or Write) via the **Control Bus**.
-3. **Data Phase:** The **Memory Controller** activates the RAM, and data is either sent to the CPU or received from the CPU via the **Data Bus**.
+1. **Fetch:** The CPU looks at the **Program Counter**, goes to that address in memory via the Address Bus, and grabs the instruction.
+2. **Decode:** The Control Unit determines what the instruction means (e.g., a `MOV` or `ADD` command).
+3. **Execute:** The ALU (Arithmetic Logic Unit) performs the operation, or data is moved between registers.
+4. **Store (Write-Back):** The result is written back to a register or a specific memory address via the Data Bus.
 
-***
+### Virtual Memory and Addressing
 
-### **The Instruction Set**
+The Operating System and CPU work together to provide a simplified view of memory to programs.
 
-When a programmer writes code, it is compiled into machine code. An instruction might look like this in assembly:
+* **Virtual Address Space:** Every program is given its own continuous range of addresses (from 0 to Max). It doesn't know where its data is physically stored in the RAM chips; the MMU handles that translation.
+* **Segmentation and Offsets:** The CPU often calculates addresses using a **Base Address** (start of a region) + an **Offset** (distance into that region).
+  * _Example:_ If a data block starts at `1000` and you need the 5th item, the CPU accesses `1000 + 5`.
+* **Memory Width:** A 64-bit CPU can address $$2^{64}$$bytes of memory, whereas a 32-bit CPU is limited to$$2^{32}$$ bytes (4GB).
 
-```
-MOV EAX, [0x4001]
-```
+### Memory Regions
 
-This literally tells the CPU: "Go to memory address 0x4001, grab whatever is there, and put it in the EAX register." The "where" is hardcoded into the program's instructions.
+<figure><img src="../.gitbook/assets/ram.png" alt=""><figcaption></figcaption></figure>
 
-### **Registers**
+The OS divides a program's virtual memory into specific "territories" to prevent data corruption.
 
-**Program Counter (PC)**
+| Feature        | The Stack                                    | The Heap                                  |
+| -------------- | -------------------------------------------- | ----------------------------------------- |
+| **Purpose**    | Short-term local variables & function calls. | Long-term data & large objects.           |
+| **Management** | Automatic (LIFO - Last In, First Out).       | Manual (Programmer) or Garbage Collector. |
+| **Growth**     | Starts at high addresses, grows **down**.    | Starts at low addresses, grows **up**.    |
 
-It holds the address of the _next_ instruction. Once an instruction is fetched, the PC increments to the next address so the CPU knows where to go next.
-
-**Stack Pointer (SP)**
-
-This holds the address of the "top" of the stack. When you call a function, the CPU looks at the SP to know exactly where to write the return address.
-
-**Segmentation and Offsets**
-
-We deal with offsets. Instead of using one giant number, the CPU often uses a Base Address (the start of a memory region) + an Offset (how far into that region to look).
-
-* Example: If your "Data Region" starts at `1000` and you want the 5th item, the CPU calculates `1000 + 5 = 1005`.
-
-***
-
-### Memory
-
-#### Memory Regions
-
-Even though RAM is one long physical strip, the Operating System divides it into specific regions for every running program to keep things organized.
-
-**Stack**
-
-Stack handles the immediate, short-term needs of functions.
-
-* Stores local variables, function parameters, and return addresses.
-* Uses LIFO (Last-In, First-Out). When a function is called, a "frame" is pushed on; when it finishes, the frame is popped off.
-
-**Heap**&#x20;
-
-Heap used for data that needs to stay around for a long time or is too big for the stack.
-
-* Stores global variables or data created "on the fly" (like a large image file or a list of users).
-* Logic: Managed manually by the programmer or the language's "Garbage Collector." It has no set order; the OS just finds an empty hole in memory and sticks the data there.
-
-#### Shared Address Space
-
-Every program is given its own Virtual Address Space, which is a continuous range of numbers (addresses) from $$0$$ to a maximum value determined by the CPU bit-width (e.g., $$2^{64}-1$$).
-
-{% hint style="info" %}
-The Stack and Heap are not separate physical boxes; they are just designated territories within this single number line.
-{% endhint %}
-
-#### The "Collision" Prevention
-
-In a typical memory layout, the Stack and the Heap are placed at opposite ends of the memory region:
-
-* The Stack starts at a high address and grows down.
-* The Heap starts at a lower address and grows up. This design ensures they have the maximum amount of space to grow before they potentially crash into each other.
-
-#### **Memory Width (12, 24, 32, 64 bits)**
-
-Usually, when we talk about 32-bit or 64-bit systems, we are talking about the width of the registers and the address bus. A 64-bit CPU can "address" much more memory ($$2^{64}$$ bytes) than a 32-bit CPU ($$2^{32}$$ bytes, or 4GB).
-
-#### **Virtual Memory**
-
-Every program thinks it has access to the entire memory range (e.g., from address `0` to Max). The MMU (Memory Management Unit) intercepts these "virtual" addresses and maps them to "physical" addresses in the actual RAM chips.
-
-### Execution Cycle
-
-1. Fetch: The CPU looks at the Program Counter, goes to that address in Memory, and grabs the instruction.
-2. Decode: The Control Unit figures out what the instruction means (e.g., "This is an addition command").
-3. Execute: The ALU performs the math, or data is moved between Registers.
-4. Store: The result is written back to a register or a specific memory address.
+> **Note on "Collision Prevention":** By having the Stack grow down and the Heap grow up from opposite ends of the memory space, the system ensures they have the maximum possible room to expand before crashing into each other.
 
 ## Bits & Bytes
 
@@ -332,7 +281,3 @@ TURN is an extension of STUN that acts as a fallback when STUN fails (most commo
 * The peer sends all its traffic _to_ the TURN server's Relayed Transport Address.
 * The TURN server receives the data and relays it to the first client.
 * All communication for the duration of the session flows through the TURN server
-
-## Other
-
-A/B testing, Content enrichment, Re-ranking, Fraud detection with (graph nodes)
