@@ -153,14 +153,7 @@ Notice:
 
 ### UTF-16
 
-Uses 2 or 4 bytes per character
-
-| Character | Code Point | UTF-16 (Hex)                             |
-| --------- | ---------- | ---------------------------------------- |
-| A         | U+0041     | 00 41                                    |
-| ñ         | U+00F1     | 00 F1                                    |
-| 中         | U+4E2D     | 4E 2D                                    |
-| 😄        | U+1F604    | D83D DE04 (two 16-bit “surrogate pairs”) |
+Uses 2 or 4 bytes per character.
 
 ### UTF-32
 
