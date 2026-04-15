@@ -82,7 +82,7 @@ if you have **n bits**, you can represent **2ⁿ unique values**.
 
 **Example**:
 
-generate unique code 10.000/day using base64 with max length code 8
+generate unique code 10.000/day using base64 with max length code 8.
 
 <pre><code><strong>// Base64
 </strong><strong>64⁸ = if its represented to bits become (2^6)^8 = 2^48 
