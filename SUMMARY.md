@@ -1,8 +1,9 @@
 # Table of contents
 
-* [General](README.md)
-  * [Computing](general/computing.md)
+* [Experience](README.md)
+* [General](<README (1).md>)
   * [API Design Guidelines](general/api-design-guidelines.md)
+  * [Computing](general/computing.md)
   * [Database](general/database.md)
   * [Kafka](general/kafka.md)
   * [Oauth2 & Oidc](general/oauth2-and-oidc.md)
@@ -32,5 +33,3 @@
   * [Chunking & Embedding](ml/chunking-and-embedding.md)
 * [Books & Blog](books.md)
 * [Software Architecture](software-architecture.md)
-* [Online Travel Agency](online-travel-agency.md)
-* [Experience](<README (1).md>)
