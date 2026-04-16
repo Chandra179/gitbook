@@ -24,7 +24,6 @@ const OUTPUT = path.join(ROOT, 'src/js/navigation-data.js');
 // without renaming the file/directory.
 const NAME_OVERRIDES = {
     'README':                      'Introduction',
-    'blog-architecture':           'Blog Architecture',
     'p2p-chat':                    'P2P Chat',
     'reactjs':                     'ReactJS',
     'fundamental':                 'Fundamentals',
@@ -36,7 +35,7 @@ const NAME_OVERRIDES = {
     'web-intelligence':            'Web Intelligence',
     'precalculus':                 'Precalculus',
     'cpu':                         'CPU',
-    'api-design-guidelines':       'API Design Guidelines',
+    'api-design-guidelines':       'API Best Practices',
     'oauth2-and-oidc':             'OAuth2 and OIDC',
     'sequence-series-limit':       'Sequence, Series, Limit',
     'linear-algebra':              'Linear Algebra',
@@ -64,7 +63,7 @@ const CATEGORY_ORDER = ['fundamental', 'system-design', 'golang', 'math', 'ml', 
 // Directories / files to never include.
 const IGNORE = new Set([
     'node_modules', 'dist', 'src', 'scripts', '.git', '.gitbook',
-    'CLAUDE.md', 'SUMMARY.md', 'diagrams', 'books.md',
+    'CLAUDE.md', 'SUMMARY.md', 'diagrams', 'books.md', 'online-travel-agency.md'
 ]);
 
 function toName(slug) {
