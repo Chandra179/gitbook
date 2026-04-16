@@ -2,7 +2,7 @@
 // Run `node scripts/gen-nav.js` (or `./build.sh`) to regenerate.
 const navigationData = [
     {
-        name: "Introduction",
+        name: "README",
         slug: "README",
         standalone: true,
     },
@@ -34,6 +34,7 @@ const navigationData = [
             { name: "Computing", slug: "computing" },
             { name: "Database", slug: "database" },
             { name: "Kafka", slug: "kafka" },
+            { name: "Networking", slug: "networking" },
             { name: "OAuth2 and OIDC", slug: "oauth2-and-oidc" },
         ],
     },

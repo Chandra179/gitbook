@@ -4,7 +4,7 @@
 
 ### Physical Hardware
 
-<figure><img src="../.gitbook/assets/cpu.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="/.gitbook/assets/cpu.png" alt=""><figcaption></figcaption></figure>
 
 To interact with RAM, the CPU uses a specific set of hardware components to locate and move data.
 
@@ -48,7 +48,7 @@ The Operating System and CPU work together to provide a simplified view of memor
 
 ### Memory Regions
 
-<figure><img src="../.gitbook/assets/ram.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="/.gitbook/assets/ram.png" alt=""><figcaption></figcaption></figure>
 
 The OS divides a program's virtual memory into specific "territories" to prevent data corruption.
 
