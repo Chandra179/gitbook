@@ -1,5 +1,39 @@
 # Networking
 
+## HTTP&#x20;
+
+| Version      | Transport  | Key Feature                            | Primary Trade-off                                 |
+| ------------ | ---------- | -------------------------------------- | ------------------------------------------------- |
+| **HTTP/1.1** | TCP        | Persistent Connections                 | Head-of-Line (HOL) Blocking at Application Layer. |
+| **HTTP/2**   | TCP        | Multiplexing & Binary Framing          | HOL Blocking at Transport Layer (TCP-level).      |
+| **HTTP/3**   | UDP (QUIC) | No HOL Blocking & Connection Migration | Higher CPU usage; potential UDP firewall blocks.  |
+
+* **Cookies:** Client-side storage. Small (\~4KB). Used for session IDs or user preferences.
+* **Sessions:** Server-side storage. The client holds a `SessionID`, but data (cart, user info) stays on the server.
+* **JWT (JSON Web Token):** Stateless authentication. The token contains all user data (claims) and is signed by the server.
+* **Basic Auth:** Username/Password sent in headers (Base64). Must use HTTPS.
+* **OAuth2:** Framework for delegated authorization (e.g., "Login with Google").
+
+***
+
+* **Connection Pooling:** Reusing a set of established TCP connections to avoid the "Three-way Handshake" latency.
+* **Keep-Alive:** Header that prevents a connection from closing immediately after a request.
+* **Cache-Control:**
+  * `max-age`: Time (in seconds) the browser should trust the local copy.
+  * `no-cache`: Must re-validate with the server before using.
+  * `immutable`: The resource will never change (great for versioned assets).
+* **ETag:** A unique hash of a resource. Server returns `304 Not Modified` if the hash hasn't changed.
+
+***
+
+* **HTTPS (TLS):** Encrypts the HTTP request/response. Essential for privacy and data integrity.
+* **CORS (Cross-Origin Resource Sharing):** Security mechanism that restricts how a browser interacts with resources from a different domain.
+* **Idempotency:**
+  * **Idempotent:** GET, PUT, DELETE (Multiple identical requests have the same effect as one).
+  * **Non-Idempotent:** POST (Multiple requests create multiple resources)
+
+***
+
 ## NAT
 
 ### Packet Flow
