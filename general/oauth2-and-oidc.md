@@ -18,7 +18,7 @@ Access Token TTL: Short (e.g., 5-15 minutes)
 
 #### Refresh Token
 
-Check if refresh attempt fails  (might be the refresh token is expired. And handle failure gracefully (delete session + force re-login) like logout mechanism
+Check if refresh attempt fails (might be the refresh token is expired. And handle failure gracefully (delete session + force re-login) like logout mechanism
 
 #### **Refresh Access token**
 
@@ -46,21 +46,3 @@ for protected routes, required user to be login first
 #### **Logout**
 
 Delete the local session (destroy the session in Redis/Memory and clear the cookie).
-
-#### DB Schema
-
-```sql
-CREATE TABLE users (
-    -- UUID v7 
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    
-    -- Email is often synced from OIDC, but can change. 
-    -- Treat it as mutable data, not an ID.
-    email VARCHAR(255) NOT NULL, 
-    
-    full_name VARCHAR(100),
-    
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-```

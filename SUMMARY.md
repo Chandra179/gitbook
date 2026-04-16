@@ -1,7 +1,7 @@
 # Table of contents
 
 * [Experience](README.md)
-* [General](<README (1).md>)
+* [General](general/README.md)
   * [API Design Guidelines](general/api-design-guidelines.md)
   * [Computing](general/computing.md)
   * [Database](general/database.md)
