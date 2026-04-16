@@ -1,11 +1,5 @@
 # Books & Blog
 
-**"Antifragile: Things That Gain from Disorder" by Nassim Nicholas Taleb**: Taleb introduces the concept of "antifragility"—systems that actually get stronger when stressed. For an engineer, this changes how you think about "robustness" and "resilience" in both code and career.
-
-**"The Great Mental Models" by Shane Parrish**: A collection of tools from various disciplines (physics, chemistry, biology) used to deconstruct problems. It’s like a design patterns book, but for life and strategy
-
-**"Infinite Powers: How Calculus Reveals the Secrets of the Universe" by Steven Strogatz**: Even if you already know calculus, this book changes your perspective on it from a "math requirement" to a universal language for describing change. It frames math as a discovery of the hidden logic in nature.
-
 **"The Visual Display of Quantitative Information" by Edward Tufte**: For someone dealing with data, this is the "bible" of communication. It teaches you how to present complex information without "chartjunk." It’s a masterclass in efficiency and clarity.
 
 **"The Misbehavior of Markets" by Benoit Mandelbrot**: The father of fractal geometry takes on finance. He argues that standard economic models (like the Bell Curve) are dangerously wrong because they ignore "wild randomness." It’s a very satisfying read for someone who likes identifying patterns that others miss.
