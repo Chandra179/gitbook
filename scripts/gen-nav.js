@@ -27,7 +27,7 @@ const NAME_OVERRIDES = {
     'blog-architecture':           'Blog Architecture',
     'p2p-chat':                    'P2P Chat',
     'reactjs':                     'ReactJS',
-    'general':                     'General',
+    'fundamental':                 'Fundamentals',
     'golang':                      'Golang',
     'math':                        'Math',  
     'ml':                          'ML',
@@ -59,7 +59,7 @@ const ROOT_PAGE_ORDER = ['README', 'p2p-chat', 'reactjs'];
 
 // Top-level content directories, in order.
 // Directories not listed here but found on disk are appended alphabetically.
-const CATEGORY_ORDER = ['general', 'golang', 'math', 'ml', 'system-design'];
+const CATEGORY_ORDER = ['fundamental', 'system-design', 'golang', 'math', 'ml', ];
 
 // Directories / files to never include.
 const IGNORE = new Set([

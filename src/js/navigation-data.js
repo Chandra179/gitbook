@@ -2,7 +2,7 @@
 // Run `node scripts/gen-nav.js` (or `./build.sh`) to regenerate.
 const navigationData = [
     {
-        name: "README",
+        name: "Introduction",
         slug: "README",
         standalone: true,
     },
@@ -22,13 +22,8 @@ const navigationData = [
         standalone: true,
     },
     {
-        name: "Software Architecture",
-        slug: "software-architecture",
-        standalone: true,
-    },
-    {
-        name: "General",
-        slug: "general",
+        name: "Fundamentals",
+        slug: "fundamental",
         pages: [
             { name: "API Design Guidelines", slug: "api-design-guidelines" },
             { name: "Computing", slug: "computing" },
@@ -36,6 +31,19 @@ const navigationData = [
             { name: "Kafka", slug: "kafka" },
             { name: "Networking", slug: "networking" },
             { name: "OAuth2 and OIDC", slug: "oauth2-and-oidc" },
+            { name: "Software Architecture", slug: "software-architecture" },
+        ],
+    },
+    {
+        name: "System Design",
+        slug: "system-design",
+        pages: [
+            { name: "Consistent Hashing", slug: "consistent-hashing" },
+            { name: "Distributed Cache", slug: "distributed-cache" },
+            { name: "Distributed Task Scheduler", slug: "distributed-task-scheduler" },
+            { name: "ID Generator", slug: "id-generator" },
+            { name: "Notification System", slug: "notification-system" },
+            { name: "Rate Limit", slug: "rate-limit" },
         ],
     },
     {
@@ -71,18 +79,6 @@ const navigationData = [
         slug: "ml",
         pages: [
             { name: "Chunking and Embedding", slug: "chunking-and-embedding" },
-        ],
-    },
-    {
-        name: "System Design",
-        slug: "system-design",
-        pages: [
-            { name: "Consistent Hashing", slug: "consistent-hashing" },
-            { name: "Distributed Cache", slug: "distributed-cache" },
-            { name: "Distributed Task Scheduler", slug: "distributed-task-scheduler" },
-            { name: "ID Generator", slug: "id-generator" },
-            { name: "Notification System", slug: "notification-system" },
-            { name: "Rate Limit", slug: "rate-limit" },
         ],
     },
 ];
