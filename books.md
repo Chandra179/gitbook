@@ -6,15 +6,9 @@
 
 **"Lords of Finance" by Liaquat Ahamed**: A fascinating look at the four central bankers who accidentally triggered the Great Depression. It reads like a psychological thriller but explains the systemic mechanics of global interest rates and currency valuation.
 
-**"Gödel, Escher, Bach: An Eternal Golden Braid" by Douglas Hofstadter**: A classic for a reason. It explores how self-reference and formal systems (like math and code) can give rise to "meaning." It’s a dense, playful puzzle of a book that connects logic, art, and music.
-
-**"The Order of Time" by Carlo Rovelli**: A short, mind-bending book by a theoretical physicist. It deconstructs our intuitive sense of time, explaining that on a fundamental level, "now" doesn't actually exist. It’s excellent for stretching your conceptual boundaries of reality.
-
 **"The Software Architect Elevator" by Gregor Hohpe**: This is perfect for an engineer transitioning into more senior or architectural roles. It discusses the need to "ride the elevator" between the engine room (technical implementation) and the penthouse (business strategy). It helps you understand why technical excellence isn't always enough to make a project succeed
 
 **"Architecture for Flow" (Modern Architecture)**: This is a newer perspective (popular in 2025-2026 circles) that integrates Wardley Mapping (strategy), Domain-Driven Design (modeling), and Team Topologies (structure). It’s about building systems that don't just work, but allow for a continuous "flow" of value without bottlenecks.
-
-**"The Selfish Gene" by Richard Dawkins**: While technically a biology book, it is highly recommended for software engineers because it describes evolution as an information-processing system. It frames genes as "code" trying to survive in a competitive environment, which offers a fascinating perspective on legacy code, refactoring, and system survival.
 
 **"Complexity: A Guided Tour" by Melanie Mitchell**: This bridges the gap between computer science and biology. It covers how simple rules (like those in cellular automata or genetic algorithms) lead to complex, emergent behavior—a great "new perspective" on how to build decentralized or autonomous systems.
 
@@ -37,8 +31,6 @@
 **"Adaptive Systems with Domain-Driven Design, Wardley Mapping, and Team Topologies" by Susanne Kaiser (2025/2026)**: This is the "Grand Unified Theory" book for the titles you mentioned. It connects the strategy (Wardley Mapping), the logic (DDD), and the organization (Team Topologies). It’s the "how-to" manual for the "Architecture for Flow" philosophy you found interesting
 
 **"Software Architecture: The Hard Parts" by Neal Ford & Mark Richards**: If you liked Hohpe's high-level view, this book provides the "low-level" trade-off analysis. It uses a very logical, almost mathematical approach to deciding between microservices and monoliths, data partitioning, and service granularity.
-
-
 
 [https://github.com/donnemartin/system-design-primer](https://github.com/donnemartin/system-design-primer)\
 [https://medium.com/airbnb-engineering](https://medium.com/airbnb-engineering)\
