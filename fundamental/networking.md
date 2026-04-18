@@ -62,7 +62,7 @@ This determines how "friendly" a NAT is to Peer-to-Peer connections.
 
 #### Mapping Behavior (Outgoing)
 
-<figure><img src="../.gitbook/assets/nat.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="/.gitbook/assets/nat.png" alt=""><figcaption></figcaption></figure>
 
 1. **Endpoint-Independent Mapping (EIM):** Reuses the same public port for all destinations. (Easiest for P2P).
 2. **Address-Dependent Mapping (ADM):** Different public port for different destination IPs.
@@ -70,7 +70,7 @@ This determines how "friendly" a NAT is to Peer-to-Peer connections.
 
 #### Filtering Behavior (Incoming)
 
-<figure><img src="../.gitbook/assets/nat_filter.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="/.gitbook/assets/nat_filter.png" alt=""><figcaption></figcaption></figure>
 
 1. **Endpoint-Independent Filtering (EIF):** Anyone can send data back to the opened public port.
 2. **Address-Restricted:** Only the IP you contacted can send data back.
