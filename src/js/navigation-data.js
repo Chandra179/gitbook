@@ -17,15 +17,10 @@ const navigationData = [
         standalone: true,
     },
     {
-        name: "Online Travel Agency",
-        slug: "online-travel-agency",
-        standalone: true,
-    },
-    {
         name: "Fundamentals",
         slug: "fundamental",
         pages: [
-            { name: "API Design Guidelines", slug: "api-design-guidelines" },
+            { name: "API Best Practices", slug: "api-design-guidelines" },
             { name: "Computing", slug: "computing" },
             { name: "Database", slug: "database" },
             { name: "Kafka", slug: "kafka" },
