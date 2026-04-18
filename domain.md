@@ -50,7 +50,9 @@
 **Personal Knowledge Base with Semantic Search**
 
 * **Concept:** Markdown notes searchable via natural language with ranked results (an evolution of the GitBook search layer).
+* **Current State:** im using gitbook and sync with github so all of my data is in markdown format
 * **Engine:** `AST chunking` + `embeddings` + `cosine similarity` + `Go REST API`.
+* **Dependencies:** chunking library, vector db, prog lang
 * **Reference Notes:** chunking-and-embedding.md.
 
 **Real-Time Auction Platform**
@@ -58,3 +60,10 @@
 * **Concept:** Real-time bidding with instant winner notification and high concurrency.
 * **Engine:** `WebSockets`, `Kafka` for bid events, `rate limiting`, `notification fan-out`, `strong consistency`.
 * **Reference Notes:** rate-limit, notification-system, Kafka.
+
+**Travel itinerary**
+
+* User sharing itinerary, API integration with 3rd party like local guide, riding, shop (cofee, fnb, antique, etc..), events like (city, provice, national based), or use realtime scrape data from internet (update every n seconds/minutes).
+* User sharing experience (e.g, user a: im using .. to ...), rating, story, etc..
+* User can be anonymous
+* User can search events, places, etc..

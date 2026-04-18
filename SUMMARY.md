@@ -34,3 +34,5 @@
 * [Machine Learning](ml/README.md)
   * [Chunking & Embedding](ml/chunking-and-embedding.md)
 * [Books & Blog](books.md)
+* [Personal Knowledge Base](personal-knowledge-base.md)
+* [Travel Itineraries](travel-itineraries.md)
