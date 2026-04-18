@@ -34,81 +34,56 @@
 
 ***
 
-## NAT
+## Network Address Translation (NAT)
 
-### Packet Flow
+NAT was primarily created as a "stop-gap" solution for **IPv4 Exhaustion**. It allows multiple devices on a private network to share a single public IPv4 address.
 
-* Your device sends: `src:192.168.1.50:5000 → dst:Spotify (35.186.224.25)`
-* Router receives it and performs NAT: Converts private source → public source\
-  `192.168.1.50:5000 → 145.23.66.90:41200`
-* Router forwards the translated packet to Spotify: `src:145.23.66.90:41200 → dst:35.186.224.25`
-* Spotify replies back to the router’s public IP: `reply → 145.23.66.90:41200`
-* Router checks its NAT table entry: `145.23.66.90:41200 ↔ 192.168.1.50:5000`
-* Router rewrites the reply back to the private address: `dst becomes 192.168.1.50:5000`
-* Packet is delivered to your device.
+Before getting into complex mapping, you should know the three basic functional types:
 
-***
+* **Static NAT (1-to-1):** Maps one private IP to one public IP. Used for servers inside a network that need to be accessible from the outside.
+* **Dynamic NAT (M-to-M):** Maps a private IP to a public IP from a pool of available public addresses.
+* **PAT (Port Address Translation / NAT Overload):** The most common form (used in homes). Thousands of private IPs share **one** public IP by using unique port numbers to distinguish sessions.
 
-### NAT Mapping & Filtering
+### Packet Flow & Terminology
 
-**Mapping Behavior (Outgoing)**
+* **Inside Local:** The real IP of the device (e.g., 192.168.1.50).
+* **Inside Global:** The public IP assigned by the ISP (e.g., 145.23.66.90).
+* **Outside Global:** The IP of the destination (e.g., Spotify).
 
-```
-1. Endpoint-Independent Mapping (EIM)
-   Internal: 192.168.1.50:5000
-   → Sends to 1.1.1.1:443 → Router maps to 145.23.66.90:62000
-   → Sends to 8.8.8.8:443 → STILL uses 145.23.66.90:62000
-   (Same external port reused no matter the destination)
+**The Process:**
 
-2. Address-Dependent Mapping (ADM)
-   Internal: 192.168.1.50:5000
-   → Sends to 1.1.1.1:443 → mapped to 145.23.66.90:62000
-   → Sends to 8.8.8.8:443 → mapped to 145.23.66.90:62001
-   (New external port for each NEW external IP)
+1. **Outgoing:** Device (Source: 192.168.1.50:5000) -> Router -> Router translates to (Source: 145.23.66.90:41200) -> Internet.
+2. **NAT Table:** Router saves the mapping: `192.168.1.50:5000 <-> 145.23.66.90:41200`.
+3. **Incoming:** Spotify replies to `145.23.66.90:41200`. Router looks at the table, sees it belongs to `192.168.1.50:5000`, and forwards it.
 
-3. Address-and-Port-Dependent (Symmetric NAT)
-   Internal: 192.168.1.50:5000
-   → Sends to 1.1.1.1:443 → mapped to 145.23.66.90:62000
-   → Sends to 1.1.1.1:80  → mapped to 145.23.66.90:62001
-   (New external port for EACH different IP OR PORT)
-```
+### NAT Mapping & Filtering (P2P Mechanics)
 
-**Filtering Behavior (Incoming)**
+This determines how "friendly" a NAT is to Peer-to-Peer connections.
 
-<pre><code>1. Endpoint-Independent Filtering (EIF) 
-   Router opened: 145.23.66.90:62000 → 192.168.1.50:5000 
-   ANY external host can now send to 145.23.66.90:62000 
-   (Most open, good for P2P)
+#### Mapping Behavior (Outgoing)
 
-2. Address-Restricted Filtering 
-   145.23.66.90:62000  contacted 1.1.1.1 
-   ONLY 1.1.1.1 can reply to 145.23.66.90:62000 
-   (Different IPs are blocked)
-<strong>
-</strong><strong>3. Port-Restricted Filtering 
-</strong><strong>   145.23.66.90:62000 contacted 1.1.1.1:443 
-</strong><strong>   ONLY 1.1.1.1:443 can reply 
-</strong><strong>   (Strictest; both IP AND port must match)
-</strong></code></pre>
+<figure><img src="../.gitbook/assets/nat.png" alt=""><figcaption></figcaption></figure>
 
-### NAT Traversal
+1. **Endpoint-Independent Mapping (EIM):** Reuses the same public port for all destinations. (Easiest for P2P).
+2. **Address-Dependent Mapping (ADM):** Different public port for different destination IPs.
+3. **Address-and-Port-Dependent (Symmetric):** Different public port for every unique IP:Port combination. (Hardest for P2P).
 
-**STUN (Hole Punching)**
+#### Filtering Behavior (Incoming)
 
-* A client behind a NAT sends a request to a STUN server on the public internet.
-* The NAT translates the client's private IP and port to a public IP and port.
-* The STUN server sees the public IP/port in the packet's source address.
-* The STUN server sends this public IP/port back to the client.
-* The client then shares this public address information with its peer via a separate signaling mechanism.
-* The peers attempt a direct peer-to-peer (P2P) connection using the discovered public addresses.
+<figure><img src="../.gitbook/assets/nat_filter.png" alt=""><figcaption></figcaption></figure>
 
-**TURN (Relay)**
+1. **Endpoint-Independent Filtering (EIF):** Anyone can send data back to the opened public port.
+2. **Address-Restricted:** Only the IP you contacted can send data back.
+3. **Port-Restricted:** Only the specific IP AND Port you contacted can send data back.
 
-TURN is an extension of STUN that acts as a fallback when STUN fails (most commonly due to Symmetric NAT or strict firewall policies).
+### NAT Traversal (Hole Punching & Relays)
 
-* The **ICE framework** attempts STUN first. If the direct connection attempt fails, the clients fall back to TURN.
-* The client requests an Allocation on the TURN server. The TURN server reserves a public IP address and port (the Relayed Transport Address) for the client.
-* The client sends this Relayed Transport Address to its peer via the signaling mechanism.
-* The peer sends all its traffic _to_ the TURN server's Relayed Transport Address.
-* The TURN server receives the data and relays it to the first client.
-* All communication for the duration of the session flows through the TURN server
+* **STUN (Session Traversal Utilities for NAT):** A "What's my IP?" service. Used for Hole Punching. Works for EIM/EIF but fails on Symmetric NAT.
+* **TURN (Traversal Using Relays around NAT):** If STUN fails, traffic is relayed through a middle-man server. High latency/cost, but 100% success rate.
+* **ICE (Interactive Connectivity Establishment):** The "manager" that tries STUN first, and falls back to TURN if needed.
+
+### Advanced Concepts
+
+* **Hairpinning (NAT Loopback):** Allows a device on the internal network to access another internal device using the **public** IP address. Without this, you can't "see" your own local server via its public URL while on the same Wi-Fi.
+* **CGNAT (Carrier-Grade NAT):** Used by mobile ISPs and many home ISPs. Your "Public IP" on your router is actually _another_ private IP (usually `100.64.x.x`). This is "NAT behind a NAT" and makes port forwarding almost impossible without a VPN or Tunnel (Tailscale/Cloudflare).
+* **UPnP / NAT-PMP:** Protocols that allow apps (like gaming consoles) to automatically ask the router to open a port.
