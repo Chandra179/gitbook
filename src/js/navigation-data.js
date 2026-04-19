@@ -17,6 +17,21 @@ const navigationData = [
         standalone: true,
     },
     {
+        name: "Domain",
+        slug: "domain",
+        standalone: true,
+    },
+    {
+        name: "Personal Knowledge Base",
+        slug: "personal-knowledge-base",
+        standalone: true,
+    },
+    {
+        name: "Travel Itineraries",
+        slug: "travel-itineraries",
+        standalone: true,
+    },
+    {
         name: "Fundamentals",
         slug: "fundamental",
         pages: [
@@ -74,6 +89,9 @@ const navigationData = [
         slug: "ml",
         pages: [
             { name: "Chunking and Embedding", slug: "chunking-and-embedding" },
+            { name: "Embedding", slug: "embedding" },
+            { name: "Retrieval", slug: "retrieval" },
+            { name: "Retrieval Evaluation", slug: "retrieval-evaluation" },
         ],
     },
 ];

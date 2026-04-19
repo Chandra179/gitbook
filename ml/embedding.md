@@ -1,6 +1,6 @@
 # Embedding
 
-<figure><img src="../.gitbook/assets/vector_dense_sparse.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="/.gitbook/assets/vector_dense_sparse.png" alt=""><figcaption></figcaption></figure>
 
 We need to store **dense vector** from the embed result, and also create **sparse vector** using SPLADE (Sparse Lexical and Expansion Model). Its needed for Hybrid Search retrieval.
 

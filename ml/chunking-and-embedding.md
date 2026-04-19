@@ -62,7 +62,7 @@ Next we do chunking. Each the text, paragraphs, code, tables have their own stra
 
 If the chunk size is bigger than the `token limits` we should split it into a new chunk. Also adds `context overlap` before and after the current chunk for better retrieval. example:
 
-<figure><img src="../.gitbook/assets/chunk_overlap.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="/.gitbook/assets/chunk_overlap.png" alt=""><figcaption></figcaption></figure>
 
 ```md
 # Header A
