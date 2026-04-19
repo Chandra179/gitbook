@@ -34,14 +34,18 @@ We need to store **dense vector** from the embed result, and also create **spars
 }  
 ```
 
-#### Dense vector embed config
+#### Dense vector embed
+
+The dense vector maps the query's meaning into a fixed-size numerical space (768 dimensions). Every single dimension has a value, representing a "location" in a semantic map.
 
 * model\_name: `BAAI/bge-base-en-v1.5`
 * tokenizer\_path: "tokenizer.json" or HuggingFace model ID
 * max\_token\_limit: 512 (model's actual limit)
 * model\_dim: 768 (embedding dimension)
 
-#### Sparse vector embed config
+#### Sparse vector embed
+
+The sparse vector maps the query onto a massive vocabulary ($$>30,000$$ tokens). Instead of a list of floats, it only stores the IDs of "activated" terms and their importance weights. Note how it "expands" to include relevant terms not present in the original query (like "concurrency" or "thread").
 
 * model\_name: `prithivida/Splade_PP_en_v1` (The industry standard for high-performance SPLADE embeddings).
 * max\_token\_limit: `512` (Matches dense model's limit for consistency during chunking).

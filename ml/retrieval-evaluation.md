@@ -1,42 +1,72 @@
 # Retrieval Evaluation
 
-#### MRR@K
+To illustrate these metrics, assume we run a test with **N=1 query** and **K=5**. The search returns 5 chunks, where relevance is marked as:
 
-**Mean Reciprocal Rank** measures how early the system returns the _first_ relevant chunk. If the first relevant result is at rank 1, the score is 1.0; at rank 2, it is 0.5, etc.
+* **Rank 1:** Irrelevant (0)
+* **Rank 2:** **Relevant (1)**
+* **Rank 3:** Irrelevant (0)
+* **Rank 4:** **Relevant (1)**
+* **Rank 5:** Irrelevant (0)
 
-**Formula:**
+***
 
-$$MRR = \frac{1}{N} \sum_{i=1}^{N} \frac{1}{\text{rank}_i}$$
+#### HitRate@K (Success@K)
 
-(Where $$\text{rank}_i$$ _is the 1-based index of the first relevant chunk. If no relevant chunks are found in the top_ $$K$$_, the reciprocal rank is 0)._
+Measures if at least one relevant result exists in the top $$K$$.
 
-#### NDCG@K
+* **Example:** Since Rank 2 and Rank 4 are relevant, the query is a "Hit."
+* **Calculation:** $$1 / 1 = 1.0$$ (or 100%).
+* **Formula:** $$HitRate@K = \frac{1}{|Q|} \sum_{q \in Q} \mathbb{1}[\exists \text{ relevant doc in top-}K]$$
 
-**Normalized Discounted Cumulative Gain** evaluates ranking quality by penalizing relevant documents that appear lower in the search results.&#x20;
+***
 
-**Formulas:**
+#### MRR@K (Mean Reciprocal Rank)
 
-$$DCG = \sum_{j=1}^{K} \frac{rel_j}{\log_2(j+1)}$$
+Focuses on the position of the **first** relevant result.
 
-(Where $$rel_j \in {0,1}$$. In the code, $$j+1$$ is represented as `rank + 2` because the loop is 0-indexed).
+* **Example:** The first relevant chunk is at **Rank 2**.
+* **Calculation:** $$1 / 2 = 0.5$$.
+* **Formula:** $$MRR = \frac{1}{N} \sum_{i=1}^{N} \frac{1}{\text{rank}_i}$$
 
-$$IDCG = \sum_{j=1}^{\min(relCount, K)} \frac{1}{\log_2(j+1)}$$
-
-$$NDCG = \frac{1}{N} \sum_{i=1}^{N} \frac{DCG_i}{IDCG_i}$$
+***
 
 #### Precision@K
 
-Measures the exact density of relevant items within the retrieved context window, indicating how much of the returned context is actually useful vs. noise.
+Measures the "signal-to-noise" ratio in the top $$K$$ results.
 
-**Formula:**
+* **Example:** There are 2 relevant chunks out of 5 total results.
+* **Calculation:** $$2 / 5 = 0.4$$.
+* **Formula:** $$\text{Precision} = \frac{1}{N} \sum_{i=1}^{N} \frac{\text{count}(\text{relevant chunks})_i}{K}$$
 
-$$\text{Precision} = \frac{1}{N} \sum_{i=1}^{N} \frac{\text{count}(\text{relevant chunks})_i}{K}$$
+***
+
+#### NDCG@K (Normalized Discounted Cumulative Gain)
+
+Measures the quality of the ranking, giving more credit for relevant items at the top.
+
+**1. Calculate DCG:**
+
+* Rank 2 (Relevant): $$1 / \log_2(2+1) = 0.6309$$
+* Rank 4 (Relevant): $$1 / \log_2(4+1) = 0.4307$$
+* **Total DCG** = $$1.0616$$
+
+**2. Calculate IDCG (Ideal DCG):** The "Ideal" scenario would have put both relevant chunks at Rank 1 and Rank 2.
+
+* Rank 1: $$1 / \log_2(1+1) = 1.0$$
+* Rank 2: $$1 / \log_2(2+1) = 0.6309$$
+* **Total IDCG** = $$1.6309$$
+
+**3. Final NDCG:**
+
+* $$1.0616 / 1.6309 = \mathbf{0.6509}$$
+
+**Formulas:** $$DCG = \sum_{j=1}^{K} \frac{rel_j}{\log_2(j+1)} \quad IDCG = \sum_{j=1}^{\min(relCount, K)} \frac{1}{\log_2(j+1)} \quad NDCG = \frac{DCG}{IDCG}$$
 
 ***
 
 ### References
 
-* **Voorhees 1999** — MRR introduced for TREC QA track
-* **Thakur et al. 2021** — BEIR: Heterogeneous Benchmark for IR — uses nDCG@10
-* **Es et al. 2023** — RAGAS: Automated Evaluation of RAG — context recall, faithfulness, answer relevancy
-* **MS MARCO leaderboard** — uses MRR@10
+* **Voorhees 1999** — MRR introduced for TREC QA track.
+* **Thakur et al. 2021** — BEIR: Heterogeneous Benchmark for IR — uses nDCG@10.
+* **Es et al. 2023** — RAGAS: Automated Evaluation of RAG — context recall, faithfulness, answer relevancy.
+* **MS MARCO leaderboard** — uses MRR@10.
