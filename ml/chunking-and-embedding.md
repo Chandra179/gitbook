@@ -130,11 +130,7 @@ Once the text is split into small parts by the chosen separator, the `mergeSplit
 
     > **Benefit:** This "sliding window" ensures that semantic context isn't lost if a key piece of information is split exactly at the boundary of two chunks.
 
-#### Fallback: Hard Splitting
-
-In cases where a single string of text has no separators (e.g., a very long URL or a sequence of characters without spaces) and still exceeds the `chunkSize`, the logic falls back to `hardSplit`. This performs a literal cut based on `rune` indices to ensure the chunker never produces an invalid output size.
-
-#### Before&#x20;
+#### Before
 
 ```
 # Artificial Intelligence
