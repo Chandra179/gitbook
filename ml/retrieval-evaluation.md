@@ -64,6 +64,14 @@ Measures the quality of the ranking, giving more credit for relevant items at th
 
 ***
 
+#### RAGAS & G-Eval
+
+Focus on Faithfulness (hallucination check), Answer Relevance, and Context Precision.
+
+LLM as a judge
+
+***
+
 ### References
 
 * **Voorhees 1999** — MRR introduced for TREC QA track.

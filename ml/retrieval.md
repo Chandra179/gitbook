@@ -1,5 +1,15 @@
 # Retrieval
 
+## Pre Retrieval
+
+* Multi-Query Generation: Generate 3-5 variations of the user's prompt to overcome poor phrasing.
+* Semantic Router: Use a lightweight classifier to decide if a query needs the Vector DB, the Knowledge Graph, a web search tool, or just a direct LLM response.
+* Step-back Prompting: Force the model to ask a broader "step-back" question to retrieve foundational concepts before answering the specific technical query.
+
+***
+
+## Retrieval
+
 #### BM25 (Keyword Precision)
 
 **Scenario:** Query is "Fast Car".
@@ -79,3 +89,23 @@
 * **Loss of Distributional Info:** If the top result in BM25 is a 99% match and the second is only a 10% match, RRF treats them simply as #1 and #2. It "squashes" the nuance of how much better the first result actually was.
 * **Hyperparameter Sensitivity:** The constant $$k$$ (usually 60) determines how much weight is given to lower-ranked items. If $$k$$ is too low, the system becomes "top-heavy" and ignores any document that isn't in the top 3 of either list.
 
+
+
+## Enhanced Retrieval
+
+#### GraphRAG
+
+Extract entities and relationships from your Markdown files to build a Knowledge Graph.
+
+#### Agentic RAG (Corrective RAG)
+
+* Self-RAG / CRAG: Implement a loop where the LLM evaluates the retrieved documents. If they are irrelevant, the agent triggers a web search or a different retrieval strategy.
+* Citation & Attribution: Develop a post-processing step that forces the LLM to provide precise Markdown-linked citations for every claim, verifying that the answer actually exists in the retrieved context.
+
+
+
+## Nice To Have
+
+* Local Embedding Caching: Implement a high-performance LRU cache for embeddings to reduce API costs and latency.
+* Quantization: Experiment with binary or scalar quantization in Qdrant. Reducing your vectors from `float32` to `int8` or `bit` can drastically speed up search with minimal recall loss.
+* Streaming RAG: Ensure your Go backend handles streaming tokens and partial retrieval results to minimize "Time to First Byte" (TTFB) for the user.
