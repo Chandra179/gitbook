@@ -22,6 +22,11 @@ const navigationData = [
         standalone: true,
     },
     {
+        name: "ML",
+        slug: "ml",
+        standalone: true,
+    },
+    {
         name: "Personal Knowledge Base",
         slug: "personal-knowledge-base",
         standalone: true,
@@ -82,16 +87,6 @@ const navigationData = [
                     { name: "Summary", slug: "summary" },
                 ],
             },
-        ],
-    },
-    {
-        name: "ML",
-        slug: "ml",
-        pages: [
-            { name: "Chunking and Embedding", slug: "chunking-and-embedding" },
-            { name: "Embedding", slug: "embedding" },
-            { name: "Retrieval", slug: "retrieval" },
-            { name: "Retrieval Evaluation", slug: "retrieval-evaluation" },
         ],
     },
 ];
