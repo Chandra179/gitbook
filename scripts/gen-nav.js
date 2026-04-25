@@ -27,6 +27,7 @@ const NAME_OVERRIDES = {
     'p2p-chat':                    'P2P Chat',
     'reactjs':                     'ReactJS',
     'fundamental':                 'Fundamentals',
+    'rag':                         'RAG',
     'golang':                      'Golang',
     'math':                        'Math',  
     'ml':                          'ML',
