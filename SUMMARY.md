@@ -34,4 +34,4 @@
 * [Machine Learning](ml.md)
 * [Books & Blog](books.md)
 * [RAG](rag.md)
-* [Travel Itineraries](travel-itineraries.md)
+* [Personal Knowledge Base](personal-knowledge-base.md)
