@@ -1,68 +1,431 @@
-# Personal Knowledge Base
+# RAG
 
-#### Concept
+## Chunking
 
-An intelligent search and retrieval layer for Markdown-based knowledge bases. It transforms static notes into a queryable brain by combining traditional text processing with vector embeddings.
+### Structure-Aware Chunking
 
-#### Goals
+Parse Markdown into an Abstract Syntax Tree (AST) using **markdown-it.**
 
-* **High Precision Retrieval:** Ensure users find the exact context, not just the file.
-* **Architectural Modularity:** Decouple the chunking logic and retrieval strategies to allow for experimentation with different LLMs or Vector DBs.
-* **Cost Efficiency & Privacy:** Minimize token usage via RAG and support local embedding models to keep personal data private.
-* **Low Latency:** Provide sub-second search results using optimized vector indexing.
-
-#### Engine Components
-
-* **Chunking Provider (Interface):**
-  * _Recursive Character Splitting (Default):_ Splits by hierarchy (Paragraphs > Sentences > Words) with adjustable overlap to keep related ideas together.
-  * _AST Parser:_ Optional module for code-heavy notes or structured frontmatter.
-* **Vector Engine:** Go-based REST API managing the orchestration. It handles token counting to ensure chunks fit within the chosen model's maximum context window.
-* **Storage:** Vector Database (Qdrant) for high-dimensional indexing and metadata filtering.
-
-#### Chunking Trade-offs
-
-| Strategy                | Pros                                                                                                  | Cons                                                                               | Best For                                       |
-| ----------------------- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------- |
-| **Recursive Character** | Preserves semantic flow; handles irregular Markdown well; adjustable "overlap" prevents context loss. | Less aware of specific code logic or deep nested metadata.                         | General prose, journals, and conceptual notes. |
-| **AST Parsing**         | Extremely precise for code snippets and frontmatter; understands file grammar.                        | Fragile; breaks on malformed Markdown; can create chunks too small for embeddings. | Technical documentation and code repositories. |
-
-#### Architecture & Abstractions
-
-* **Ingestion Pipeline:**
-  * **Watcher (GitHub Webhook):** Listens for `push` events from the repository. Receives payloads detailing `added`, `modified`, and `removed` files.
-  * **Filter:** Checks file paths against a `.pkbignore` configuration. Supports deep nested directories natively via absolute file paths.
-  * **Fetcher:** Calls the GitHub REST API to pull the raw Markdown content for modified files.
-  * **Processor:** Normalizes Markdown, strips YAML frontmatter, and handles image links.
-  *   **Chunker (Modular):**
-
-      ```go
-      // Abstraction Contract
-      type Chunker interface {
-          Chunk(text string, metadata map[string]any) ([]DocumentChunk, error)
+```json
+[
+  {
+    "type": "ElementType.HEADING",
+    "content": "this is content abc",
+    "level": 2,
+    "children": [
+      {
+        "type": "ElementType.HEADING",
+        "content": "on section abc we have ...",
+        "level": 2,
+        "children": []
       }
-      ```
+    ]
+  }
+]
+```
 
-      Routes text to either `RecursiveSplitter` or `ASTParser` based on file extensions.
-* **Embedding Layer:**
-  *   **Embedder (Modular):**
+Then, we build a section hierarchy. It groups content (tables, lists, paragraphs) under their respective headers. For example, Header 1 is the top-level header; all associated content is grouped under it. for example:
 
-      ```go
-      // Abstraction Contract
-      type Embedder interface {
-          Embed(text string) ([]float32, error)
-          GetDimensions() int
+```json
+[
+  {
+    "level": 1, 
+    "heading": "Header A",
+    "content_elements": [], 
+    "subsections": [
+      {
+        "level": 2,
+        "heading": "Header A.1",
+        "content_elements": [
+          "<tables>",
+          "<list>"
+        ],
+        "subsections": []
       }
-      ```
-  * Implementations can be swapped between an `OpenAIClient` or a `LocalOllamaClient` (e.g., using `nomic-embed-text`).
-  * Generates the vector and attaches the "Pointer" (File Path + Header/Line Number).
-* **Retrieval Layer (Modular):**
-  * **Strategy A (Dense Vector):** Pure cosine similarity for conceptual search.
-  * **Strategy B (Hybrid):** Combines Vector Search with Keyword Matching (BM25) to ensure specific technical terms aren't missed.
+    ]
+  },
+  {
+    "level": 1,
+    "heading": "Header B",
+    "content_elements": [
+      "<paragraph>"
+    ],
+    "subsections": []
+  }
+]
+```
 
-#### Dependencies
+Next we do chunking. Each the text, paragraphs, code, tables have their own strategies for chunking
 
-* **Language:** Go (Golang)
-* **Markdown Parser:** Goldmark (with custom extensions if needed for AST)
-* **Vector DB:** Qdrant (Supports both local Docker and Cloud)
-* **Embeddings:** Swappable between OpenAI (`text-embedding-3-small`) and Local Ollama instances.
-* **Reference Notes:** chunking-and-embedding.md
+1. paragraphs/text, if its to long split it by sentence/clauses/words, if its to short merged it into one
+2. tables, if tables to large split by rows while still keep the table header
+3. codes, split by lines
+4. list, split by items
+
+If the chunk size is bigger than the `token limits` we should split it into a new chunk. Also adds `context overlap` before and after the current chunk for better retrieval. example:
+
+<figure><img src=".gitbook/assets/chunk_overlap.png" alt=""><figcaption></figcaption></figure>
+
+```md
+# Header A
+## Header A.1
+<tables>
+<list>
+
+# Header B
+<paragraph>
+```
+
+If we want to chunk `## Header A.1 <list>`, the "before" context is `<tables>` and the "after" context is `# Header B`. Since `# Header B` is at the same level as `# Header A` (Level 1), we do not add it as "after" context. The final output will be:
+
+```json
+[
+  {
+    "id": "86881823-686f-48c2-a574-b10d999a9235",
+    "chunk_type": "table",
+    "section_path": "Table of Contents",
+    "parent_section": "Table of Contents",
+    "next_chunk_id": "ec782819-99d5-4a61-a663-ec5a78504c6c",
+    "prev_chunk_id": "d1faf125-e423-4e9b-bb21-778509df1c61",
+    "document_id": "example",
+    "content": "| Executive Summary …",
+    "token_count": 677,
+    "split_sequence": "28/40"
+  }
+]
+```
+
+* `id`: A unique string (UUID v4) assigned to this specific chunk to identify it within the vector store.
+* `chunk_type`: Identifies the type of the content, ex: "table"
+* `section_path`: A full breadcrumb path representing the document's hierarchical ancestry (e.g., "Introduction > Summary") to preserve global context.
+* `parent_section`: The name of the immediate heading under which this chunk is located, used to anchor the data to a specific topic.
+* `next_chunk_id`: The unique ID of the following chunk in the document
+* `prev_chunk_id`: The unique ID of the preceding chunk in the document
+* `document_id`: file name
+* `content`: The actual text or markdown representation of the chunk
+* `token_count`: The number of tokens in the content
+* `split_sequence`: An index (e.g., "28/40") indicating this is the 28th part out of 40 total chunks created from the same original section or element.
+
+### Recursive Chunker
+
+Instead of treating the document as a raw string, the chunker first uses the `goldmark` library to parse the Markdown into an **Abstract Syntax Tree (AST)**.
+
+* **Heading-Based Grouping:** The `extractSections` function identifies headings (`#`, `##`, etc.) and groups all subsequent paragraphs, lists, and blockquotes under that specific header.
+* **Context Preservation:** By grouping by header, each chunk "knows" its location in the document hierarchy.
+* **Plain Text Conversion:** The `nodeToPlainText` utility strips Markdown syntax (like link brackets or image tags) while preserving the inner text, ensuring the LLM focuses on content rather than formatting noise.
+
+When a section exceeds the `chunkSize`, the `splitText` method applies a hierarchical "drill-down" approach. It attempts to split the text using a sequence of increasingly granular separators:
+
+1. **Paragraphs** (`\n\n`)
+2. **Lines** (`\n`)
+3. **Sentences** (`.` )
+4. **Words** ( )
+
+#### Why this order?
+
+The goal is to split the text at the **largest possible semantic boundary**. If a section can be split by paragraphs without breaking a single paragraph across chunks, the system prefers that over splitting in the middle of a sentence.
+
+Once the text is split into small parts by the chosen separator, the `mergeSplits` function recombines them:
+
+* **Filling the Buffer:** It adds parts to a chunk until adding one more would exceed the `chunkSize`.
+*   **Overlap Injection:** When a chunk is finalized, the next chunk starts with an **overlap suffix** from the previous chunk.
+
+    > **Benefit:** This "sliding window" ensures that semantic context isn't lost if a key piece of information is split exactly at the boundary of two chunks.
+
+#### Before
+
+```
+# Artificial Intelligence
+
+Artificial intelligence (AI) is intelligence demonstrated by machines, as opposed to the natural intelligence displayed by animals and humans. It is a broad field of study.
+
+## Applications
+
+AI is used in many fields today. Examples include medical diagnosis, electronic commerce, and robot control. It is truly everywhere.
+```
+
+#### After
+
+```json
+[
+  {
+    "Text": "Artificial intelligence (AI) is intelligence demonstrated by machines, as opposed to the natural",
+    "FilePath": "intro.md",
+    "Header": "Artificial Intelligence",
+    "LineStart": 3
+  },
+  {
+    "Text": "as opposed to the natural intelligence displayed by animals and humans. It is a broad field of study.",
+    "FilePath": "intro.md",
+    "Header": "Artificial Intelligence",
+    "LineStart": 3
+  },
+  {
+    "Text": "AI is used in many fields today. Examples include medical diagnosis, electronic commerce, and",
+    "FilePath": "intro.md",
+    "Header": "Applications",
+    "LineStart": 7
+  },
+  {
+    "Text": "electronic commerce, and robot control. It is truly everywhere.",
+    "FilePath": "intro.md",
+    "Header": "Applications",
+    "LineStart": 7
+  }
+]
+```
+
+* **Semantic Integrity**: The split for the first section happened at a space between "natural" and "intelligence" because the chunker couldn't fit the whole paragraph.
+* **Contextual Overlap**: In the second chunk, the text begins with `"as opposed to the natural"`. This is the 20-character overlap that ensures the LLM doesn't lose the start of the thought.
+* **Metadata Extraction**: Even though the "Applications" section was split into two chunks, both retain the `Header: "Applications"`. This is crucial for RAG systems to know which topic the text belongs to.
+
+***
+
+## Embedding
+
+<figure><img src=".gitbook/assets/vector_dense_sparse.png" alt=""><figcaption></figcaption></figure>
+
+We need to store **dense vector** from the embed result, and also create **sparse vector** using SPLADE (Sparse Lexical and Expansion Model). Its needed for Hybrid Search retrieval.
+
+```json
+{
+  "id": 31868393794739972,
+  "payload": {
+    "is_continuation": false,
+    "token_count": 322,
+    "extra": null,
+    "document_id": "econ_nuclear",
+    "split_sequence": null,
+    "chunk_type": "text",
+    "content": "The policy to promote the development of small-scale coal mines worked...",
+    "section_path": "2.  The boom-and-bust road of the coal industry"
+  },
+  "vector": {
+    "sparse": {
+      "indices": [
+        21447,
+        21762
+      ],
+      "values": [
+        0.14956795,
+        0.12950781
+      ]
+    },
+    "dense": [
+      -0.011004133,
+      -0.007966931
+    ]
+  }
+}  
+```
+
+#### Dense vector embed
+
+The dense vector maps the query's meaning into a fixed-size numerical space (768 dimensions). Every single dimension has a value, representing a "location" in a semantic map.
+
+* model\_name: `BAAI/bge-base-en-v1.5`
+* tokenizer\_path: "tokenizer.json" or HuggingFace model ID
+* max\_token\_limit: 512 (model's actual limit)
+* model\_dim: 768 (embedding dimension)
+
+#### Sparse vector embed
+
+The sparse vector maps the query onto a massive vocabulary ($$>30,000$$ tokens). Instead of a list of floats, it only stores the IDs of "activated" terms and their importance weights. Note how it "expands" to include relevant terms not present in the original query (like "concurrency" or "thread").
+
+* model\_name: `prithivida/Splade_PP_en_v1` (The industry standard for high-performance SPLADE embeddings).
+* max\_token\_limit: `512` (Matches dense model's limit for consistency during chunking).
+
+{% hint style="info" %}
+the model config flexible, we can change it later
+{% endhint %}
+
+***
+
+## Pre Retrieval
+
+* Multi-Query Generation: Generate 3-5 variations of the user's prompt to overcome poor phrasing.
+* Semantic Router: Use a lightweight classifier to decide if a query needs the Vector DB, the Knowledge Graph, a web search tool, or just a direct LLM response.
+* Step-back Prompting: Force the model to ask a broader "step-back" question to retrieve foundational concepts before answering the specific technical query.
+
+***
+
+## Retrieval
+
+#### BM25 (Keyword Precision)
+
+**Scenario:** Query is "Fast Car".
+
+**Formula:** $$Score(D, Q) = \sum_{q \in Q} IDF(q) \cdot \frac{f(q, D) \cdot (k_1 + 1)}{f(q, D) + k_1 \cdot (1 - b + b \cdot \frac{|D|}{avgdl})}$$
+
+* **Logic:** It rewards documents where "Fast" and "Car" appear frequently, but saturates the score so that the 100th mention of "Car" adds less value than the 1st.
+* **Example Calculation:**
+  * **Doc 1 ("Fast sports car"):** Contains both. Score: **2.45**
+  * **Doc 2 ("Speedy vehicle"):** Contains neither. Score: **0.00**
+  * **Doc 3 ("Red car"):** Contains "car". Score: **1.10**
+
+**Best Used For:** Exact matches: SKU numbers, legal terms, specific names (e.g., "RTX 4050").
+
+* Extremely fast execution on massive datasets.
+
+**When it Performs Poorly:**
+
+* **The "Vocabulary Mismatch" Problem:** If the user types "apartment" but the document uses "flat," BM25 will return a score of 0.
+* **Context Blindness:** It treats words as isolated units. It cannot distinguish between "Apple" (the company) and "apple" (the fruit) unless other keywords are present.
+
+***
+
+#### SPLADE (Sparse Neural Expansion)
+
+**Scenario:** Query is "Fast Car".
+
+**Formula:** $$w_{j} = \sum_{i \in \text{query}} \log(1 + \text{ReLU}(w_{i,j}))$$
+
+* **Logic:** It expands "Fast Car" to include terms like "speed" or "engine" by activating weights in a BERT-sized vocabulary.
+* **Example Calculation:**
+  * **Doc 1 ("Fast sports car"):** Strong activation for "fast" and "car". Score: **3.10**
+  * **Doc 2 ("Speedy vehicle"):** Strong activation because "speedy" is a neighbor of "fast". Score: **2.95**
+  * **Doc 3 ("Red car"):** Weak activation. Score: **0.80**
+
+**Best Used For:**
+
+* Bridging the gap between keywords and meaning.
+* Handling synonyms and "query expansion" automatically without needing a manual thesaurus.
+
+**When it Performs Poorly:**
+
+* **Inference Latency:** Unlike BM25 (which is a simple math lookup), SPLADE requires a neural network (BERT-based) pass to generate weights. This increases the "Time to First Token."
+* **"Hallucinated" Keywords:** Sometimes the model expands a query too aggressively. Searching for "Java" (the language) might activate weights for "coffee" or "Indonesia," leading to irrelevant results in a technical corpus.
+* **Resource Intensive:** Storing SPLADE vectors in Qdrant takes significantly more disk space/RAM than a standard BM25 index.
+
+***
+
+#### Cosine Distance (The Metric)
+
+**Formula:** $$\text{similarity} = \cos(\theta) = \frac{\mathbf{A} \cdot \mathbf{B}}{\|\mathbf{A}\| \|\mathbf{B}\|}$$
+
+* **Logic:** Used by Qdrant to find the similarity between the Query Vector ($\mathbf{A}$) and Document Vector ($$\mathbf{B}$$) based on their angle in high-dimensional space.
+* **Example:** If $$\mathbf{A}$$ is $\[1, 1]$ and $$\mathbf{B}$$ is $$[2, 2]$$, the angle is $$0^\circ$$, so similarity is **1.0**.
+
+***
+
+#### RRF (Reciprocal Rank Fusion)
+
+**Formula:** $$RRFscore(d) = \sum_{r \in R} \frac{1}{k + r(d)}$$ _(Where_ $$k=60$$ _is the standard constant, and_ $$r(d)$$ _is the rank position)_
+
+| Document  | BM25 Rank (r\_1) | SPLADE Rank (r\_2) | RRF Calculation                     | Final Score |
+| --------- | ---------------- | ------------------ | ----------------------------------- | ----------- |
+| **Doc 1** | 1                | 1                  | $$\frac{1}{60+1} + \frac{1}{60+1}$$ | **0.0328**  |
+| **Doc 2** | 3                | 2                  | $$\frac{1}{60+3} + \frac{1}{60+2}$$ | **0.0320**  |
+| **Doc 3** | 2                | 3                  | $$\frac{1}{60+2} + \frac{1}{60+3}$$ | **0.0320**  |
+
+**Result:** Doc 1 is the winner. Doc 2 (which had 0 keywords) is boosted to a tie for 2nd place because of its semantic relevance found by SPLADE.
+
+**Best Used For:**
+
+* Merging results from completely different scoring systems (e.g., a 0-1 cosine score and a 0-100 BM25 score) without needing to "normalize" the math.
+
+**When it Performs Poorly:**
+
+* **The "Tie-Breaker" Weakness:** RRF relies entirely on rank position. If two models both provide mediocre results, RRF might still rank them highly just because they both "agreed" they were mediocre.
+* **Loss of Distributional Info:** If the top result in BM25 is a 99% match and the second is only a 10% match, RRF treats them simply as #1 and #2. It "squashes" the nuance of how much better the first result actually was.
+* **Hyperparameter Sensitivity:** The constant $$k$$ (usually 60) determines how much weight is given to lower-ranked items. If $$k$$ is too low, the system becomes "top-heavy" and ignores any document that isn't in the top 3 of either list.
+
+### Enhanced Retrieval
+
+#### GraphRAG
+
+Extract entities and relationships from your Markdown files to build a Knowledge Graph.
+
+#### Agentic RAG (Corrective RAG)
+
+* Self-RAG / CRAG: Implement a loop where the LLM evaluates the retrieved documents. If they are irrelevant, the agent triggers a web search or a different retrieval strategy.
+* Citation & Attribution: Develop a post-processing step that forces the LLM to provide precise Markdown-linked citations for every claim, verifying that the answer actually exists in the retrieved context.
+
+#### Nice To Have
+
+* Local Embedding Caching: Implement a high-performance LRU cache for embeddings to reduce API costs and latency.
+* Quantization: Experiment with binary or scalar quantization in Qdrant. Reducing your vectors from `float32` to `int8` or `bit` can drastically speed up search with minimal recall loss.
+* Streaming RAG: Ensure your Go backend handles streaming tokens and partial retrieval results to minimize "Time to First Byte" (TTFB) for the user.
+
+***
+
+## Evaluation
+
+To illustrate these metrics, assume we run a test with **N=1 query** and **K=5**. The search returns 5 chunks, where relevance is marked as:
+
+* **Rank 1:** Irrelevant (0)
+* **Rank 2:** **Relevant (1)**
+* **Rank 3:** Irrelevant (0)
+* **Rank 4:** **Relevant (1)**
+* **Rank 5:** Irrelevant (0)
+
+***
+
+#### HitRate@K (Success@K)
+
+Measures if at least one relevant result exists in the top $$K$$.
+
+* **Example:** Since Rank 2 and Rank 4 are relevant, the query is a "Hit."
+* **Calculation:** $$1 / 1 = 1.0$$ (or 100%).
+* **Formula:** $$HitRate@K = \frac{1}{|Q|} \sum_{q \in Q} \mathbb{1}[\exists \text{ relevant doc in top-}K]$$
+
+***
+
+#### MRR@K (Mean Reciprocal Rank)
+
+Focuses on the position of the **first** relevant result.
+
+* **Example:** The first relevant chunk is at **Rank 2**.
+* **Calculation:** $$1 / 2 = 0.5$$.
+* **Formula:** $$MRR = \frac{1}{N} \sum_{i=1}^{N} \frac{1}{\text{rank}_i}$$
+
+***
+
+#### Precision@K
+
+Measures the "signal-to-noise" ratio in the top $$K$$ results.
+
+* **Example:** There are 2 relevant chunks out of 5 total results.
+* **Calculation:** $$2 / 5 = 0.4$$.
+* **Formula:** $$\text{Precision} = \frac{1}{N} \sum_{i=1}^{N} \frac{\text{count}(\text{relevant chunks})_i}{K}$$
+
+***
+
+#### NDCG@K (Normalized Discounted Cumulative Gain)
+
+Measures the quality of the ranking, giving more credit for relevant items at the top.
+
+**1. Calculate DCG:**
+
+* Rank 2 (Relevant): $$1 / \log_2(2+1) = 0.6309$$
+* Rank 4 (Relevant): $$1 / \log_2(4+1) = 0.4307$$
+* **Total DCG** = $$1.0616$$
+
+**2. Calculate IDCG (Ideal DCG):** The "Ideal" scenario would have put both relevant chunks at Rank 1 and Rank 2.
+
+* Rank 1: $$1 / \log_2(1+1) = 1.0$$
+* Rank 2: $$1 / \log_2(2+1) = 0.6309$$
+* **Total IDCG** = $$1.6309$$
+
+**3. Final NDCG:**
+
+* $$1.0616 / 1.6309 = \mathbf{0.6509}$$
+
+**Formulas:** $$DCG = \sum_{j=1}^{K} \frac{rel_j}{\log_2(j+1)} \quad IDCG = \sum_{j=1}^{\min(relCount, K)} \frac{1}{\log_2(j+1)} \quad NDCG = \frac{DCG}{IDCG}$$
+
+***
+
+#### RAGAS & G-Eval
+
+Focus on Faithfulness (hallucination check), Answer Relevance, and Context Precision.
+
+LLM as a judge
+
+***
+
+#### References
+
+* **Voorhees 1999** — MRR introduced for TREC QA track.
+* **Thakur et al. 2021** — BEIR: Heterogeneous Benchmark for IR — uses nDCG@10.
+* **Es et al. 2023** — RAGAS: Automated Evaluation of RAG — context recall, faithfulness, answer relevancy.
+* **MS MARCO leaderboard** — uses MRR@10.
