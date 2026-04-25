@@ -1,20 +1,65 @@
 # Personal Knowledge Base
 
-## Ingest
+## Ingestion
 
-* data: markdown
+#### Data Source
 
-## Chunking
+* **Format:** Markdown
 
-* recursive
-* sentence window chunking
+#### Chunking Strategies
 
-## Embedding
+* **Recursive Character:** Standard hierarchical splitting.
+* **Sentence Window:** Contextual enrichment for retrieval.
 
-* sparse vector: `prithivida/Splade_PP_en_v1`
-* ollama embedder
+#### Embedding Models
 
-## Qrels (Query Relevance)
+* **Sparse Vector:** `prithivida/Splade_PP_en_v1`
+* **Dense Vector:** Ollama Embedder (local)
+
+***
+
+## Storage & Indexing
+
+#### Vector Configuration
+
+* **Dense:** Vector size, dimensions, and distance metric (e.g., Cosine).
+* **Sparse:** Configuration for SPLADE/BM25 compatibility.
+
+#### Search Optimization
+
+* **Full-Text Search:** Indexing for lexical matches.
+* **Keyword Indexing:** Filtering based on `file_path` metadata.
+
+***
+
+## Retrieval Pipeline
+
+#### Semantic Cache (The Entry Point)
+
+* **Strategy:** Vector-based similarity lookup for queries.
+* **Function:** Checks if a semantically similar query exists in the cache (e.g., using RedisVL or GPTCache). If a match is found (e.g., >0.95 similarity), it returns the cached response immediately, bypassing the LLM and Retrieval steps.
+
+#### Query Transformation (HyDE)
+
+* **Strategy:** Hypothetical Document Embeddings.
+* **Function:** Uses an LLM to generate a synthetic answer to the query before embedding to improve dense retrieval performance.
+
+#### Retrieval
+
+* **Hybrid Search:** Combining sparse and dense results.
+* **Sparse Scorer:** Logic for keyword/SPLADE weighting.
+* **RRF (Reciprocal Rank Fusion):** Merging ranked lists from multiple search types.
+
+#### Reranking
+
+* **Model:** `cross-encoder/ms-marco-MiniLM-L-6-v2`
+* **Endpoint:** Internal inference service.
+
+***
+
+### Evaluation & Testing
+
+#### Ground Truth (Qrels)
 
 ```json
 {
@@ -25,70 +70,8 @@
 }
 ```
 
-## Search
+## Metrics
 
-* hybrid search
-* sparse scorer
-* rrf
+prometheus
 
-## Reranking
-
-* model: `cross-encoder/ms-marco-MiniLM-L-6-v2`
-* endpoint
-
-## Evaluation
-
-* llm as a judge
-
-***
-
-## Storage
-
-qdrant: vector size, dimensions, vector distance(cosine, etc..), sparse & dense vector config
-
-indexing for full text search
-
-keyword indexing based on filepath
-
-## Config
-
-Configuration for end to end process from ingestion to retrieval
-
-#### Profiles
-
-```json
-[
-  {
-    "name": "tf-recursive256",
-    "sparse_scorer": "tf",
-    "chunk_size": 256,
-    "chunk_overlap": 32
-  },
-  {
-    "name": "splade-recursive256",
-    "sparse_scorer": "splade",
-    "chunk_size": 256,
-    "chunk_overlap": 32
-  }
-]
-```
-
-#### Queries
-
-Sample queries to test&#x20;
-
-```json
-{"query": "How does the Go GPM scheduler work with goroutines and OS threads?"}
-{"query": "What causes goroutine leaks and how do you prevent them?"}
-{"query": "How do Go channels work internally with sendq and recvq?"}
-{"query": "What changed in Go 1.22 loop variable scoping semantics?"}
-```
-
-#### Query Relevance (qrels)
-
-```json
-{"query":"How does the Go GPM scheduler work with goroutines and OS threads?","chunk_id":"golang/goroutine.md:3","file_path":"golang/goroutine.md","relevant":true}
-{"query":"How does the Go GPM scheduler work with goroutines and OS threads?","chunk_id":"golang/goroutine.md:83","file_path":"golang/goroutine.md","relevant":true}
-{"query":"How does the Go GPM scheduler work with goroutines and OS threads?","chunk_id":"golang/goroutine.md:290","file_path":"golang/goroutine.md","relevant":true}
-
-```
+latency and cache hit
