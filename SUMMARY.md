@@ -33,5 +33,5 @@
   * [Notification System](system-design/notification-system.md)
 * [Machine Learning](ml.md)
 * [Books & Blog](books.md)
-* [RAG](personal-knowledge-base.md)
+* [RAG](rag.md)
 * [Travel Itineraries](travel-itineraries.md)
