@@ -1,25 +1,35 @@
 # Personal Knowledge Base
 
+<figure><img src=".gitbook/assets/image.png" alt="" width="563"><figcaption></figcaption></figure>
+
 ## Ingestion
 
-#### Data Source
+#### Data Sources
 
-* **Final Format:** Markdown
-* Data Source: PDF, text, image
-* Dependencies: docling
+| Source | Final Format | Tool    |
+| ------ | ------------ | ------- |
+| PDF    | Markdown     | docling |
+| Text   | Markdown     | docling |
+| Image  | Markdown     | docling |
 
-#### Chunking Strategies
+All inputs normalize to Markdown before chunking.
 
-* **Recursive Character:** Standard hierarchical splitting.
-* \[TBD] semantic chunking
-* **Sentence Window:** Contextual enrichment for retrieval. sentences before+after each sentence (sentence-window only)
-* Chunk size: 128,256,512
-* Chunk overlap
+## Chunking Strategies
 
-#### Embedding Models
+| Strategy            | Status | Notes                                               |
+| ------------------- | ------ | --------------------------------------------------- |
+| Recursive Character | Active | Hierarchical: heading → paragraph → sentence → word |
+| Sentence Window     | Active | Index sentences; expand ±N window at retrieval      |
+| Semantic Chunking   | TBD    | Split on embedding similarity boundaries            |
 
-* **Sparse Vector:** `prithivida/Splade_PP_en_v1`
-* **Dense Vector:** Ollama Embedder (local)
+**Chunk sizes:** 128, 256, 512 tokens (configurable) **Chunk overlap:** configurable
+
+## Embedding Models
+
+| Modality | Model                         | Notes                |
+| -------- | ----------------------------- | -------------------- |
+| Sparse   | `prithivida/Splade_PP_en_v1`  | SPLADE neural sparse |
+| Dense    | `nomic-embed-text` via Ollama | 768-dim, local       |
 
 ***
 
@@ -27,44 +37,87 @@
 
 #### Vector Configuration
 
-* **Dense:** Vector size, dimensions, and distance metric (e.g., Cosine).
-* **Sparse:** Configuration for SPLADE/BM25 compatibility.
+| Type   | Config                                           |
+| ------ | ------------------------------------------------ |
+| Dense  | 768-dim, Cosine distance                         |
+| Sparse | SPLADE/BM25-compatible named vector (`"sparse"`) |
 
 #### Search Optimization
 
-* **Full-Text Search:** Indexing for lexical matches.
-* **Keyword Indexing:** Filtering based on `file_path` metadata.
+* **Full-text search:** Qdrant text index for lexical matches
+* **Keyword indexing:** `file_path` payload field — enables per-file filtering
 
 ***
 
 ## Retrieval Pipeline
 
-#### Semantic Cache (The Entry Point)
+```
+Query
+  │
+  ▼
+Semantic Cache ──── hit (score ≥ threshold) ──► return cached result
+  │ miss
+  ▼
+Query Transformation (HyDE)
+  └── LLM generates hypothetical doc → embed → avg vector
+  │
+  ▼
+Hybrid Search
+  ├── Dense: Qdrant ANN (nomic-embed-text vec)
+  └── Sparse: SPLADE or TF fallback
+        └── RRF fusion (k=60): score = Σ 1/(60 + rank)
+  │
+  ▼
+Reranker
+  └── cross-encoder/ms-marco-MiniLM-L-6-v2
+  │
+  ▼
+Results: []{ file_path, header, line_start, score, text }
+```
 
-* **Strategy:** Vector-based similarity lookup for queries.
-* **Function:** Checks if a semantically similar query exists in the cache (e.g., using RedisVL or GPTCache). If a match is found (e.g., >0.95 similarity), it returns the cached response immediately, bypassing the LLM and Retrieval steps.
+### Semantic Cache
 
-#### Query Transformation (HyDE)
+* Storage: separate Qdrant collection (`pkb_cache`)
+* Lookup: cosine search, top-1 score ≥ threshold → return immediately
+* Miss: run full pipeline, write result async (fire-and-forget)
+* Expiry: lazy TTL check on read (`cached_at + TTL < now` → miss)
+* Threshold guidance:
+  * `0.85–0.90`: high recall, allows paraphrased queries
+  * `0.90–0.95`: balanced (default `0.90`)
+  * `>0.95`: near-identical only
 
-* **Strategy:** Hypothetical Document Embeddings.
-* **Function:** Uses an LLM to generate a synthetic answer to the query before embedding to improve dense retrieval performance.
+### Query Transformation — HyDE
 
-#### Retrieval
+* LLM generates N hypothetical docs for query
+* Embed each → average vectors → L2-normalize
+* Use averaged vec for dense retrieval
+* Falls back to multi-fragment search on generation failure
 
-* **Hybrid Search:** Combining sparse and dense results.
-* **Sparse Scorer:** Logic for keyword/SPLADE weighting.
-* **RRF (Reciprocal Rank Fusion):** Merging ranked lists from multiple search types.
+### Hybrid Search
 
-#### Reranking
+**Server-side (SPLADE sidecar available):**
 
-* **Model:** `cross-encoder/ms-marco-MiniLM-L-6-v2`
-* **Endpoint:** Internal inference service.
+* Qdrant `QueryPoints`: prefetch dense (topK×5) + sparse (topK×5)
+* Qdrant RRF fusion on server
+
+**Client-side fallback (no sidecar):**
+
+* Dense: `SearchPoints`
+* Sparse: scroll + text filter + `TFSparseScorer`
+* Client RRF (k=60)
+
+### Reranking
+
+* Model: `cross-encoder/ms-marco-MiniLM-L-6-v2`
+* Input: topK × `candidate_mul` candidates (default ×10 oversample)
+* Output: top-K by cross-encoder score
+* Endpoint: internal Python sidecar (`cmd/reranker/main.py`)
 
 ***
 
-### Evaluation & Testing
+## Evaluation & Testing
 
-#### Ground Truth (Qrels)
+#### Ground Truth Format (Qrels)
 
 ```json
 {
@@ -75,8 +128,34 @@
 }
 ```
 
-## Metrics
+Qrels stored in `internal/pkb/testdata/qrels.jsonl`.
 
-prometheus
+#### Metrics
 
-latency and cache hit
+| Metric                        | Source                          |
+| ----------------------------- | ------------------------------- |
+| Latency (p50/p95/p99)         | Prometheus histograms           |
+| Cache hit rate                | Prometheus counter              |
+| Retrieval quality (MRR, nDCG) | Eval harness (`eval_runner.go`) |
+
+Prometheus endpoint exposed via OpenTelemetry collector.
+
+***
+
+## Configuration Reference
+
+| Key                        | Default     | Effect                                                  |
+| -------------------------- | ----------- | ------------------------------------------------------- |
+| `chunker.provider`         | `recursive` | `sentence-window` for sentence-level indexing           |
+| `sparse_scorer.provider`   | `splade`    | `tf` for zero-dep TF proxy                              |
+| `hyde.enabled`             | `true`      | HyDE query expansion                                    |
+| `hyde.num_docs`            | `1`         | `8` matches paper accuracy, \~8× latency (parallelized) |
+| `reranker.enabled`         | `true`      | Cross-encoder reranking                                 |
+| `reranker.candidate_mul`   | `10`        | Oversample factor before reranking                      |
+| `semantic_cache.enabled`   | `false`     | Query-result cache                                      |
+| `semantic_cache.threshold` | `0.90`      | Cosine similarity cutoff                                |
+| `semantic_cache.ttl`       | `24h`       | Cache entry lifetime; `0` = no expiry                   |
+
+## Infrasturcture
+
+<figure><img src=".gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
