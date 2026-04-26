@@ -31,7 +31,7 @@
   * [Distributed Task Scheduler](system-design/distributed-task-scheduler.md)
   * [Distributed Cache](system-design/distributed-cache.md)
   * [Notification System](system-design/notification-system.md)
-  * [Caching Problem](system-design/caching-problem.md)
+  * [Cache  Stampede](system-design/cache-stampede.md)
 * [Machine Learning](ml.md)
 * [Books & Blog](books.md)
 * [RAG](rag.md)
