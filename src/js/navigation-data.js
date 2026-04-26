@@ -32,8 +32,8 @@ const navigationData = [
         standalone: true,
     },
     {
-        name: "Travel Itineraries",
-        slug: "travel-itineraries",
+        name: "RAG",
+        slug: "rag",
         standalone: true,
     },
     {
