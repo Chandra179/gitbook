@@ -4,12 +4,17 @@
 
 #### Data Source
 
-* **Format:** Markdown
+* **Final Format:** Markdown
+* Data Source: PDF, text, image
+* Dependencies: docling
 
 #### Chunking Strategies
 
 * **Recursive Character:** Standard hierarchical splitting.
-* **Sentence Window:** Contextual enrichment for retrieval.
+* \[TBD] semantic chunking
+* **Sentence Window:** Contextual enrichment for retrieval. sentences before+after each sentence (sentence-window only)
+* Chunk size: 128,256,512
+* Chunk overlap
 
 #### Embedding Models
 

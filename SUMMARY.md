@@ -31,6 +31,7 @@
   * [Distributed Task Scheduler](system-design/distributed-task-scheduler.md)
   * [Distributed Cache](system-design/distributed-cache.md)
   * [Notification System](system-design/notification-system.md)
+  * [Flash Sale](system-design/flash-sale.md)
 * [Machine Learning](ml.md)
 * [Books & Blog](books.md)
 * [RAG](rag.md)
