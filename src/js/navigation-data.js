@@ -53,6 +53,7 @@ const navigationData = [
         name: "System Design",
         slug: "system-design",
         pages: [
+            { name: "Cache Stampede", slug: "cache-stampede" },
             { name: "Consistent Hashing", slug: "consistent-hashing" },
             { name: "Distributed Cache", slug: "distributed-cache" },
             { name: "Distributed Task Scheduler", slug: "distributed-task-scheduler" },
