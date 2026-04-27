@@ -132,6 +132,8 @@ top-K by cross-encoder score
 
 ## Evaluation & Testing
 
+describe methodology for eval .. and how to test it.. and metrics used ... then we need to store the result comparing combination of (model, chunk size, retrieval with hyde/not, etc..)
+
 #### Ground Truth Format (Qrels)
 
 ```json
@@ -143,22 +145,18 @@ top-K by cross-encoder score
 }
 ```
 
-Qrels stored in `internal/pkb/testdata/qrels.jsonl`.
+## Generator
 
-#### Metrics
+pass result from rag to LLM
+
+## Infrastructure
+
+<figure><img src=".gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
+
+## Observability
 
 | Metric                        | Source                          |
 | ----------------------------- | ------------------------------- |
 | Latency (p50/p95/p99)         | Prometheus histograms           |
 | Cache hit rate                | Prometheus counter              |
 | Retrieval quality (MRR, nDCG) | Eval harness (`eval_runner.go`) |
-
-Prometheus endpoint exposed via OpenTelemetry collector.
-
-## Generator
-
-
-
-## Infrastructure
-
-<figure><img src=".gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
