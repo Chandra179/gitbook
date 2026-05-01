@@ -2,6 +2,13 @@
 
 4 years experience in Fintech, distributed system, workflow automation
 
+### BookCabin
+
+* Led a Rewrite Order Service from .NET to Go, establishing domain boundaries, reduced memory footprint and response latency.
+* Engineered a resilient event-driven, decouple core transactions from side effects, achieving 100% message reliability and at-least-once delivery
+* Engineered a unified state management system to standardize complex lifecycles (Refunds, Reschedules, Upgrades) across multiple products, improving cross-service consistency.
+* Standardized a modular HTML/i18n framework with independent component builds, enabling parallel processing, it reduces template compilation times.
+
 ### BFI finance
 
 * Design API integration architecture with high reliability and fault tolerance
@@ -20,6 +27,7 @@
 
 * Golang SDK: [https://github.com/Chandra179/gosdk](https://github.com/Chandra179/gosdk)
 * Golang Template: [https://github.com/Chandra179/brook](https://github.com/Chandra179/brook)
+* Nadir, E2E Rag Production Grade (Scalable & Battle tested):&#x20;
 
 ### Tech stack
 

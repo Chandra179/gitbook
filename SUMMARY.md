@@ -35,5 +35,5 @@
   * [Event Processing](system-design/event-processing.md)
 * [Machine Learning](ml.md)
 * [Books & Blog](books.md)
-* [RAG](rag.md)
+* [RAG Fundamental](rag.md)
 * [Production RAG](production-rag.md)

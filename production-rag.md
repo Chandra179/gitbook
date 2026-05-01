@@ -8,6 +8,10 @@ end to end rag sysyem from data ingestion -> chunking -> embed -> retrieval -> g
 
 Accept data sources (PDFs, Markdown) -> process using Docling/Marker -> final output mardkown
 
+* Uses Hash Tracking to compare file SHAs, ensuring only new or modified files are processed.
+* Performs Targeted Deletions for modified files and uses Deterministic UUIDs to prevent duplicate entries during re-ingestion.
+* Auto-Provisioning: The system self-heals by auto-configuring Qdrant collections, distance metrics, and required indices (Full-Text & Keyword) on startup.
+
 ## Chunking Strategies
 
 Abstraction for chunking so we can swap it depends on configuration:
@@ -106,7 +110,9 @@ Search and if result top-1 score ≥ threshold → return immediately, if not: r
 
 produces a hypothetical document for a query. The generated text is embedded and used as the search vector instead of the raw query. Ref: Precise Zero-Shot Dense Retrieval without Relevance Labels" (Gao et al., ACL 2023).
 
-### Hybrid Search
+### Search
+
+#### Hybrid Search
 
 fetches dense + text-filtered candidates, reranks sparse leg client-side, fuses via RRF.
 
@@ -123,12 +129,28 @@ Offloading the heavy lifting to Qdrant, to reduce network latency and memory ove
 
 Use it when you need a level of customization that a standard database engine can't provide. For example using `BM25` search and `Splade` as scorer before fusing the results. While this introduces more "noise" and latency due to the extra data transfer and manual sorting loops, it is usable for fine-tuning relevance in niche domains.
 
+#### **Custom Search**
+
+While Hybrid search is good its using high compute process/heavy process, i think we should consider the type of query like is the query complex, easier to understand? if using dense/keyword search resulting in good result we dont need Hybrid Search
+
+* **Dense-Only Search** (`Search`): A standard vector similarity search without the sparse/BM25 overhead. Ideal for purely semantic queries.
+* **Keyword-Only Search** (`KeywordSearch`): Bypasses vectors entirely to perform a pure text-match search using Qdrant's Scroll API. Useful for exact phrasing or when embedding models are unnecessary.
+
+#### **Payload Filtering**
+
+All search methods (Hybrid, Dense, and Keyword) support strict pre-filtering. This guarantees that similarity scores are only calculated against relevant documents, improving both speed and accuracy. You can filter by:
+
+* `file_path`: Restrict searches to a specific file.
+* `header`: Restrict searches to a specific section or markdown header.
+* `source_sha`: Restrict searches to a specific version of a document.
+
 ### Reranking
 
-top-K by cross-encoder score
+Use a high-precision model to verify the "rough" results from the vector search.
 
-* Model: `cross-encoder/ms-marco-MiniLM-L-6-v2`
-* Input: topK × `candidate_mul` candidates (default ×10 oversample)
+* **Oversampling**: The retrieval stage fetches a larger set of candidates (e.g., 10x the requested amount) to ensure the reranker has enough high-quality options to choose from.
+* **Contextual Scoring**: The system passes the Window Text (the chunk plus its surrounding context) to a Cross-Encoder.
+* **Final Sorting**: The candidates are re-scored based on deep semantic relevance and sorted, ensuring the absolute best matches are promoted to the top for the LLM.
 
 ***
 

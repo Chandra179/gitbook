@@ -2,8 +2,6 @@
 
 **"The Visual Display of Quantitative Information" by Edward Tufte**: For someone dealing with data, this is the "bible" of communication. It teaches you how to present complex information without "chartjunk." It’s a masterclass in efficiency and clarity.
 
-**"The Misbehavior of Markets" by Benoit Mandelbrot**: The father of fractal geometry takes on finance. He argues that standard economic models (like the Bell Curve) are dangerously wrong because they ignore "wild randomness." It’s a very satisfying read for someone who likes identifying patterns that others miss.
-
 **"Lords of Finance" by Liaquat Ahamed**: A fascinating look at the four central bankers who accidentally triggered the Great Depression. It reads like a psychological thriller but explains the systemic mechanics of global interest rates and currency valuation.
 
 **"The Software Architect Elevator" by Gregor Hohpe**: This is perfect for an engineer transitioning into more senior or architectural roles. It discusses the need to "ride the elevator" between the engine room (technical implementation) and the penthouse (business strategy). It helps you understand why technical excellence isn't always enough to make a project succeed
