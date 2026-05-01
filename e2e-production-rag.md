@@ -401,16 +401,49 @@ ollama pull llama3.1:8b-instruct-q4_K_M  # eval LLM judge
 
 ***
 
-## Agent Instructions: Querying This Documentation
+### System Snapshot (2026-05-01)
 
-If you need additional information that is not directly available in this page, you can query the documentation dynamically by asking a question.
+| Metric                  | Value      |
+| ----------------------- | ---------- |
+| Vectors stored (Qdrant) | 554        |
+| Chunk size              | 256 tokens |
+| Chunk overlap           | 32 tokens  |
+| Chunker                 | recursive  |
+| Eval queries            | 50         |
+| Qrels total             | 500        |
 
-Perform an HTTP GET request on the current page URL with the `ask` query parameter:
+#### Eval Results (qrels judge, top-K=5)
 
-```
-GET https://nothin.gitbook.io/computing/production-rag.md?ask=<question>
-```
+| Profile                           | MRR       | Hit@5     | NDCG@5    | P@5       |
+| --------------------------------- | --------- | --------- | --------- | --------- |
+| tf-recursive256-baseline          | 0.918     | 1.000     | 0.941     | 0.840     |
+| tf-recursive256-hyde1             | 0.916     | 1.000     | 0.927     | —         |
+| tf-recursive256-multi-hyde3       | 0.903     | 0.980     | 0.914     | 0.688     |
+| tf-recursive256-multi-hyde5       | 0.916     | 1.000     | 0.927     | 0.688     |
+| tf-recursive256-adaptive-hyde     | 0.892     | 0.960     | 0.904     | 0.708     |
+| splade-recursive256-adaptive-hyde | **0.950** | **1.000** | **0.955** | **0.836** |
 
-The question should be specific, self-contained, and written in natural language. The response will contain a direct answer to the question and relevant excerpts and sources from the documentation.
+Best: `splade-recursive256-adaptive-hyde` — highest MRR + NDCG. SPLADE sparse + adaptive HyDE outperforms TF baseline across all metrics.
 
-Use this mechanism when the answer is not explicitly present in the current page, you need clarification or additional context, or you want to retrieve related documentation sections.
+#### Category Breakdown (splade-recursive256-adaptive-hyde)
+
+| Category         | N  | NDCG@5 | Hit@5  |
+| ---------------- | -- | ------ | ------ |
+| rag              | 2  | 1.0000 | 1.0000 |
+| databases        | 5  | 0.9758 | 1.0000 |
+| computer-science | 5  | 0.9234 | 1.0000 |
+| golang           | 11 | 0.8663 | 1.0000 |
+| networking       | 1  | 0.6183 | 1.0000 |
+| system-design    | 17 | 0.8566 | 0.9412 |
+| math             | 9  | 0.8245 | 0.8889 |
+
+#### Misses (2/50)
+
+1. **\[system-design/medium]** "What is the Snowflake ID structure and how does it handle clock skew?" — top1: `system-design/consistent-hashing.md:18` (score=0.016)
+2. **\[math/hard]** "What is QR decomposition and when is it used over LU?" — top1: `math/linear-algebra.md:290` (score=0.015)
+
+Both misses have very low scores (≤0.016), indicating missing or insufficient coverage in the corpus, not retrieval failure.
+
+#### Sample Search
+
+Server must be running (`make run`) to execute `make search`. Example query: `{"query":"personal knowledge base","top_k":10}`.
