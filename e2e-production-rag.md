@@ -2,7 +2,7 @@
 
 End to end rag sysyem from data ingestion -> chunking -> embed -> retrieval -> generation -> evaluation -> testing
 
-<figure><img src=".gitbook/assets/pipeline.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="/.gitbook/assets/pipeline.png" alt=""><figcaption></figcaption></figure>
 
 ### Ingestion
 
