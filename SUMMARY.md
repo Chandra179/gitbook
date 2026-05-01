@@ -32,6 +32,7 @@
   * [Distributed Cache](system-design/distributed-cache.md)
   * [Notification System](system-design/notification-system.md)
   * [Cache  Stampede](system-design/cache-stampede.md)
+  * [Event Processing](system-design/event-processing.md)
 * [Machine Learning](ml.md)
 * [Books & Blog](books.md)
 * [RAG](rag.md)

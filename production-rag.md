@@ -2,6 +2,8 @@
 
 end to end rag sysyem from data ingestion -> chunking -> embed -> retrieval -> generation -> evaluation -> testing
 
+<figure><img src=".gitbook/assets/image.png" alt="" width="563"><figcaption></figcaption></figure>
+
 ## Ingestion
 
 Accept data sources (PDFs, Markdown) -> process using Docling/Marker -> final output mardkown
@@ -148,10 +150,6 @@ describe methodology for eval .. and how to test it.. and metrics used ... then 
 ## Generator
 
 pass result from rag to LLM
-
-## Infrastructure
-
-<figure><img src=".gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
 
 ## Observability
 
