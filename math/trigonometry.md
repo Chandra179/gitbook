@@ -1,6 +1,6 @@
 # Trigonometry
 
-<figure><img src="/.gitbook/assets/trigonometry.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/trigonometry.png" alt=""><figcaption></figcaption></figure>
 
 Opposite = height\
 Hypotenuse = diagonal\
@@ -75,7 +75,7 @@ $$\theta = \arctan\left(\frac{\text{Opposite}}{\text{Adjacent}}\right)$$
 
 ## Cosecant
 
-$\csc(\theta) = \frac{\text{Hypotenuse}}{\text{Opposite}}$ (The flip of Sine)
+$$\csc(\theta) = \frac{\text{Hypotenuse}}{\text{Opposite}}$$ (The flip of Sine)
 
 * What it finds: The Diagonal length.
 * Use this when you know how high you need to go and want to find the diagonal path.
@@ -87,7 +87,7 @@ $\csc(\theta) = \frac{\text{Hypotenuse}}{\text{Opposite}}$ (The flip of Sine)
 
 ## Secant
 
-$\sec(\theta) = \frac{\text{Hypotenuse}}{\text{Adjacent}}$ (The flip of Cosine)
+$$\sec(\theta) = \frac{\text{Hypotenuse}}{\text{Adjacent}}$$ (The flip of Cosine)
 
 * What it finds: The Diagonal length.
 * Use this when you know the flat distance and need to find the diagonal.
@@ -99,7 +99,7 @@ $\sec(\theta) = \frac{\text{Hypotenuse}}{\text{Adjacent}}$ (The flip of Cosine)
 
 ## Cotangent
 
-$\cot(\theta) = \frac{\text{Adjacent}}{\text{Opposite}}$ (The flip of Tangent)
+$\cot(\theta) = \frac{\text{Adjacent\}}{\text{Opposite\}}$ (The flip of Tangent)
 
 * What it finds: The Flat distance.
 * Use this when you know the Height and want to find the ground distance.
@@ -113,7 +113,7 @@ $\cot(\theta) = \frac{\text{Adjacent}}{\text{Opposite}}$ (The flip of Tangent)
 
 Because it is a circle with radius $$r = 1$$, its equation is derived from the Pythagorean theorem:
 
-$x^2 + y^2 = 1$
+$$x^2 + y^2 = 1$$
 
 Because the Hypotenuse ($H$) is 1, the SOH CAH TOA formulas turn into direct values:
 
@@ -121,7 +121,7 @@ $$\text{Opposite} = H \times \sin(\theta) = 1 \times \sin(\theta) = \mathbf{\sin
 
 $$\text{Adjacent} = H \times \cos(\theta) = 1 \times \cos(\theta) = \mathbf{\cos(\theta)}$$
 
-<figure><img src="/.gitbook/assets/circle_degrees.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/circle_degrees.png" alt=""><figcaption></figcaption></figure>
 
 The radius ending at (0, 1) on the positive vertical axis has a **90 degrees** angle with the positive horizontal axis.
 
@@ -153,7 +153,7 @@ How far is the angle from the x-axis?
 
 ***
 
-<figure><img src="/.gitbook/assets/circle_sine_cosine_example.png" alt="" width="375"><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/circle_sine_cosine_example.png" alt="" width="375"><figcaption></figcaption></figure>
 
 The "Height": $$\sin \theta = 0.6$$. This tells us that the point on the unit circle is exactly $$0.6$$ units above the center line.
 
@@ -190,9 +190,9 @@ These functions are the "flipped" versions of the primary ones:
 * Secant: $$\sec(\theta) = \frac{1}{x}$$ (where $$x \neq 0$$)
 * Cotangent: $$\cot(\theta) = \frac{x}{y}$$ (where $$y \neq 0$$)
 
-<figure><img src="/.gitbook/assets/degrees_and_radian.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/degrees_and_radian.png" alt=""><figcaption></figcaption></figure>
 
-<figure><img src="/.gitbook/assets/special_value_trigonometric_func.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/special_value_trigonometric_func.png" alt=""><figcaption></figcaption></figure>
 
 ## **Domain of trigonometric function**
 
@@ -210,7 +210,7 @@ At $$90^\circ$$ (The top edge): Your point is at $$(0, 1)$$. The horizontal widt
 
 The Math: $$\tan(90^\circ) = \frac{1}{0}$$.
 
-<figure><img src="/.gitbook/assets/unit_circle_wave.png" alt="" width="563"><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/unit_circle_wave.png" alt="" width="563"><figcaption></figcaption></figure>
 
 you cannot divide by zero. At this exact angle, the Tangent "breaks" and becomes undefined.
 
