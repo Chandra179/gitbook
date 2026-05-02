@@ -41,12 +41,6 @@
 
 #### Project Roadmap
 
-**Decentralized Private Chat**
-
-* **Concept:** A polished version of an existing P2P chat featuring group rooms, message history, file attachments, and a clean TUI/Web UI.
-* **Engine:** Product layer built on top of the core P2P engine.
-* **Reference Notes:** p2p-chat.md.
-
 **Personal Knowledge Base with Semantic Search**
 
 * **Concept:** Markdown notes searchable via natural language with ranked results (an evolution of the GitBook search layer).
@@ -54,12 +48,6 @@
 * **Engine:** `AST chunking` + `embeddings` + `cosine similarity` + `Go REST API`.
 * **Dependencies:** chunking library, vector db, prog lang
 * **Reference Notes:** chunking-and-embedding.md.
-
-**Real-Time Auction Platform**
-
-* **Concept:** Real-time bidding with instant winner notification and high concurrency.
-* **Engine:** `WebSockets`, `Kafka` for bid events, `rate limiting`, `notification fan-out`, `strong consistency`.
-* **Reference Notes:** rate-limit, notification-system, Kafka.
 
 **Travel itinerary**
 

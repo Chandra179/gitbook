@@ -1,7 +1,6 @@
 # Table of contents
 
 * [Experience](README.md)
-* [Domain](domain.md)
 * [Fundamental](fundamental/README.md)
   * [Computing](fundamental/computing.md)
   * [Networking](fundamental/networking.md)
@@ -12,6 +11,8 @@
   * [Software Architecture](fundamental/software-architecture.md)
   * [RAG Fundamental](rag.md)
   * [ReactJS](fundamental/reactjs.md)
+  * [Domain](fundamental/domain.md)
+  * [Predicting Asset Trends](fundamental/predicting-asset-trends.md)
 * [Golang](golang/README.md)
   * [Compiler](golang/compiler.md)
   * [Goroutine](golang/goroutine.md)
