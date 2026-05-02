@@ -354,10 +354,4 @@ HyDE adds 7–8 min latency with worse metrics on this corpus — disable unless
 | 10–30              | Monitor embed latency. Run 10→50 VU load ramp test first. Increase `evalops.max_workers` (currently 4 → drops at burst).                |
 | 30+                | Ollama embed becomes bottleneck. Options: GPU instance, embed batching, or swap to hosted API (OpenAI/Voyage). Scale Qdrant separately. |
 
-**Known gaps**
-
-* Load ramp (10→50 VU) not yet run — required before prod traffic
-* `math/hard` topics (QR decomp, SVD) and niche terms (OAuth2 vs OIDC) are retrieval misses — content gap, not retrieval failure
-* EvalOps mean context\_relevance=0.310 (low) — `gemma3:1b` strict judge + CS fundamentals underrepresented in KB
-
 ***
