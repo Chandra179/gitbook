@@ -27,8 +27,9 @@
 
 * Golang SDK: [https://github.com/Chandra179/gosdk](https://github.com/Chandra179/gosdk)
 * Golang Template: [https://github.com/Chandra179/brook](https://github.com/Chandra179/brook)
-* Nadir, E2E Rag Production Grade (Scalable & Battle tested):&#x20;
+* Nadir, RAG Production Grade: [https://github.com/Chandra179/nadir](https://github.com/Chandra179/nadir)
+* GreenClaw, Data extraction & Knowledge Graph: [https://github.com/Chandra179/greenclaw](https://github.com/Chandra179/greenclaw)
 
 ### Tech stack
 
-* Golang, Temporal, SolidJS, Docker, Javascript, Kubernetes, ArgoCD, Redis, RabbitMQ, Nats, GCP, Python
+* Golang, Temporal, SolidJS, Docker, Javascript, GCP, Redis, RabbitMQ, Nats, Python, SqlServer, AWS, SolidJS

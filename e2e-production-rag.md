@@ -2,11 +2,11 @@
 
 End to end rag sysyem from data ingestion -> chunking -> embed -> retrieval -> generation -> evaluation -> testing
 
-<figure><img src="/.gitbook/assets/pipeline.png" alt=""><figcaption></figcaption></figure>
+<figure><img src=".gitbook/assets/pipeline.png" alt=""><figcaption></figcaption></figure>
 
 ### Ingestion
 
-Accept data sources (Markdown) -> process using Docling -> final output mardkown
+Markdown -> process using Docling -> final output mardkown
 
 * Uses Hash Tracking to compare file SHAs, ensuring only new or modified files are processed.
 * Performs Targeted Deletions for modified files and uses Deterministic UUIDs to prevent duplicate entries during re-ingestion.
