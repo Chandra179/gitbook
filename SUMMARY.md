@@ -12,7 +12,6 @@
   * [RAG Fundamental](rag.md)
   * [ReactJS](fundamental/reactjs.md)
   * [Domain](fundamental/domain.md)
-  * [Predicting Asset Trends](fundamental/predicting-asset-trends.md)
 * [Golang](golang/README.md)
   * [Compiler](golang/compiler.md)
   * [Goroutine](golang/goroutine.md)
@@ -38,3 +37,4 @@
 * [Machine Learning](ml.md)
 * [E2E Production RAG](e2e-production-rag/README.md)
   * [Test Results](e2e-production-rag/test-results.md)
+* [Event-Driven Market Simulation](event-driven-market-simulation.md)
