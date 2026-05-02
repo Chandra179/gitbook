@@ -10,7 +10,7 @@
   * [Kafka](fundamental/kafka.md)
   * [Oauth2 & Oidc](fundamental/oauth2-and-oidc.md)
   * [Software Architecture](fundamental/software-architecture.md)
-  * [RAG Fundamental](fundamental/rag.md)
+  * [RAG Fundamental](rag.md)
 * [Golang](golang/README.md)
   * [Compiler](golang/compiler.md)
   * [Goroutine](golang/goroutine.md)

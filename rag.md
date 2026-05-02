@@ -1,4 +1,4 @@
-# RAG
+# RAG Fundamental
 
 ## RAG
 
