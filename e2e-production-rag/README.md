@@ -1,8 +1,8 @@
 # E2E Production RAG
 
-End to end rag sysyem from data ingestion -> chunking -> embed -> retrieval -> generation -> evaluation -> testing
+End to end rag system from data ingestion -> chunking -> embed -> retrieval -> generation -> evaluation -> testing -> monitoring
 
-<figure><img src=".gitbook/assets/pipeline.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/pipeline.png" alt=""><figcaption></figcaption></figure>
 
 ## Ingestion
 
@@ -138,13 +138,6 @@ Offloading the heavy lifting to Qdrant, to reduce network latency and memory ove
 **Client-side**
 
 Use it when you need a level of customization that a standard database engine can't provide. For example using `BM25` search and `Splade` as scorer before fusing the results. While this introduces more "noise" and latency due to the extra data transfer and manual sorting loops, it is usable for fine-tuning relevance in niche domains.
-
-### **Custom Search**
-
-While Hybrid search is good its using high compute process/heavy process, i think we should consider the type of query like is the query complex, easier to understand? if using dense/keyword search resulting in good result we dont need Hybrid Search
-
-* **Dense-Only Search** (`Search`): A standard vector similarity search without the sparse/BM25 overhead. Ideal for purely semantic queries.
-* **Keyword-Only Search** (`KeywordSearch`): Bypasses vectors entirely to perform a pure text-match search using Qdrant's Scroll API. Useful for exact phrasing or when embedding models are unnecessary.
 
 ### **Payload Filtering**
 
@@ -332,54 +325,39 @@ evalops:
 
 ***
 
-## Observability
+## System Summary
 
-<table><thead><tr><th width="374">Metric</th><th>Source</th></tr></thead><tbody><tr><td>Latency (p50/p95/p99)</td><td>Prometheus histograms</td></tr><tr><td>Cache hit rate</td><td>Prometheus counter</td></tr><tr><td>Rerank score before/after</td><td>Prometheus histogram</td></tr><tr><td>Ingest file status</td><td>Prometheus counter (processed/skipped/failed)</td></tr><tr><td>Embed latency + batch size</td><td>Prometheus histogram</td></tr><tr><td>Retrieval quality (MRR, nDCG)</td><td>Eval harness (<code>eval_runner.go</code>)</td></tr><tr><td>Context relevance drift</td><td>EvalOps monitor (log alert)</td></tr></tbody></table>
+> Date: 2026-05-02. KB: 554 vectors, 38 files, 19 MB. Embedder: `nomic-embed-text` 768-dim. Stack: Ollama + Qdrant (local).
 
-### Benchmark Results
+**Throughput (local, k6)**
 
-> Full details: docs/TEST\_RESULTS.md. Date: 2026-05-02. Embedder: `nomic-embed-text` (768-dim). Store: Qdrant `pkb_chunks` (554 vectors). topK: 5.
+| Path                       | Throughput | Latency   |
+| -------------------------- | ---------- | --------- |
+| Cached search (10 VU)      | 270 req/s  | p50=35ms  |
+| Uncached search            | —          | p50=58ms  |
+| Embed only (8 VU)          | 182 req/s  | p95=25ms  |
+| Full pipeline (1 VU smoke) | —          | p95=290ms |
 
-#### IR Evaluation
+Cache hit rate on repeated query pool: **96.21%** (\~1.7× latency speedup).
 
-50 queries, 7 categories. 5 profiles run (SPLADE skipped — sidecar not running).
+**Best retrieval config**
 
-| Profile                         | MRR        | HitRate    | NDCG       | P@5        | Time |
-| ------------------------------- | ---------- | ---------- | ---------- | ---------- | ---- |
-| `tf-recursive256-baseline`      | **0.9183** | **1.0000** | **0.9407** | **0.8400** | 6s   |
-| `tf-recursive256-multi-hyde3`   | 0.9200     | 0.9800     | 0.9212     | 0.7120     | 447s |
-| `tf-recursive256-multi-hyde5`   | 0.9067     | 0.9600     | 0.9037     | 0.7040     | 451s |
-| `tf-recursive256-adaptive-hyde` | 0.8813     | 0.9800     | 0.8915     | 0.6520     | 441s |
-| `tf-recursive256-hyde1`         | 0.8483     | 0.9400     | 0.8604     | 0.6560     | 437s |
+`chunk_size=256`, `overlap=32`, `recursive chunker`, `TF hybrid (no SPLADE)`, **no HyDE** → MRR=0.92, HitRate=100%, NDCG=0.94 over 50 queries.
 
-**Key findings:**
+HyDE adds 7–8 min latency with worse metrics on this corpus — disable unless KB vocab diverges sharply from query vocabulary.
 
-* Baseline (no HyDE) wins all metrics. Direct query embed + TF hybrid sufficient when KB vocab matches queries.
-* HyDE adds 7–8 min latency with worse results on this corpus. Multi-HyDE-3 best HyDE variant (1 miss).
-* `math/hard` (QR decomposition, SVD) and niche system-design terms (OAuth2 vs OIDC, architecture quantum) are recurring misses — likely content gap, not retrieval failure.
+**Scaling guidance**
+
+| Users (concurrent) | Recommendation                                                                                                                          |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| 1–10               | Local Ollama sufficient. Cache absorbs repeat queries.                                                                                  |
+| 10–30              | Monitor embed latency. Run 10→50 VU load ramp test first. Increase `evalops.max_workers` (currently 4 → drops at burst).                |
+| 30+                | Ollama embed becomes bottleneck. Options: GPU instance, embed batching, or swap to hosted API (OpenAI/Voyage). Scale Qdrant separately. |
+
+**Known gaps**
+
+* Load ramp (10→50 VU) not yet run — required before prod traffic
+* `math/hard` topics (QR decomp, SVD) and niche terms (OAuth2 vs OIDC) are retrieval misses — content gap, not retrieval failure
+* EvalOps mean context\_relevance=0.310 (low) — `gemma3:1b` strict judge + CS fundamentals underrepresented in KB
 
 ***
-
-## EvalOps (Continuous Evaluation)
-
-Disabled in current config (`enabled: false`). Architecture wired: 5% sampler → LLM judge → JSONL trace → drift alert at 10% relative drop. Zero hot-path cost when not sampled.
-
-Enable: set `evalops.enabled: true` + `judge_base_url` pointing at Ollama `/v1`.
-
-***
-
-## Load & Throughput (k6)
-
-| Test                           | Result  | Key Metric                                            |
-| ------------------------------ | ------- | ----------------------------------------------------- |
-| smoke (1 VU, 30s)              | PASS    | p(95)=290ms, 0% error                                 |
-| cache hit rate (10 VU, 90s)    | PASS    | **96.21% hits**, 270 req/s, cache -40% median latency |
-| keyword vs hybrid (5 VU, 60s)  | PASS    | hybrid p(95)=49ms vs keyword 59ms                     |
-| embed throughput (1–8 VU ramp) | PASS    | **182 req/s**, p(95)=25ms, 0% error                   |
-| load ramp (10→50 VU)           | NOT RUN | requires warm full stack                              |
-
-**Key findings:**
-
-* Semantic cache saturates fast on repeated query pool: 96.21% hit rate, median 35ms vs 58ms uncached (\~1.7× speedup).
-* `nomic-embed-text` stable under 8 parallel requests: p(95) ≤ 25ms, no errors. Embed contributes \~17ms per uncached request.
-* Hybrid search faster than keyword-only at p(95) (49ms vs 59ms). Keyword has higher p(99) tail (311ms vs 78ms) under load.
