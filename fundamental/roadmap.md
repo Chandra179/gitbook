@@ -1,194 +1,145 @@
 # Roadmap
 
-## Software Engineer
-
-### Phase 0: Solidify the Core (2–3 weeks)
-
-You already know most of this, but a quick refresh with advanced practice will cement your foundation.
-
-| Topic                                       | Key Gaps to Fill                                                        | Resources                                                                                                                                                                                                                                                   | Hands‑on Project                                                                                                                                                                                              |
-| ------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Go concurrency deeper**                   | `singleflight` (you know it), `errgroup`, `semaphore`, custom scheduler | <p>• Blog: <a href="https://go.dev/blog/pipelines">Go Concurrency Patterns (Pipelines &#x26; cancellation)</a><br>• <a href="https://github.com/uber-go/guide">Uber Go Style Guide</a></p>                                                                  | **Project:** Build a **parallel downloader** that fetches 1000 files in chunks using worker pools, rate limiting, and retries with exponential backoff. Use `singleflight` to deduplicate identical requests. |
-| **Linux systems & performance**             | `strace`, `perf`, `eBPF` basics, `netstat`, `ss`, `iostat`              | <p>• Book: <em>Systems Performance</em> (Brendan Gregg) – Chapter 1–4<br>• <a href="https://ebpf.io/what-is-ebpf/">BPF and eBPF official docs</a></p>                                                                                                       | **Project:** Write a tiny eBPF program (using `bcc` Python or C) that traces `openat` syscalls in your Go service and logs file access latency.                                                               |
-| **Design patterns for distributed systems** | Circuit breaker, retry with jitter, bulkhead, health endpoint           | <p>• <a href="https://learn.microsoft.com/en-us/azure/architecture/patterns/">Microsoft Resilience Patterns</a><br>• Blog: <a href="https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/">Exponential Backoff and Jitter (AWS)</a></p> | **Project:** Enhance your previous `singleflight` project with a circuit breaker (fail fast) and a health check endpoint. Use `go‑kit` or roll your own.                                                      |
+| Activity Type                        | ROI for career                 | Time investment                         |
+| ------------------------------------ | ------------------------------ | --------------------------------------- |
+| Open source contributions (real PRs) | ⭐⭐⭐⭐⭐                          | Medium (4‑8 hrs / week)                 |
+| Teaching (YouTube, blog, GitBook)    | ⭐⭐⭐⭐                           | Low‑Medium (2‑4 hrs / breakdown)        |
+| LeetCode (medium, targeted)          | ⭐⭐⭐ (necessary for interviews) | Low (3‑5 problems/week)                 |
+| Local infrastructure projects        | ⭐ (for you)                    | **Drop** unless you enjoy them as hobby |
 
 ***
 
-### Phase 1: Deep Distributed Systems – Master the Classics (5–6 weeks)
+### Phase 0: Solidify the Core (1–2 weeks)
 
-These are the non‑negotiable topics for senior roles in platform/infra.
+_No local projects. Just refresh and practice._
 
-#### 1.1 Consensus & Replication
+| Topic                   | Action                                                                                                                 | Resources                                                                                       |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Go concurrency patterns | Review and **teach** by writing a short blog post: "Singleflight, errgroup, and semaphore in Go"                       | [Go Concurrency Patterns](https://go.dev/blog/pipelines)                                        |
+| Linux performance tools | Run `strace`, `perf`, `ss` on a real service (e.g., your local Kafka) and write a **1‑page breakdown** of what you see | _Systems Performance_ (Brendan Gregg) Ch 1‑4                                                    |
+| Resilience patterns     | **Create a video (5 min)** explaining circuit breaker vs. retry with jitter, using real examples                       | [Microsoft Resilience Patterns](https://learn.microsoft.com/en-us/azure/architecture/patterns/) |
 
-| Resource                                                                                                                                                                                                                                                                    | Type    | Key Takeaway                                                          |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | --------------------------------------------------------------------- |
-| _Designing Data‑Intensive Applications_ (Kleppmann) – Chapters 5, 6, 7, 9                                                                                                                                                                                                   | Book    | The bible for replication, partitioning, transactions, and consensus. |
-| [Raft paper (Extended version)](https://raft.github.io/raft.pdf)                                                                                                                                                                                                            | Paper   | Understand leader election, log replication, safety.                  |
-| [ZooKeeper’s atomic broadcast (ZAB)](https://zookeeper.apache.org/doc/current/zookeeperInternals.html)                                                                                                                                                                      | Article | Practical consensus in production.                                    |
-| [Consistent Hashing (original paper)](https://www.akamai.com/us/en/multimedia/documents/technical-publication/consistent-hashing-consistent-hashing-and-random-trees-distributed-caching-protocols-for-relieving-hot-spots-on-the-world-wide-web-technical-publication.pdf) | Paper   | You know the concept – now read the paper.                            |
+**Deliverable:** One blog post + one short video + one written analysis. Publish on your GitBook / YouTube.
 
-**Project 1.1 – Build a minimal Raft library in Go**\
-Implement leader election and log replication. Use gRPC for communication. Do not use external libraries.\
-&#xNAN;_&#x44;eliverable:_ A key‑value store that tolerates 1 out of 3 node failures.
+***
 
-**Project 1.2 – Consistent hash ring with virtual nodes and replication**\
-Extend your distributed cache design (from your notes) into a runnable Go service. Support adding/removing nodes without massive remapping. Use a gossip protocol (e.g., memberlist) for node discovery.\
-&#xNAN;_&#x53;tretch goal:_ Add data replication factor = 2.
+### Phase 1: Deep Distributed Systems – Open Source First (4–5 weeks)
+
+Instead of building Raft from scratch, **contribute to real projects** and **teach the concepts**.
+
+#### 1.1 Consensus & Replication – Open Source Path
+
+| Activity                                                                                            | Why                            | Target Project                                                                                                                                                   |
+| --------------------------------------------------------------------------------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Fix a good first issue** in a distributed database or coordination system.                        | Real code, real review.        | [etcd](https://github.com/etcd-io/etcd/labels/good%20first%20issue) (Go, Raft) or [hasicorp/raft](https://github.com/hashicorp/raft/labels/good%20first%20issue) |
+| **Write a breakdown article** – "How Raft leader election works (with etcd code walkthrough)".      | Shows deep understanding.      | Use etcd's code as reference.                                                                                                                                    |
+| **Contribute a small feature** to a consistent hashing library (e.g., adding virtual node support). | Demonstrates practical skills. | [stathat/consistent](https://github.com/stathat/consistent) (Go)                                                                                                 |
+
+**Skip:** Building your own Raft. You know the theory. Prove it by contributing.
 
 #### 1.2 Distributed Transactions & Sagas
 
-| Resource                                                                                                                              | Type  |
-| ------------------------------------------------------------------------------------------------------------------------------------- | ----- |
-| [Saga pattern (original paper)](https://www.cs.cornell.edu/andru/cs711/2002fa/reading/sagas.pdf)                                      | Paper |
-| [Google Percolation (database transactions at scale)](https://storage.googleapis.com/pub-tools-public-publication-data/pdf/36726.pdf) | Paper |
-| Book: _Software Architecture: The Hard Parts_ (Ford, Richards) – Chapter on Sagas                                                     | Book  |
+| Activity                                                                                         | Why                          | Target                                                                                     |
+| ------------------------------------------------------------------------------------------------ | ---------------------------- | ------------------------------------------------------------------------------------------ |
+| **Contribute to Temporal** (you already know it). Fix a doc bug or a small workflow issue.       | Aligns with your experience. | [Temporal Go SDK issues](https://github.com/temporalio/sdk-go/labels/good%20first%20issue) |
+| **Create a video breakdown** – "Saga pattern vs. 2PC: When to use which, with Temporal example". | Teaching forces clarity.     | Use your own prior code as demo.                                                           |
 
-**Project 1.3 – Travel booking saga**\
-Three services: Flight, Hotel, Payment. Each has a `book` and `cancel` operation. Implement a saga orchestrator (using Temporal – you already know it!) that coordinates a trip booking. If flight fails, run compensating transactions.\
-&#xNAN;_&#x44;eliverable:_ Idempotent steps, with a dead letter queue for failed compensations.
+#### 1.3 Observability
 
-#### 1.3 Observability – The Senior Engineer’s Force Multiplier
-
-| Resource                                                                                                                    | Type          |
-| --------------------------------------------------------------------------------------------------------------------------- | ------------- |
-| [Google Dapper paper (distributed tracing)](https://storage.googleapis.com/pub-tools-public-publication-data/pdf/36356.pdf) | Paper         |
-| [OpenTelemetry specification](https://opentelemetry.io/docs/specs/otel/)                                                    | Documentation |
-| [USE method (Brendan Gregg)](https://www.brendangregg.com/usemethod.html)                                                   | Methodology   |
-
-**Project 1.4 – Instrument a microservices app**\
-Take a simple 3‑service app (e.g., order, payment, notification). Add OpenTelemetry traces, metrics (Prometheus), and logs (structured JSON). Export to Jaeger and Grafana. Write a dashboard that shows latency percentiles (p99) and error rates per service.\
-&#xNAN;_&#x53;tretch:_ Use exemplars to link traces to metrics.
+| Activity                                                                              | Why                                                         | Target                                                                                                                             |
+| ------------------------------------------------------------------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| **Contribute to OpenTelemetry Collector** (Go). Add a small processor or exporter.    | Directly matches your experience (you used OTel + Datadog). | [OpenTelemetry Collector good first issues](https://github.com/open-telemetry/opentelemetry-collector/labels/good%20first%20issue) |
+| **Write a tutorial** – "Instrumenting a Go service with OpenTelemetry in 15 minutes". | High visibility.                                            | Publish on [Dev.to](https://dev.to/) / GitBook.                                                                                    |
 
 ***
 
-### Phase 2: AI Infrastructure – Your Future Edge (5–6 weeks)
+### Phase 2: AI Infrastructure – Build & Teach (4–5 weeks)
 
-You already built a RAG pipeline. Now go deeper into the platform aspects of serving, scaling, and managing LLMs.
+Keep **two small, focused projects** (they are lightweight and runnable locally). Everything else = open source + teaching.
 
-#### 2.1 LLM Serving Systems
+#### 2.1 LLM Serving – Minimal Project
 
-| Resource                                                                                      | Type                                        |
-| --------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| [vLLM paper (OSDI 2023)](https://www.usenix.org/conference/osdi23/presentation/kwon)          | Paper – PagedAttention, continuous batching |
-| [TensorRT‑LLM architectural overview](https://github.com/NVIDIA/TensorRT-LLM)                 | GitHub docs                                 |
-| [Hugging Face TGI architecture](https://github.com/huggingface/text-generation-inference)     | GitHub                                      |
-| [Blog post: “How to serve LLMs at scale” (together.ai)](https://together.ai/blog/llm-serving) | Article                                     |
+**Project (keep):** Go wrapper for vLLM with caching, rate limiting, and singleflight.\
+&#xNAN;_&#x57;hy keep:_ It's small (<500 lines) and directly portable to a real job.\
+&#xNAN;_&#x44;eliverable:_ GitHub repo with clear README and a 5‑min demo video.
 
-**Project 2.1 – Wrapper for vLLM with caching**\
-Deploy vLLM locally with a model (e.g., Llama 3.2 1B). Write a Go service in front that:
+**Instead of building a multi‑model router**, contribute to an existing one:
 
-* Caches exact‑match prompts in Redis (LRU)
-* Rate‑limits per API key (token bucket)
-* Implements request coalescing (singleflight) for the same prompt while the model is computing\
-  &#xNAN;_&#x52;esult:_ A production‑like LLM gateway.
-
-**Project 2.2 – Multi‑model router**\
-Extend the gateway to route requests based on:
-
-* Prompt length → short prompts go to a small model (fast/cheap), long → big model
-* Priority: high‑priority (OTP) goes to reserved capacity\
-  Implement circuit breakers if a model endpoint fails.\
-  &#xNAN;_&#x53;tretch:_ Use consistent hashing on the prompt to stick the same user to the same model shard for better cache locality.
+* **Open source contribution** to [LiteLLM](https://github.com/BerriAI/litellm) (Python, but you can help with docs or a Go client) or [OpenRouter](https://openrouter.ai/).
+* **Teach:** "How to build a multi‑model router – design trade‑offs" (blog post).
 
 #### 2.2 LLM Observability & Evaluation
 
-| Resource                                                                                   | Type         |
-| ------------------------------------------------------------------------------------------ | ------------ |
-| [RAGAS paper](https://arxiv.org/abs/2309.15217)                                            | Paper        |
-| [Lil’Log – Prompt Engineering & RAG](https://lilianweng.github.io/posts/2023-06-23-agent/) | Blog         |
-| [LangSmith / Phoenix documentation](https://docs.smith.langchain.com/)                     | Product docs |
+| Activity                                                                                                       | Why                           | Target                                                      |
+| -------------------------------------------------------------------------------------------------------------- | ----------------------------- | ----------------------------------------------------------- |
+| **Contribute to RAGAS** (Python, but evaluation logic is language‑agnostic). Add a new metric or improve docs. | Connects to your RAG project. | [RAGAS GitHub](https://github.com/explodinggradients/ragas) |
+| **Write a case study** – "How we evaluated our RAG pipeline using RAGAS" (even if it's your own project).      | Shows end‑to‑end thinking.    | GitBook / Medium.                                           |
 
-**Project 2.3 – RAG evaluation pipeline**\
-Improve your existing Nadir/Greenclaw RAG system:
+**Drop semantic cache project** – too heavy. Instead, **teach the concept** with a 10‑min video + diagram.
 
-* Add evaluation metrics: Faithfulness, Answer Relevancy, Context Recall
-* Run 100 test queries, log each run’s scores in PostgreSQL
-* Build a Grafana dashboard to track average scores over time
+#### 2.3 LLM Agents
 
-**Project 2.4 – Semantic cache for embeddings**\
-Instead of caching only exact prompts, implement a **semantic cache** using a vector DB (pgvector or Qdrant). For a new query, find the top‑k most similar previous queries and return cached answer if similarity > threshold.\
-&#xNAN;_&#x43;hallenges:_ Deciding the threshold, handling false positives.
-
-#### 2.3 LLM Agents & Workflows
-
-| Resource                                                                          | Type    |
-| --------------------------------------------------------------------------------- | ------- |
-| [ReAct paper (reason + act)](https://arxiv.org/abs/2210.03629)                    | Paper   |
-| [Google’s “Chain of Thought” paper](https://arxiv.org/abs/2201.11903)             | Paper   |
-| [Temporal’s LLM workflows (blog)](https://temporal.io/blog/llm-workflow-patterns) | Article |
-
-**Project 2.5 – Customer support agent using Temporal**\
-Build a workflow that:
-
-1. Receives a user query
-2. Calls an LLM to classify intent (refund, order status, product info)
-3. Routes to a sub‑workflow (e.g., `RefundWorkflow` that checks order DB)
-4. Returns answer to user\
-   Use Temporal for durable execution – if the LLM API times out, resume from last step.\
-   &#xNAN;_&#x53;tretch:_ Add human‑in‑the‑loop for sensitive actions (e.g., “refund > $100 requires approval”).
+| Activity                                                                                               | Why                        |
+| ------------------------------------------------------------------------------------------------------ | -------------------------- |
+| **Contribute to Temporal's LLM examples** (they have a Python SDK for AI workflows). Add a Go example. | Direct use of Temporal.    |
+| **Create a YouTube video** – "Building a durable LLM agent with Temporal: workflow as code".           | High visibility, low code. |
 
 ***
 
-### Phase 3: Advanced Systems Design – Staff Level Preparation (4 weeks)
+### Phase 3: Advanced Systems Design – Document & Teach (3 weeks)
 
-Now you design systems that span many of the components you’ve studied.
+**No code.** Write design docs and turn them into teaching content.
 
-#### 3.1 Materials & Case Studies
+#### Design docs (write 3, 2 pages each):
 
-| Resource                                                                                                                                                      | Type                 |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
-| [Google File System paper](https://storage.googleapis.com/pub-tools-public-publication-data/pdf/035fc8.pdf)                                                   | Paper                |
-| [Apache Kafka architecture (original paper)](https://notes.stephenholiday.com/Kafka.pdf)                                                                      | Paper                |
-| [Uber’s “Domain Oriented Microservices” article](https://www.uber.com/en-DE/blog/microservice-architecture/)                                                  | Article (design doc) |
-| [Discord’s “Why we switched from Go to Rust”](https://discord.com/blog/why-discord-is-switching-from-go-to-rust) (but you’ll note they kept many Go services) | Blog                 |
-| [Real‑world design docs: Airbnb’s “Dynamic Pricing”](https://medium.com/airbnb-engineering/dynamic-pricing-2e7b6ebb1b6d)                                      | Tech blog            |
+* YouTube watch time counter
+* Distributed cron job scheduler
+* LLM batch inference platform
 
-**Exercise (no coding):** Write a 2‑page design doc for each of:
+**Publish** the best one as a blog post with diagrams.
 
-* _YouTube watch time counter_ (consistent hashing, counter with eventual consistency)
-* _Distributed cron job scheduler_ (leader election, lease, fault tolerance)
-* _LLM batch inference platform_ (scheduling, batching, results storage)
+#### Teaching content:
 
-Use a template: **Context, Requirements (functional/non‑functional), High‑level design, API, Data model, Trade‑offs, Failure modes.**
+* **Record a video** walking through one design doc (e.g., the LLM batch inference platform).
+* **Create a short podcast‑style audio** or live stream where you explain trade‑offs.
 
-#### 3.2 Capstone Project (2–3 weeks)
-
-**Project 3 – AI‑Native Distributed Cache**\
-Build a distributed cache (like your earlier design) but specialized for LLM embeddings:
-
-* Keys are embedding vectors (instead of strings) – use LSH (locality‑sensitive hashing) to route keys to nodes
-* Support approximate nearest neighbor (ANN) search directly in the cache (no separate vector DB)
-* Implement “semantic TTL” – items that are semantically similar remain in cache longer
-* Write a design doc for it, then implement a minimal prototype in Go
-
-This project touches: consistent hashing (for vectors), replication, failure detection, and machine learning – a perfect staff‑level showcase.
+**Drop capstone project** (AI‑Native Distributed Cache). Too heavy, too local. Instead, **contribute to an existing vector database** like [Milvus](https://github.com/milvus-io/milvus) (Go components) or [Qdrant](https://github.com/qdrant/qdrant) (Rust, but you can contribute to its client).
 
 ***
 
 ### Phase 4: Soft Skills & Career (ongoing)
 
-To get the senior/staff title, you need influence beyond code.
-
-| Skill                      | Resource                                                                                                                                                        | Action                                                                      |
-| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| **Writing design docs**    | Book: _Writing Effective Engineering Design Docs_ (Google internal, but [this public template](https://www.industrialempathy.com/posts/design-docs-at-google/)) | Refactor your past projects into design docs. Publish them on your GitBook. |
-| **Leading projects**       | [StaffEng.com – “Arbitration”](https://staffeng.com/guides/arbitration/)                                                                                        | Interview yourself: “What trade‑off did I force my team to accept?”         |
-| **Technical interviewing** | _System Design Interview_ (Alex Xu) Vol 1 & 2                                                                                                                   | Practice 2 designs/week whiteboarded.                                       |
+| Activity                                                                            | Why                                    | How                                                          |
+| ----------------------------------------------------------------------------------- | -------------------------------------- | ------------------------------------------------------------ |
+| **Review open source PRs** (not just your own)                                      | Learn to be a reviewer, mentor others. | Ask maintainers for review permissions after 2‑3 merged PRs. |
+| **Attend a contributor summit** (e.g., Temporal Community, KubeCon)                 | Network with hiring managers.          | Virtual events are free.                                     |
+| **Update your resume** to highlight open source contributions and teaching content. | Direct impact.                         | Link to your GitHub contributions page and YouTube channel.  |
 
 ***
 
-### How to Prioritise – The 3‑Month High‑Impact Sprint
+### Prioritized 3‑Month High‑Impact Sprint
 
-If you have limited time, do **only these**:
+| Week  | Primary Activity                                                                                  | Secondary                                            | Time per week |
+| ----- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------------- |
+| 1     | **Open source onboarding** – pick Temporal or OTel, set up dev env, fix a small doc/test issue.   | Write a 1‑page "how I set up" guide.                 | 6 hrs         |
+| 2‑3   | **First meaningful open source PR** – add a small feature (e.g., a new metric in OTel collector). | Record a 5‑min video explaining the feature.         | 6‑8 hrs/week  |
+| 4     | **LeetCode prep** (medium problems, 3‑5/week) – only if interviewing soon.                        | Review design doc templates.                         | 3 hrs         |
+| 5‑6   | **Second open source PR** – contribute to LiteLLM or RAGAS (AI infra).                            | Write a blog post about the contribution experience. | 6 hrs/week    |
+| 7‑8   | **Create two teaching videos** – one on consistent hashing, one on saga vs. 2PC.                  | Publish on YouTube and LinkedIn.                     | 4 hrs/week    |
+| 9‑10  | **Write two design docs** (pick from list above). Turn one into a blog post with diagrams.        | Review a friend's design doc.                        | 4 hrs/week    |
+| 11‑12 | **Final open source contribution** – improve Temporal's Go SDK docs or examples.                  | Record a "lessons learned" video.                    | 6 hrs/week    |
 
-| Week  | Focus                              | Project Output                       |
-| ----- | ---------------------------------- | ------------------------------------ |
-| 1–2   | Consensus (Raft)                   | Minimal Raft key‑value store         |
-| 3–4   | AI Gateway (vLLM wrapper)          | Caching + rate limiting + coalescing |
-| 5–6   | Semantic cache (vector similarity) | RAG system with semantic cache       |
-| 7–8   | Saga with Temporal                 | Travel booking saga                  |
-| 9–10  | Capstone: AI distributed cache     | Prototype with LSH routing           |
-| 11–12 | Design docs & interview prep       | 3 design docs + 2 mock interviews    |
+***
+
+### What You Will Have After 3 Months
+
+* ✅ **3‑5 merged PRs** to real open source projects (Temporal, OTel, LiteLLM, RAGAS, etc.)
+* ✅ **2‑3 teaching videos** on YouTube (distributed systems + AI infra)
+* ✅ **2‑3 blog posts** (design docs + contribution stories)
+* ✅ **Solid LeetCode muscle** (if needed)
+* ✅ **A public portfolio** that proves you can collaborate, communicate, and solve real problems
+
+***
 
 ## Mathematics Learning Roadmap
 
