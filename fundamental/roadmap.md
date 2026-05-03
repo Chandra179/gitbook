@@ -1,76 +1,194 @@
 # Roadmap
 
-## Software Engineering Knowledge Expansion & Projects Roadmap
+## Software Engineer
 
-This roadmap broadens your architectural depth, introduces new domains, and sharpens your systems-building skills without grinding you into burnout again. It's structured in phases, each with a theme and a suggested capstone project.
+### Phase 0: Solidify the Core (2–3 weeks)
 
-#### Phase 1: Systems Architecture & Distributed Patterns (Weeks 4–8)
+You already know most of this, but a quick refresh with advanced practice will cement your foundation.
 
-**Goal:** Fill any gaps in large-scale architecture, cloud-native patterns, and formal design thinking.
-
-**Topics to study:**
-
-* Domain-Driven Design (DDD), CQRS, Event Sourcing
-* Cloud-native patterns (Kubernetes, service mesh, observability)
-* Architectural Decision Records (ADRs) and technical strategy
-
-**Resources:**
-
-* **Book:** _Designing Data-Intensive Applications_ (Kleppmann) – read chapters on replication, partitioning, transactions, and the “Future of Data Systems”. It deepens your database knowledge.
-* **Book:** _Fundamentals of Software Architecture_ (Richards & Ford) – covers architecture styles, governance, and communication.
-* **YouTube:** "Event Sourcing" by Greg Young (talks at conferences); "Microservices vs Modular Monoliths" by Kamil Grzybek.
-* **Paper:** _"Out of the Tar Pit"_ (Moseley & Marks) – functional relational programming for complexity management.
-
-**Project options (choose one, keep small – 2 weeks max):**
-
-* **Design and document an architecture** for a fictional high-scale system (e.g., “Spotify-like music streaming”) using ADRs, including deployment diagrams, data flow, and trade-offs. No code—just design docs.
-* **Build a small Kubernetes operator** using `kubebuilder` (Go) that manages a custom resource (e.g., auto-scaling a Redis cluster). Deploy on Minikube.
-
-#### Phase 2: Rust Mastery & Systems Programming (Weeks 9–16)
-
-**Goal:** Achieve fluency in Rust and apply it to a unique, challenging domain.
-
-**Resources:**
-
-* **Book:** _Programming Rust_ (Blandy & Orendorff, 2nd edition) – excellent after the official book.
-* **Book:** _Rust for Rustaceans_ (Jon Gjengset) – advanced idiomatic Rust.
-* **YouTube:** Jon Gjengset’s “Crust of Rust” series (deep dives into iterators, smart pointers, etc.).
-* **Paper:** _"The HNSW Paper"_ (Malkov & Yashunin) if you go the vector engine route; _"Kademlia: A Peer-to-peer Information System"_ (Maymounkov & Mazières) for a DHT project.
-
-**Project menu (pick one you'll love, spend \~6 weeks):**
-
-* **Distributed Key-Value Store:** Implement a Raft-based, fault-tolerant KV store with gRPC, snapshots, and dynamic membership changes. (Use the _Raft paper_, and `raft-rs` as reference but implement core yourself.)
-* **Quantitative Event Engine (your original idea):** Build a high-performance backtesting library in Rust that ingests event timestamps and price CSVs, computes abnormal returns, and performs shape matching with DTW. (Reference MacKinlay 1997 paper for formulas, but treat it as an engineering tool, not trading validation.)
-* **Blazing-Fast Vector Search Engine:** Brute-force → HNSW → hybrid sparse/dense, integrated with your Go RAG (but now in Rust). High excitement, immediate use.
-
-#### Phase 3: Specialization Track (choose one for weeks 17–24+)
-
-Based on your career aspirations, dive deeper into one area.
-
-**Track A: AI Infrastructure (ML Platform Engineering)**
-
-* **Books:** _Machine Learning Engineering_ (Burkov); _Building Machine Learning Pipelines_ (Hapke & Nelson).
-* **YouTube:** "MLOps Community" channel; "Stanford CS 329P: Machine Learning Deployment".
-* **Project:** Build a Model Router – a proxy that load-balances across LLM APIs, implements semantic caching, rate limiting, and fallback. Use your `singleflight` pattern and circuit breakers. Deploy with observability.
-
-**Track B: Distributed Systems / Databases**
-
-* **Books:** _Database Internals_ (Petrov); _Consensus: Bridging Theory and Practice_ (Ongaro).
-* **Paper:** _"Dynamo: Amazon's Highly Available Key-value Store"_; _"Bigtable"_; _"Spanner"_.
-* **Project:** Implement a lightweight columnar query engine or a streaming SQL processor (with a subset of SQL parsing and execution).
-
-**Track C: Low-level Systems / Embedded**
-
-* **Books:** _Operating Systems: Three Easy Pieces_ (free online); _Linux Kernel Development_ (Love).
-* **Project:** Write a small operating system kernel from scratch (following tutorials from _"Writing an OS in Rust"_ blog series). Build a USB driver.
-
-#### Phase 4: Career Launch (final weeks)
-
-* **Polish your portfolio:** Document your best sabbatical project with benchmarks, a great README, and a blog post.
-* **Networking:** Share your article on LinkedIn, Hacker News, Reddit (r/rust, r/ExperiencedDevs). Post about your architecture decisions.
-* **Interview preparation:** System design practice (Grokking the System Design Interview, etc.). Focus on remote-friendly companies.
+| Topic                                       | Key Gaps to Fill                                                        | Resources                                                                                                                                                                                                                                                   | Hands‑on Project                                                                                                                                                                                              |
+| ------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Go concurrency deeper**                   | `singleflight` (you know it), `errgroup`, `semaphore`, custom scheduler | <p>• Blog: <a href="https://go.dev/blog/pipelines">Go Concurrency Patterns (Pipelines &#x26; cancellation)</a><br>• <a href="https://github.com/uber-go/guide">Uber Go Style Guide</a></p>                                                                  | **Project:** Build a **parallel downloader** that fetches 1000 files in chunks using worker pools, rate limiting, and retries with exponential backoff. Use `singleflight` to deduplicate identical requests. |
+| **Linux systems & performance**             | `strace`, `perf`, `eBPF` basics, `netstat`, `ss`, `iostat`              | <p>• Book: <em>Systems Performance</em> (Brendan Gregg) – Chapter 1–4<br>• <a href="https://ebpf.io/what-is-ebpf/">BPF and eBPF official docs</a></p>                                                                                                       | **Project:** Write a tiny eBPF program (using `bcc` Python or C) that traces `openat` syscalls in your Go service and logs file access latency.                                                               |
+| **Design patterns for distributed systems** | Circuit breaker, retry with jitter, bulkhead, health endpoint           | <p>• <a href="https://learn.microsoft.com/en-us/azure/architecture/patterns/">Microsoft Resilience Patterns</a><br>• Blog: <a href="https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/">Exponential Backoff and Jitter (AWS)</a></p> | **Project:** Enhance your previous `singleflight` project with a circuit breaker (fail fast) and a health check endpoint. Use `go‑kit` or roll your own.                                                      |
 
 ***
+
+### Phase 1: Deep Distributed Systems – Master the Classics (5–6 weeks)
+
+These are the non‑negotiable topics for senior roles in platform/infra.
+
+#### 1.1 Consensus & Replication
+
+| Resource                                                                                                                                                                                                                                                                    | Type    | Key Takeaway                                                          |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | --------------------------------------------------------------------- |
+| _Designing Data‑Intensive Applications_ (Kleppmann) – Chapters 5, 6, 7, 9                                                                                                                                                                                                   | Book    | The bible for replication, partitioning, transactions, and consensus. |
+| [Raft paper (Extended version)](https://raft.github.io/raft.pdf)                                                                                                                                                                                                            | Paper   | Understand leader election, log replication, safety.                  |
+| [ZooKeeper’s atomic broadcast (ZAB)](https://zookeeper.apache.org/doc/current/zookeeperInternals.html)                                                                                                                                                                      | Article | Practical consensus in production.                                    |
+| [Consistent Hashing (original paper)](https://www.akamai.com/us/en/multimedia/documents/technical-publication/consistent-hashing-consistent-hashing-and-random-trees-distributed-caching-protocols-for-relieving-hot-spots-on-the-world-wide-web-technical-publication.pdf) | Paper   | You know the concept – now read the paper.                            |
+
+**Project 1.1 – Build a minimal Raft library in Go**\
+Implement leader election and log replication. Use gRPC for communication. Do not use external libraries.\
+&#xNAN;_&#x44;eliverable:_ A key‑value store that tolerates 1 out of 3 node failures.
+
+**Project 1.2 – Consistent hash ring with virtual nodes and replication**\
+Extend your distributed cache design (from your notes) into a runnable Go service. Support adding/removing nodes without massive remapping. Use a gossip protocol (e.g., memberlist) for node discovery.\
+&#xNAN;_&#x53;tretch goal:_ Add data replication factor = 2.
+
+#### 1.2 Distributed Transactions & Sagas
+
+| Resource                                                                                                                              | Type  |
+| ------------------------------------------------------------------------------------------------------------------------------------- | ----- |
+| [Saga pattern (original paper)](https://www.cs.cornell.edu/andru/cs711/2002fa/reading/sagas.pdf)                                      | Paper |
+| [Google Percolation (database transactions at scale)](https://storage.googleapis.com/pub-tools-public-publication-data/pdf/36726.pdf) | Paper |
+| Book: _Software Architecture: The Hard Parts_ (Ford, Richards) – Chapter on Sagas                                                     | Book  |
+
+**Project 1.3 – Travel booking saga**\
+Three services: Flight, Hotel, Payment. Each has a `book` and `cancel` operation. Implement a saga orchestrator (using Temporal – you already know it!) that coordinates a trip booking. If flight fails, run compensating transactions.\
+&#xNAN;_&#x44;eliverable:_ Idempotent steps, with a dead letter queue for failed compensations.
+
+#### 1.3 Observability – The Senior Engineer’s Force Multiplier
+
+| Resource                                                                                                                    | Type          |
+| --------------------------------------------------------------------------------------------------------------------------- | ------------- |
+| [Google Dapper paper (distributed tracing)](https://storage.googleapis.com/pub-tools-public-publication-data/pdf/36356.pdf) | Paper         |
+| [OpenTelemetry specification](https://opentelemetry.io/docs/specs/otel/)                                                    | Documentation |
+| [USE method (Brendan Gregg)](https://www.brendangregg.com/usemethod.html)                                                   | Methodology   |
+
+**Project 1.4 – Instrument a microservices app**\
+Take a simple 3‑service app (e.g., order, payment, notification). Add OpenTelemetry traces, metrics (Prometheus), and logs (structured JSON). Export to Jaeger and Grafana. Write a dashboard that shows latency percentiles (p99) and error rates per service.\
+&#xNAN;_&#x53;tretch:_ Use exemplars to link traces to metrics.
+
+***
+
+### Phase 2: AI Infrastructure – Your Future Edge (5–6 weeks)
+
+You already built a RAG pipeline. Now go deeper into the platform aspects of serving, scaling, and managing LLMs.
+
+#### 2.1 LLM Serving Systems
+
+| Resource                                                                                      | Type                                        |
+| --------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| [vLLM paper (OSDI 2023)](https://www.usenix.org/conference/osdi23/presentation/kwon)          | Paper – PagedAttention, continuous batching |
+| [TensorRT‑LLM architectural overview](https://github.com/NVIDIA/TensorRT-LLM)                 | GitHub docs                                 |
+| [Hugging Face TGI architecture](https://github.com/huggingface/text-generation-inference)     | GitHub                                      |
+| [Blog post: “How to serve LLMs at scale” (together.ai)](https://together.ai/blog/llm-serving) | Article                                     |
+
+**Project 2.1 – Wrapper for vLLM with caching**\
+Deploy vLLM locally with a model (e.g., Llama 3.2 1B). Write a Go service in front that:
+
+* Caches exact‑match prompts in Redis (LRU)
+* Rate‑limits per API key (token bucket)
+* Implements request coalescing (singleflight) for the same prompt while the model is computing\
+  &#xNAN;_&#x52;esult:_ A production‑like LLM gateway.
+
+**Project 2.2 – Multi‑model router**\
+Extend the gateway to route requests based on:
+
+* Prompt length → short prompts go to a small model (fast/cheap), long → big model
+* Priority: high‑priority (OTP) goes to reserved capacity\
+  Implement circuit breakers if a model endpoint fails.\
+  &#xNAN;_&#x53;tretch:_ Use consistent hashing on the prompt to stick the same user to the same model shard for better cache locality.
+
+#### 2.2 LLM Observability & Evaluation
+
+| Resource                                                                                   | Type         |
+| ------------------------------------------------------------------------------------------ | ------------ |
+| [RAGAS paper](https://arxiv.org/abs/2309.15217)                                            | Paper        |
+| [Lil’Log – Prompt Engineering & RAG](https://lilianweng.github.io/posts/2023-06-23-agent/) | Blog         |
+| [LangSmith / Phoenix documentation](https://docs.smith.langchain.com/)                     | Product docs |
+
+**Project 2.3 – RAG evaluation pipeline**\
+Improve your existing Nadir/Greenclaw RAG system:
+
+* Add evaluation metrics: Faithfulness, Answer Relevancy, Context Recall
+* Run 100 test queries, log each run’s scores in PostgreSQL
+* Build a Grafana dashboard to track average scores over time
+
+**Project 2.4 – Semantic cache for embeddings**\
+Instead of caching only exact prompts, implement a **semantic cache** using a vector DB (pgvector or Qdrant). For a new query, find the top‑k most similar previous queries and return cached answer if similarity > threshold.\
+&#xNAN;_&#x43;hallenges:_ Deciding the threshold, handling false positives.
+
+#### 2.3 LLM Agents & Workflows
+
+| Resource                                                                          | Type    |
+| --------------------------------------------------------------------------------- | ------- |
+| [ReAct paper (reason + act)](https://arxiv.org/abs/2210.03629)                    | Paper   |
+| [Google’s “Chain of Thought” paper](https://arxiv.org/abs/2201.11903)             | Paper   |
+| [Temporal’s LLM workflows (blog)](https://temporal.io/blog/llm-workflow-patterns) | Article |
+
+**Project 2.5 – Customer support agent using Temporal**\
+Build a workflow that:
+
+1. Receives a user query
+2. Calls an LLM to classify intent (refund, order status, product info)
+3. Routes to a sub‑workflow (e.g., `RefundWorkflow` that checks order DB)
+4. Returns answer to user\
+   Use Temporal for durable execution – if the LLM API times out, resume from last step.\
+   &#xNAN;_&#x53;tretch:_ Add human‑in‑the‑loop for sensitive actions (e.g., “refund > $100 requires approval”).
+
+***
+
+### Phase 3: Advanced Systems Design – Staff Level Preparation (4 weeks)
+
+Now you design systems that span many of the components you’ve studied.
+
+#### 3.1 Materials & Case Studies
+
+| Resource                                                                                                                                                      | Type                 |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| [Google File System paper](https://storage.googleapis.com/pub-tools-public-publication-data/pdf/035fc8.pdf)                                                   | Paper                |
+| [Apache Kafka architecture (original paper)](https://notes.stephenholiday.com/Kafka.pdf)                                                                      | Paper                |
+| [Uber’s “Domain Oriented Microservices” article](https://www.uber.com/en-DE/blog/microservice-architecture/)                                                  | Article (design doc) |
+| [Discord’s “Why we switched from Go to Rust”](https://discord.com/blog/why-discord-is-switching-from-go-to-rust) (but you’ll note they kept many Go services) | Blog                 |
+| [Real‑world design docs: Airbnb’s “Dynamic Pricing”](https://medium.com/airbnb-engineering/dynamic-pricing-2e7b6ebb1b6d)                                      | Tech blog            |
+
+**Exercise (no coding):** Write a 2‑page design doc for each of:
+
+* _YouTube watch time counter_ (consistent hashing, counter with eventual consistency)
+* _Distributed cron job scheduler_ (leader election, lease, fault tolerance)
+* _LLM batch inference platform_ (scheduling, batching, results storage)
+
+Use a template: **Context, Requirements (functional/non‑functional), High‑level design, API, Data model, Trade‑offs, Failure modes.**
+
+#### 3.2 Capstone Project (2–3 weeks)
+
+**Project 3 – AI‑Native Distributed Cache**\
+Build a distributed cache (like your earlier design) but specialized for LLM embeddings:
+
+* Keys are embedding vectors (instead of strings) – use LSH (locality‑sensitive hashing) to route keys to nodes
+* Support approximate nearest neighbor (ANN) search directly in the cache (no separate vector DB)
+* Implement “semantic TTL” – items that are semantically similar remain in cache longer
+* Write a design doc for it, then implement a minimal prototype in Go
+
+This project touches: consistent hashing (for vectors), replication, failure detection, and machine learning – a perfect staff‑level showcase.
+
+***
+
+### Phase 4: Soft Skills & Career (ongoing)
+
+To get the senior/staff title, you need influence beyond code.
+
+| Skill                      | Resource                                                                                                                                                        | Action                                                                      |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| **Writing design docs**    | Book: _Writing Effective Engineering Design Docs_ (Google internal, but [this public template](https://www.industrialempathy.com/posts/design-docs-at-google/)) | Refactor your past projects into design docs. Publish them on your GitBook. |
+| **Leading projects**       | [StaffEng.com – “Arbitration”](https://staffeng.com/guides/arbitration/)                                                                                        | Interview yourself: “What trade‑off did I force my team to accept?”         |
+| **Technical interviewing** | _System Design Interview_ (Alex Xu) Vol 1 & 2                                                                                                                   | Practice 2 designs/week whiteboarded.                                       |
+
+***
+
+### How to Prioritise – The 3‑Month High‑Impact Sprint
+
+If you have limited time, do **only these**:
+
+| Week  | Focus                              | Project Output                       |
+| ----- | ---------------------------------- | ------------------------------------ |
+| 1–2   | Consensus (Raft)                   | Minimal Raft key‑value store         |
+| 3–4   | AI Gateway (vLLM wrapper)          | Caching + rate limiting + coalescing |
+| 5–6   | Semantic cache (vector similarity) | RAG system with semantic cache       |
+| 7–8   | Saga with Temporal                 | Travel booking saga                  |
+| 9–10  | Capstone: AI distributed cache     | Prototype with LSH routing           |
+| 11–12 | Design docs & interview prep       | 3 design docs + 2 mock interviews    |
 
 ## Mathematics Learning Roadmap
 
