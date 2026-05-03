@@ -12,11 +12,6 @@ const navigationData = [
         standalone: true,
     },
     {
-        name: "ReactJS",
-        slug: "reactjs",
-        standalone: true,
-    },
-    {
         name: "Domain",
         slug: "domain",
         standalone: true,
@@ -24,11 +19,6 @@ const navigationData = [
     {
         name: "ML",
         slug: "ml",
-        standalone: true,
-    },
-    {
-        name: "Personal Knowledge Base",
-        slug: "personal-knowledge-base",
         standalone: true,
     },
     {
@@ -46,6 +36,7 @@ const navigationData = [
             { name: "Kafka", slug: "kafka" },
             { name: "Networking", slug: "networking" },
             { name: "OAuth2 and OIDC", slug: "oauth2-and-oidc" },
+            { name: "ReactJS", slug: "reactjs" },
             { name: "Software Architecture", slug: "software-architecture" },
         ],
     },
@@ -57,6 +48,7 @@ const navigationData = [
             { name: "Consistent Hashing", slug: "consistent-hashing" },
             { name: "Distributed Cache", slug: "distributed-cache" },
             { name: "Distributed Task Scheduler", slug: "distributed-task-scheduler" },
+            { name: "Event Processing", slug: "event-processing" },
             { name: "ID Generator", slug: "id-generator" },
             { name: "Notification System", slug: "notification-system" },
             { name: "Rate Limit", slug: "rate-limit" },
@@ -88,6 +80,13 @@ const navigationData = [
                     { name: "Summary", slug: "summary" },
                 ],
             },
+        ],
+    },
+    {
+        name: "E2e Production Rag",
+        slug: "e2e-production-rag",
+        pages: [
+            { name: "Test Results", slug: "test-results" },
         ],
     },
 ];
