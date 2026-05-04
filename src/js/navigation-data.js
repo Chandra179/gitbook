@@ -12,8 +12,8 @@ const navigationData = [
         standalone: true,
     },
     {
-        name: "Domain",
-        slug: "domain",
+        name: "Event Driven Market Simulation",
+        slug: "event-driven-market-simulation",
         standalone: true,
     },
     {
@@ -33,6 +33,7 @@ const navigationData = [
             { name: "API Best Practices", slug: "api-design-guidelines" },
             { name: "Computing", slug: "computing" },
             { name: "Database", slug: "database" },
+            { name: "Domain", slug: "domain" },
             { name: "Kafka", slug: "kafka" },
             { name: "Networking", slug: "networking" },
             { name: "OAuth2 and OIDC", slug: "oauth2-and-oidc" },
