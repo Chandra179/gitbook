@@ -33,5 +33,5 @@
   * [Cache Stampede](system-design/cache-stampede.md)
   * [Event Processing](system-design/event-processing.md)
 * [Machine Learning](ml.md)
-* [E2E Production RAG](e2e-production-rag.md)
+* [Production RAG](e2e-production-rag.md)
 * [Quant](quant.md)

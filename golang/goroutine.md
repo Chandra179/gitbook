@@ -44,7 +44,7 @@ go func() {
 ch <- "apple" // blocks until receiver is ready
 ```
 
-**Buffered:** `make(chan T, n)`. Has a "waiting room" of size `n`. Sends only block when the buffer is full.
+**Buffered:** `make(chan T, n)`. Has a "waiting room" of size `n`. Sends only block when the buffer is full. Leaky buffer: [https://go.dev/doc/effective\_go#leaky\_buffer](https://go.dev/doc/effective_go#leaky_buffer). If channel is full then the new data will be drop.
 
 ```go
 func main() {
