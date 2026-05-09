@@ -7,18 +7,18 @@ const navigationData = [
         standalone: true,
     },
     {
-        name: "P2P Chat",
-        slug: "p2p-chat",
-        standalone: true,
-    },
-    {
-        name: "Event Driven Market Simulation",
-        slug: "event-driven-market-simulation",
+        name: "E2e Production Rag",
+        slug: "e2e-production-rag",
         standalone: true,
     },
     {
         name: "ML",
         slug: "ml",
+        standalone: true,
+    },
+    {
+        name: "Quant",
+        slug: "quant",
         standalone: true,
     },
     {
@@ -59,7 +59,6 @@ const navigationData = [
         name: "Golang",
         slug: "golang",
         pages: [
-            { name: "Compiler", slug: "compiler" },
             { name: "Goroutine", slug: "goroutine" },
             { name: "Strings", slug: "strings" },
         ],
@@ -81,13 +80,6 @@ const navigationData = [
                     { name: "Summary", slug: "summary" },
                 ],
             },
-        ],
-    },
-    {
-        name: "E2e Production Rag",
-        slug: "e2e-production-rag",
-        pages: [
-            { name: "Test Results", slug: "test-results" },
         ],
     },
 ];

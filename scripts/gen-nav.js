@@ -25,15 +25,12 @@ const OUTPUT = path.join(ROOT, 'src/js/navigation-data.js');
 const NAME_OVERRIDES = {
     'README':                      'Introduction',
     'p2p-chat':                    'P2P Chat',
-    'reactjs':                     'ReactJS',
     'fundamental':                 'Fundamentals',
-    'rag':                         'RAG',
     'golang':                      'Golang',
     'math':                        'Math',  
     'ml':                          'ML',
     'system-design':               'System Design',
     'web-scraper':                 'Web Scraper',
-    'web-intelligence':            'Web Intelligence',
     'precalculus':                 'Precalculus',
     'cpu':                         'CPU',
     'api-design-guidelines':       'API Best Practices',
@@ -49,8 +46,6 @@ const NAME_OVERRIDES = {
     'notification-system':         'Notification System',
     'chunking-and-embedding':      'Chunking and Embedding',
     'garbage-collector':           'Garbage Collector',
-    'headless-browser':            'Headless Browser',
-    'youtube-extraction':          'Youtube Extraction',
 };
 
 // Root .md files to expose as standalone pages, in order.
@@ -64,7 +59,7 @@ const CATEGORY_ORDER = ['fundamental', 'system-design', 'golang', 'math', 'ml', 
 // Directories / files to never include.
 const IGNORE = new Set([
     'node_modules', 'dist', 'src', 'scripts', '.git', '.gitbook',
-    'CLAUDE.md', 'SUMMARY.md', 'diagrams', 'books.md', 'online-travel-agency.md'
+    'CLAUDE.md', 'SUMMARY.md', 'diagrams', 'books.md'
 ]);
 
 function toName(slug) {
