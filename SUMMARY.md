@@ -12,6 +12,7 @@
   * [RAG Fundamental](rag.md)
   * [ReactJS](fundamental/reactjs.md)
   * [Domain](fundamental/domain.md)
+  * [RabbitMQ](fundamental/rabbitmq.md)
 * [Golang](golang/README.md)
   * [Goroutine](golang/goroutine.md)
   * [Strings](golang/strings.md)
