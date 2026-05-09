@@ -17,12 +17,17 @@ const navigationData = [
         standalone: true,
     },
     {
+        name: "Online Travel Agency",
+        slug: "online-travel-agency",
+        standalone: true,
+    },
+    {
         name: "Quant",
         slug: "quant",
         standalone: true,
     },
     {
-        name: "RAG",
+        name: "Rag",
         slug: "rag",
         standalone: true,
     },
@@ -37,7 +42,8 @@ const navigationData = [
             { name: "Kafka", slug: "kafka" },
             { name: "Networking", slug: "networking" },
             { name: "OAuth2 and OIDC", slug: "oauth2-and-oidc" },
-            { name: "ReactJS", slug: "reactjs" },
+            { name: "Rabbitmq", slug: "rabbitmq" },
+            { name: "Reactjs", slug: "reactjs" },
             { name: "Software Architecture", slug: "software-architecture" },
         ],
     },
