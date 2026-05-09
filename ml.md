@@ -1,70 +1,96 @@
-# AI
+# Machine Learning
 
-### Fundamentals
+### Core Theory & Building Blocks
 
-* Single Perceptron
-* Multilayer Perceptron (MLP)
-* Activation Functions: Sigmoid, Tanh, ReLU (knowing when to use which). determines the output of a neuron based on input and weights
-* Loss Functions: MSE (for regression), Cross-Entropy (for classification). Valuate model predictions with actual target value
-* Gradient Descent: The concept of minimizing error. Used for minimize loss function
-  * Backpropagation: algorithm (Chain Rule) that calculates gradients.
-* Evaluation Metrics (Precision/Recall/F1) vs. Loss Functions.
+* **Single Perceptron** – The simplest unit: weighted inputs, bias, activation.
+* **Multilayer Perceptron (MLP)** – Stacked layers of neurons; universal function approximators.
+* **Activation Functions** – Sigmoid, Tanh, ReLU (and variants like GELU, Swish).\
+  &#xNAN;_&#x44;etermines the output of a neuron; choice affects gradient flow and expressiveness._
+* **Loss Functions**
+  * MSE (regression), Cross‑Entropy (classification).
+  * Also: Binary Cross‑Entropy, Categorical Cross‑Entropy, Hinge loss.\
+    &#xNAN;_&#x51;uantify the discrepancy between predictions and targets._
+* **Gradient Descent** – Iterative algorithm to minimize the loss by moving against the gradient.
+* **Backpropagation** – The chain rule applied to compute gradients of the loss w.r.t. every parameter.
+* **Bias–Variance Tradeoff** – Decomposition of generalization error.\
+  &#xNAN;_&#x48;igh bias → underfitting; high variance → overfitting._
+* **Underfitting** – Model too simple or undertrained, fails to capture patterns in training data.
+* **Overfitting** – Model memorizes training data instead of learning to generalize.\
+  &#xNAN;_&#x53;weet spot often 1–3 epochs for fine‑tuning large models._
+* **Vanishing / Exploding Gradients** – Why deep networks fail without careful initialization and normalization.
+* **Evaluation Metrics** – Precision, Recall, F1‑Score, Accuracy, AUC‑ROC.\
+  &#xNAN;_&#x55;sed to assess model performance on held‑out data, distinct from training loss._
 
-### Data Processing
+### Data Processing & Preparation
 
-* Tensors & Shapes: Understanding dimensions (e.g., `[32, 3, 224, 224]`). Shape mismatch is the #1 error in AI coding.
-* Normalization / Scaling: Squashing data to a 0-1 range so the network doesn't explode.
-* Train / Val / Test Split: Separating data to prove your model actually works.
-* Embeddings: represent data as vector
+* **Tensors & Shapes** – Understanding dimensions (e.g., `[batch, channels, height, width]`).\
+  &#xNAN;_&#x53;hape mismatch is the #1 error in AI coding._
+* **Normalization / Scaling** – Squashing features to a common range (0‑1, z‑score) so gradients behave.
+* **Train / Validation / Test Split** – Dividing data to train, tune, and honestly evaluate a model.
+* **Cross‑Validation** – k‑fold CV provides more robust performance estimates, especially on small datasets.
+* **Data Augmentation** – Artificially expanding training data (rotation, cropping, flip, cutout, synonym replacement) to improve robustness.
+* **Tokenization** – Converting raw text into tokens (BPE, WordPiece, SentencePiece); fundamental for all NLP.
+* **Embeddings** – Dense vector representations of discrete items (words, sentences, images). Learned during training.
 
 ### Optimization
 
-* Weight Initialization: Starting weights correctly (He/Xavier init) so the network starts learning immediately.
-* Mini-Batch Gradient Descent: The industry standard balance of speed and stability.
-* Stochastic Gradient Descent (SGD): Understanding the "noisy" alternative.
-* Advanced Optimizers: Momentum, Adam (The default choice today).
+* **Weight Initialization** – He (for ReLU) and Xavier/Glorot (for sigmoid/tanh) keep activations stable initially.
+* **Mini‑Batch Gradient Descent** – Industry standard: balances speed and noise by using small subsets of data.
+* **Stochastic Gradient Descent (SGD)** – The extreme case (batch size 1); noisy but can escape local minima.
+* **Advanced Optimizers** – **Momentum** (speeds up movement), **Adam** (adaptive learning rates; the default today), AdamW (decoupled weight decay), RMSprop.
+* **Learning Rate Schedules** – Step decay, cosine annealing, warmup, and 1‑cycle policies to aid convergence.
+* **Batch Normalization** – Normalizes layer inputs across the batch; accelerates training of CNNs.
+* **Layer Normalization** – Normalizes across features; key for Transformers (independent of batch size).
+* **Hyperparameter Tuning** – Systematic search (grid, random, Bayesian) for lr, dropout, batch size, etc.
 
-### Generalization (Stopping Overfitting)
+### Generalization & Regularization
 
-* Regularization: L1 (Lasso) and L2 (Ridge/Weight Decay).
-* Dropout: Randomly ignoring neurons to force robustness.
-* Early Stopping: Stopping training before the model memorizes noise.
+* **L₁ Regularization (Lasso)** – Encourages sparse weights.
+* **L₂ Regularization (Ridge / Weight Decay)** – Penalizes large weights, smooths the loss surface.
+* **Dropout** – Randomly zeroes neurons during training, forcing the network to learn redundant representations.
+* **Early Stopping** – Halt training when validation loss stops improving, preventing overfitting.
+* **Calibration** – How well predicted probabilities reflect true likelihoods; critical for risk‑sensitive applications.
+* **Distribution Shift** – When deployment data differs from training data (covariate shift, concept drift); threatens reliability.
 
-### Architecture
+### Architectures
 
-* CNNs: Convolutional Neural Networks (for Images).
-* RNNs / LSTMs: Recurrent Neural Networks (for basic sequences).
-* Transformers & Attention: read sequence of input into sequece of output (like GPT/Gemini).
+* **Convolutional Neural Networks (CNNs)** – Local weight sharing for spatial data (images).\
+  &#xNAN;_&#x4B;ey ops: convolution, pooling, stride._
+* **Recurrent Neural Networks (RNNs) / LSTMs** – Process sequences with hidden state; LSTMs mitigate vanishing gradients via gating.
+* **Transformer & Attention** – Maps input sequence to output sequence via self‑attention.
+  * **Self‑Attention** – Each token attends to all others.
+  * **Multi‑Head Attention** – Multiple parallel attention heads capture different relationships.
+  * **Cross‑Attention** – One sequence attends to another (encoder–decoder).
+* **Encoder–Decoder Architecture** – Encoder processes input into a latent representation, decoder generates output. Backbone of T5, original Transformer, and many seq2seq tasks.
+* **Mixture of Experts (MoE)** – Sparsely‑activated sub‑networks (experts) with a router; massive capacity without proportionate compute.
+* **Generative Model Families**
+  * **GANs** – Generator vs. discriminator min‑max game.
+  * **VAEs** – Latent variable models with variational inference.
+  * **Diffusion Models** – Learn to denoise; state‑of‑the‑art in image/video generation.
+* **Self‑Supervised Learning** – Pre‑training objectives that use the data itself as supervision (masked language modeling, contrastive learning).
+* **Pre‑training Objectives**
+  * **Autoregressive (AR) Modeling** – Predict next token (GPT‑style).
+  * **Masked Language Modeling (MLM)** – Fill masked tokens (BERT‑style).
 
-### Other
+### Modern Paradigms & Large‑Model Behavior
 
-**Mixture of Experts (MoE)**
+* **Transfer Learning** – Pre‑train on vast data, then fine‑tune on a target task; enables small‑data success.
+* **Reinforcement Learning from Human Feedback (RLHF)** – Aligns model outputs with human preferences using RL (Proximal Policy Optimization) on reward models.
+* **Constitutional AI** – Rule‑based self‑critique for alignment without human reward models.
+* **Prompting as a Fundamental** – In‑context learning: the model adapts based on the prompt without weight updates.
+* **Scaling Laws** – Empirical relationships between compute, data, and model size (Chinchilla optimal, etc.) guide resource allocation.
+* **Differences Between Major Models** – Despite shared Transformer roots, GPT, Claude, Gemini differ in:
+  * **Training Data** (e.g., Google’s YouTube/Search vs. Anthropic’s curated data)
+  * **Alignment** (RLHF vs. Constitutional AI)
+  * **Engineering** (proprietary context‑handling, native multimodality)
 
-MoE allows models to have a massive "brain size" without high compute costs by using a "router" to send tasks only to specific specialized sub-networks (experts). This is used in LLMs but also in vision and multimodal models.
+### Hardware, Training Scale & Practical Deployment
 
-**Differences Between Major Models**
-
-Even though Gemini, Claude, and GPT-4 use the Transformer architecture, they differ in:
-
-* Data: What they were trained on (e.g., Google’s YouTube/Search data vs. Anthropic’s highly curated data).
-* Alignment: Training styles like RLHF (Human feedback) vs. Constitutional AI (rule-based self-critique).
-* Engineering: Proprietary tweaks for long context handling and native multimodality.
-
-**Hardware and Scaling**
-
-Training "Frontier" models takes 3–6 months and uses tens of thousands of specialized chips (Nvidia H100 GPUs or Google TPUs).
-
-* These chips are interconnected via high-speed "highways" (NVLink/InfiniBand) to act as one giant brain.
-* Training is fragile; a single chip failure or "Loss Spike" (where the math explodes) can ruin a multi-million dollar training run.
-
-**Individual Training & VRAM**
-
-* You can't train a massive model from scratch at home, but you can "Fine-Tune" a small model (like Llama 3.2 1B) for specialized tasks like Finance.
-* VRAM is the "Live Working Memory." During training, it must hold the Weights (the brain), Optimizer States (memory of changes), Gradients (directions for learning), and Activations (temporary thoughts).
-* If you have low VRAM, you must use a small model like (1B) and tricks like 4-bit QLoRA and Unsloth to ensure the "math" has enough room to function without crashing.
-
-**Pattern Recognition and Overfitting**
-
-* Training longer helps the model find patterns, but training _too_ long leads to Overfitting, where the model just memorizes the training data like a parrot instead of understanding the logic.
-* The "sweet spot" is usually 1–3 passes (epochs) through your data.
-
+* **Frontier Model Training** – 3–6 months, tens of thousands of H100/TPU GPUs interconnected with NVLink/InfiniBand.
+  * Fragile: a single chip failure or loss spike can ruin a multi‑million dollar run.
+* **Individual Training / Fine‑Tuning** – At home, fine‑tune small models (e.g., Llama 1B) with careful VRAM management.
+* **VRAM** – Live working memory holding **weights, optimizer states, gradients, and activations**.
+  * Low VRAM → use small models + 4‑bit QLoRA + Unsloth to fit the “math” into memory.
+* **Model Merging** – Combining multiple fine‑tuned models into one without retraining (SLERP, DARE).
+* **Knowledge Distillation** – Train a smaller “student” model to mimic a large “teacher”, compressing knowledge for cheap inference.
+* **Quantization** – Reducing weight precision (FP16, INT8, 4‑bit) to shrink model size and speed up inference/training.
