@@ -12,7 +12,7 @@ Use a database-backed job to separate the critical order status update from the 
 
 For the emails, the status is stored in the database as "pending." A scheduled Cron Job then reads these unsent records every few minutes and attempts to send them in batches, updating their status to "success" or "failed". This approach prioritizes at-least-once delivery and system stability; even during high traffic or email provider downtime, the primary order flow remains fast, and side effects eventually catch up without clogging the messaging infrastructure.
 
-<figure><img src="../.gitbook/assets/image (8).png" alt="" width="563"><figcaption></figcaption></figure>
+<figure><img src="/.gitbook/assets/eventprocess_cronjob.png" alt="" width="563"><figcaption></figcaption></figure>
 
 #### Tradeoff
 
@@ -24,7 +24,7 @@ For the emails, the status is stored in the database as "pending." A scheduled C
 
 The **CDC** approach offers near-instant execution by using a listener (such as Debezium) to monitor the database transaction logs (WAL). A relay then pushes the captured data to a dedicated Email Queue, where a specialized Worker consumes and processes the messages. This approach results in minimal latency between the database update and email delivery, high throughput without additional database IOPS from polling, and a completely decoupled architecture that ensures the main application logic remains lightweight.
 
-<figure><img src="../.gitbook/assets/image (11).png" alt=""><figcaption></figcaption></figure>
+<figure><img src="/.gitbook/assets/cdc_messagerelay.png" alt=""><figcaption></figcaption></figure>
 
 #### Why this is often better:
 

@@ -133,12 +133,13 @@ class Renderer {
                 return;
             }
 
-            // Auto-detect timelines by checking for year patterns
-            const hasYears = Array.from(list.children).some(li =>
-                /\b(19|20)\d{2}\b/.test(li.textContent)
+            // Auto-detect: items must start with a year, not just contain one
+            const itemsStartingWithYear = Array.from(list.children).filter(li =>
+                /^\s*(19|20)\d{2}\b/.test(li.textContent)
             );
 
-            if (hasYears && list.children.length >= TIMELINE_CONFIG.MIN_ITEMS_FOR_GRID) {
+            if (itemsStartingWithYear.length >= TIMELINE_CONFIG.MIN_ITEMS_FOR_GRID &&
+                itemsStartingWithYear.length >= list.children.length / 2) {
                 list.classList.add('timeline-list');
             }
         });

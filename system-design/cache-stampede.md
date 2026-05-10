@@ -6,7 +6,7 @@ What happens if we have a cache where 100k requests hit simultaneously just as t
 
 ## Solution
 
-<figure><img src="../.gitbook/assets/cacheStampede.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="/.gitbook/assets/cacheStampede.png" alt=""><figcaption></figcaption></figure>
 
 * **Request Coalescing**: When the Redis cache expires, instead of allowing all requests to hit the DB, we use in-memory lock (like mutex) so only one request proceeds. The first request acquires the mutex, fetches the data from the DB, and updates the cache.
   * What happens to the other requests? Requests that attempted to acquire the lock while it was held are "parked." Once the "winner" finishes and updates the cache, the "waiters" are woken up to consume the new result from memory without ever touching the DB.

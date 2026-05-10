@@ -4,6 +4,7 @@
     position: relative;
     padding-left: 2rem;
     border-left: 2px solid #e5e7eb;
+    list-style: none;
 }
 
 .timeline-list li {
