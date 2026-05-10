@@ -154,14 +154,14 @@ Before: (The original mapping remains illustrative, showing where the data was g
 92 → Server C
 
 After Server B dies: (The mapping shows where the traffic shifts to)
-​​
-12 → Server A​
-18 → Server C (The data previously on B is now accessed via C)​
-28 → Server A​
-35 → Server C​
-63 → Server A​
-70 → Server C (The data previously on B is now accessed via C)​
-88 → Server A​
+​
+12 → Server A
+18 → Server A  
+28 → Server A
+35 → Server C
+63 → Server A
+70 → Server A  
+88 → Server A
 92 → Server C
 ```
 
