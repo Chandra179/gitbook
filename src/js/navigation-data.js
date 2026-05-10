@@ -49,6 +49,8 @@ const navigationData = [
             { name: "ID Generator", slug: "id-generator" },
             { name: "Notification System", slug: "notification-system" },
             { name: "Rate Limit", slug: "rate-limit" },
+            { name: "Real Time Chat Discord", slug: "real-time-chat-discord" },
+            { name: "Template", slug: "template" },
         ],
     },
     {

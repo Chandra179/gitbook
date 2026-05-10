@@ -149,8 +149,120 @@ class Renderer {
         });
     }
 
-    renderAll() {
+    async renderMermaid() {
+        if (typeof mermaid === 'undefined') return;
+
+        const content = document.getElementById(this.contentElementId);
+        if (!content) return;
+
+        const mermaidBlocks = content.querySelectorAll('pre code.language-mermaid');
+        if (mermaidBlocks.length === 0) return;
+
+        mermaid.initialize({ startOnLoad: false, theme: 'default' });
+
+        for (const block of mermaidBlocks) {
+            const pre = block.parentElement;
+            if (!pre || pre.dataset.mermaidRendered) continue;
+            pre.dataset.mermaidRendered = '1';
+
+            try {
+                const id = 'mermaid-' + Math.random().toString(36).substr(2, 9);
+                const { svg } = await mermaid.render(id, block.textContent);
+                const wrapper = document.createElement('div');
+                wrapper.className = 'mermaid-diagram';
+
+                const svgContainer = document.createElement('div');
+                svgContainer.className = 'mermaid-svg-container';
+                svgContainer.innerHTML = svg;
+
+                let scale = 1;
+                let tx = 0, ty = 0;
+                let dragging = false;
+                let dragStartX, dragStartY, dragStartTX, dragStartTY;
+
+                function applyTransform() {
+                    svgContainer.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+                }
+
+                svgContainer.style.transformOrigin = '0 0';
+                svgContainer.style.cursor = 'grab';
+                applyTransform();
+
+                // Wheel / pinch → zoom (only on ctrlKey or two-finger pinch)
+                // Normal scroll → let container scroll naturally
+                wrapper.addEventListener('wheel', (e) => {
+                    if (!e.ctrlKey && !e.metaKey) return;
+                    e.preventDefault();
+                    const rect = svgContainer.getBoundingClientRect();
+                    const mx = e.clientX - rect.left;
+                    const my = e.clientY - rect.top;
+
+                    const factor = e.deltaY < 0 ? 1.1 : 0.9;
+                    const newScale = Math.min(Math.max(scale * factor, 0.25), 5);
+
+                    tx = mx - (mx - tx) * (newScale / scale);
+                    ty = my - (my - ty) * (newScale / scale);
+                    scale = newScale;
+                    applyTransform();
+                }, { passive: false });
+
+                // Pan via drag
+                svgContainer.addEventListener('pointerdown', (e) => {
+                    dragging = true;
+                    svgContainer.style.cursor = 'grabbing';
+                    svgContainer.setPointerCapture(e.pointerId);
+                    dragStartX = e.clientX;
+                    dragStartY = e.clientY;
+                    dragStartTX = tx;
+                    dragStartTY = ty;
+                });
+
+                svgContainer.addEventListener('pointermove', (e) => {
+                    if (!dragging) return;
+                    tx = dragStartTX + (e.clientX - dragStartX);
+                    ty = dragStartTY + (e.clientY - dragStartY);
+                    applyTransform();
+                });
+
+                const stopDrag = () => {
+                    dragging = false;
+                    svgContainer.style.cursor = 'grab';
+                };
+                svgContainer.addEventListener('pointerup', stopDrag);
+                svgContainer.addEventListener('pointerleave', stopDrag);
+
+                // Zoom buttons
+                const controls = document.createElement('div');
+                controls.className = 'mermaid-controls';
+                controls.innerHTML = `
+                    <button class="mermaid-zoom-btn" data-action="in" title="Zoom in">+</button>
+                    <button class="mermaid-zoom-btn" data-action="out" title="Zoom out">−</button>
+                    <button class="mermaid-zoom-btn" data-action="reset" title="Reset">↺</button>
+                `;
+
+                controls.querySelectorAll('button').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const action = btn.dataset.action;
+                        if (action === 'in') scale = Math.min(scale * 1.25, 5);
+                        else if (action === 'out') scale = Math.max(scale / 1.25, 0.25);
+                        else { scale = 1; tx = 0; ty = 0; }
+                        applyTransform();
+                    });
+                });
+
+                wrapper.appendChild(svgContainer);
+                wrapper.appendChild(controls);
+                pre.replaceWith(wrapper);
+            } catch (e) {
+                console.warn('Mermaid render failed:', e);
+            }
+        }
+    }
+
+    async renderAll() {
         this.applyTimelineClass();
+        await this.renderMermaid();
         this.renderCodeBlocks();
         this.renderMathSpans();
     }

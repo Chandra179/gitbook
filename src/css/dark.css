@@ -183,6 +183,27 @@
     background-color: #0f172a;
 }
 
+/* ========== Mermaid Diagrams ========== */
+.dark .mermaid-diagram {
+    border-color: #334155;
+    background: #0f172a;
+}
+
+.dark .mermaid-diagram svg {
+    filter: invert(0.85) hue-rotate(180deg);
+}
+
+.dark .mermaid-zoom-btn {
+    background: rgba(30, 41, 59, 0.9);
+    border-color: #475569;
+    color: #cbd5e1;
+}
+
+.dark .mermaid-zoom-btn:hover {
+    background: #334155;
+    color: #f1f5f9;
+}
+
 /* ========== Mobile menu button ========== */
 .dark button.hover\:bg-gray-100:hover {
     background-color: #1e293b !important;
