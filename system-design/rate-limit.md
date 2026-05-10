@@ -1,39 +1,70 @@
 # Rate Limit
 
-Before building, we must define the boundaries of the system:
+### Goal
 
-* Support from 1,000 to 1,000,000+ concurrent users.
-* Direction:
-  * Inbound: Protecting our public APIs from users.
-  * Outbound: Throttling calls to external 3rd party APIs to avoid contract violations.
-* Differentiation between Free and Paid users (tiered limits).
-* Unique identification via `user_id`, `API_key`, or `IP_address`.
+Build a distributed rate limiting system that protects public APIs from abuse and throttles outbound calls to third-party APIs, supporting 1,000 to 1,000,000+ concurrent users with tiered limits per user (free vs paid).
 
-<figure><img src="/.gitbook/assets/rate_limit_high_level.png" alt="" width="505"><figcaption></figcaption></figure>
+### Non-goals
 
-#### Multi-Layer Architecture
+* Handling authentication/authorization beyond user identification (user\_id, API\_key, IP\_address)
+* Storing permanent request history or analytics dashboards
+* Implementing global rate limits across independent services (we accept eventual consistency for general cases)
 
-We use a "Defense in Depth" strategy by placing limits at different levels:
+### Numbers
 
-<table><thead><tr><th width="186.20001220703125">Layer</th><th>Implementation</th><th>Purpose</th></tr></thead><tbody><tr><td>Infrastructure (L7)</td><td>Kubernetes Ingress / Nginx / WAF</td><td>IP-based limiting and DDoS protection.</td></tr><tr><td>Application Layer</td><td>Domain Service or Independent Service</td><td>Business logic limits (e.g., Tiered access, $10M caps).</td></tr></tbody></table>
+* **QPS:** Up to 1,000,000 requests per second (peak)
+* **Storage:** \~10 GB in Redis for 100 million active keys (each `{user_id}:{operation}` + count + TTL ≈ 100 bytes)
+* **Latency target:** <5 ms p99 for rate check (including Redis round-trip)
 
-**Integrated (Domain Service)**: Logic resides within the service. Lower latency, simpler deployment, but harder to share limits across different services.
+### Diagram
 
-**Independent Service**: High complexity and latency (extra network hop), but provides a centralized "Global" view of user activity.
+```mermaid
+flowchart TB
+    A[User request] --> B{API Gateway}
+    B --> C[Rate Limiter Service]
+    C --> D{Redis Cluster}
+    D -->|within limit| E[Forward to API / 3rd party]
+    D -->|over limit| F[Return 429 + Retry-After with jitter]
+    F --> G[Client retries after random 1-2s delay]
+```
 
-#### Data Storage & Consistency
+### Core flow
 
-Storage: Distributed cache (Redis) is the primary store.
+* Identify the caller using `user_id`, `API_key`, or `IP_address` (order of precedence: API\_key > user\_id > IP).
+* Look up the user’s tier (free/paid) to determine the allowed limit per time window (e.g., free: 100 req/min, paid: 10,000 req/min).
+* For **critical operations** (e.g., financial withdrawals):\
+  Execute an atomic Lua script in Redis that reads, increments, and checks the count against the limit → strong consistency.
+* For **general API throttling**:\
+  Use eventual consistency with in memory caching + periodic Redis sync to reduce latency.
+* If the limit is exceeded, return `HTTP 429 Too Many Requests` with a `Retry-After` header set to `1 + random(0..1000)ms` to prevent thundering herd.
+* For **outbound throttling** (calls to external 3rd party APIs): apply the same logic before initiating the external request — protects contract compliance.
 
-Schema: Key-Value pair where Key = `{user_id}:{operation}` and Value = `{count, ttl}`.
+### Storage choice & why
 
-Consistency:&#x20;
+**Redis Cluster** because:
 
-* Strong Consistency: Required for critical data (e.g., financial withdrawals). Handled at the application level using atomic operations (Redis Lua scripts).
-* Eventual Consistency: Acceptable for general API throttling to reduce latency.
+* In-memory operations deliver sub‑millisecond latency and millions of QPS
+* Atomic Lua scripting provides strong consistency for critical paths
+* Built‑in TTL automatically expires keys (no manual cleanup)
+* Native sharding scales linearly to 1M+ concurrent users
 
-#### Traffic & Reliability Strategies
+### The hard part & how we solve it
 
-To handle massive spikes and system failures, we implement the following:
+**Bottleneck:** A single hot user (e.g., a popular API key) sending millions of requests per second can overload one Redis shard, causing tail latency spikes and cluster instability.
 
-**Thundering Herd Protection**: When returning a `429 Too Many Requests` error, add a Random Delay (Jitter) of 1–2 seconds to the `Retry-After` header. This prevents a million users from retrying at the exact same millisecond
+**Fix:**
+
+* **Local token bucket** + async sync to Redis for high‑throughput users (the rate limiter service maintains an in‑memory bucket, periodically reconciling with Redis).
+* **Client‑side jitter** on retries spreads thundering herds across time.
+* **Multi‑tier limits** – paid users can have higher burst allowances, reducing lock contention.
+* **Redis Cluster** already shards by key (hash of `user_id`), so different users go to different nodes.
+
+### Tradeoff I'm making
+
+Choosing **eventual consistency for general API throttling** over **strong consistency** because:
+
+* A few extra requests during a race condition (e.g., 101 instead of 100) are acceptable for non‑critical APIs.
+* It avoids distributed locks or always‑hitting Redis, cutting p99 latency from \~10ms to <5ms.
+* **Strong consistency is still used for critical financial operations** (via Lua scripts), where accuracy matters more than a few extra microseconds.
+
+<br>

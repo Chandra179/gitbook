@@ -16,7 +16,14 @@
 
 ## Diagram&#x20;
 
-mermaidjs flowchart or component diagram
+mermaidjs flowchart
+
+```mermaid
+flowchart TB
+    A[User A]
+    B[User B]
+    C[User C offline]
+```
 
 ## Core flow
 

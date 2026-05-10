@@ -4,6 +4,43 @@ This document describes the core building blocks of our RabbitMQ / AMQP 0-9-1 cl
 
 ***
 
+```mermaid
+graph TD
+    TM[Topology Manager]
+    TM --> Qdecl[Queue Declaration]
+    TM --> Edecl[Exchange Declaration]
+    TM --> Bind[Binding]
+    
+    Qdecl --> DlxCfg[Configure DLX/Retry/Parking Lot]
+    
+    DlxCfg --> Q[Primary Queue]
+    DlxCfg --> DLX[Dead-Letter Exchange]
+    DlxCfg --> RQ[Retry Queue<br/>x-message-ttl<br/>x-dead-letter-exchange → EX]
+    DlxCfg --> PL[Parking Lot Queue]
+    
+    TM --> Cache[(In-Memory Cache)]
+    Cache --> Reconnect[Re-declare on Reconnection]
+    Reconnect --> Q
+    Reconnect --> DLX
+    Reconnect --> RQ
+    Reconnect --> PL
+
+    P[Producer] --> CP[Channel Pool]
+    CP --> P
+    CP --> Ch[AMQP Channel]
+    P --> EX[Exchange<br/>type: direct/topic/fanout]
+    EX --> Q
+    
+    C[Consumer] --> Q
+    C --> Acknowledge[Ack/Nack/Reject]
+    Acknowledge --> Q
+    Acknowledge --> DLX
+    
+    DLX --> RQ
+    DLX --> PL
+    RQ --> EX
+```
+
 ## Topology Manager
 
 The topology manager is responsible for declaring and caching the broker-side objects (exchanges, queues, bindings) that the application needs. It guarantees that all required topology exists before any message is published or consumed.
@@ -97,7 +134,7 @@ Producers are responsible for publishing messages to an exchange. The library pr
   * Uses a single AMQP channel to avoid per-message overhead.
   * When combined with publisher confirms (see below), the batch can be acknowledged after all messages have been confirmed.
 
-#### &#x20;Publisher Confirms
+#### Publisher Confirms
 
 Publisher confirms provide an **acknowledgement from the broker** that a message has been safely handled (routed to all intended queues and persisted if the queue is durable).
 
