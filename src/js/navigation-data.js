@@ -27,11 +27,6 @@ const navigationData = [
         standalone: true,
     },
     {
-        name: "Rag",
-        slug: "rag",
-        standalone: true,
-    },
-    {
         name: "Fundamentals",
         slug: "fundamental",
         pages: [
