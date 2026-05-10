@@ -25,10 +25,9 @@
 
 ### Project
 
-* Golang SDK: [https://github.com/Chandra179/gosdk](https://github.com/Chandra179/gosdk)
+* Golang SDK: [https://github.com/Chandra179/ghost](https://github.com/Chandra179/ghost)
 * Golang Template: [https://github.com/Chandra179/brook](https://github.com/Chandra179/brook)
-* Nadir, RAG Production Grade: [https://github.com/Chandra179/nadir](https://github.com/Chandra179/nadir)
-* GreenClaw, Data extraction & Knowledge Graph: [https://github.com/Chandra179/greenclaw](https://github.com/Chandra179/greenclaw)
+* Nadir, RAG: [https://github.com/Chandra179/nadir](https://github.com/Chandra179/nadir)
 
 ### Tech stack
 
