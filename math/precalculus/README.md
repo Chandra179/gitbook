@@ -340,7 +340,7 @@ Used for two terms that are perfect cubes.
 3. Set Up the Model. Find the crucial fact in the problem that gives a relationship between the expressions you listed in Step 2. Set up an equation (or model) that expresses this relationship.
 4. Solve the Equation and Check Your Answer. Solve the equation, check your answer, and state your answer as a sentence.
 
-A car rental company charges $30 a day and 15¢ a mile for renting a car. A tourist rents\
+A car rental company charges 30 dollar a day and 15¢ a mile for renting a car. A tourist rents\
 a car for two days, and the bill comes to $108. How many miles was the car driven?
 
 * Let $$x$$ = the number of miles driven.
@@ -650,8 +650,6 @@ $$(h, k)$$: This is the Vertex (the peak or valley).
   * If $$a$$ is negative, it’s an n.
 
 The Minus Sign ($$-h$$): This is the "Pusher." Because it is _inside_ the parentheses with $$x$$, it works backward from what you expect. If you see $$(x - 3)$$, it actually pushed the graph right to $$+3$$.
-
-$$(\dots)^2$$
 
 The square is what creates that "U" shape. Because any number squared (positive or negative) becomes positive, the graph mirrors itself on both sides, creating a valley or a hill.
 

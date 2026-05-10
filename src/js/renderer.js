@@ -1,8 +1,3 @@
-// Timeline configuration
-const TIMELINE_CONFIG = {
-    MIN_ITEMS_FOR_GRID: 3
-};
-
 // Math rendering note:
 // Math is handled entirely at markdown parse time by the `gitbookMath` marked extension
 // (see marked-extensions.js). It matches GitBook-style $...$ and $$...$$ delimiters and
@@ -126,20 +121,8 @@ class Renderer {
         const lists = content.querySelectorAll('ul');
 
         lists.forEach(list => {
-            // Check if the previous element is a comment or contains 'timeline'
             const prevSibling = list.previousElementSibling;
             if (prevSibling && prevSibling.textContent.includes('timeline')) {
-                list.classList.add('timeline-list');
-                return;
-            }
-
-            // Auto-detect: items must start with a year, not just contain one
-            const itemsStartingWithYear = Array.from(list.children).filter(li =>
-                /^\s*(19|20)\d{2}\b/.test(li.textContent)
-            );
-
-            if (itemsStartingWithYear.length >= TIMELINE_CONFIG.MIN_ITEMS_FOR_GRID &&
-                itemsStartingWithYear.length >= list.children.length / 2) {
                 list.classList.add('timeline-list');
             }
         });

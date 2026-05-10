@@ -17,11 +17,6 @@ const navigationData = [
         standalone: true,
     },
     {
-        name: "Online Travel Agency",
-        slug: "online-travel-agency",
-        standalone: true,
-    },
-    {
         name: "Quant",
         slug: "quant",
         standalone: true,
