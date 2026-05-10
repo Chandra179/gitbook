@@ -128,8 +128,30 @@ class Renderer {
         });
     }
 
+    renderMathSpans() {
+        if (typeof katex === 'undefined') return;
+
+        const content = document.getElementById(this.contentElementId);
+        if (!content) return;
+
+        content.querySelectorAll('span.math').forEach(span => {
+            if (span.dataset.mathRendered) return;
+            span.dataset.mathRendered = '1';
+            try {
+                const html = katex.renderToString(span.textContent, {
+                    displayMode: false,
+                    throwOnError: false
+                });
+                span.innerHTML = html;
+            } catch (e) {
+                console.warn('KaTeX render failed for math span:', span.textContent, e);
+            }
+        });
+    }
+
     renderAll() {
         this.applyTimelineClass();
         this.renderCodeBlocks();
+        this.renderMathSpans();
     }
 }

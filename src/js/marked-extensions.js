@@ -5,7 +5,7 @@ function initializeMarkedExtensions() {
         start(src) { return src.indexOf('$'); },
         tokenizer(src) {
             // Matches both $$...$$ and $...$
-            const match = /^(?:\$\$([\s\S]+?)\$\$|\$([\s\S]+?)\$)/.exec(src);
+            const match = /^(?:\$\$([\s\S]+?)\$\$|\$(?!\d)([\s\S]+?)\$)/.exec(src);
             if (match) {
                 return {
                     type: 'gitbookMath',
