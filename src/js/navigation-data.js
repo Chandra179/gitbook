@@ -7,7 +7,7 @@ const navigationData = [
         standalone: true,
     },
     {
-        name: "E2e Production Rag",
+        name: "RAG",
         slug: "e2e-production-rag",
         standalone: true,
     },
