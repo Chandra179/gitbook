@@ -3,6 +3,21 @@ const APP_CONFIG = {
     INITIALIZATION_DELAY_MS: 100
 };
 
+// Landing page card grid configuration
+const LANDING_CONFIG = {
+    GRID_COLUMNS: 2,  // Number of columns on tablet/desktop (1-4). Mobile always 1 column.
+};
+
+// Category -> badge CSS class mapping
+const CATEGORY_BADGES = {
+    'fundamental':    'badge-fundamental',
+    'system-design':  'badge-system-design',
+    'golang':         'badge-golang',
+    'math':           'badge-math',
+    'ml':             'badge-ml',
+    'quant':          'badge-quant',
+};
+
 function portfolioApp() {
     return {
         mobileMenuOpen: false,
@@ -14,6 +29,10 @@ function portfolioApp() {
         expandedFolders: {},
         content: '',
         _initialPageViewDone: false,
+
+        landingCards: [],
+        landingColumns: LANDING_CONFIG.GRID_COLUMNS,
+        landingFilter: 'all',
 
         router: null,
         search: null,
@@ -41,6 +60,11 @@ function portfolioApp() {
             this.renderer = new Renderer();
 
             this.router.onRouteChange = (category, anchor) => {
+                if (category === '__home__') {
+                    this.tocGenerator.clear();
+                    this.updateSEOMeta();
+                    return;
+                }
                 const page = this.router.getCurrentPage().includes('/')
                     ? this.router.getCurrentPage().split('/').slice(1).join('/')
                     : null;
@@ -60,9 +84,58 @@ function portfolioApp() {
 
             this.router.init();
             this.search.init();
+            this.initLanding();
+        },
+
+        async initLanding() {
+            try {
+                const res = await fetch('/landing-index.json');
+                if (res.ok) {
+                    this.landingCards = await res.json();
+                }
+            } catch (e) {
+                console.warn('Failed to load landing index', e);
+            }
+            if (this.isLanding) {
+                this.loading = false;
+            }
+        },
+
+        get landingGridStyle() {
+            return `--landing-cols: ${this.landingColumns};`;
+        },
+
+        get isLanding() {
+            return this.router ? this.router.isHome : false;
+        },
+
+        getCategoryBadgeClass(categorySlug) {
+            return CATEGORY_BADGES[categorySlug] || 'badge-default';
+        },
+
+        get filteredCards() {
+            if (this.landingFilter === 'all') return this.landingCards;
+            return this.landingCards.filter(c => c.categorySlug === this.landingFilter);
+        },
+
+        get landingCategories() {
+            const seen = new Set();
+            const cats = [];
+            for (const card of this.landingCards) {
+                const key = card.categorySlug;
+                if (!key || seen.has(key)) continue;
+                seen.add(key);
+                cats.push({ slug: key, label: card.category || key });
+            }
+            return cats;
+        },
+
+        setLandingFilter(slug) {
+            this.landingFilter = slug;
         },
 
         async loadContent(category, page, anchor) {
+            if (this.isLanding) return;
             this.tocGenerator.clear();
             this.loading = true;
             await this.contentLoader.loadContent(category, page, anchor);
@@ -250,7 +323,7 @@ function portfolioApp() {
             const siteName = 'Chan179';
             const baseDescription = 'Technical notes and learning resources on Math, Golang, System Design, ML, and more.';
 
-            const isHome = !this.router.getCurrentPage() || this.router.getCurrentPage() === 'README';
+            const isHome = this.router.isHome;
             const title = isHome ? `${siteName} — Technical Notes` : `${breadcrumb} — ${siteName}`;
             const description = isHome ? baseDescription : `Notes on ${breadcrumb}. ${baseDescription}`;
 

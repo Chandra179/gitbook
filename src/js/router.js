@@ -4,6 +4,7 @@ class Router {
         this.currentPage = 'README';
         this.currentCategory = null;
         this.breadcrumb = 'README';
+        this.isHome = false;
         this.onRouteChange = null;
     }
 
@@ -15,7 +16,21 @@ class Router {
     handleRoute() {
         try {
             // Use pathname for History API routing; strip leading slash
-            let path = window.location.pathname.replace(/^\//, '') || 'README';
+            let path = window.location.pathname.replace(/^\//, '');
+
+            // Root path -> landing page
+            if (!path) {
+                this.isHome = true;
+                this.currentPage = '__home__';
+                this.currentCategory = null;
+                this.breadcrumb = 'Home';
+                if (this.onRouteChange) {
+                    this.onRouteChange('__home__', '');
+                }
+                return;
+            }
+
+            this.isHome = false;
 
             // Also support an in-page anchor via the URL hash (e.g. /math/algebra#section)
             let anchor = window.location.hash.replace(/^#/, '');
@@ -60,6 +75,17 @@ class Router {
     }
 
     navigate(path) {
+        if (path === '__home__') {
+            history.pushState(null, '', '/');
+            this.isHome = true;
+            this.currentPage = '__home__';
+            this.currentCategory = null;
+            this.breadcrumb = 'Home';
+            if (this.onRouteChange) {
+                this.onRouteChange('__home__', '');
+            }
+            return;
+        }
         history.pushState(null, '', '/' + path);
         this.handleRoute();
     }

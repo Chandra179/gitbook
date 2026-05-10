@@ -26,9 +26,12 @@ echo "Generating navigation data..."
 node scripts/gen-nav.js
 echo "Generating search index..."
 node scripts/gen-search-index.js
+echo "Generating landing index..."
+node scripts/gen-landing-index.js
 cp -r src/js dist/js
 cp src/worker.js dist/worker.js
 cp src/search-index.json dist/search-index.json
+cp src/landing-index.json dist/landing-index.json
 
 # Copy .gitbook assets (images)
 mkdir -p dist/.gitbook

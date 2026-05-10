@@ -100,7 +100,7 @@
     </script>
 
     <!-- Mobile Header -->
-    <div
+    <div x-show="!isLanding"
         class="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 z-50 flex items-center px-4 gap-4">
         <button @click="mobileMenuOpen = !mobileMenuOpen" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex-shrink-0">
             <svg class="w-6 h-6 text-gray-700 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -171,7 +171,7 @@
     </div>
 
     <!-- Desktop Header -->
-    <header
+    <header x-show="!isLanding"
         class="hidden lg:flex fixed top-0 left-0 right-0 h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 z-50 items-center justify-between">
         <!-- Left: Logo -->
         <div class="flex items-center w-64 pl-6">
@@ -248,7 +248,7 @@
     </header>
 
     <!-- Left Sidebar (Navigation) -->
-    <aside
+    <aside x-show="!isLanding"
         class="fixed top-16 left-0 bottom-0 w-64 bg-white dark:bg-gray-900 overflow-y-auto z-40 transition-transform duration-300 lg:translate-x-0"
         :class="mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
         <div class="p-6">
@@ -369,27 +369,69 @@
         x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"></div>
 
     <!-- Main Content Area -->
-    <main class="lg:ml-64 xl:mr-64 min-h-screen bg-white pt-16 overflow-x-hidden">
-        <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8 lg:py-12">
+    <main class="min-h-screen bg-white dark:bg-gray-900 overflow-x-hidden transition-all duration-300"
+        :class="isLanding ? 'pt-8' : 'pt-16 lg:ml-64 xl:mr-64'">
+        <div class="mx-auto px-4 sm:px-6 py-8 lg:py-12 transition-all duration-300"
+            :class="isLanding ? 'max-w-6xl' : 'max-w-3xl'">
             <!-- Loading State -->
             <div x-show="loading" class="flex items-center justify-center py-20">
                 <div class="loader"></div>
             </div>
 
+            <!-- Landing Page Card Grid -->
+            <section x-show="isLanding && !loading">
+                <!-- Filter Bar -->
+                <div class="flex flex-wrap items-center gap-2 mb-8">
+                    <button @click="setLandingFilter('all')"
+                        class="filter-pill"
+                        :class="landingFilter === 'all' ? 'filter-pill-active' : ''">All</button>
+                    <template x-for="cat in landingCategories" :key="cat.slug">
+                        <button @click="setLandingFilter(cat.slug)"
+                            class="filter-pill"
+                            :class="landingFilter === cat.slug ? 'filter-pill-active' : ''"
+                            x-text="cat.label"></button>
+                    </template>
+                </div>
+
+                <div class="landing-grid" :style="landingGridStyle">
+                    <template x-for="card in filteredCards" :key="card.path">
+                        <a :href="`/${card.path}`" @click.prevent="navigate(card.path)" class="landing-card">
+                            <div class="card-badge-wrapper">
+                                <span x-show="card.category" class="card-badge" :class="getCategoryBadgeClass(card.categorySlug)" x-text="card.category"></span>
+                            </div>
+                            <h3 class="card-title" x-text="card.title"></h3>
+                            <p class="card-desc" x-text="card.description || 'No description available.'"></p>
+                        </a>
+                    </template>
+                </div>
+            </section>
+
             <!-- Content -->
-            <article x-show="!loading" id="content" class="prose prose-lg prose-blue max-w-none" x-html="content">
+            <article x-show="!isLanding && !loading" id="content" class="prose prose-lg prose-blue max-w-none" x-html="content">
             </article>
         </div>
     </main>
 
     <!-- Right Sidebar (TOC) -->
-    <aside class="hidden xl:block fixed top-16 right-0 bottom-0 w-64 overflow-y-auto bg-white dark:bg-gray-900">
+    <aside x-show="!isLanding" class="hidden xl:block fixed top-16 right-0 bottom-0 w-64 overflow-y-auto bg-white dark:bg-gray-900">
         <div class="p-6">
         </div>
         <nav id="toc" class="px-4 pb-6 space-y-2 text-sm">
             <!-- TOC will be generated here -->
         </nav>
     </aside>
+
+    <!-- Floating Dark Mode Toggle (landing page only) -->
+    <button x-show="isLanding" @click="toggleDarkMode()"
+        class="fixed bottom-6 right-6 z-50 p-3 rounded-full shadow-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 hover:shadow-xl transition-all duration-200"
+        aria-label="Toggle dark mode">
+        <svg x-show="isDark" class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+        </svg>
+        <svg x-show="!isDark" class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+        </svg>
+    </button>
 
     <!-- CRITICAL: Load JavaScript modules in correct order -->
     
