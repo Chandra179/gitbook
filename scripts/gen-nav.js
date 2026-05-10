@@ -26,6 +26,7 @@ const NAME_OVERRIDES = {
     'README':                      'Introduction',
     'p2p-chat':                    'P2P Chat',
     'fundamental':                 'Fundamentals',
+    'e2e-production-rag':          'RAG',
     'golang':                      'Golang',
     'math':                        'Math',  
     'ml':                          'ML',
