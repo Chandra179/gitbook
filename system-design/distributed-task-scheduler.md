@@ -1,51 +1,69 @@
 # Distributed Task Scheduler
 
-<figure><img src="/.gitbook/assets/distributed_task_scheduler.png" alt=""><figcaption></figcaption></figure>
+#### Goal
 
-#### Requirements & Scope
+A scalable, durable, exactly-once task scheduler that decouples timing from execution for billions of heterogeneous background jobs.
 
-* Scale: Support billions of tasks (Reminders, Financial Retries, Cron jobs).
-* Accuracy: High precision (low drift) and Exactly-once execution (critical for financial tasks).
-* Flexibility: Support varying types of tasks (Email, DB fetching, API calls) across different domain services.
-* Durability: No task should be lost even if a node crashes.
+#### Non-goals
 
-#### High-Level Architecture
+* Not a workflow orchestration engine (no DAGs, dependencies, or chaining of tasks)
+* Not an execution environment—business logic lives in separate domain services, not in the scheduler
+* Not targeting sub-second scheduling precision; low drift (seconds) is acceptable
+* No single-tenant, in-process, or embedded scheduling; designed as a shared service
 
-We chose a Manager-Worker (Decoupled) Pattern:
+#### Numbers
 
-* Scheduler Service: The "Manager" that handles the timing and orchestration.
-* Message Broker: The "Buffer" that handles task distribution and backpressure.
-* Domain Services: The "Workers" that execute the actual business logic.
+* **QPS**: Up to 10,000 tasks dispatched per second at peak
+* **Storage**: \~1 TB/year for billions of tasks (≈1 KB per task metadata record)
+* **Latency target**: 99.9% of tasks enqueued within 5 seconds of `scheduled_time`; exactly-once execution guarantee
 
-#### Data Storage & Management
+#### Diagram
 
-* Database: SQL (Postgres/MySQL) for strong consistency and structured data.
-* Efficiency:&#x20;
-  * Indexing: Composite index on `(status, scheduled_time)` to avoid scanning the whole table.
-  * Partitioning: Table partitioning by date (e.g., daily partitions) to keep the "active" search space small.
-* Concurrency (The "Double Execution" Problem):&#x20;
-  * Optimistic Locking: We use a `version` column. A worker only picks up a task if the version matches what it read. This ensures that even if 10 nodes try to grab the same task at the same millisecond, only one succeeds.
+```mermaid
+flowchart TB
+    Tasks[("Task Table\nstatus, scheduled_time, version")]
+    Scheduler["Scheduler Service\n(polls, optimistic lock,\ndispatches)"]
+    Broker["Message Broker\nPriority Queues"]
+    WorkerA["Domain Service A\n(Worker)"]
+    WorkerB["Domain Service B\n(Worker)"]
+    DLQ["Dead Letter Queue"]
+    Cleanup["Cleanup Job\n(visibility timeout)"]
 
-#### The Execution Flow
+    Tasks -- "batch fetch\nPENDING, scheduled_time <= now" --> Scheduler
+    Scheduler -- "UPDATE with version check\nPENDING to IN_PROGRESS" --> Tasks
+    Scheduler -- "publish task + priority" --> Broker
+    Broker -- "consume high prio" --> WorkerA
+    Broker -- "consume low prio" --> WorkerB
+    WorkerA -- "max retries exceeded" --> DLQ
+    WorkerB -- "max retries exceeded" --> DLQ
+    Cleanup -- "stuck IN_PROGRESS reset to PENDING" --> Tasks
+```
 
-1. Polling/Fetching: The Scheduler service uses Batch Fetching and Pagination to pull "Due" tasks from SQL.
-2. Status Update: The Scheduler updates task status from `PENDING` to `IN_PROGRESS` using the versioning logic.
-3. Dispatching: Instead of a direct call (Webhook), the Scheduler pushes the task into a Message Broker (RabbitMQ/Kafka).
-   * This decouples the "Timing" from the "Execution." If a domain service is down, the task stays safe in the queue.
-4. Priority Handling: We use Priority Queues within the broker. "Paylater Overdue" tasks get a higher priority than "Marketing Emails."
+#### Core flow
 
-***
+1. The Scheduler polls the task table for `PENDING` tasks where `scheduled_time <= now`, using a composite index on `(status, scheduled_time)` and batch/pagination to limit load.
+2. For each fetched task, it attempts an atomic status update `PENDING → IN_PROGRESS` with a version field — `WHERE version = last_read_version`. Only one scheduler node wins per task (optimistic locking).
+3. Successfully claimed tasks are published to a message broker. Priority is attached (e.g., financial retries → high priority, marketing emails → low) and the broker routes them to the correct priority queue.
+4. Domain workers consume from the queues, execute the actual business logic (API call, email, DB operation), and acknowledge on success. The broker applies exponential backoff and retries on failure/nack.
+5. After the final retry failure, the task is moved to a Dead Letter Queue for manual inspection.
+6. A separate periodic clean‑up job scans for tasks stuck in `IN_PROGRESS` beyond a visibility timeout (e.g., due to worker crash) and resets them to `PENDING` so they can be retried safely.
 
-#### Reliability & Traffic Strategies
+#### Storage choice & why
 
-**Handling Spikes**
+**PostgreSQL / MySQL** — ACID transactions, strong consistency, and deterministic queries are essential for exactly‑once task claiming. Optimistic locking via a version column gives us safe concurrent dispatching across horizontally scaled scheduler nodes. Composite indexing and date‑based table partitioning keep the working set small and scans efficient even with billions of rows.
 
-* Jitter (Random Delay): We apply a small random delay (1–5 seconds) to spread out the execution of millions of simultaneous tasks, preventing a system meltdown.
-* Horizontal Scaling: We scale the Scheduler nodes horizontally. Since they use Optimistic Locking, they can work on the same DB table safely.
+#### The hard part & how we solve it
 
-**Error Handling**
+**Bottleneck:** Safely handing out tasks to competing schedulers without double execution, while keeping latency low at massive scale.\
+**Fix:**
 
-* Exponential Backoff: If a task fails, we retry it with increasing intervals.
-* Dead Letter Queue (DLQ): After $$X$$ failed retries, the task is moved to a special queue for manual inspection.
-* Safety Net (Visibility Timeout):
-  * If a task is marked `IN_PROGRESS` but never finishes (node crash), a **cleanup job** eventually resets it to `PENDING` so it can be retried.
+* **Optimistic locking** with version column ensures exactly‑one claim per task, no coordination needed.
+* **Polling + partitioning** keeps the active scan set tiny (only today’s partition).
+* **Message broker + backpressure** decouples timing from execution, absorbs spikes, and retries failures without scheduler involvement.
+* **Jitter** (1–5 s random delay on dispatch) smoothes out thundering herds of simultaneous tasks.
+* **Visibility timeout clean‑up** protects against node crashes and stranded `IN_PROGRESS` tasks.
+
+#### Tradeoff I’m making
+
+**Choosing a decoupled architecture with a persistent message broker over synchronous, direct worker invocations (webhooks)**.\
+This adds one network hop and a small latency increase, but gives us far superior durability (tasks survive worker outages), natural backpressure, priority queuing, and independent retry/dead‑letter handling — all critical for financial retries and high‑scale reliability.
