@@ -32,6 +32,8 @@
   * [Notification System](system-design/notification-system.md)
   * [Cache Stampede](system-design/cache-stampede.md)
   * [Event Processing](system-design/event-processing.md)
+  * [Real Time Chat (Discord)](system-design/real-time-chat-discord.md)
+  * [Template](system-design/template.md)
 * [Machine Learning](ml.md)
 * [RAG](e2e-production-rag.md)
 * [Quant](quant.md)

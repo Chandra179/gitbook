@@ -1,5 +1,7 @@
 # Distributed Cache
 
+### Requirement
+
 The goal was to design a distributed cache system for a large-scale organization, similar to Redis or Memcached, capable of handling extreme traffic.
 
 **Functional Requirements**
@@ -19,9 +21,9 @@ The goal was to design a distributed cache system for a large-scale organization
 
 ### High-Level Architecture
 
-<figure><img src="/.gitbook/assets/distributed_cache.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/distributed_cache.png" alt=""><figcaption></figcaption></figure>
 
-The system is designed as a distributed cluster of nodes. Because 10 TB cannot fit on a single machine, the data is partitioned (sharded) and replicated.<a class="button secondary"></a>
+The system is designed as a distributed cluster of nodes. Because 10 TB cannot fit on a single machine, the data is partitioned (sharded) and replicated.
 
 1. Client SDK: Integrated into microservices; handles routing logic.
 2. Configuration Service (The Brain): (e.g., Zookeeper/Etcd) Stores the "Map" of the system.
@@ -57,7 +59,7 @@ Proposed Solution: Leader-Follower (Parent-Child) Model.
 Proposed Solution: Decoupled Configuration Mapping.
 
 * Problem: If clients query a "Manager" for every request to find the right shard, latency doubles.
-* The Strategy:&#x20;
+* The Strategy:
   * The client pulls the Hash Ring map from the Configuration Service (Zookeeper) at startup.
   * The client caches this map locally to perform $$O(1)$$ routing lookups.
   * Push Mechanism: Zookeeper uses "Watchers" to push updates to the client only when the cluster topology changes (e.g., a node dies).
@@ -89,4 +91,3 @@ Proposed Solution: Decoupled Configuration Mapping.
   * Hash Map: Allows $$O(1)$$ lookup of the data.
   * Doubly Linked List: Tracks usage. Every time a key is accessed, it moves to the "Head." The "Tail" represents the least recently used item.
   * Action: When memory is full, the system evicts the item at the Tail
-

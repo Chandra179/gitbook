@@ -1,8 +1,8 @@
-# E2E Production RAG
+# RAG
 
 End to end rag system from data ingestion -> chunking -> embed -> retrieval -> generation -> evaluation -> testing -> monitoring
 
-<figure><img src="../.gitbook/assets/pipeline.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="/broken/files/vcIyyQ526PsRyZZGhtPu" alt=""><figcaption></figcaption></figure>
 
 ## Ingestion
 
