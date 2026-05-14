@@ -12,29 +12,15 @@
 * \[Reason 2 — e.g., "Compiles to a single static binary. No runtime dependencies. Matches our deployment model of horizontally scaled scheduler nodes"]
 * \[Reason 3 — e.g., "pgx driver has first-class support for FOR UPDATE SKIP LOCKED, the concurrency primitive our design depends on"]
 
-**Why not \[alternative]:**
-
-* \[Reason the obvious alternative was rejected — e.g., "Rust would give stronger correctness guarantees, but the team has no Rust experience and the database already provides the safety net via ACID"]
-
 ***
 
-## Event Queue
+## Event Queue (if used)
 
 **Choice:** \[Kafka / RabbitMQ / NATS / Redis Streams / None]
 
 **Why:**
 
 * \[Architectural reason — e.g., "Kafka provides ordered, durable retention. Critical because tasks must be replayed in order for exactly-once worker deduplication"]
-
-**Why not \[alternative]:**
-
-* \[e.g., "RabbitMQ has more flexible routing and built-in priority queues, but its persistence model is weaker. A RabbitMQ crash can lose acknowledged-but-unprocessed messages"]
-
-**Configuration:**
-
-* \[Topic/queue naming convention]
-* \[Partitioning strategy — e.g., "One partition per task type priority"]
-* \[Retention policy — e.g., "7-day retention for replay capability"]
 
 ***
 
@@ -70,31 +56,24 @@
 \[Package 2] — Responsibility\
 \[Package 3] — Responsibility
 
+dependencies (programming language standard library, open source pkg, sidecar pattern)
+
 ***
 
 ## Directory Structure
 
-* modular monolith, pluggable architecture, DDD
+* modular monolith (golang example: /modules, /middleware, /config, /cmd)
+* pluggable/pipeline/orchestrator architecture
+* DDD
+* simple architecture
 
 ***
 
-## Abstraction Depth
+## Abstraction Depth per Modules
 
-**Principle:** \[e.g., "Interface per external dependency. No interface for internal types that have a single implementation. Deep modules (complex internals, simple interfaces) over shallow modules."]
-
-**Where we abstract:**
-
-* **Broker:** `broker.Publisher` interface. One method: `Publish(task Task) error`. Kafka and RabbitMQ implement it. This lets us swap brokers without changing the scheduler
-* **Database:** `store.TaskStore` interface. Methods: `PollPending()`, `Claim(taskID)`, `Release(taskID)`. PostgreSQL implements it. A future CockroachDB implementation is possible
-
-**Where we don't abstract:**
-
-* The claim loop. It has one implementation. Wrapping it in an interface adds indirection without value
-* Domain types. `Task`, `TaskStatus`, `Priority` are concrete types. Used everywhere. Interfaces would obscure, not clarify
-
-**Rule of thumb used:**
-
-> Abstract external dependencies (broker, database, clock). Don't abstract internal logic (claim loop, state transitions, priority calculation). Add an interface when you have two real implementations or when testing requires it. Don't add one preemptively.
+* use interfaces for swapable implementation
+* dont over abstract
+* add why we abstract it (the functions) why the module export this function to be usable to outside world
 
 ***
 
@@ -102,9 +81,7 @@
 
 #### Unit Tests
 
-**What:** Domain logic. Priority calculation. State transition validation. Task aggregate behavior.
-
-**Coverage target:** 90%+ on domain package. 70%+ on claim/dispatch logic (mocked dependencies).
+**What:** Domain logic. Core functionalities
 
 **Example:**
 
