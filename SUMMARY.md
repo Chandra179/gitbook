@@ -29,7 +29,7 @@
 * [System Design](system-design/README.md)
   * [Rate Limit](system-design/rate-limit.md)
   * [Distributed Task Scheduler](system-design/distributed-task-scheduler.md)
-  * [Distributed Cache](system-design/distributed-cache.md)
+  * [Distributed Cache for Live‑Streaming Chat](system-design/distributed-cache.md)
   * [Notification System](system-design/notification-system.md)
   * [Event Processing](system-design/event-processing.md)
   * [Real Time Chat (Discord)](system-design/real-time-chat-discord.md)
