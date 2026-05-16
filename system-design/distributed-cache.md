@@ -24,6 +24,10 @@ A distributed in‑memory cache cluster that serves a large‑scale live‑strea
 | Staleness window   | < 500 ms for standard streams            | Bound by stream delay (5–15 s) – leaves plenty of room                                                           |
 | Shard count        | \~200 shards                             | Balanced for throughput and failover (with replication factor 3, \~600 nodes)                                    |
 
+### Key Design Decisions
+
+<table data-header-hidden><thead><tr><th width="67.08120727539062"></th><th width="164.5999755859375"></th><th></th><th></th></tr></thead><tbody><tr><td></td><td>Decision</td><td>Chosen Approach</td><td>Rejected Alternatives &#x26; Why</td></tr><tr><td>1</td><td>Storage medium</td><td><strong>In‑memory</strong> hash maps &#x26; sorted sets</td><td>Disk: seek time (0.1–1 ms) alone violates sub‑ms read SLO. Database: optimized for durability, not 10 M RPS.</td></tr><tr><td>2</td><td>Routing</td><td><strong>Client‑side consistent hashing</strong></td><td>Proxy: adds a network hop and becomes a bottleneck. Simple modulo: all keys remap when shard count changes, causing a complete cache flush.</td></tr><tr><td>3</td><td>Replication</td><td><strong>Async leader‑follower</strong></td><td>Synchronous: violates write‑ack latency SLO. Multi‑leader: requires conflict resolution (CRDTs), adding complexity and latency for message ordering.</td></tr><tr><td>4</td><td>Shard key</td><td><strong><code>chat_room_id</code></strong></td><td><code>user_id</code>: scatter‑gather across all shards to read a room’s messages would destroy latency and throughput.</td></tr><tr><td>5</td><td>Read‑your‑own‑writes</td><td><strong>Sticky leader</strong> (500 ms pin after write)</td><td>Sync replication: violates write latency. Global sequence numbers: coordination bottleneck. Optimistic UI alone: cache must still return correct data on refresh/rejoin.</td></tr><tr><td>6</td><td>Eviction</td><td><strong>Per‑room time‑based</strong> (trim on write)</td><td>Global LRU: could evict new messages from a slow room while keeping old ones from a busy room. Chat messages decay by time, not access frequency.</td></tr><tr><td>7</td><td>Hot‑key reads</td><td><strong>SDK L1 cache + dynamic replication</strong></td><td>Remote cache only: a celebrity room with 500k viewers overwhelms a single shard’s throughput limit (~50k–100k RPS).</td></tr><tr><td>8</td><td>Cache miss storms</td><td><strong>Singleflight coalescing</strong></td><td>No protection: 10k concurrent misses hit the database simultaneously (thundering herd). Per‑request locking: adds latency to every miss, even when there’s no contention.</td></tr></tbody></table>
+
 ### Diagram
 
 ```mermaid
@@ -115,9 +119,9 @@ flowchart TB
 
 ### Storage choice & why
 
-* **In‑memory sorted sets** (ZSET) per chat room, holding `(sequence_number → message_payload)`. This gives O(log N) insertion and O(log N + M) range queries, which is sufficient for a sliding window of thousands of messages.
-* Shards still use a hash map for other key‑value data (e.g., session tokens) with a doubly linked LRU for eviction.
-* Consistent hashing with virtual nodes distributes rooms evenly across shards.
+* **In‑memory sorted sets** (ZSET) per chat room, holding `(sequence_number → message_payload)`. This is the only way to meet the sub‑millisecond p99 read SLO (disk seek alone is 0.1–1 ms). O(log N) insertion and O(log N + M) range queries are sufficient for a sliding window of thousands of messages.
+* **In‑memory hash map** for other key‑value data (e.g., session tokens) with per‑shard LRU eviction.
+* **Consistent hashing with virtual nodes** distributes rooms evenly across shards. Chosen over simple modulo because it minimizes key movement (only \~K/N keys remap) when shards are added or removed.
 
 ### The hard part & how we solve it
 
@@ -132,14 +136,38 @@ _Fix:_
 * **Singleflight coalescing** prevents thundering herds when a room’s cache expires.
 * **Per‑room sorted sets with time‑based eviction** keep memory bound and avoid LRU thrashing for streaming workloads.
 
-### Tradeoff I’m making
+***
 
-We choose **eventual consistency with a bounded staleness window** over strong consistency. Writes are acknowledged instantly, and followers may return slightly stale data (up to 500 ms). This is acceptable because:
+### Tradeoffs
 
-1. The streamer’s own broadcast delay (5–15 seconds) dwarfs the cache staleness; viewers cannot perceive a 500 ms lag in chat relative to the video.
+#### Primary Tradeoff: Eventual Consistency with Bounded Staleness
+
+We choose **eventual consistency** over strong consistency. Writes are acknowledged instantly, and followers may return slightly stale data (up to 500 ms). This is acceptable because:
+
+1. The streamer’s broadcast delay (5–15 seconds) dwarfs the cache staleness; viewers cannot perceive a 500 ms lag in chat relative to the video.
 2. Read‑your‑own‑writes is preserved by the sticky leader, so a user always sees their own messages.
-3. The read‑heavy workload (over 90 % reads) benefits massively from load‑balanced follower reads, and synchronous replication would violate the latency SLO.
+3. The read‑heavy workload (> 90 % reads) benefits massively from load‑balanced follower reads, and synchronous replication would violate the latency SLO.
 
-For rooms that genuinely need stronger guarantees (e.g., moderator commands, payment events), the SDK can be instructed to use **quorum writes** on a per‑request basis, trading a small latency increase for higher consistency. This _tunable consistency_ allows the same cache to serve a spectrum of needs without redesign.
+#### Secondary Tradeoff: Staleness vs. Load for Read‑Your‑Own‑Writes
+
+The sticky leader pins reads to the leader for 500 ms after a write. This guarantees the writer sees their own message but adds a small amount of extra leader read load. Mitigations if leader capacity is tight:
+
+* **Shorten the sticky window** to 50–100 ms (replication within a datacenter is typically 1–10 ms).
+* **Probabilistic fallback:** read from a follower first; fall back to leader only if the follower lacks the expected sequence number.
+* **Client‑side optimistic rendering:** show the user’s message in the UI immediately, reducing the criticality of the cache read.
+
+#### Tertiary Tradeoff: L1 Cache Staleness for Hot Rooms
+
+The SDK L1 cache holds hot‑room messages for 2–3 seconds. Viewers may miss the very latest messages in that room, but:
+
+* The streamer’s video is 5–15 seconds behind, so the chat remains ahead of the video.
+* The reduction in remote cache load (99%+ for hot rooms) justifies the minor staleness.
+* For rooms requiring fresher data, L1 caching can be disabled or the TTL shortened.
+
+#### Tunable Consistency for Special Cases
+
+For operations that genuinely need stronger guarantees (moderator commands, payment events), the SDK supports **tunable consistency** on a per‑request basis. The SDK can be instructed to use **quorum writes** (write to leader + at least one follower before acknowledging), trading a small latency increase for stronger durability without redesigning the cache.
+
+<br>
 
 <br>

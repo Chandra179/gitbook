@@ -44,11 +44,9 @@
 
 ## Architecture Style
 
-**Choice:** \[Modular monolith / Microservices / DDD / Hexagonal / Plugable]
+**Choice:** \[Modular monolith / Plugable]
 
-**Why:**
-
-* \[e.g., "Modular monolith. Scheduler, dispatcher, and cleanup are separate packages within one binary. They share database access but have clear interface boundaries. We reject microservices because the network overhead and deployment complexity aren't justified for a system where all components share the same scaling profile"]
+**Why:** explain why we choose this archicture
 
 **Module boundaries:**
 
@@ -56,28 +54,39 @@
 \[Package 2] — Responsibility\
 \[Package 3] — Responsibility
 
-dependencies (programming language standard library, open source pkg, sidecar pattern)
+dependencies (programming language standard library, open source pkg, sidecar pattern, etc..)
 
 ***
 
 ## Directory Structure
 
-* modular monolith (golang example: /modules, /middleware, /config, /cmd)
-* pluggable/pipeline/orchestrator architecture
-* DDD
-* simple architecture
+* pluggable/pipeline/orchestrator architecture. Depends on the usecases and what the domain do if its suitable for  this archictecture
+*   for MVP use simple architecture (modular monolith), ref: [https://github.com/Chandra179/brook](https://github.com/Chandra179/brook)<br>
+
+    ```
+    cmd/example/main.go   # entrypoint — starts HTTP + gRPC
+    modules/              # domain modules
+      example/            #   example module
+        config.go         #     module-specific config struct
+        dependencies.go   #     wire deps, load own config
+        http.go           #     HTTP handlers + route registration
+    middleware/           # shared: recovery, request ID, timeout, validation
+    config/               # YAML loader + config.yaml
+    ```
 
 ***
 
 ## Abstraction Depth per Modules
 
-* use interfaces for swapable implementation
-* dont over abstract
+* use interfaces for swappable implementation
+* do not over abstract
 * add why we abstract it (the functions) why the module export this function to be usable to outside world
 
 ***
 
 ## Testing Strategy
+
+tests should be done after each phase implementation, we should breakdown the system to be independent and testable without waiting the apps fully build
 
 #### Unit Tests
 
@@ -99,6 +108,12 @@ dependencies (programming language standard library, open source pkg, sidecar pa
 * "Worker idempotency: submitting the same task\_id twice results in single execution"
 * use test-container if applicable
 
+***
+
+## Performance Test
+
+NOTES: do performance tests after the MVP phase
+
 #### Load / Performance Tests
 
 **Purpose:** Validates the architectural assumptions.
@@ -113,7 +128,7 @@ dependencies (programming language standard library, open source pkg, sidecar pa
 
 **Pass criteria:** Derived from the system design's Numbers section. The architecture predicted 10K QPS. The load test proves or disproves it.
 
-#### Stress / Soak Tests
+#### Stress Tests
 
 **Purpose:** Finds the breaking point.
 
@@ -127,7 +142,7 @@ dependencies (programming language standard library, open source pkg, sidecar pa
 
 ***
 
-### What Not to Include Here
+## What Not to Include Here
 
 * CI/CD pipeline configuration
 * Monitoring and alerting rules (separate ops runbook)
