@@ -19,7 +19,7 @@ Physical RAM is organized into a hierarchy of structures that determine how addr
 * **Memory Banks & Ranks:** RAM modules are divided into banks (sets of cells) and ranks (independent sets of chips on a DIMM). The memory controller interleaves accesses across banks to hide latency.
 * **Channels & Interleaving:** Modern CPUs use multiple memory channels (e.g., dual‑channel, quad‑channel). Adjacent addresses are spread across channels to increase bandwidth. For example, address `0x1000` may go to channel 0, `0x1008` to channel 1.
 * **Row, Column, and CAS Latency:** Physically, each bank is a 2D grid of rows and columns. The memory controller first activates a row (RAS – Row Address Strobe), then reads a column (CAS – Column Address Strobe). The time between these steps is the CAS latency.
-* **Physical Address Range:** The number of physical address lines (e.g., 36‑bits on older x86, 46+ bits on modern servers) defines the maximum amount of RAM the CPU can address. This is **not** the same as virtual address space.
+* **Physical Address Range:** The number of physical address lines defines the **theoretical maximum** RAM the CPU can address, but actual limits depend on motherboard chipset, BIOS-reserved addresses (PCIe, MMIO), and memory interleaving configuration
 
 ### On-Chip Memory
 
@@ -53,7 +53,7 @@ The Operating System and CPU work together to provide a simplified view of memor
 * **Virtual Address Space:** Every program is given its own continuous range of addresses (from 0 to Max). It doesn't know where its data is physically stored in the RAM chips; the MMU handles that translation.
 * **Segmentation and Offsets:** The CPU often calculates addresses using a **Base Address** (start of a region) + an **Offset** (distance into that region).
   * _Example:_ If a data block starts at `1000` and you need the 5th item, the CPU accesses `1000 + 5`.
-* **Memory Width:** A 64-bit CPU can address $$2^{64}$$bytes of memory, whereas a 32-bit CPU is limited to$$2^{32}$$ bytes (4GB).
+* **Memory Width:** A 64-bit CPU has a **theoretical** address space of 2^64 bytes, but current x86-64 implementations use **48-bit addresses** (256 TB) or 57-bit with 5-level paging. 32-bit CPUs are limited to 2^32 bytes (4 GB).
 
 ### Virtual Memory Layout (OS Dependent)
 
@@ -73,7 +73,7 @@ The way the OS organizes the virtual address space varies significantly between 
 **OS‑specific Differences**
 
 * **Linux (x86\_64):**
-  * User space: `0x0000000000000000` – `0x00007fffffffffff` (128 TB)
+  * User space: `0x00400000` – `0x00007fffffffffff` (first 4MB unmapped to catch null pointer dereferences) (128 TB)
   * Kernel space: `0xffff800000000000` – `0xffffffffffffffff` (128 TB)
   * Uses **ASLR** (Address Space Layout Randomization) for stack, heap, and mmap bases. Randomization bits can be tuned via `/proc/sys/kernel/randomize_va_space`.
 * **Windows (x64):**
