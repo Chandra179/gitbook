@@ -70,32 +70,6 @@ The way the OS organizes the virtual address space varies significantly between 
 | **Stack** | Local variables, call frames                        | Grows downward (toward lower addresses) |
 | **MMIO**  | Memory‑mapped I/O regions                           | Fixed                                   |
 
-**OS‑specific Differences**
-
-* **Linux (x86\_64):**
-  * User space: `0x00400000` – `0x00007fffffffffff` (first 4MB unmapped to catch null pointer dereferences) (128 TB)
-  * Kernel space: `0xffff800000000000` – `0xffffffffffffffff` (128 TB)
-  * Uses **ASLR** (Address Space Layout Randomization) for stack, heap, and mmap bases. Randomization bits can be tuned via `/proc/sys/kernel/randomize_va_space`.
-* **Windows (x64):**
-  * User space: `0x0000000000000000` – `0x00007fffffffffff` (128 TB)
-  * Kernel space: `0xffff800000000000` – `0xffffffffffffffff`
-  * Uses **dynamic base** (ASLR) enabled by default for executables and DLLs. The heap and stack locations are randomized at process creation.
-* **macOS (ARM64 / x86\_64):**
-  * User space: `0x0000000100000000` – `0x00007fffffffffff` (slightly less than 128 TB)
-  * Kernel space: `0xffff800000000000` – `0xffffffffffffffff`
-  * Implements **ASLR** with per‑execution stack and heap offsets. Additionally, the **shared cache** (system libraries) is placed at a fixed offset but randomized across boots.
-
-**ASLR in Action**
-
-```bash
-# Linux: view the memory map of a running process
-cat /proc/self/maps
-# Output (addresses change every run):
-# 55f9c8a4f000-55f9c8a50000 r--p  ...  [text]
-# 55f9c8c54000-55f9c8c55000 rw-p  ...  [heap]
-# 7f8e2b7f7000-7f8e2b7f8000 rw-p  ...  [stack]
-```
-
 ### Memory Regions
 
 The OS divides a program's virtual memory into specific "territories" to prevent data corruption.
