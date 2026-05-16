@@ -1,6 +1,6 @@
 # Implementation Template
 
-> Companion to the System Design Document. Read that first for architectural context, tradeoffs, and invariants.
+**Companion to:** [design-template.md](design-template.md "mention") | [mvp-template.md](mvp-template.md "mention")
 
 ## Programming Language & Why
 

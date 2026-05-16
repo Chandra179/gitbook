@@ -1,5 +1,7 @@
 # Design Template
 
+**Companion to:** [implementation-template.md](implementation-template.md "mention") | [mvp-template.md](mvp-template.md "mention")
+
 ### Goal
 
 \[One sentence. What are we building?]

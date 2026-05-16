@@ -1,6 +1,6 @@
 # MVP Template
 
-**Companion to:** [.](./ "mention") | [implementation-template.md](implementation-template.md "mention")
+**Companion to:** [design-template.md](design-template.md "mention") | [implementation-template.md](implementation-template.md "mention")
 
 ***
 
