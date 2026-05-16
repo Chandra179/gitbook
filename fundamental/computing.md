@@ -1,10 +1,10 @@
-#  Computing
+# Computing
 
 ## CPU and Memory Architecture
 
-### Physical Hardware
+<figure><img src="../.gitbook/assets/cpu.png" alt=""><figcaption></figcaption></figure>
 
-<figure><img src="/.gitbook/assets/cpu.png" alt=""><figcaption></figcaption></figure>
+### Physical Hardware
 
 To interact with RAM, the CPU uses a specific set of hardware components to locate and move data.
 
@@ -12,15 +12,24 @@ To interact with RAM, the CPU uses a specific set of hardware components to loca
 2. **Data Bus (The "What"):** The highway that carries the actual bits. Its width determines how much data can be moved in a single "trip," regardless of how big the address was.
 3. **Memory Controller (The "Gatekeeper"):** The intermediate manager. It takes the CPU's request, finds the physical electrical row in the RAM, and handles the timing of the data transfer.
 
+### Physical Memory Layout
+
+Physical RAM is organized into a hierarchy of structures that determine how addresses map to actual hardware cells.
+
+* **Memory Banks & Ranks:** RAM modules are divided into banks (sets of cells) and ranks (independent sets of chips on a DIMM). The memory controller interleaves accesses across banks to hide latency.
+* **Channels & Interleaving:** Modern CPUs use multiple memory channels (e.g., dual‑channel, quad‑channel). Adjacent addresses are spread across channels to increase bandwidth. For example, address `0x1000` may go to channel 0, `0x1008` to channel 1.
+* **Row, Column, and CAS Latency:** Physically, each bank is a 2D grid of rows and columns. The memory controller first activates a row (RAS – Row Address Strobe), then reads a column (CAS – Column Address Strobe). The time between these steps is the CAS latency.
+* **Physical Address Range:** The number of physical address lines (e.g., 36‑bits on older x86, 46+ bits on modern servers) defines the maximum amount of RAM the CPU can address. This is **not** the same as virtual address space.
+
 ### On-Chip Memory
 
 Before reaching out to the relatively "slow" RAM, the CPU utilizes memory located directly on its own chip.
 
-#### CPU Cache (L1, L2, L3)
+**CPU Cache (L1, L2, L3)**
 
 High-speed buffers that store copies of frequently accessed data from RAM. The CPU checks these first to avoid the time-consuming trip across the Address Bus.
 
-#### Registers
+**Registers**
 
 The fastest memory locations in existence, located inside the CPU core.
 
@@ -46,9 +55,48 @@ The Operating System and CPU work together to provide a simplified view of memor
   * _Example:_ If a data block starts at `1000` and you need the 5th item, the CPU accesses `1000 + 5`.
 * **Memory Width:** A 64-bit CPU can address $$2^{64}$$bytes of memory, whereas a 32-bit CPU is limited to$$2^{32}$$ bytes (4GB).
 
-### Memory Regions
+### Virtual Memory Layout (OS Dependent)
 
-<figure><img src="/.gitbook/assets/ram.png" alt=""><figcaption></figcaption></figure>
+The way the OS organizes the virtual address space varies significantly between operating systems. Each process sees its own private layout, but the structure is defined by the OS kernel.
+
+**Common Segments (present on all OSes)**
+
+| Segment   | Contents                                            | Growth                                  |
+| --------- | --------------------------------------------------- | --------------------------------------- |
+| **Text**  | Executable code (read‑only)                         | Fixed size                              |
+| **Data**  | Initialized global/static variables                 | Fixed size                              |
+| **BSS**   | Uninitialized global/static variables (zero‑filled) | Fixed size                              |
+| **Heap**  | Dynamic allocations (malloc/Box)                    | Grows upward (toward higher addresses)  |
+| **Stack** | Local variables, call frames                        | Grows downward (toward lower addresses) |
+| **MMIO**  | Memory‑mapped I/O regions                           | Fixed                                   |
+
+**OS‑specific Differences**
+
+* **Linux (x86\_64):**
+  * User space: `0x0000000000000000` – `0x00007fffffffffff` (128 TB)
+  * Kernel space: `0xffff800000000000` – `0xffffffffffffffff` (128 TB)
+  * Uses **ASLR** (Address Space Layout Randomization) for stack, heap, and mmap bases. Randomization bits can be tuned via `/proc/sys/kernel/randomize_va_space`.
+* **Windows (x64):**
+  * User space: `0x0000000000000000` – `0x00007fffffffffff` (128 TB)
+  * Kernel space: `0xffff800000000000` – `0xffffffffffffffff`
+  * Uses **dynamic base** (ASLR) enabled by default for executables and DLLs. The heap and stack locations are randomized at process creation.
+* **macOS (ARM64 / x86\_64):**
+  * User space: `0x0000000100000000` – `0x00007fffffffffff` (slightly less than 128 TB)
+  * Kernel space: `0xffff800000000000` – `0xffffffffffffffff`
+  * Implements **ASLR** with per‑execution stack and heap offsets. Additionally, the **shared cache** (system libraries) is placed at a fixed offset but randomized across boots.
+
+**ASLR in Action**
+
+```bash
+# Linux: view the memory map of a running process
+cat /proc/self/maps
+# Output (addresses change every run):
+# 55f9c8a4f000-55f9c8a50000 r--p  ...  [text]
+# 55f9c8c54000-55f9c8c55000 rw-p  ...  [heap]
+# 7f8e2b7f7000-7f8e2b7f8000 rw-p  ...  [stack]
+```
+
+### Memory Regions
 
 The OS divides a program's virtual memory into specific "territories" to prevent data corruption.
 
@@ -56,11 +104,36 @@ The OS divides a program's virtual memory into specific "territories" to prevent
 | -------------- | -------------------------------------------- | ----------------------------------------- |
 | **Purpose**    | Short-term local variables & function calls. | Long-term data & large objects.           |
 | **Management** | Automatic (LIFO - Last In, First Out).       | Manual (Programmer) or Garbage Collector. |
-| **Growth**     | Starts at high addresses, grows **down**.    | Starts at low addresses, grows **up**.    |
 
 > **Note on "Collision Prevention":** By having the Stack grow down and the Heap grow up from opposite ends of the memory space, the system ensures they have the maximum possible room to expand before crashing into each other.
 
-## Bits & Bytes
+### VRAM vs Physical RAM
+
+**VRAM** (Video RAM) is memory physically located on a graphics card (GPU). **Physical RAM** (system RAM) is attached to the CPU. They serve different purposes and have distinct characteristics.
+
+| Aspect               | Physical RAM (DDR4/DDR5)         | VRAM (GDDR6 / HBM)                                          |
+| -------------------- | -------------------------------- | ----------------------------------------------------------- |
+| **Primary user**     | CPU                              | GPU                                                         |
+| **Latency**          | Lower (\~70‑100 ns)              | Higher (\~150‑300 ns)                                       |
+| **Bandwidth**        | Moderate (\~50‑100 GB/s)         | Very high (\~500‑2000 GB/s)                                 |
+| **Capacity**         | Larger (up to 2 TB on servers)   | Smaller (typically 4‑24 GB for gaming, up to 80 GB for HPC) |
+| **Error correction** | ECC optional (common in servers) | ECC rarely used (except in professional cards)              |
+| **Access pattern**   | Random (caches hide latency)     | Sequential / streaming (optimised for throughput)           |
+| **Voltage**          | 1.1‑1.2 V (DDR4)                 | 1.35‑1.5 V (GDDR6)                                          |
+
+**How CPU and GPU share data**
+
+* **Discrete GPU (dedicated card):** The CPU cannot directly access VRAM. Data must be copied over the PCIe bus using DMA. This copy is slow (≈16‑32 GB/s for PCIe 4.0). Example: game textures are loaded from system RAM → VRAM before rendering.
+* **Integrated GPU (iGPU):** The GPU shares system RAM (no separate VRAM). This reduces cost but severely limits bandwidth (system RAM is slower than dedicated VRAM).
+* **Unified Memory (Apple M‑series, AMD APU):** Physical RAM is accessible by both CPU and GPU without copying. Hardware cache coherence ensures consistency. This eliminates the PCIe bottleneck.
+
+**When to care about VRAM vs System RAM**
+
+* **Game / 3D rendering:** VRAM capacity and bandwidth determine maximum texture resolution and frame rate.
+* **Machine learning (training):** Large models (e.g., LLaMA 70B) require VRAM to hold weights and activations. If VRAM overflows, data spills to system RAM (very slow).
+* **Compute (CUDA / OpenCL):** Data resides in VRAM while GPU kernels run. Moving data back and forth should be minimised.
+
+### Bits & Bytes
 
 A **bit** is the smallest unit of information in computer — **0 or 1**.
 
@@ -83,83 +156,3 @@ if you have **n bits**, you can represent **2ⁿ unique values**.
 **Example**:
 
 generate unique code 10.000/day using base64 with max length code 8.
-
-<pre><code><strong>// Base64
-</strong><strong>64⁸ = if its represented to bits become (2^6)^8 = 2^48 
-</strong>combinations = 281 474 976 710 656
-
-// 10.000 per day
-days = 281,474,976,710,656 / 10,000 = 28,147,497,671.0656 (days till it maxed out)
-years = 28,147,497,671.0656 / 365 ≈ 77,127,390 years (approx.)
-
-// 100.000.000 per day
-days = 281,474,976,710,656 / 100,000,000 = 2,814,749.76710656 days
-years = 2,814,749.76710656 / 365 ≈ 7,711.64 years
-
-// 1.000.000.000 per day
-days = 281,474,976,710,656 / 1,000,000,000 = 281,474.976710656 days
-years = 281,474.976710656 / 365 ≈ 771.17 years
-
-// Base62
-62⁸ = 218,340,105,584,896
-218,340,105,584,896 / 10,000 = 21,834,010,558.49 days
-21,834,010,558.49 / 365 ≈ 59,834,276 year
-</code></pre>
-
-## ASCII
-
-| Character       | Decimal | Binary   | Hex  |
-| --------------- | ------- | -------- | ---- |
-| A               | 65      | 01000001 | 0x41 |
-| B               | 66      | 01000010 | 0x42 |
-| a               | 97      | 01100001 | 0x61 |
-| z               | 122     | 01111010 | 0x7A |
-| Space           | 32      | 00100000 | 0x20 |
-| Enter (newline) | 10      | 00001010 | 0x0A |
-
-ASCII only defines **128 characters**, which works for English, but not for other languages — no ñ, é, ü, 中, or 😄.
-
-### **Unicode**
-
-**Unicode** assigns a unique **code point** (a number) to every character
-
-| Character | Unicode Code Point | Hex Notation |
-| --------- | ------------------ | ------------ |
-| A         | U+0041             | 0x0041       |
-| ñ         | U+00F1             | 0x00F1       |
-| 中         | U+4E2D             | 0x4E2D       |
-| 😄        | U+1F604            | 0x1F604      |
-
-A **code point** is _not_ a byte, it’s just a number (like an ID). Unicode defines several **encoding forms** to represent those code points as bytes
-
-### UTF-8
-
-* Variable-length encoding: **1–4 bytes per character**
-* Backward compatible with ASCII
-
-| Character | Code Point | UTF-8 Bytes (Hex) | Binary form                         |
-| --------- | ---------- | ----------------- | ----------------------------------- |
-| A         | U+0041     | 41                | 01000001                            |
-| ñ         | U+00F1     | C3 B1             | 11000011 10110001                   |
-| 中         | U+4E2D     | E4 B8 AD          | 11100100 10111000 10101101          |
-| 😄        | U+1F604    | F0 9F 98 84       | 11110000 10011111 10011000 10000100 |
-
-Notice:
-
-* 1-byte for ASCII
-* 2-byte for Latin symbols
-* 3-byte for most Asian scripts
-* 4-byte for emoji and rare symbols
-
-### UTF-16
-
-Uses 2 or 4 bytes per character.
-
-### UTF-32
-
-Always uses 4 bytes per character (fixed length).
-
-| Character | Code Point | UTF-32 (Hex) |
-| --------- | ---------- | ------------ |
-| A         | U+0041     | 00 00 00 41  |
-| 😄        | U+1F604    | 00 01 F6 04  |
