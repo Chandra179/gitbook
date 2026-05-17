@@ -33,7 +33,7 @@
   * [Distributed Cache for Live‑Streaming Chat](system-design/distributed-cache.md)
   * [Notification System](system-design/notification-system.md)
   * [Real Time Chat (Discord)](system-design/real-time-chat-discord.md)
-  * [Design Template](system-design/design-template.md)
+  * [SaaS Template](system-design/saas-template.md)
 * [Machine Learning](ml.md)
 * [RAG](e2e-production-rag.md)
 * [Quant](quant.md)
