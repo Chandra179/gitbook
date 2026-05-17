@@ -1,7 +1,5 @@
 # Computing
 
-## CPU and Memory Architecture
-
 <figure><img src="../.gitbook/assets/cpu.png" alt=""><figcaption></figcaption></figure>
 
 ### Physical Hardware
