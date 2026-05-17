@@ -38,6 +38,10 @@
 * \[Risk — e.g., "No authentication on this endpoint"]
 * \[Risk — e.g., "Data loss if process crashes mid-write"]
 
+**Trusted sources:**
+
+* paper or articles or books
+
 #### Feature 2: \[Name]
 
 **What it does:** \[One sentence.]
@@ -47,6 +51,10 @@
 * \[Risk]
 * \[Risk]
 
+**Trusted sources:**
+
+* paper or articles or books
+
 #### Feature 3: \[Name]
 
 **What it does:** \[One sentence.]
@@ -54,6 +62,10 @@
 **Risks we tolerate:**
 
 * \[Risk]
+
+**Trusted sources:**
+
+* paper or articles or books
 
 ***
 
@@ -64,17 +76,6 @@ use modular monolith architecture
 #### Core flow
 
 \[Paragraphs. Use bullet lists when needed.]
-
-#### Diagram
-
-mermaidjs flowchart
-
-```mermaid
-flowchart TB
-    A[User A]
-    B[User B]
-    C[User C offline]
-```
 
 #### Storage choice & why
 

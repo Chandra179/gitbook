@@ -1,98 +1,256 @@
 # Psyhco
 
-#### Goal
+## Goal
 
-A system that extracts the psychological structure of a person from their writing and presents it with full auditability—every trait, cognitive label, and value assignment traceable to specific linguistic evidence, with explicit confidence levels, running entirely locally so no data leaves the user’s device.
+A local-first system that extracts the psychological structure of a person from their writing and presents it with full auditability—every trait, cognitive label, and value assignment traceable to specific linguistic evidence, with explicit confidence levels. Zero data leaves the device.
 
-#### Non-goals
+## Non-goals
 
 * Clinical diagnosis or mental health assessment
 * Real‑time surveillance or monitoring
 * Predicting future behavior
 * Black‑box LLM inference (all claims are auditable)
 * Multi‑modal input (audio, video); text only in this version
+* Multi‑tenant SaaS platform; single‑user local app for now
 
-#### Numbers
+## Numbers
 
-* QPS: 1–10 analysis requests per minute (single‑user or small team)
+* QPS: 1–10 analysis requests per minute (single‑user local app)
 * Storage: \~10 MB per analyzed subject (raw text + feature vectors + profile)
 * Latency target: <5 seconds for full analysis of a 5,000‑word corpus
 
-#### Critical invariant
+## Constraints
 
-Every claim in the output must be auditable by a human. The user can trace any trait score, cognitive label, or value assignment back to the specific linguistic evidence, understand the confidence level, and see where the system might be wrong. No inference is delivered without a verifiable trail.
+* Only handle text input: file upload, URL fetch, direct paste. No audio, video, or images.
+* Single user. No authentication, no multi‑tenancy, no role‑based access.
+* Only Big Five (OCEAN), cognitive style (abstract/concrete, systematic/intuitive, need for closure), and Schwartz values. No MBTI, Enneagram, or custom frameworks in MVP.
+* Dictionary‑based feature extraction only. LLM used optionally for narrative prose synthesis, never for core trait inference.
+* Max 3 source types flagged per analysis (e.g., blog, chat, email). No unlimited source taxonomy.
+* No real‑time collaboration or sharing. Export profile as JSON/PDF only.
 
-#### Failure modes
+***
 
-| What fails                                                 | How it manifests                                                                   | How we recover                                                                                                         |
-| ---------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Input text too short (<500 words)                          | Trait estimates are unreliable, wide confidence intervals                          | Warn user; require minimum 500 words; report low confidence; do not show fine‑grained scores unless word count > 1 000 |
-| Domain‑specific jargon dominates                           | Psycholinguistic dictionary coverage drops; features become unrepresentative       | Flag low dictionary coverage rate; suggest more natural‑language samples                                               |
-| Sarcasm, irony, or highly contextual language              | Positive/negative emotion words are inverted; personality estimates may be flipped | Acknowledge limitation in output; future versions may add contextual disambiguation but sacrifice transparency         |
-| Single data source (e.g., only work emails)                | Persona captured is context‑specific, not general                                  | Encourage multiple sources; report source‑specific profiles separately before aggregating                              |
-| Drift in a person’s language over time without re‑analysis | Older profile no longer reflects the person; user makes decisions on stale data    | Encourage periodic re‑analysis; support temporal comparison to detect significant shifts                               |
+## Core Features
 
-#### Diagram
+### **Feature 1: Text Ingestion & Psychometric Analysis**
 
-```mermaid
-flowchart TB
-    Input[Text Input<br/>upload, URL, paste]
-    Ingest[Ingestion & Preprocessing<br/>tokenize, normalize, clean]
-    FeatureExtract[Psycholinguistic Feature Extraction<br/>word‑category frequencies, stylometrics]
-    FeatureVector[Feature Vector<br/>50‑90 dimensions]
-    TraitInference[Big Five Trait Inference<br/>statistical model]
-    CognitiveStyle[Cognitive Style Analysis<br/>abstract/concrete, systematic/intuitive]
-    ValueMapping[Value Orientation Mapping<br/>Schwartz values]
-    Synthesis[Profile Synthesis<br/>aggregate, confidence weights]
-    Temporal[Temporal Comparison<br/>detect shifts over time]
-    Output[Character Portrait<br/>structured + narrative report]
+**What it does:** User submits text via paste, file upload, or URL. System normalises, extracts psycholinguistic features, and outputs Big Five trait scores, cognitive style labels, and value orientations with confidence intervals.
 
-    Input --> Ingest
-    Ingest --> FeatureExtract
-    FeatureExtract --> FeatureVector
-    FeatureVector --> TraitInference
-    FeatureVector --> CognitiveStyle
-    FeatureVector --> ValueMapping
-    TraitInference --> Synthesis
-    CognitiveStyle --> Synthesis
-    ValueMapping --> Synthesis
-    Synthesis --> Temporal
-    Temporal --> Output
+**Risks we tolerate:**
+
+* No authentication on the ingestion endpoint. Anyone with access to the local port can submit text.
+* Analysis may be unreliable for texts <500 words. System warns but does not block submission.
+* Single‑threaded processing. Texts >50,000 words may take >30 seconds. No progress indicator in MVP.
+
+**Trusted sources:**
+
+* LIWC2015 dictionary (Pennebaker et al., 2015) – validated mapping of words to psychological categories.
+* Big Five language correlates (Yarkoni, 2010; Pennebaker & King, 1999) – regression coefficients linking LIWC features to personality.
+* Schwartz Value Survey (Schwartz, 1992) – framework for value orientation, adapted for text co‑occurrence.
+
+### **Feature 2: Audit Trail**
+
+**What it does:** Every trait score, cognitive label, and value assignment is clickable. The user can trace any output back to the specific word‑frequency percentages, dictionary categories, and statistical features that produced it.
+
+**Risks we tolerate:**
+
+* Audit links may break if the underlying dictionary version changes between analyses. MVP ships with a single dictionary version.
+* Audit trail data stored alongside profile; for very large corpora this may double storage per subject.
+* No diff view between audit trails of different subjects in MVP.
+
+**Trusted sources:**
+
+* Explainable AI design principles from the DARPA XAI program (Gunning et al., 2019) – ensuring traceability of model decisions.
+
+### **Feature 3: Temporal Comparison**
+
+**What it does:** If the user provides writing from two or more distinct time periods, the system detects statistically significant shifts in traits, cognitive style, and emotional tone. Outputs a timeline of psychological change.
+
+**Risks we tolerate:**
+
+* Statistical significance requires ≥1,000 words per time period. Below that, shifts are flagged as "low confidence" but still displayed.
+* Comparing across different source types (e.g., work email vs. personal blog) may produce misleading shifts. System warns but does not enforce source-type consistency.
+* No automatic period detection. User must explicitly label time periods.
+
+**Trusted sources:**
+
+* Cohen's d effect size (Cohen, 1988) for detecting meaningful trait shifts between time points.
+* Longitudinal language‑personality studies (Mehl et al., 2006) – baseline expectations for stability vs. change.
+
+***
+
+## Software Architecture
+
+**Style:** Modular monolith — components share a single process and database but have clear interface boundaries. No network calls between modules.
+
+**Core flow**
+
+1. User submits text (paste, file, URL). The ingest module normalises whitespace, strips irrelevant markup, segments into sentences and paragraphs, and attaches source metadata (type, date).
+2. The normalised text passes to the analyze module, which tokenises and compares against a psycholinguistic dictionary. It computes category percentages, stylometric features, and a coverage rate.
+3. The feature vector is fed to trait inference (Big Five regression), cognitive style classification, and value orientation mapping. Every output is stored with the evidence chain that produced it.
+4. The profile module aggregates all scores, attaches confidence intervals, and generates structured output. Optionally, an external LLM call (user‑configurable, off by default) synthesises a narrative portrait from the structured scores.
+5. If multiple time‑labelled corpora exist for the same subject, the temporal module compares baseline profiles across periods and outputs a change timeline.
+
+### **Storage choice & why**
+
+**Embedded SQLite** — Single‑user local app with modest data volumes. No server process needed. Provides queryability for cross‑subject comparison and temporal tracking that flat JSON files would make cumbersome. The database file is portable; a user can back up their entire analysis history by copying one file.
+
+### **Directory Structure**
+
+```
+cmd/psycho/main.go      # entrypoint — starts HTTP server
+modules/
+  ingest/                  #   text ingestion module
+    config.go              #     module-specific config struct
+    dependencies.go        #     wire deps, load own config
+    http.go                #     HTTP handlers + route registration
+    normalizer.go          #     text normalization logic
+  analyze/                 #   psycholinguistic analysis module
+    config.go
+    dependencies.go
+    dictionary.go          #     dictionary lookup engine
+    features.go            #     stylometric feature extraction
+    inference.go           #     Big Five + cognitive style inference
+  profile/                 #   profile generation module
+    config.go
+    dependencies.go
+    synthesizer.go         #     aggregate scores, confidence intervals
+    narrative.go           #     optional LLM narrative synthesis
+  temporal/                #   temporal comparison module
+    config.go
+    dependencies.go
+    comparator.go          #     cross-period shift detection
+middleware/                # shared: recovery, request ID, timeout, validation
+config/                    # YAML loader + config.yaml
 ```
 
-#### Core flow
+### **Module boundaries**
 
-1. **Ingestion:** The user provides text through file upload, URL fetch, or direct paste. The system extracts raw text, normalises whitespace, and segments into analysable units (sentences, paragraphs). Source metadata (type, date) is preserved.
-2. **Feature extraction:** The normalised text is analysed with a psycholinguistic dictionary (a curated lexicon mapping words to psychologically meaningful categories) and a set of stylometric measures. The system computes the percentage of words belonging to each category (positive emotion, cognitive processes, first‑person singular, etc.) and additional statistical features: type‑token ratio, average sentence length, punctuation patterns, and dictionary coverage rate.
-3. **Trait inference:** The resulting feature vector is mapped to Big Five personality dimensions using a trained inference model (e.g., regression coefficients derived from peer‑reviewed psycholinguistics research). Each trait score is accompanied by a confidence interval derived from the word count and feature stability. Cognitive style (abstract vs. concrete, systematic vs. intuitive, need for closure) is computed from additional feature ratios.
-4. **Value orientation:** Recurring themes in the text are matched to a standard value framework (Schwartz’s ten basic human values) using keyword and category co‑occurrence. The system outputs a ranked list of value orientations with percentile estimates.
-5. **Profile synthesis:** All trait, style, and value scores are aggregated into a structured profile. A narrative character portrait is generated by combining the scores with template‑based natural language generation (or optionally an external LLM for prose, while keeping the underlying scores fully explainable). Confidence notes are appended based on corpus size and dictionary coverage.
-6. **Temporal comparison (if multiple time‑slices exist):** If the user provides writing from distinct time periods, the system computes baseline profiles for each period and detects statistically significant shifts in traits, cognitive style, or emotional tone. Output includes a timeline of psychological change with annotated events.
+* **ingest** — Owns text normalisation, segmentation, and source metadata. Exposes a clean document object to downstream modules. Does NOT know about dictionaries, traits, or profiles.
+* **analyze** — Owns the psycholinguistic dictionary, feature extraction, and trait inference models. Depends on ingest for clean text. Does NOT know about temporal comparison or narrative synthesis.
+* **profile** — Owns score aggregation, confidence computation, and narrative generation. Depends on analyze for trait/feature data. Does NOT know about ingestion or temporal logic.
+* **temporal** — Owns cross‑period comparison and shift detection. Depends on profile for baseline profiles. Does NOT know about raw text or dictionary internals.
 
-#### Storage choice & why
+### **Dependencies**
 
-**Embedded database (SQLite or similar)** — The system is single‑user or small‑team, with modest data volumes. A lightweight embedded database stores raw text corpora, extracted feature vectors, and generated profiles without requiring a separate server process. JSON files on disk would also be sufficient, but an embedded DB provides queryability for comparing subjects or tracking changes over time.
+* **Go standard library:** `net/http`, `database/sql`, `encoding/json`, `text/template`
+* **Open source:** `go-sqlite3` (embedded database), `empath` or equivalent open‑source psycholinguistic lexicon, optional LLM client package (Gemini/OpenAI, user‑configured)
+* **Sidecar/optional:** A small LLM binary (e.g., Ollama) running locally if the user enables narrative synthesis. The app functions fully without it.
 
-#### The hard part & how we solve it
+### **Abstraction Depth per Module**
 
-* **Bottleneck:** Making accurate, reliable personality inferences from limited or domain‑skewed text without relying on opaque LLMs.
-* **Fix:**
-  * Use established, validated psycholinguistic dictionaries and well‑researched linguistic markers whose category‑trait correlations are backed by decades of research.
-  * Require a minimum of 1 000 words for high‑confidence estimates and display explicit confidence intervals.
-  * Combine multiple weak linguistic signals (e.g., pronoun ratios, cognitive word percentages, punctuation patterns) rather than relying on any single feature.
-  * Flag low dictionary coverage or single‑source bias rather than silently producing misleading results.
+**ingest** — No interfaces. Single implementation. Text normalisation is not swappable; the rules are the product.
 
-#### Alternatives considered
+**analyze**
 
-| Approach                                                            | Why we rejected it                                                                                                                                                                 |
-| ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Pure LLM analysis (single prompt)                                   | Opaque. Cannot trace traits to evidence. Requires cloud API → privacy risk. No audit trail.                                                                                        |
-| Dictionary‑only pipeline, no LLM at all                             | Transparent and auditable, but the final narrative synthesis is stilted without a language model. The core scores remain dictionary‑based; the LLM only polishes the presentation. |
-| Fully local LLM (quantised open‑source model)                       | Still a black box for inference; cannot guarantee the same level of traceability. Resource requirements also limit the target hardware.                                            |
-| Commercial psychometric API (e.g., IBM Watson Personality Insights) | Dependency on third party; data leaves the device; subscription cost; service may be discontinued.                                                                                 |
+* `Dictionary` interface — **Why abstracted:** Allows swapping between LIWC‑compatible lexicons without changing inference logic. Users may bring their own dictionary. The module exports `Lookup(word) → []Category` as the contract.
+* `TraitModel` interface — **Why abstracted:** The regression model may be updated as new research publishes. The module exports `Infer(features) → BigFiveScores`.
+* `FeatureExtractor` is NOT abstracted — single implementation. The features are dictated by the psycholinguistic literature, not user preference.
 
-**Chosen approach:** Hybrid. Dictionary‑based extraction for auditable trait scores. Optional LLM for narrative synthesis _only_. The scores are always traceable; the prose is a convenience.
+**profile**
 
-#### What we sacrifice
+* `NarrativeGenerator` interface — **Why abstracted:** Users may choose no LLM (template‑based), a local LLM (Ollama), or a cloud API (Gemini). The module exports `GenerateSynthesis(scores) → string`.
+* `ScoreAggregator` is NOT abstracted — single implementation. The aggregation math is the product.
 
-We sacrifice the semantic depth and contextual understanding that a large language model could provide — sarcasm, irony, metaphor, and highly contextual language will sometimes be misinterpreted or flattened. This hurts most when analysing informal social media, poetry, or culturally specific communication styles. We also sacrifice the rapid improvement curve of LLM‑based analysis. As models become more capable, the accuracy gap between dictionary‑based methods and contextual LLMs will widen. Our differentiator is not raw accuracy; it is auditability, privacy, and trust. If the market values accuracy over those properties, we lose. In return, we gain a system whose output can be checked, challenged, and refined by the user — a psychological mirror, not a black‑box oracle.
+**temporal**
+
+* No interfaces. Single implementation. Shift detection uses a fixed statistical method (Cohen's d on trait scores). If the method changes, it changes for everyone.
+
+***
+
+## Core Feature Implementation Phase
+
+**Phase 1: Text Ingestion & Basic Analysis**
+
+* Build `ingest` module: paste handler, file upload, URL fetch. Normalise text, extract metadata.
+* Build `analyze` module: load dictionary, tokenise, compute category percentages and stylometrics.
+* Implement Big Five inference using published regression coefficients (hardcoded for MVP).
+* No cognitive style or values yet. No audit trail. No narrative synthesis.
+* Write unit tests for normalizer, dictionary lookup, and trait inference.
+* Write integration test: paste 1,000‑word sample → receive Big Five scores with confidence intervals.
+
+**Checkpoint:** User pastes text. System returns raw Big Five scores with confidence intervals. No UI beyond JSON output.
+
+**Phase 2: Audit Trail & Profile Synthesis**
+
+* Add evidence chain to every trait score: store the word‑frequency percentages and dictionary categories that produced it.
+* Build `profile` module: aggregate scores, compute confidence intervals, generate structured output.
+* Implement `NarrativeGenerator` with template‑based (no LLM) implementation. Flag where LLM integration point exists.
+* Add cognitive style and value orientation inference to `analyze` module.
+* Integration test: click on any trait score → see the linguistic evidence. Change dictionary → audit link warns of version mismatch.
+
+**Checkpoint:** Full structured profile output. Every claim auditable. No LLM dependency. JSON + basic HTML report.
+
+**Phase 3: Temporal Comparison**
+
+* Build `temporal` module: accept multiple time‑labelled corpora for same subject.
+* Compute baseline profiles per period. Detect shifts using Cohen's d on Big Five scores.
+* Flag low‑confidence shifts (insufficient words per period).
+* Integration test: two time‑separated text sets → detect significant shifts, annotate low‑confidence ones.
+
+**Checkpoint:** User uploads writing from 2023 and 2024. System returns a change timeline showing what shifted with confidence levels.
+
+***
+
+## Testing Strategy
+
+Tests run after each phase completes. The system is decomposed so each module is testable independently without waiting for the full app.
+
+**Unit Tests**
+
+**What:** Domain logic. Normalisation rules. Dictionary lookup. Feature computation. Trait inference math.
+
+**Examples:**
+
+* "Text with 5.2% positive emotion words and 8.7% cognitive process words maps to predicted Openness percentile within expected range."
+* "Corpus with <500 words returns low‑confidence flag regardless of feature values."
+* "Normaliser strips HTML tags but preserves paragraph boundaries."
+* "Dictionary coverage below 60% triggers warning flag."
+* "Two profiles with Cohen's d < 0.2 on Extraversion are flagged as 'no significant shift'."
+
+**Integration Tests**
+
+**What:** Module interactions. Full pipeline from text input to profile output. Temporal comparison with real data.
+
+**Examples:**
+
+* "Submit 5,000‑word personal blog corpus → receive Big Five, cognitive style, and values within 5 seconds. All scores have evidence links."
+* "Audit link for Openness score: click it → receive list of cognitive process word percentages, tentative word count, and type‑token ratio that contributed to the score."
+* "Submit two time‑labelled corpora (2023 and 2024) from the same subject → temporal module detects significant Openness increase and flags low‑confidence Agreeableness shift."
+* "Submit text with 80% domain‑specific jargon → system returns low dictionary coverage warning and wide confidence intervals."
+* "Change dictionary version → existing profiles warn of version mismatch on audit links."
+* Use test fixtures: pre‑prepared text samples with known linguistic profiles, embedded SQLite for test isolation.
+
+***
+
+## References
+
+These are the published works, validated tools, and proven implementations that underpin the system. Every core inference is traceable to one of these sources.
+
+#### Psycholinguistic Dictionary & Validation
+
+* Pennebaker, J.W., Boyd, R.L., Jordan, K., & Blackburn, K. (2015). _The development and psychometric properties of LIWC2015_. University of Texas at Austin. – The standard dictionary for mapping words to psychological categories. Provides the category‑trait validation used in the `analyze` module.
+* Fast, E., Chen, B., & Bernstein, M.S. (2016). _Empath: Understanding Topic Signals in Large‑Scale Text_. CHI 2016. – Open‑source alternative to LIWC with 194 categories, built on modern word embeddings. Used as the default dictionary if LIWC licence is unavailable.
+
+#### Big Five & Language
+
+* Yarkoni, T. (2010). _Personality in 100,000 words: A large‑scale analysis of personality and word use among bloggers_. Journal of Research in Personality. – Provides the regression coefficients linking LIWC features to Big Five traits. Directly implemented in `inference.go`.
+* Pennebaker, J.W., & King, L.A. (1999). _Linguistic styles: Language use as an individual difference_. Journal of Personality and Social Psychology. – Foundational work establishing that function words (pronouns, articles) carry reliable personality signals.
+
+#### Value Frameworks
+
+* Schwartz, S.H. (1992). _Universals in the content and structure of values: Theoretical advances and empirical tests in 20 countries_. Advances in Experimental Social Psychology. – The Schwartz Value Survey, adapted for keyword co‑occurrence in `analyze/values.go`.
+
+#### Cognitive Style
+
+* Petty, R.E., & Cacioppo, J.T. (1986). _The Elaboration Likelihood Model of persuasion_. Advances in Experimental Social Psychology. – Basis for systematic vs. intuitive processing markers.
+* Webster, D.M., & Kruglanski, A.W. (1994). _Individual differences in need for cognitive closure_. Journal of Personality and Social Psychology. – Need for closure operationalised via certainty/tentative word ratios.
+
+#### Temporal Comparison & Effect Sizes
+
+* Cohen, J. (1988). _Statistical Power Analysis for the Behavioral Sciences_ (2nd ed.). – Cohen's d used for shift detection in `temporal/comparator.go`.
+* Mehl, M.R., Gosling, S.D., & Pennebaker, J.W. (2006). _Personality in its natural habitat: Manifestations and implicit folk theories of personality in daily life_. Journal of Personality and Social Psychology. – Longitudinal stability expectations for language‑based personality measures.
+
+#### Explainability
+
+* Gunning, D., Stefik, M., Choi, J., Miller, T., Stumpf, S., & Yang, G.Z. (2019). _XAI—Explainable artificial intelligence_. Science Robotics. – Design principles for the audit trail and evidence‑chain architecture.
