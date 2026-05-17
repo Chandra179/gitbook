@@ -110,38 +110,6 @@ tests should be done after each phase implementation, we should breakdown the sy
 
 ***
 
-## Performance Test
-
-NOTES: do performance tests after the MVP phase
-
-#### Load / Performance Tests
-
-**Purpose:** Validates the architectural assumptions.
-
-**What we test:**
-
-* Claim throughput: N schedulers claiming from M pending tasks. Target: 10K claims/second
-* Poll latency under contention: p95 < 50ms with 10 concurrent schedulers
-* Broker dispatch throughput: publish rate matches claim rate with no backpressure buildup
-* Visibility cleanup scan time on 10M rows with date-based partitioning
-* use K6 for free use
-
-**Pass criteria:** Derived from the system design's Numbers section. The architecture predicted 10K QPS. The load test proves or disproves it.
-
-#### Stress Tests
-
-**Purpose:** Finds the breaking point.
-
-**What we test:**
-
-* Run system at 2x target load for 24 hours. Memory leak? Connection exhaustion? Partition skew?
-* Simulate database failover mid-claim. Does the system recover without double execution?
-* Kill a scheduler node every 5 minutes. Does the cleanup leader re-elect within 30 seconds? Are tasks recovered?
-
-**Pass criteria:** No data loss. No double execution. Recovery within visibility timeout window
-
-***
-
 ## What Not to Include Here
 
 * CI/CD pipeline configuration
