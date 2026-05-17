@@ -44,14 +44,14 @@ Understanding the **inputs to a strategy** is extremely important to understandi
 
 Price‑related data come mostly from instrument prices and exchange‑provided information (e.g., trading volume).
 
-#### 4.1 Trend Following (Momentum)
+#### Trend Following (Momentum)
 
 * **Core Concept:** Markets sometimes move consistently in one direction long enough to identify and ride the trend. Trends exist because of gradual consensus‑building (or the “greater fools theory”).
 * **Economic Rationale:** Uncertainty and conflicting information cause prices to shift slowly from one equilibrium to another; early adopters trade on a correct thesis, and the migration is the trend follower’s opportunity.
 * **Key Risk:** **Whipsawing** – rapid up‑and‑down price movements that cause repeated losses. Trend followers filter for “significant” moves to avoid this.
 * **Common Implementation:** Moving average crossover (e.g., when a 60‑day average crosses below a 200‑day average, sell short; when above, buy long). _Example: S\&P 500 trend in 2007–2008._
 
-#### 4.2 Mean Reversion
+#### Mean Reversion
 
 * **Core Concept:** Bet that prices will move in the opposite direction of the recent trend, returning to an equilibrium level.
 * **Theoretical Rationale:**
@@ -66,7 +66,7 @@ Price‑related data come mostly from instrument prices and exchange‑provided 
   * Pioneered by Nunzio Tartaglia’s team at Morgan Stanley (including Gerry Bamberger and David Shaw, influenced by Ed Thorp).
   * Focus shifted from “is a stock cheap/expensive?” to “is it over/undervalued relative to another stock?”
 
-#### 4.3 Technical Sentiment
+#### Technical Sentiment
 
 * **Core Concept:** Track investor sentiment expressed through price, volume, and volatility behaviors as a forecast of future returns. No single, clear economic rationale exists—practitioners interpret sentiment in conflicting ways.
 * **Three Conflicting Views:**
@@ -89,7 +89,7 @@ Price‑related data come mostly from instrument prices and exchange‑provided 
 
 Most strategies using fundamental data in their alpha models fall into one of three groups: **Value/Yield**, **Growth**, and **Quality**.
 
-#### 5.1 Value / Yield
+#### Value / Yield
 
 * **Concept:** Buy cheap instruments (high yield relative to price). Markets tend to overestimate risk in risky assets, so owning higher‑yielding assets can pay off as prices revert to fair value.
 * **Quant Approach:** Invert standard ratios (e.g., E/P earnings yield instead of P/E) to avoid issues with negative or zero earnings.
@@ -97,14 +97,14 @@ Most strategies using fundamental data in their alpha models fall into one of th
 * **Equities:** Relative value strategies (quant long/short) rank stocks by metrics like book‑to‑price, buying high‑ranked and shorting low‑ranked.
 * **Commodities:** Roll yield (backwardation = positive yield; contango = negative yield).
 
-#### 5.2 Growth
+#### Growth
 
 * **Concept:** Buy assets experiencing rapid economic/earnings growth, sell those with slow or negative growth—regardless of price or valuation.
 * **Justification:** Growth tends to trend; strong growers gain market share.
 * **Macro example:** Long currencies of countries with strong growth (future higher interest rates).
 * **Equity example:** QLS (quant long/short) uses growth signals; a key variant focuses on analysts’ earnings estimate revisions (a sentiment‑based strategy closely related to growth).
 
-#### 5.3 Quality
+#### Quality
 
 * **Concept:** All else equal, own high‑quality instruments, sell low‑quality ones. Protects in stressful “flight‑to‑quality” environments.
 * **Five categories of quality signals:**

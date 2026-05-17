@@ -39,3 +39,4 @@
 * [Machine Learning](ml.md)
 * [RAG](e2e-production-rag.md)
 * [Quant](quant.md)
+* [Psyhco](psyhco.md)
