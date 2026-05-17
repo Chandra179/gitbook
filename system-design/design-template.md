@@ -1,7 +1,5 @@
 # Design Template
 
-**Companion to:** [Broken link](/broken/pages/ssLgVMb1U7WKwMIdEJZc "mention") | [Broken link](/broken/pages/h9Azz1HKNN5KhXAFCX09 "mention")
-
 ## Goal
 
 \[One sentence. What are we building?]
