@@ -34,8 +34,6 @@
   * [Notification System](system-design/notification-system.md)
   * [Real Time Chat (Discord)](system-design/real-time-chat-discord.md)
   * [Design Template](system-design/design-template.md)
-  * [Implementation Template](system-design/implementation-template.md)
-  * [MVP Template](system-design/mvp-template.md)
 * [Machine Learning](ml.md)
 * [RAG](e2e-production-rag.md)
 * [Quant](quant.md)
