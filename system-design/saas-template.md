@@ -23,58 +23,6 @@
 * \[Constraint — e.g., "Max 3 retries. No custom retry policies."]
 * \[Constraint — e.g., "No update or delete of submitted tasks."]
 
-## Architecture (Modular Monolith)
-
-#### **Module boundaries**
-
-\[Package 1] — Responsibility\
-\[Package 2] — Responsibility\
-\[Package 3] — Responsibility
-
-#### **Dependencies**
-
-programming language standard library, open source packages, sidecar pattern, etc.)
-
-#### **Directory Structure**
-
-```
-cmd/example/main.go   # entrypoint — starts HTTP + gRPC
-modules/              # domain modules
-  example/            #   example module
-    config.go         #     module-specific config struct
-    dependencies.go   #     wire deps, load own config
-    http.go           #     HTTP handlers + route registration
-middleware/           # shared: recovery, request ID, timeout, validation
-config/               # YAML loader + config.yaml
-```
-
-#### Abstraction Depth per Modules
-
-* use interfaces for swappable implementation
-* do not over abstract
-* add why we abstract it (the functions) why the module export this function to be usable to outside world
-
-***
-
-## Storage choice & why
-
-\[What + reasoning.]
-
-## Core flow
-
-\[Paragraphs. Use bullet lists when needed.]
-
-### Diagram
-
-mermaidjs flowchart
-
-```mermaid
-flowchart TB
-    A[User A]
-    B[User B]
-    C[User C offline]
-```
-
 ***
 
 ## Core Features
@@ -109,7 +57,61 @@ flowchart TB
 
 ***
 
-## Implementation Phases
+## Software Architecture
+
+use modular monolith architecture
+
+#### Core flow
+
+\[Paragraphs. Use bullet lists when needed.]
+
+#### Diagram
+
+mermaidjs flowchart
+
+```mermaid
+flowchart TB
+    A[User A]
+    B[User B]
+    C[User C offline]
+```
+
+#### Storage choice & why
+
+\[What + reasoning.]
+
+#### **Directory Structure**
+
+```
+cmd/example/main.go   # entrypoint — starts HTTP + gRPC
+modules/              # domain modules
+  example/            #   example module
+    config.go         #     module-specific config struct
+    dependencies.go   #     wire deps, load own config
+    http.go           #     HTTP handlers + route registration
+middleware/           # shared: recovery, request ID, timeout, validation
+config/               # YAML loader + config.yaml
+```
+
+#### **Module boundaries**
+
+\[Package 1] — Responsibility\
+\[Package 2] — Responsibility\
+\[Package 3] — Responsibility
+
+#### **Dependencies**
+
+programming language standard library, open source packages, sidecar pattern, etc.)
+
+#### Abstraction Depth per Modules
+
+* use interfaces for swappable implementation
+* do not over abstract
+* add why we abstract it (the functions) why the module export this function to be usable to outside world
+
+***
+
+## Core Feature Implementation Phase
 
 #### Phase 1: \[Feature A]
 
