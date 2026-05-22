@@ -37,4 +37,5 @@
 * [RAG](e2e-production-rag.md)
 * [Quant](quant.md)
 * [Psyhco](psyhco.md)
+* [Syncthing](syncthing.md)
 * [SaaS Template](saas-template.md)
