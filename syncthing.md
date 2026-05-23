@@ -142,99 +142,84 @@ sequenceDiagram
 
 Establish a trusted relationship with another User device. This is the ONLY manual step in the entire system and the foundation of all security.
 
+### Adding a Device
+
+```mermaid
+sequenceDiagram
+    participant User as User
+    participant GUI as Web GUI
+    participant API as REST API
+    participant Config as Configuration
+    participant Model as Orchestration
+
+    Note over User,Model: Prerequisite: Exchange Device IDs out-of-band
+
+    User->>GUI: Click "Add Remote Device"
+    User->>GUI: Enter Device ID + settings
+    GUI->>GUI: Validate checksum
+    GUI->>API: POST /rest/config/devices
+    API->>API: Validate Device ID format
+    API->>Config: Store device
+    Config->>Config: Add to in-memory config
+    Config->>Config: Write config.xml to disk
+    Config->>Model: Notify: device list changed
+    Model->>Model: Create connection handle
+    Model->>Model: Signal: connect to this Device ID
 ```
-ADDING A REMOTE DEVICE
-======================
 
-PREREQUISITE: OUT-OF-BAND DEVICE ID EXCHANGE (Manual, Human-Verified)
----------------------------------------------------------------------
+#### PREREQUISITE: Out-of-Band Device ID Exchange
 
-YOU (Device A)                    FRIEND (Device B)
-┌──────────────┐                 ┌──────────────┐
-│ Device ID:   │                 │ Device ID:   │
-│ ABCD-EFGH... │                 │ WXYZ-1234... │
-│              │                 │              │
-│ [QR Code]    │                 │ [QR Code]    │
-└──────────────┘                 └──────────────┘
+Before any connection can happen, both users must exchange Device IDs through a trusted channel — scanning a QR code in person, sending via an encrypted messenger like Signal or WhatsApp, or reading it over a phone call. Email works but is less secure since it still requires a man-in-the-middle attack to exploit. A Device ID received through an untrusted channel should never be accepted.
 
-Exchange methods (trusted channel):
-• Scan QR code in person
-• Send via Signal/WhatsApp (encrypted messenger)
-• Read over phone call
-• Email (less secure, but still requires MITM to exploit)
+#### Enter Device ID in Web GUI
 
-⚠️  NEVER trust a Device ID received through an untrusted channel!
+The user opens the Syncthing Web GUI, clicks "Add Remote Device," and enters the friend's Device ID. Optional settings include a friendly name, compression preference, whether the device can act as an introducer, and static addresses for fixed IPs. The GUI validates the checksum before sending anything to the backend.
 
+#### REST API Call
 
-STEP 2.1: ENTER DEVICE ID IN WEB GUI
-------------------------------------
-File: gui/default/index.html (Web GUI)
-The user opens the Syncthing Web GUI and adds the remote device
+The GUI sends the new device information as JSON to the backend. The backend validates the Device ID format and checksum again, then passes the validated configuration to the configuration layer for storage.
 
-1. User clicks "Add Remote Device"
-2. Enters/pastes friend's Device ID: "WXYZ-1234-..."
-3. Optionally sets:
-   - Device name (friendly label)
-   - Compression (metadata only / always / never)
-   - Introducer flag (can this device introduce others?)
-   - Addresses (tcp://ip:port for static IPs)
-4. GUI validates checksum client-side before submission
+#### Persist to Configuration
 
+The configuration layer adds the device to its in-memory store with the Device ID, name, and settings. The updated configuration is written to `config.xml` on disk so it survives restarts. All interested parts of Syncthing are notified that the device list has changed.
 
-STEP 2.2: REST API CALL
------------------------
-File: cmd/syncthing/gui.go: handle POST /rest/config/devices
-The GUI sends the new device information to the Syncthing backend
+#### Orchestration Reacts
 
-1. Receive JSON: { "deviceID": "WXYZ-...", "name": "Friend's PC" }
-2. Validate Device ID format and checksum (lib/protocol/)
-3. It passes the validated device configuration to the configuration layer for storage
+The orchestration layer receives the notification, creates an internal handle for the new device, and signals the connection service to begin discovery — searching for the device on the local network, via global discovery servers, and through cached addresses.
 
+***
 
-STEP 2.3: PERSIST TO CONFIGURATION
-----------------------------------
-File: lib/config/config.go: SetDevice()
-The configuration layer stores the new device permanently
+### Sharing a Folder
 
-1. The device is added to the in-memory configuration with its Device ID, name, and settings:
-   <device id="WXYZ-1234-..." name="Friend's PC">
-     <address>dynamic</address>
-     <compression>metadata</compression>
-   </device>
+```mermaid
+sequenceDiagram
+    participant UserA as You
+    participant GUI as Web GUI
+    participant Config as Configuration
+    participant Model as Orchestration
+    participant UserB as Friend
 
-2. Write updated config.xml to disk, so it survive restart
-3. Notify all subscribers (via callback/observer pattern) that device list has changed
-
-
-STEP 2.4: MODEL REACTS TO CONFIG CHANGE
----------------------------------------
-File: lib/model/model.go: deviceAdded(deviceID)
-The orchestration layer (the brain) responds to the configuration change
-
-1. Model receives configuration change notification
-2. Creates internal device connection handle
-3. Signals connection service: "Try to connect to this Device ID"
-4. Connection service begins discovery (see Section 3)
-
-
-STEP 2.5: FOLDER SHARING (Optional but Typical)
------------------------------------------------
-User selects a folder in GUI and adds the remote device to it.
-
-Config update:
-<folder id="folder-abc123..." ...>
-  <device id="MY-DEVICE-ID"/>  <!-- me -->
-  <device id="WXYZ-1234..."/>  <!-- friend (NEW) -->
-</folder>
-
-This triggers:
-1. Local device now expects to sync this folder with friend
-2. On next connection to friend, a "folder suggestion" is sent
-   (protocol ClusterConfig message)
-3. Friend's Syncthing shows: "Device ABCD-... wants to share
-   folder 'Documents' with you. Accept?"
-4. If friend accepts, folder is added to THEIR config too
+    UserA->>GUI: Select folder, add remote device
+    GUI->>Config: Update folder config
+    Config->>Config: Add device to folder definition
+    Config->>Config: Write config.xml
+    Model->>UserB: ClusterConfig: "Want to share 'Documents'?"
+    UserB->>UserB: See folder suggestion
+    UserB->>Config: Accept → add folder to own confi
 ```
+
+#### Folder Sharing (Optional but Typical)
+
+After adding a device, the user typically shares a folder with it. In the Web GUI, the user selects a folder and adds the remote device to it. The configuration is updated so the folder now lists both devices as participants — the local device and the newly added remote device.
+
+On the next connection to the remote device, the orchestration layer sends a folder suggestion via a ClusterConfig message. The friend sees a notification: "Device ABCD-... wants to share folder 'Documents' with you. Accept?" If the friend accepts, the folder is added to their configuration too, and both devices now expect to keep that folder in sync.
+
+Key things:
+
+* User picks a folder and adds the remote device to it
+* ClusterConfig message sent on next connection
+* Friend must accept before syncing begins
+* Acceptance adds the folder to both configurations
 
 ***
 
