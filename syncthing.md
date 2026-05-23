@@ -31,7 +31,6 @@ graph TD
     end
 
     subgraph INFRA["Infrastructure"]
-        direction LR
         I1["Discovery"]
         I2["Relay"]
         I3["Upgrade/Crash"]
@@ -49,9 +48,8 @@ graph TD
     C2 --> P
     C3 --> P
     C4 --> P
-    P --> I1
-    P --> I2
-    P --> I3
+    C1 -.-> I1
+    C1 -.-> I2
 ```
 
 **User Interface**
@@ -581,468 +579,292 @@ Key things:
 
 ***
 
-### SECTION 5: RESILIENCE & ERROR HANDLING
-
-#### Purpose
+## Resilience & Error Handling
 
 Handle connection failures, network issues, restarts, and partial transfers without data loss.
 
-#### Files Involved
+### Detection & Immediate reaction
 
-| File                         | Role                                 |
-| ---------------------------- | ------------------------------------ |
-| `lib/connections/service.go` | Reconnection logic, keepalive        |
-| `lib/model/model.go`         | Transfer retry, state persistence    |
-| `lib/db/set.go`              | Persistent state (survives restarts) |
-| `lib/db/transactions.go`     | Atomic DB operations                 |
-| `lib/protocol/protocol.go`   | Ping/pong protocol messages          |
-| `lib/relay/client/`          | Relay fallback connections           |
-
-#### Step-by-Step Flow
-
+```mermaid
+flowchart TD
+    A[Two Layers of Keepalive] --> B[TCP Keepalives: OS-level, 30s idle]
+    A --> C[Protocol Ping/Pong: every 90s]
+    B --> D{Connection OK?}
+    C --> D
+    D -->|Yes| A
+    D -->|No| E[Connection Loss Detected]
+    E --> F[Cancel In-Flight Requests]
+    E --> G[Preserve Temp Files]
+    E --> H[Notify Model: Disconnected]
+    F --> I[Begin Reconnection]
+    G --> I
+    H --> I
 ```
-RESILIENCE & ERROR HANDLING
-===========================
 
-STEP 5.1: CONNECTION MONITORING (Keepalive)
--------------------------------------------
-Files: lib/connections/service.go + lib/protocol/protocol.go
+#### Connection Monitoring
 
-Two layers of connection health checking:
+Syncthing monitors connection health using two layers of keepalive checks. At the OS level, TCP keepalives are enabled on all sockets — after 30 seconds of idle time, the kernel sends a probe every 10 seconds, and after 3 failed probes the connection is declared dead. This catches hardware-level failures like unplugged cables or router crashes.
 
-Layer 1: TCP Keepalives (OS-level)
-- Enabled on all TCP sockets
-- Default: idle 30s, probe every 10s, 3 probes before dead
-- Detects: network cable unplugged, router crash, etc.
+At the application level, Syncthing sends an empty Ping message every 90 seconds and expects a Pong response within 30 seconds. If no Pong arrives, the connection is considered dead. This catches cases where the TCP connection appears open but the remote application is unresponsive.
 
-Layer 2: Protocol Ping/Pong (Application-level)
-- Every 90 seconds, send Ping message
-- Expect Pong response within 30 seconds
-- If no response: connection is considered DEAD
+Key things:
 
-Protocol messages (lib/protocol/protocol.go):
-  type Ping struct{}  // empty message
-  type Pong struct{}  // empty response
-
-
-STEP 5.2: CONNECTION LOSS DETECTION
------------------------------------
-File: lib/connections/service.go: connectionLoop()
-
-Connection can be lost due to:
-- Network failure (WiFi disconnect, ISP outage)
-- Remote device shutdown/sleep
-- Firewall rule change
-- IP address change (mobile network, DHCP renewal)
-
-Detection:
-1. TCP connection: Read() returns error or connection reset
-2. QUIC session: idle timeout or stream error
-3. Ping timeout: no Pong within 30 seconds
-
-On detection:
-1. Mark connection as "disconnected"
-2. Cancel all in-flight requests on this connection
-3. Clean up pending blocks (temp files preserved!)
-4. Notify Model: "device WXYZ-... disconnected"
-5. Begin reconnection process (Step 5.3)
-
-
-STEP 5.3: AUTOMATIC RECONNECTION
---------------------------------
-File: lib/connections/service.go: reconnectLoop()
-
-RECONNECTION ALGORITHM:
-
-1. Immediate retry (attempt 1): wait 1 second
-2. If fails, exponential backoff:
-   Attempt 1:  wait   1 second
-   Attempt 2:  wait   2 seconds
-   Attempt 3:  wait   4 seconds
-   Attempt 4:  wait   8 seconds
-   Attempt 5:  wait  16 seconds
-   Attempt 6:  wait  32 seconds
-   Attempt 7:  wait  64 seconds
-   ...
-   Maximum:    wait 3600 seconds (1 hour)
-
-3. On each retry attempt, REDISCOVER the remote device:
-   a. Check address cache first (fast)
-   b. Try local discovery (LAN broadcast)
-   c. Try global discovery (internet)
-   d. Try relay connections if enabled
-
-4. All methods tried in PARALLEL per attempt
-5. First successful connection → stop retrying
-
-
-STEP 5.4: STATE PRESERVATION (Surviving Restarts)
--------------------------------------------------
-Files: lib/db/set.go + lib/model/model.go
-
-Syncthing is designed to be KILLED AT ANY TIME without data loss.
-
-WHAT PERSISTS TO DISK:
-
-1. config.xml: All device and folder configuration
-2. cert.pem + key.pem: Device identity
-3. Index database (LevelDB/Badger):
-   - Complete file index for all folders
-   - Block hashes for every synced file
-   - Version vectors for conflict detection
-4. Temporary files (.syncthing.tmp.*):
-   - Partially transferred files with blocks written to disk
-
-WHAT HAPPENS ON RESTART:
-
-1. Load config.xml
-2. Open index database
-3. Check for temp files from previous session:
-   - For each .syncthing.tmp.* file:
-     • Check database: was this transfer completed?
-     • YES → complete the rename to final filename
-     • NO  → keep as temp, resume transfer on reconnect
-4. Connect to known devices
-5. Exchange DELTA indexes:
-   Instead of re-sending entire index:
-   - "Here's what I have NOW"
-   - Remote compares with what it knew before
-   - Only differences trigger transfer
-6. Resume interrupted transfers from temp files:
-   - Check which blocks are already written to temp file
-   - Only request the MISSING blocks
-
-
-STEP 5.5: RELAY FALLBACK (When Direct Connection Impossible)
------------------------------------------------------------
-Files: lib/relay/client/ + lib/connections/service.go
-
-When direct connection fails (both behind restrictive NAT):
-
-   Device A                        Device B
-   (NAT)                           (NAT)
-     │                                │
-     │  1. Can't connect directly     │
-     │                                │
-     │  2. Connect to relay           │  3. Connect to relay
-     ├──────────────────────────────► ├───────────────────────►
-     │                                │
-     │               RELAY SERVER (public or private)
-     │               ┌──────────────────────┐
-     │               │  Listens on :22067   │
-     │               │  cmd/strelaysrv/     │
-     │               └──────────────────────┘
-     │                         │
-     │  4. Relay matches       │
-     │     "A wants WXYZ..."   │
-     │     "B wants ABCD..."   │
-     │                         │
-     │  5. A <──── TLS (END-TO-END) ────> B
-     │     Relay forwards bytes, CANNOT DECRYPT
-     │
-
-WHAT THE RELAY CAN SEE:
-- Source IP and destination IP
-- Encrypted TLS traffic (unreadable)
-- Amount of data transferred
-
-WHAT THE RELAY CANNOT SEE:
-- File names, folder names
-- File contents
-- Device IDs (inside encrypted tunnel)
-
-Connection preference: Direct > Relay
-- Direct connections always preferred
-- Relay is only used as fallback
-- If direct connection becomes available, switch automatically
-```
+* OS-level: TCP keepalives, 30s idle, 3 probes
+* App-level: Ping every 90s, expect Pong within 30s
+* Two independent layers for reliability
 
 ***
 
-### SECTION 6: FILE VERSIONING & RECOVERY
+#### Connection Loss Detection
 
-#### Purpose
+Connections can be lost for many reasons: WiFi disconnects, ISP outages, the remote device going to sleep, firewall changes, or IP address changes from mobile networks or DHCP renewal. Syncthing detects loss through three signals: a TCP read returning an error or connection reset, a QUIC session timing out, or a Ping message receiving no Pong within 30 seconds.
+
+When loss is detected, Syncthing marks the connection as disconnected, cancels all in-flight block requests on that connection, and cleans up pending state. Critically, temporary files with partially transferred data are preserved on disk — they are not deleted. The Model is notified that the device disconnected, and the reconnection process begins.
+
+Key things:
+
+* Detected via TCP error, QUIC timeout, or missed Pong
+* In-flight requests cancelled, temp files preserved
+* Model notified, reconnection starts immediately
+
+### Recovery
+
+```mermaid
+flowchart TD
+    A[Begin Reconnection] --> B[Exponential Backoff: 1s → 2s → 4s → ... → 1hr max]
+    B --> C[Rediscover Device]
+    C --> D{Direct Connection Possible?}
+    D -->|Yes| E[Reconnect Directly]
+    D -->|No| F[Fallback to Relay]
+    F --> G[End-to-End TLS via Relay]
+    G --> E
+    E --> H[Exchange Delta Indexes]
+    H --> I[Resume Interrupted Transfers]
+    I --> J[Restart Monitoring]
+```
+
+#### Automatic Reconnection
+
+When a connection is lost, Syncthing begins reconnecting immediately. The first retry happens after 1 second. If it fails, the wait time doubles with each attempt — 2 seconds, 4, 8, 16, 32, 64 — up to a maximum of one hour between attempts.
+
+On each retry, Syncthing rediscovers the remote device using all available methods in parallel: cached addresses from previous connections, LAN broadcasts, global discovery servers, and relay connections if enabled. The first method to produce a working connection wins, and retrying stops.
+
+Key things:
+
+* Exponential backoff from 1 second to 1 hour max
+* Rediscovery on every attempt using all methods in parallel
+* First successful connection wins
+
+***
+
+#### State Preservation
+
+Syncthing is designed to survive being killed at any moment without data loss. Four things persist to disk:&#x20;
+
+* the configuration file with all device and folder settings
+* the device certificate and key
+* the index database containing every file's metadata and block hashes
+* any temporary files from interrupted transfers with their already-written blocks intact.
+
+On restart, Syncthing loads the configuration and opens the index database. It scans for leftover temporary files — if the database confirms a transfer was fully completed before the shutdown, the temp file is atomically renamed to its final filename. If the transfer was incomplete, the temp file is kept so the transfer can resume where it left off.
+
+After reconnecting to known devices, Syncthing exchanges delta indexes instead of full indexes — it tells the remote what it has now, the remote compares against what it knew before, and only the differences trigger new transfers. Interrupted transfers resume by checking which blocks already exist in the temp file and requesting only the missing ones.
+
+Key things:
+
+* Config, certificate, database, and temp files all persist to disk
+* Completed transfers are finalized on restart
+* Incomplete transfers resume with only missing blocks requested
+* Delta indexes avoid re-sending all metadata
+
+***
+
+#### Relay Fallback
+
+When a direct connection is impossible — typically because both devices are behind restrictive NATs — Syncthing falls back to a relay server. Both devices connect to the same relay, which runs on port 22067. The relay matches them by their Device IDs and forwards traffic between them.
+
+The critical security property is that the TLS encryption is end-to-end between the two devices. The relay forwards encrypted bytes but cannot decrypt them. It sees only source and destination IP addresses, the amount of data transferred, and the encrypted TLS stream. It cannot see file names, folder names, file contents, or even the Device IDs, which are inside the encrypted tunnel.
+
+Direct connections are always preferred. The relay is only a fallback, and if a direct connection becomes available later, Syncthing switches automatically.
+
+Key things:
+
+* Relay used only when direct connection fails
+* End-to-end TLS — relay cannot decrypt traffic
+* Relay sees IPs and data volume, nothing more
+* Automatically switches back to direct when possible<br>
+
+***
+
+### File Versioning & Recovery
 
 Protect against accidental deletion, unwanted modification, and provide a safety net for user errors.
 
-#### Files Involved
+```mermaid
+flowchart TD
+    A[Remote Change Arrives] --> B{What Type of Change?}
+    B -->|Overwrite Local File| C[Versioning Triggered]
+    B -->|Delete Local File| C
+    B -->|Permission Change| C
+    B -->|Local Change / Initial Sync| D[No Versioning]
 
-| File                         | Role                                        |
-| ---------------------------- | ------------------------------------------- |
-| `lib/versioner/simple.go`    | Simple versioning (keep N versions)         |
-| `lib/versioner/staggered.go` | Staggered versioning (time-based retention) |
-| `lib/versioner/trashcan.go`  | Trash can versioning (move to .stversions)  |
-| `lib/versioner/external.go`  | External script versioning                  |
-| `lib/model/model.go`         | Integrates versioning into sync flow        |
+    C --> E{Which Strategy?}
+    E -->|Trash Can| F[Move old file to .stversions/<br/>Keep forever]
+    E -->|Simple| G[Move old file to .stversions/<br/>Keep last N, delete oldest]
+    E -->|Staggered| H[Keep all for 1hr<br/>Hourly for 1 day<br/>Daily for 30 days<br/>Weekly for 1 year<br/>Monthly beyond]
+    E -->|External| I[Call user script with<br/>action, filepath, version path]
 
-#### Step-by-Step Flow
-
+    F --> J[New file pulled and written]
+    G --> J
+    H --> J
+    I --> J
+    J --> K[Recovery: copy from .stversions/ back to original]
 ```
-FILE VERSIONING & RECOVERY
-==========================
 
-STEP 6.1: VERSIONING TRIGGERS
------------------------------
-Versioning activates when:
+#### Versioning Triggers
 
-1. A remote device sends a file that OVERWRITES a local file
-2. A remote device sends a DELETION for a file
-3. (When "sync ownership" is enabled) permissions/metadata change
+Versioning activates when a remote change would overwrite or delete a local file — a remote device sends a newer version, a deletion, or a permission change when sync ownership is enabled. It does not activate for local changes made by the user or for files received for the first time during initial sync. The purpose is to protect against unwanted remote changes, not to version every edit.
 
-Versioning does NOT activate for:
-- Local changes you make yourself
-- Initial sync (first time receiving a file)
+Key things:
 
-
-STEP 6.2: VERSIONING STRATEGIES
--------------------------------
-
-STRATEGY 1: TRASH CAN (Simple)
-File: lib/versioner/trashcan.go
-
-When a file is replaced/deleted:
-- Move old file to: .stversions/filename~timestamp.ext
-- Keep forever (unless manually cleaned)
-- Example:
-  Original: documents/report.pdf
-  Replaced → documents/.stversions/report~20260519-143052.pdf
-
-
-STRATEGY 2: SIMPLE VERSIONING
-File: lib/versioner/simple.go
-
-Configuration: "Keep last N versions"
-
-When a file is replaced/deleted:
-1. Move old file to .stversions/filename~timestamp.ext
-2. If total versions > N, delete the OLDEST one
-
-Example with N=3:
-.stversions/
-  report~20260517-090000.pdf  ← version 1
-  report~20260518-150000.pdf  ← version 2
-  report~20260519-120000.pdf  ← version 3 (newest)
-Next change: version 1 is DELETED, new version 4 is kept
-
-
-STRATEGY 3: STAGGERED VERSIONING
-File: lib/versioner/staggered.go
-
-Configuration: "Keep versions at increasing intervals"
-
-Retention schedule:
-  For the first HOUR:     Keep ALL versions
-  For the first DAY:      Keep one version per HOUR
-  For the first 30 DAYS:  Keep one version per DAY
-  Up to 1 YEAR:           Keep one version per WEEK
-  Beyond 1 year:          Keep one version per MONTH
-  Maximum age:            Delete versions older than 365 days
-
-Result: Fine-grained recent history, efficient long-term storage
-
-
-STRATEGY 4: EXTERNAL VERSIONING
-File: lib/versioner/external.go
-
-- Calls a user-specified script/program on each version event
-- Script receives: action, filepath, version path
-- Allows integration with: Git, Borg Backup, Restic, etc.
-
-
-STEP 6.3: VERSIONING INTEGRATION WITH SYNC
-------------------------------------------
-File: lib/model/model.go: versioner.Archive(filePath)
-
-When a remote change would overwrite a local file:
-
-1. Remote sends: "I have report.pdf v5"
-2. Local has:   "report.pdf v3"
-3. Before overwriting:
-   a. Versioner.Archive("report.pdf")
-   b. Old file moved to .stversions/
-   c. New file pulled and written
-4. If user realizes v5 is wrong:
-   - Go to .stversions/
-   - Copy report~20260518-143000.pdf back to report.pdf
-```
+* Triggers on remote overwrite, remote deletion, or permission changes
+* Does not trigger on local changes or initial sync
 
 ***
 
-### SECTION 7: SHUTDOWN & RESTART
+#### Versioning Strategies
 
-#### Purpose
+Syncthing offers four st rategies, all working by moving the old file into a `.stversions` folder before the new version is written.
 
-Gracefully stop all subsystems, flush data to disk, and prepare for clean restart.
+* **Trash Can** simply moves the old file with a timestamp appended and keeps it forever until the user manually cleans it up.&#x20;
+* **Simple Versioning** does the same but only retains the last N versions, deleting the oldest when the limit is exceeded.&#x20;
+* **Staggered Versioning** keeps a fine-grained history for recent changes and progressively thins it out over time — all versions for the first hour, hourly for a day, daily for 30 days, weekly for up to a year, and monthly beyond that, with a maximum age of 365 days.&#x20;
+* **External Versioning** calls a user-provided script with the action, file path, and version path, allowing integration with tools like Git, Borg Backup, or Restic.
 
-#### Files Involved
+Key things:
 
-| File                         | Role                                    |
-| ---------------------------- | --------------------------------------- |
-| `cmd/syncthing/main.go`      | Signal handling, shutdown orchestration |
-| `lib/model/model.go`         | Stop sync, flush state                  |
-| `lib/connections/service.go` | Close all connections gracefully        |
-| `lib/db/set.go`              | Flush database to disk                  |
-| `lib/config/config.go`       | Save final configuration                |
-
-#### Step-by-Step Flow
-
-```
-SHUTDOWN & RESTART
-==================
-
-STEP 7.1: SHUTDOWN TRIGGERS
----------------------------
-File: cmd/syncthing/main.go: signal handling
-
-Shutdown initiated by:
-1. SIGINT (Ctrl+C) or SIGTERM (systemd stop)
-2. GUI "Shutdown" button (REST API call)
-3. Fatal error (auto-restart via service manager)
-
-
-STEP 7.2: GRACEFUL SHUTDOWN SEQUENCE
-------------------------------------
-
-1. STOP ACCEPTING NEW CONNECTIONS
-   Close TCP listener (lib/connections/tcp_listener.go)
-   Close QUIC listener (lib/connections/quic_listener.go)
-   New connection attempts will be rejected
-
-2. NOTIFY REMOTE DEVICES
-   Send "Close" message on each active connection:
-   type Close struct {
-     Reason string  // "shutting down"
-   }
-   Remote devices know: this is intentional, not a crash
-
-3. CANCEL IN-FLIGHT TRANSFERS
-   - Cancel all pending block requests
-   - Mark temp files with current progress
-   - Temp files survive shutdown (intact on disk)
-
-4. FLUSH DATABASE
-   lib/db/set.go: db.Close()
-   - Complete any in-progress transactions
-   - Flush all writes to disk
-   - Close LevelDB/Badger database handle
-
-5. SAVE CONFIGURATION
-   lib/config/config.go: config.Save()
-   - Write config.xml to disk (if changes pending)
-   - All device and folder settings preserved
-
-6. CLOSE ALL CONNECTIONS
-   - Close TLS connections gracefully
-   - Close relay connections
-   - Close discovery announcements
-
-7. EXIT
-   - Log "Syncthing exiting"
-   - os.Exit(0)
-
-
-STEP 7.3: RESTART SEQUENCE
---------------------------
-On restart, Syncthing resumes cleanly:
-
-1. Load existing certificate (identity preserved!)
-2. Load config.xml (all devices and folders remembered)
-3. Open index database (all file metadata intact)
-4. Scan for temp files:
-   For each .syncthing.tmp.* file:
-     if isComplete(tempFile):
-         rename tempFile → finalFile  // Complete the transfer
-     else:
-         keep tempFile  // Will resume on reconnect
-5. Start listeners (begin accepting connections)
-6. Begin discovery and connection to known devices
-7. On connection: exchange delta indexes (only what changed)
-8. Resume interrupted transfers from temp files
-
-RESULT: No data loss, minimal re-transfer, fast resume.
-```
+* All strategies save old files to `.stversions/` with timestamps
+* Trash Can: keep forever
+* Simple: keep last N, delete oldest
+* Staggered: keep all → hourly → daily → weekly → monthly
+* External: delegate to a user script
 
 ***
 
-### Complete System Data Flow Diagram
+#### Versioning Integration With Sync
 
+Versioning is integrated directly into the sync flow. When a remote device announces a new version of a file, Syncthing checks whether the local copy would be overwritten. If so, it archives the local file by moving it into `.stversions/` with a timestamp before pulling and writing the new version.
+
+If the user later realizes the new version is wrong, recovery is straightforward: open the `.stversions/` folder, find the timestamped copy, and copy it back to the original location.
+
+Key things:
+
+* Archive happens before overwrite, not after
+* Old file moved to `.stversions/` with timestamp
+* Recovery: copy timestamped file back to original location
+
+***
+
+## Shutdown & Restart
+
+Gracefully stop all subsystems, flush data to disk, and prepare for clean restart
+
+```mermaid
+sequenceDiagram
+    participant User as User / OS
+    participant Main as Syncthing
+    participant Conn as Connections
+    participant DB as Database
+    participant Config as Configuration
+    participant Remote as Remote Devices
+
+    Note over User,Remote: SHUTDOWN
+    User->>Main: SIGINT / GUI Shutdown / Fatal Error
+    Main->>Conn: Close TCP + QUIC Listeners
+    Main->>Remote: Send "Close" message (not a crash)
+    Main->>Conn: Cancel all in-flight transfers
+    Note over Main: Temp files preserved on disk
+    Main->>DB: Flush transactions, close database
+    Main->>Config: Save config.xml
+    Main->>Conn: Close TLS + relay connections
+    Main->>Main: Exit
+
+    Note over User,Remote: RESTART
+    User->>Main: Start Syncthing
+    Main->>Main: Load certificate (identity preserved)
+    Main->>Config: Load config.xml
+    Main->>DB: Open index database
+    Main->>Main: Scan temp files
+    Main->>Main: Complete finished transfers
+    Main->>Conn: Start listeners
+    Main->>Remote: Connect + exchange delta indexes
+    Main->>Main: Resume interrupted transfers
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         END-TO-END DATA FLOW                                   
-│                                                                               │
-│  YOUR DEVICE                                          FRIEND'S DEVICE         │
-│  ┌───────────────────────┐                           ┌──────────────────────┐ │
-│  │                       │                           │                      │ │
-│  │  1. FIRST LAUNCH      │                           │  (same process)      │ │
-│  │     cert.pem + key.pem│                           │                      │ │
-│  │     Device ID: ABCD.. │                           │  Device ID: WXYZ..   │ │
-│  │                       │                           │                      │ │
-│  │  2. ADD DEVICE        │                           │                      │ │
-│  │     Enter WXYZ-...    │─── out-of-band exchange ──│ Enter ABCD-...       │ │
-│  │     (manual)          │      (QR code/msg)        │ (manual)             │ │
-│  │                       │                           │                      │ │
-│  │  3. SHARE FOLDER      │                           │                      │ │
-│  │     "Documents" →     │                           │ Accept folder share  │ │
-│  │     shared with WXYZ  │                           │                      │ │
-│  │                       │                           │                      │ │
-│  │  4. DISCOVERY         │                           │                      │ │
-│  │     ├─ LAN broadcast  │◄─────── broadcast ───────►│ ├─ LAN broadcast     │ │
-│  │     ├─ Global server  │◄──── discovery.syncthing ─│ ├─ Global server     │ │
-│  │     └─ Cached addrs   │                           │ └─ Cached addrs      │ │
-│  │                       │                           │                      │ │
-│  │  5. CONNECTION        │                           │                      │ │
-│  │     Dial WXYZ:22000   │─────── TCP/QUIC ────────► │ Accept from ABCD     │ │
-│  │                       │                           │                      │ │
-│  │  6. MUTUAL TLS        │                           │                      │ │
-│  │     Present cert_A    │─────── TLS 1.3 mTLS ───── │ Present cert_B       │ │
-│  │     Verify cert_B     │◄──── no CA involved ────► │ Verify cert_A        │ │
-│  │     hash = WXYZ-... ✓ │                           │ hash = ABCD-... ✓    │ │
-│  │                       │                           │                      │ │
-│  │  7. PROTOCOL HELLO    │                           │                      │ │
-│  │     "I am ABCD-..."   │◄────────────────────────► │ "I am WXYZ-..."      │ │
-│  │     "Folders I share  │                           │ "Folders I share     │ │
-│  │      with you: Docs"  │                           │  with you: Docs"     │ │
-│  │                       │                           │                      │ │
-│  │  8. INDEX EXCHANGE     │                          │                      │ │
-│  │     Send local index   │─────── FileInfos ───────►│ Receive remote index │ │
-│  │     Receive remote idx │◄────── FileInfos ─────── │ Send local index     │ │
-│  │                        │                          │                      │ │
-│  │  9. COMPARE            │                          │                      │ │
-│  │     Need: report.pdf   │                          │ Need: photo.jpg      │ │
-│  │     Have: photo.jpg    │                          │ Have: report.pdf     │ │
-│  │                        │                          │                      │ │
-│  │  10. BLOCK TRANSFER    │                          │                      │ │
-│  │     Request blocks     │──── request(blk 0,1) ──► │ Read blocks from disk│ │
-│  │     Verify SHA-256     │◄─── response(data) ───── │ Send blocks          │ │
-│  │     Write to temp file │                          │                      │ │
-│  │     Request blocks     │◄─── request(blk 5,7) ─── │ Verify SHA-256       │ │
-│  │     Read from disk     │──── response(data) ────► │ Write to temp file   │ │
-│  │                        │                           │                     │ │
-│  │  11. FINALIZE          │                           │                     │ │
-│  │     All blocks verified│                           │ All blocks verified │ │
-│  │     Rename temp→final  │                           │ Rename temp→final   │ │
-│  │     Update DB          │                           │ Update DB           │ │
-│  │                        │                           │                     │ │
-│  │  12. CONTINUOUS SYNC   │                           │                     │ │
-│  │     ┌─ File watcher    │                           │ ┌─ File watcher     │ │
-│  │     ├─ Detect changes  │◄──── delta index ────────►│ ├─ Detect changes   │ │
-│  │     └─ Push index      │                           │ └─ Push index       │ │
-│  │                        │                           │                     │ │
-│  │  13. CONNECTION LOSS   │                           │                     │ │
-│  │     Detect disconnect  │                           │ Detect disconnect   │ │
-│  │     Exponential backoff│                           │ Exponential backoff │ │
-│  │     Rediscover + retry │◄────── reconnect ────────►│ Rediscover + retry  │ │
-│  │     Resume from temp   │                           │ Resume from temp    │ │
-│  │                        │                           │                     │ │
-│  │  14. SHUTDOWN          │                           │                     │ │
-│  │     Cancel transfers   │                           │ (same process)      │ │
-│  │     Flush DB           │                           │                     │ │
-│  │     Save config        │                           │                     │ │
-│  │     Close connections  │─────── "Close" msg ─────► │ Mark as disconnected│ │
-│  │                        │                           │                     │ │
-│  └────────────────────────┘                           └─────────────────────┘ │
-│                                                                               │
-└───────────────────────────────────────────────────────────────────────────────┘
+
+#### Shutdown Triggers
+
+Shutdown can be initiated three ways: the user sends SIGINT or SIGTERM via Ctrl+C or systemd, the user clicks the Shutdown button in the Web GUI, or a fatal error triggers an automatic restart through a service manager.
+
+Key things:
+
+* Triggered by signal, GUI button, or fatal error
+
+***
+
+#### Graceful Shutdown Sequence
+
+Syncthing shuts down in a careful sequence designed to leave everything in a clean, recoverable state. First, it stops accepting new connections by closing both the TCP and QUIC listeners — any new connection attempts will be rejected. Then it notifies every connected remote device with a Close message so they know this is an intentional shutdown, not a crash.
+
+All in-flight block requests are cancelled, and temp files are marked with their current progress and left intact on disk. The database completes any in-progress transactions, flushes all writes, and closes cleanly. The configuration file is saved if there are pending changes. All TLS connections, relay connections, and discovery announcements are closed gracefully. Finally, Syncthing logs its exit and terminates.
+
+Key things:
+
+* Listeners closed first so no new connections arrive
+* Remotes notified: intentional shutdown, not a crash
+* Temp files preserved, database flushed, config saved
+* All connections closed gracefully before exit
+
+***
+
+#### Restart Sequence
+
+On restart, Syncthing picks up exactly where it left off. It loads its existing certificate so its Device ID is preserved, loads the configuration with all devices and folders remembered, and opens the index database with all file metadata intact.
+
+It scans for leftover temporary files from the previous session. If a transfer was fully completed before shutdown, the temp file is atomically renamed to its final filename. If it was incomplete, the temp file is kept so the transfer can resume on reconnect.
+
+Listeners are started so the device becomes reachable again. Discovery begins and connections to known devices are established. On reconnection, Syncthing exchanges delta indexes — only what changed while it was offline — and resumes any interrupted transfers by checking which blocks are already written and requesting only the missing ones.
+
+Key things:
+
+* Identity, config, and database all restored on restart
+* Completed transfers finalized; incomplete ones resume
+* Delta indexes avoid re-sending all metadata
+* Only missing blocks re-requested on interrupted transfers
+* Result: no data loss, minimal re-transfer, fast resume
+
+***
+
+### E2E Data Flow Diagram
+
+```mermaid
+sequenceDiagram
+    participant A as Your Device
+    participant B as Friend's Device
+
+    Note over A,B: 1. First Launch (both sides)
+    Note over A,B: 2. Add Device (manual ID exchange)
+    Note over A,B: 3. Share Folder
+    A->>B: 4. Discovery (LAN + Global)
+    A->>B: 5. TCP/QUIC Connect
+    A->>B: 6. Mutual TLS Handshake
+    A->>B: 7. Protocol Hello
+    A->>B: 8. Index Exchange
+    Note over A,B: 9. Compare Indexes
+    A->>B: 10. Block Transfer (parallel)
+    Note over A,B: 11. Finalize (rename, update DB)
+    Note over A,B: 12. Continuous Sync (file watcher)
+    Note over A,B: 13. Connection Loss + Reconnect
+    A->>B: 14. Shutdown (Close message)
 ```
 
 ***
