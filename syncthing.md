@@ -1,224 +1,148 @@
 # Syncthing
 
-### ARCHITECTURE OVERVIEW
+## Architecture
 
+```mermaid
+graph TD
+    subgraph UI["User Interface"]
+        GUI["GUI"]
+        API["REST API"]
+        CLI["CLI"]
+    end
+
+    subgraph CONFIG["Configuration"]
+        CFG["Configuration"]
+    end
+
+    subgraph MODEL["Orchestration"]
+        M["Orchestration"]
+    end
+
+    subgraph SUBSYSTEMS["Subsystems"]
+        direction LR
+        C1["Connections"]
+        C2["Scanner"]
+        C3["Database"]
+        C4["File System"]
+    end
+
+    subgraph PROTO["Protocol"]
+        P["Protocol"]
+    end
+
+    subgraph INFRA["Infrastructure"]
+        direction LR
+        I1["Discovery"]
+        I2["Relay"]
+        I3["Upgrade/Crash"]
+    end
+
+    GUI --> CFG
+    API --> CFG
+    CLI --> CFG
+    CFG --> M
+    M --> C1
+    M --> C2
+    M --> C3
+    M --> C4
+    C1 --> P
+    C2 --> P
+    C3 --> P
+    C4 --> P
+    P --> I1
+    P --> I2
+    P --> I3
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         SYNCTHING SYSTEM ARCHITECTURE                       │
-│                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │                        USER INTERFACE LAYER                         │    │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────────┐   │    │
-│  │  │   Web GUI    │  │   REST API   │  │   CLI (syncthing cli)    │   │    │
-│  │  │  (gui/)      │  │  (gui.go)    │  │   (cmd/syncthing/)       │   │    │
-│  │  └──────┬───────┘  └──────┬───────┘  └────────────┬─────────────┘   │    │
-│  └─────────┼─────────────────┼───────────────────────┼─────────────────┘    │
-│            │                 │                       │                      │
-│  ┌─────────▼─────────────────▼───────────────────────▼─────────────────┐    │
-│  │                      CONFIGURATION LAYER                            │    │
-│  │  ┌──────────────────────────────────────────────────────────────┐   │    │
-│  │  │  lib/config/  (config.go, wrapper.go, folderconfig.go)       │   │    │
-│  │  │  - Device list & Device IDs                                  │   │    │
-│  │  │  - Folder definitions & Folder IDs                           │   │    │
-│  │  │  - GUI settings, listen addresses, discovery settings        │   │    │
-│  │  │  - Persisted as config.xml                                   │   │    │
-│  │  └──────────────────────────────────────────────────────────────┘   │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│            │                                                                │
-│  ┌─────────▼───────────────────────────────────────────────────────────┐    │
-│  │                        CORE ORCHESTRATION LAYER                     │    │
-│  │  ┌──────────────────────────────────────────────────────────────┐   │    │
-│  │  │  lib/model/ (model.go, folder.go, requests.go)               │   │    │
-│  │  │  - The "brain" of Syncthing                                  │   │    │
-│  │  │  - Coordinates all subsystems                                │   │    │
-│  │  │  - Implements sync logic, conflict resolution, versioning    │   │    │
-│  │  └──────────────────────────────────────────────────────────────┘   │    │
-│  └─────────────────────────────────────────────────────────────────────┘    
-│            │                                                                 
-│  ┌─────────┼─────────────────────────────────────────────────────────┐      │
-│  │         │              SUBSYSTEM LAYERS                           │      │
-│  │         │                                                         │      │
-│  │  ┌──────▼──────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐        │      │
-│  │  │ CONNECTIONS │  │ SCANNER  │  │ DATABASE │  │  FILE    │        │      │
-│  │  │             │  │          │  │          │  │  SYSTEM  │        │      │
-│  │  │lib/         │  │lib/      │  │lib/db/   │  │lib/fs/   │        │      │
-│  │  │connections/ │  │scanner/  │  │          │  │          │        │      │
-│  │  │             │  │          │  │          │  │          │        │      │
-│  │  │- TCP/QUIC   │  │- Walk    │  │- FileSet │  │- Watch   │        │      │
-│  │  │  listeners  │  │  dirs    │  │- Meta    │  │- Basic   │        │      │
-│  │  │- TLS mTLS   │  │- Hash    │  │- Trans-  │  │  FS ops  │        │      │
-│  │  │- Discovery  │  │  blocks  │  │  actions │  │- Temp    │        │      │
-│  │  │- Relay      │  │- Build   │  │- Block   │  │  files   │        │      │
-│  │  │  clients    │  │  index   │  │  tracking│  │          │        │      │
-│  │  └──────┬──────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘        │      │
-│  │         │              │             │             │              │      │
-│  └─────────┼──────────────┼─────────────┼─────────────┼──────────────┘      │
-│            │              │             │             │                     │
-│  ┌─────────▼──────────────▼─────────────▼─────────────▼────────────────┐    │
-│  │                      PROTOCOL LAYER                                 │    │
-│  │  ┌──────────────────────────────────────────────────────────────┐   │    │
-│  │  │  lib/protocol/ (protocol.go, encryption.go, deviceid.go)     │   │    │
-│  │  │  - Wire format (Protocol Buffers)                            │   │    │
-│  │  │  - Block exchange protocol                                   │   │    │
-│  │  │  - Index exchange protocol                                   │   │    │
-│  │  │  - TLS wrapping & certificate handling                       │   │    │
-│  │  └──────────────────────────────────────────────────────────────┘   │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │                      INFRASTRUCTURE SERVICES                        │    │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────────┐   │    │
-│  │  │  Discovery   │  │    Relay     │  │   Upgrade / Crash        │   │    │
-│  │  │   Server     │  │   Server     │  │   Reporting Services     │   │    │
-│  │  │ cmd/         │  │ cmd/         │  │                          │   │    │
-│  │  │ stdiscosrv/  │  │ strelaysrv/  │  │ cmd/stupgrades/ etc.     │   │    │
-│  │  └──────────────┘  └──────────────┘  └──────────────────────────┘   │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+
+**User Interface**
+
+for user to add trusted devices, choose folders to sync, and monitor what's happening.
+
+**Configuration**
+
+Store the source of truth for who to trust (Device IDs), what to sync (folders), and how to behave (settings). Everything persists to disk so it survives restarts.
+
+**Orchestration**
+
+Make all high-level decisions. Compare local and remote file indexes to figure out what needs syncing. Detect conflicts. Trigger versioning. Coordinate all the subsystems beneath it.
+
+**Connections**
+
+Establish and maintain secure, encrypted channels between devices. Find peers on the network. Keep connections alive or reconnect when they drop.
+
+**Scanner**
+
+Turn files on disk into a compact, hash-based index that can be compared efficiently with remote devices without sending the actual file contents.
+
+**Database**
+
+Persist everything needed to survive crashes and restarts. Remember which files exist, their block hashes, and the state of in-progress transfers so nothing is lost or re-downloaded unnecessarily.
+
+**File System**
+
+Interact safely with the operating system's file system. Detect changes instantly. Write files atomically so interrupted transfers never corrupt data.
+
+**Protocol**
+
+Define the language that **Syncthing** devices speak to each other, how to encode messages, how to exchange file metadata, how to request and send blocks, and how to verify each other's identity without a central authority.
+
+**Discovery Server**
+
+Help devices find each other's IP addresses on the internet without revealing anything about what files are being synced.
+
+**Relay Server**
+
+Forward encrypted traffic between devices that can't connect directly, without ever being able to read the data. Usually because devices is behind NAT
+
+**Upgrade/Crash Reporting**
+
+Keep **Syncthing** up to date automatically and help developers fix bugs by collecting crash reports (opt-in).
 
 ***
 
-### SECTION 1: IDENTITY CREATION & FIRST LAUNCH
-
-#### Purpose
+## Identity Creation
 
 Create a permanent, self-sovereign cryptographic identity for this device. No central authority, no registration, no cloud dependency.
 
-#### Files Involved
+```mermaid
+sequenceDiagram
+    participant Main as Entry Point
+    participant TLS as TLS Utility
+    participant Proto as Protocol
+    participant Config as Configuration
 
-| File                       | Role                                    |
-| -------------------------- | --------------------------------------- |
-| `cmd/syncthing/main.go`    | Entry point, orchestrates startup       |
-| `lib/tlsutil/tlsutil.go`   | Certificate & key generation            |
-| `lib/protocol/deviceid.go` | Device ID derivation from certificate   |
-| `lib/config/config.go`     | Default configuration creation          |
-| `lib/locations/`           | OS-specific config directory resolution |
-
-#### Step-by-Step Flow
-
+    Main->>Main: Parse flags, setup logging
+    Main->>Main: Determine config directory
+    Main->>TLS: Check for cert.pem/key.pem
+    alt No certificate exists
+        TLS->>TLS: Generate ECDSA P-256 key pair
+        TLS->>TLS: Create X.509 cert (100yr validity)
+        TLS->>TLS: Self-sign certificate
+        TLS->>TLS: Write cert.pem + key.pem to disk
+    else Certificate exists
+        TLS->>TLS: Load existing certificate
+    end
+    TLS->>Proto: Pass certificate
+    Proto->>Proto: Extract public key (DER)
+    Proto->>Proto: SHA-256 hash public key
+    Proto->>Proto: Encode as Base32 + checksum
+    Proto-->>Main: Device ID ready
+    Main->>Config: Create default config.xml
+    Config->>Config: Set default folder, GUI, options
+    Config-->>Main: Startup complete
 ```
-FIRST LAUNCH SEQUENCE
-=====================
 
-STEP 1.1: ENTRY POINT
----------------------
-File: cmd/syncthing/main.go: main() → syncthingMain()
-
-1. Parse command-line flags (-home, -gui-address, etc.)
-2. Set up logging (lib/logger/)
-3. Determine config directory:
-   - Linux:   ~/.config/syncthing/   (or $XDG_CONFIG_HOME)
-   - macOS:   ~/Library/Application Support/Syncthing/
-   - Windows: %LocalAppData%\Syncthing\
-4. If directory doesn't exist, create it
-
-
-STEP 1.2: CERTIFICATE GENERATION
---------------------------------
-File: lib/tlsutil/tlsutil.go: NewCertificate(certFile, keyFile)
-
-1. Check if cert.pem and key.pem exist in config directory
-2. If YES → load existing certificate (skip generation)
-3. If NO:
-   a. Generate ECDSA private key (curve P-256)
-      ecdsa.GenerateKey(elliptic.P256(), cryptoRand.Reader)
-
-   b. Create X.509 certificate template:
-      SerialNumber: random (crypto/rand)
-      NotBefore:    time.Now()
-      NotAfter:     time.Now() + 100 years
-      KeyUsage:     Digital Signature
-      ExtKeyUsage:  Client Auth, Server Auth
-      CommonName:   random string (privacy)
-
-   c. Self-sign: cert.SignedBy(itself)
-   d. Encode as PEM and write to disk:
-      - cert.pem (public certificate)
-      - key.pem  (private key, permissions 0600)
-
-SECURITY: key.pem NEVER leaves this device. cert.pem is shared
-during TLS handshake but is useless without key.pem.
-
-
-STEP 1.3: DEVICE ID DERIVATION
-------------------------------
-File: lib/protocol/deviceid.go: NewDeviceID(cert)
-
-1. Extract raw public key bytes from certificate:
-   pubKeyBytes = x509.MarshalPKIXPublicKey()
-   (DER-encoded, subjectPublicKeyInfo)
-
-2. Compute SHA-256 hash of the DER-encoded public key:
-   hash = sha256.Sum256(pubKeyBytes)
-   (32 bytes = 256 bits)
-
-3. Encode as Base32 with Luhn-like checksum:
-   raw = base32.Encode(hash)
-   chunks = split into 7 groups of ~8 chars
-   checksum = Luhn mod 32 of all chunks
-   deviceID = chunks + "-" + checksum
-
-Example Device ID:
-ABCDEFG-HIJKLMN-OPQRSTU-VWXYZ12-3456789-ABCDEFG-HIJKLMN-OPQRSTU
-
-PROPERTIES:
-- Cryptographically bound to the certificate (cannot be forged)
-- Human-verifiable via checksum (typos detected)
-- QR-code friendly
-- No personal information embedded
-
-
-STEP 1.4: DEFAULT CONFIGURATION CREATION
-----------------------------------------
-File: lib/config/config.go: DefaultConfig(myDeviceID)
-
-Creates config.xml with:
-
-<configuration version="37">
-  <device id="MY-DEVICE-ID" name="my-computer"
-          compression="metadata" introducer="false">
-    <address>dynamic</address>
-  </device>
-  <folder id="abc123..." label="Default Folder"
-          path="~/Sync" type="sendreceive"
-          rescanIntervalS="3600" fsWatcherEnabled="true">
-    <device id="MY-DEVICE-ID"/>
-  </folder>
-  <gui enabled="true" tls="false">
-    <address>127.0.0.1:8384</address>
-  </gui>
-  <options>
-    <listenAddress>default</listenAddress>
-    <globalAnnounceServer>default</globalAnnounceServer>
-    <relaysEnabled>true</relaysEnabled>
-  </options>
-</configuration>
-
-STARTUP COMPLETE: Device has identity, default folder, and is ready.
-```
+* Entry point: cmd/syncthing/main.go
+* Certificate generation: lib/tlsutil/tlsutil.go (ECDSA P-256, self-signed, 100yr validity)
+* Device ID: lib/protocol/deviceid.go (SHA-256 of DER-encoded public key, Base32 + Luhn checksum)
+* Config: lib/config/config.go (creates config.xml with default folder, GUI on 127.0.0.1:8384, discovery/relay enabled)
+* Security: key.pem never leaves the device; Device ID is cryptographically bound, human-verifiable, QR-code friendly
 
 ***
 
-### SECTION 2: ADDING A REMOTE DEVICE (Trust Bootstrapping)
+## Adding a Remote Device (Trust Bootstrapping)
 
-#### Purpose
-
-Establish a trusted relationship with another Syncthing device. This is the ONLY manual step in the entire system and the foundation of all security.
-
-#### Files Involved
-
-| File                          | Role                                           |
-| ----------------------------- | ---------------------------------------------- |
-| `gui/default/index.html` + JS | Web interface for entering Device IDs          |
-| `cmd/syncthing/gui.go`        | REST API handler for config changes            |
-| `lib/config/config.go`        | Configuration persistence                      |
-| `lib/model/model.go`          | Reacts to config changes, initiates connection |
-
-#### Step-by-Step Flow
-
-text
+Establish a trusted relationship with another User device. This is the ONLY manual step in the entire system and the foundation of all security.
 
 ```
 ADDING A REMOTE DEVICE
@@ -247,6 +171,7 @@ Exchange methods (trusted channel):
 STEP 2.1: ENTER DEVICE ID IN WEB GUI
 ------------------------------------
 File: gui/default/index.html (Web GUI)
+The user opens the Syncthing Web GUI and adds the remote device
 
 1. User clicks "Add Remote Device"
 2. Enters/pastes friend's Device ID: "WXYZ-1234-..."
@@ -261,30 +186,32 @@ File: gui/default/index.html (Web GUI)
 STEP 2.2: REST API CALL
 -----------------------
 File: cmd/syncthing/gui.go: handle POST /rest/config/devices
+The GUI sends the new device information to the Syncthing backend
 
 1. Receive JSON: { "deviceID": "WXYZ-...", "name": "Friend's PC" }
 2. Validate Device ID format and checksum (lib/protocol/)
-3. Call config.Wrapper.SetDevice(deviceCfg)
+3. It passes the validated device configuration to the configuration layer for storage
 
 
 STEP 2.3: PERSIST TO CONFIGURATION
 ----------------------------------
 File: lib/config/config.go: SetDevice()
+The configuration layer stores the new device permanently
 
-1. Add device entry to in-memory configuration:
+1. The device is added to the in-memory configuration with its Device ID, name, and settings:
    <device id="WXYZ-1234-..." name="Friend's PC">
      <address>dynamic</address>
      <compression>metadata</compression>
    </device>
 
-2. Write updated config.xml to disk
-3. Notify all subscribers (via callback/observer pattern)
-   that device list has changed
+2. Write updated config.xml to disk, so it survive restart
+3. Notify all subscribers (via callback/observer pattern) that device list has changed
 
 
 STEP 2.4: MODEL REACTS TO CONFIG CHANGE
 ---------------------------------------
 File: lib/model/model.go: deviceAdded(deviceID)
+The orchestration layer (the brain) responds to the configuration change
 
 1. Model receives configuration change notification
 2. Creates internal device connection handle
@@ -313,571 +240,344 @@ This triggers:
 
 ***
 
-### SECTION 3: CONNECTION ESTABLISHMENT (Discovery + TLS + Multiplexing)
-
-#### Purpose
+## Connection Establishment (Discovery + TLS + Multiplexing)
 
 Find the remote device on the network and establish a secure, authenticated, multiplexed connection.
 
-#### Files Involved
+### Listeners + Discovery
 
-| File                               | Role                                       |
-| ---------------------------------- | ------------------------------------------ |
-| `lib/connections/service.go`       | Main connection orchestrator               |
-| `lib/connections/tcp_listener.go`  | TCP socket listener                        |
-| `lib/connections/quic_listener.go` | QUIC socket listener                       |
-| `lib/discover/local.go`            | LAN broadcast discovery                    |
-| `lib/discover/global.go`           | Global discovery (DHT-like)                |
-| `lib/discover/cache.go`            | Cached addresses from previous connections |
-| `lib/tlsutil/tlsutil.go`           | TLS configuration and verification         |
-| `lib/protocol/protocol.go`         | Connection multiplexing & wire protocol    |
-| `lib/relay/client/`                | Relay connection client                    |
-
-#### Step-by-Step Flow
-
+```mermaid
+flowchart TD
+    A[Start Listeners] --> B[Read Listen Addresses from Config]
+    B --> C[Start TCP Listener :22000]
+    B --> D[Start QUIC Listener :22000]
+    C --> E{Discovery Methods}
+    D --> E
+    E --> F[Local Discovery: LAN Broadcast]
+    E --> G[Global Discovery: DHT Servers]
+    E --> H[Static Addresses: Manual Config]
+    E --> I[Address Cache: Previous Connections]
+    F --> J{Any Address Found?}
+    G --> J
+    H --> J
+    I --> J
+    J -->|Yes| K[Proceed to Dial Attempt]
+    J -->|No| E
 ```
-CONNECTION ESTABLISHMENT
-========================
 
-STEP 3.1: START LISTENERS
--------------------------
-File: lib/connections/service.go: Serve()
+#### **Start Lisiteners**
 
-1. Read listen addresses from config:
-   Default: "tcp://0.0.0.0:22000, quic://0.0.0.0:22000"
+Syncthing reads the listen addresses from its configuration — by default `tcp://0.0.0.0:22000` and `quic://0.0.0.0:22000` — and binds to all network interfaces on port 22000. It starts a TCP listener that accepts incoming connections, wraps each one in TLS, and passes it to the connection handler. It also starts a QUIC listener over UDP on the same port, handling incoming sessions the same way. Both protocols run side by side, sharing the single port number.
 
-2. Start TCP listener (lib/connections/tcp_listener.go):
-   net.Listen("tcp", "0.0.0.0:22000")
-   for each incoming connection:
-      conn = listener.Accept()
-      tlsConn = tls.Server(conn, tlsConfig)  ← see step 3.4
-      handleConnection(tlsConn)
+Key things:
 
-3. Start QUIC listener (lib/connections/quic_listener.go):
-   quic.ListenAddr("0.0.0.0:22000", tlsConfig, ...)
-   for each incoming session:
-      handleConnection(session)
-
-Both TCP and QUIC share port 22000 (QUIC runs over UDP)
-
-
-STEP 3.2: DEVICE DISCOVERY (Finding the Remote Device's IP)
------------------------------------------------------------
-The connection service tries MULTIPLE discovery methods in PARALLEL:
-
-METHOD 1: LOCAL DISCOVERY (LAN)
-File: lib/discover/local.go
-
-Device A (you):
-  1. Send IPv4 broadcast: 255.255.255.255:21027
-  2. Send IPv6 multicast: [ff12::8384]:21027
-  3. Message contains: "I am Device ABCD-..., at 192.168.1.5"
-  4. Repeat every ~30 seconds
-
-Device B (friend):
-  1. Listens on port 21027 for broadcasts
-  2. Receives: "Device ABCD-... at 192.168.1.5"
-  3. Checks: "Do I have ABCD-... in my config?" → YES
-  4. Replies directly: "I am WXYZ-... at 192.168.1.10:22000"
-
-Result: Both devices know each other's LAN IPs within seconds
-No internet required!
-
-
-METHOD 2: GLOBAL DISCOVERY (Internet)
-File: lib/discover/global.go
-
-Architecture: Distributed Hash Table (DHT) of discovery servers
-
-┌──────────────────────────────────────────────────┐
-│  Global Discovery Servers (community-run)        │
-│  discovery.syncthing.net (default, public)       │
-│  discovery-v6.syncthing.net                      │
-│  (You can run your own: cmd/stdiscosrv/)         │
-└──────────────────────────────────────────────────┘
-     ▲                               ▲
-     │ Announce (encrypted)          │ Announce (encrypted)
-     │                               │
-┌────┴─────┐                    ┌────┴─────┐
-│ Device A │                    │ Device B │
-│ (you)    │                    │ (friend) │
-└──────────┘                    └──────────┘
-
-Step by step:
-1. Device A connects to discovery.syncthing.net:443 (HTTPS)
-2. A announces: "I'm at IP 203.0.113.5, looking for WXYZ-..."
-3. Device B also announces: "I'm at IP 198.51.100.10, looking for ABCD-..."
-4. Server matches: both looking for each other!
-5. Server tells A: "WXYZ-... is at 198.51.100.10:22000"
-6. Server tells B: "ABCD-... is at 203.0.113.5:22000"
-
-PRIVACY: Discovery server sees:
-- Opaque Device IDs (just random-looking strings)
-- IP addresses
-Server does NOT see:
-- File names, folder names, file contents
-- Any data that could identify the user
-Announcements are encrypted with the device's key
-
-
-METHOD 3: STATIC ADDRESSES (Manual)
-File: lib/connections/service.go
-
-If user configured: <address>tcp://1.2.3.4:22000</address>
-→ Dial directly to that address, no discovery needed
-
-
-METHOD 4: ADDRESS CACHE
-File: lib/discover/cache.go
-
-Previously successful addresses are cached to disk
-On restart, try cached addresses immediately (fast reconnect)
-
-All methods run in PARALLEL. First successful connection wins.
-
-
-STEP 3.3: DIAL ATTEMPT
-----------------------
-File: lib/connections/service.go: connect()
-
-For each discovered address, try to connect:
-
-1. net.Dial("tcp", "198.51.100.10:22000")
-2. Wrap in TLS: tls.Client(rawConn, tlsConfig)
-
-   tlsConfig = &tls.Config{
-     Certificates:       []tls.Certificate{myCert},
-     MinVersion:         tls.VersionTLS12,
-     InsecureSkipVerify: true,  ← NO CA verification!
-     VerifyPeerCertificate: customVerifyFunc, ← MANUAL CHECK
-     ServerName:         "",     ← not used
-   }
-
-
-STEP 3.4: MUTUAL TLS HANDSHAKE (The Critical Security Step)
-----------------------------------------------------------
-
-DEVICE A (you)                          DEVICE B (friend)
-┌─────────────────┐                    ┌─────────────────┐
-│ cert_A (ABCD..) │                    │ cert_B (WXYZ..) │
-│ key_A  (secret) │                    │ key_B  (secret) │
-└─────────────────┘                    └─────────────────┘
-        │                                       │
-        │  1. TCP/QUIC Connect                  │
-        │──────────────────────────────────────>│
-        │                                       │
-        │  2. TLS ClientHello                   │
-        │<──────────────────────────────────────│
-        │                                       │
-        │  3. ServerHello + cert_A.pem          │
-        │──────────────────────────────────────>│
-        │                                       │
-        │  4. cert_B.pem                        │
-        │<──────────────────────────────────────│
-        │                                       │
-5. VERIFY PEER:           │     6. VERIFY PEER:
-┌─────────────────────┐   │    ┌─────────────────────┐
-│ receivedCert = conn │   │    │ receivedCert = conn │
-│   .PeerCertificates │   │    │   .PeerCertificates │
-│                     │   │    │                     │
-│ pubKey = received   │   │    │ pubKey = received   │
-│   .PublicKey        │   │    │   .PublicKey        │
-│                     │   │    │                     │
-│ hash = SHA256(      │   │    │ hash = SHA256(      │
-│   pubKey.DER())     │   │    │   pubKey.DER())     │
-│                     │   │    │                     │
-│ candidateID =       │   │    │ candidateID =       │
-│   base32(hash)      │   │    │   base32(hash)      │
-│                     │   │    │                     │
-│ IS candidateID      │   │    │ IS candidateID      │
-│ IN config.xml       │   │    │ IN config.xml       │
-│ device list?        │   │    │ device list?        │
-│                     │   │    │                     │
-│ YES → "WXYZ-..." ✓  │   │    │ YES → "ABCD-..." ✓  │
-│ Allowed!            │   │    │ Allowed!            │
-└─────────────────────┘   │    └─────────────────────┘
-        │                                        │
-        │  7. TLS Handshake Complete             │
-        │<────────── ENCRYPTED CHANNEL ─────────>│
-        │                                        │
-
-⚠️  NO Certificate Authority (CA) involved!
-⚠️  Trust is purely: "This cert hashes to a Device ID I know"
-⚠️  If hash doesn't match any known Device ID → connection REJECTED
-
-Code: lib/tlsutil/tlsutil.go → VerifyPeerCertificate callback
-
-
-STEP 3.5: PROTOCOL NEGOTIATION
-------------------------------
-File: lib/protocol/protocol.go: connection handshake
-
-After TLS, devices exchange a "Hello" message:
-
-Device A sends:                    Device B sends:
-{                                  {
-  deviceID: "ABCD-...",              deviceID: "WXYZ-...",
-  clientName: "syncthing",           clientName: "syncthing",
-  clientVersion: "v2.1.0",           clientVersion: "v2.1.0",
-}                                  }
-
-1. Both verify: received deviceID matches the TLS-verified identity
-2. Exchange "ClusterConfig" (which folders are shared with whom)
-3. Connection is now fully established
-
-
-STEP 3.6: CONNECTION MULTIPLEXING
----------------------------------
-File: lib/protocol/protocol.go: Connection Multiplexing
-
-One TCP/QUIC connection = Multiple logical streams:
-
-┌──────────────────────────────────────────────────────────────────┐
-│  PHYSICAL CONNECTION (TLS 1.3 encrypted)                         │
-│                                                                  │
-│  ┌────────────────────────────────────────────────────────────┐  │
-│  │  Stream 0: Index Data (metadata exchange)                  │  │
-│  │  Stream 1: Block Request (outgoing: "give me block 5")     │  │
-│  │  Stream 2: Block Response (incoming: "here's block 5")     │  │
-│  │  Stream 3: Block Request (file B)                          │  │
-│  │  Stream 4: Block Response (file B)                         │  │
-│  │  Stream 5: Ping/Pong keepalive                             │  │
-│  │  Stream 6: ClusterConfig updates                           │  │
-│  │  ... (more as needed)                                      │  │
-│  └────────────────────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────────────────┘
-
-How multiplexing works:
-- Each message has a header: [streamID | messageType | length]
-- Messages on different streams are independent
-- Can interleave: Stream 1 msg, Stream 3 msg, Stream 1 msg, etc.
-- Each stream has its own sequence numbers for ordering
-- Go goroutines handle each stream concurrently
-
-PARALLEL TRANSFER CAPABILITY:
-- Multiple files can transfer simultaneously (different streams)
-- Within one file, multiple block requests can be in-flight
-- Default: up to 4 concurrent file transfers per device
-- Within a file: up to 16 outstanding block requests at once
-- Blocks can arrive OUT OF ORDER and are written to correct offset
-```
+* Listens on all interfaces, port 22000
+* TCP and QUIC simultaneously
+* Every connection is TLS-wrapped before any data flows
 
 ***
 
-### SECTION 4: FILE SYNCHRONIZATION (The Core Loop)
+#### Device Discovery
 
-#### Purpose
+Syncthing finds the remote device's IP address by trying four methods in parallel and using whichever responds first.
+
+**Local Discovery (LAN):** Each device broadcasts its presence on the local network every 30 seconds — "I am Device ABCD-..., at 192.168.1.5" — using IPv4 broadcast to `255.255.255.255:21027` and IPv6 multicast to `[ff12::8384]:21027`. Other devices listen on port 21027. When a device hears a broadcast from a Device ID it recognizes from its configuration, it replies directly with its own address. Both devices learn each other's LAN IPs within seconds without any internet access.
+
+**Global Discovery (Internet):** Devices connect to community-run discovery servers over HTTPS. Each device announces its current IP address and which Device ID it wants to reach. When the server sees two devices announcing that they're looking for each other, it shares their IP addresses. The discovery server only sees opaque Device IDs and IP addresses — never file names, folder contents, or anything that could identify the user. Announcements are encrypted with each device's key. Users can also run their own discovery server for complete privacy.
+
+**Static Addresses:** If a user has manually configured a fixed address like `tcp://1.2.3.4:22000` for a device, Syncthing dials it directly without any discovery step.
+
+**Address Cache:** Previously successful addresses are saved to disk. On restart, Syncthing tries these cached addresses immediately for a fast reconnect before waiting for discovery.
+
+> All four methods run simultaneously. The first one to produce a working address wins.
+
+```mermaid
+sequenceDiagram
+    participant A as Device A
+    participant B as Device B
+
+    A->>B: TCP/QUIC Connect to IP:22000
+    B->>A: TLS ClientHello
+    A->>B: ServerHello + Certificate (cert_A)
+    B->>A: Certificate (cert_B)
+
+    Note over A: Hash cert_B public key with SHA-256<br/>Compare against trusted Device IDs<br/>Match? YES → Allow
+
+    Note over B: Hash cert_A public key with SHA-256<br/>Compare against trusted Device IDs<br/>Match? YES → Allow
+
+    Note over A,B: Encrypted Channel Established (TLS 1.3)
+
+    A->>B: Hello: "I am ABCD-..., syncthing v2.1.0"
+    B->>A: Hello: "I am WXYZ-..., syncthing v2.1.0"
+
+    Note over A,B: Verify Device ID matches TLS certificate
+
+    A->>B: ClusterConfig: "I share folder 'Documents' with you"
+    B->>A: ClusterConfig: "I share folder 'Documents' with you"
+
+    Note over A,B: Connection fully established
+```
+
+### Dial Attempt
+
+Once discovery produces an IP address, Syncthing dials it on port 22000 and wraps the raw connection in TLS. Certificate authority verification is disabled, and instead a custom callback verifies the peer by hashing its certificate and checking whether the resulting Device ID exists in the local trusted device list. No CA, no server name, just the raw certificate check.
+
+Key things:
+
+* Dials the discovered IP on port 22000
+* TLS configured with CA verification turned off
+* Custom callback handles verification by hashing the peer certificate into a Device ID
+
+***
+
+#### Mutual TLS Handshake
+
+This is the critical security step where both devices prove their identities without any central authority.
+
+Device A and Device B each hold a self-signed certificate and a secret private key. The handshake proceeds in four steps: Device A connects, Device B sends a ClientHello, Device A replies with its certificate, and Device B sends its own certificate.
+
+Then both sides perform the same verification. They extract the received certificate's public key, compute its SHA-256 hash, encode it as a Device ID, and check whether that Device ID appears in their local configuration's trusted device list. If the hash matches a known Device ID, the connection is allowed. If it does not match, the connection is rejected immediately.
+
+No certificate authority is involved. Trust comes entirely from the out-of-band Device ID exchange done earlier: "This certificate hashes to a Device ID I was explicitly told to trust." Once both sides accept, the TLS handshake completes and an encrypted channel is established.
+
+Key things:
+
+* Both devices present self-signed certificates
+* Each side hashes the other's certificate and compares to trusted Device IDs
+* No CA — trust is purely certificate pinning
+* Mismatched hash means immediate rejection
+
+***
+
+#### Protocol Negotiation
+
+After TLS encryption is active, the devices confirm their identities at the application level. Each sends a Hello message containing its Device ID, client name, and version. Both sides verify that the Device ID in the Hello matches the identity from the TLS certificate. They then exchange ClusterConfig messages listing which folders are shared with whom. At this point, the connection is fully established.
+
+Key things:
+
+* Hello messages confirm Device ID, client name, and version
+* Device ID is cross-checked against the TLS certificate
+* ClusterConfig declares shared folders
+
+***
+
+#### Connection Multiplexing
+
+A single physical TLS connection carries multiple independent logical streams. Each message carries a header with a stream ID, message type, and length, so messages from different streams can be interleaved freely — a block request for file A, then a block request for file B, then a response for file A, and so on.
+
+* Stream 0: Index data (file metadata exchange)
+* Stream 1-N: Block requests and responses for different files
+* Dedicated stream: Ping/pong keepalive messages to detect dead connections
+* Dedicated stream: ClusterConfig updates when folder sharing changes
+
+This multiplexing enables parallel transfers: multiple files can sync simultaneously, and within a single file up to 16 block requests can be in flight at once. Blocks can arrive out of order and are written directly to the correct offset in the temporary file. Go goroutines handle each stream concurrently, making efficient use of a single encrypted channel.
+
+Key things:
+
+* One physical connection, many logical streams
+* Each message tagged with stream ID for interleaving
+* Separate streams for index data, block transfers, keepalive, and config
+* Up to 4 concurrent files, 16 in-flight blocks per file
+* Blocks written to correct offset regardless of arrival order
+
+***
+
+## File Synchronization
 
 Detect which files need to be transferred, transfer only the changed blocks, verify integrity, handle conflicts.
 
-#### Files Involved
+### Indexing
 
-| File                       | Role                                        |
-| -------------------------- | ------------------------------------------- |
-| `lib/model/model.go`       | Core sync orchestrator, puller/pusher logic |
-| `lib/model/folder.go`      | Per-folder state management                 |
-| `lib/model/requests.go`    | Block request handling                      |
-| `lib/scanner/walk.go`      | File system walking & block hashing         |
-| `lib/db/set.go`            | Index database (FileSet)                    |
-| `lib/db/meta.go`           | Metadata storage                            |
-| `lib/db/transactions.go`   | DB transaction support                      |
-| `lib/protocol/protocol.go` | Index & block exchange wire protocol        |
-| `lib/fs/walk.go`           | File system abstraction for scanning        |
-| `lib/fs/watch.go`          | Real-time file change notifications         |
-| `lib/versioner/`           | File versioning strategies                  |
+```mermaid
+sequenceDiagram
+    participant Scanner as Scanner
+    participant DB as Database
+    participant A as Device A
+    participant B as Device B
 
-#### Step-by-Step Flow
+    Note over Scanner: Walk folder recursively
+    Scanner->>Scanner: Stat each file (size, time, permissions)
+    Scanner->>Scanner: Read file in 128 KiB blocks
+    Scanner->>Scanner: Compute SHA-256 per block
+    Scanner->>Scanner: Build FileInfo (name, size, blocks, version)
+    Scanner->>DB: Store all FileInfos
 
+    Note over A,B: On connection, exchange indexes
+    A->>B: Send local index (all FileInfos)
+    B->>A: Send local index (all FileInfos)
+
+    Note over A,B: Index contains metadata only — no file contents
 ```
-FILE SYNCHRONIZATION
-====================
 
-STEP 4.1: INITIAL LOCAL INDEXING (Scanner)
-------------------------------------------
-File: lib/scanner/walk.go: Walk() → hashFile()
+#### Initial Local Indexing
 
-When a folder is first added or rescanned:
+When a folder is first added or rescanned, Syncthing walks it recursively and builds a local index. For each file, it reads the file's size, modification time, and permissions. Then it opens the file and reads it in 128 KiB blocks, computing a SHA-256 hash for each block. These hashes are stored in a list of block metadata, each entry recording the block's byte offset, size, and hash.
 
-1. Walk the folder recursively (lib/fs/walk.go)
-2. For each file:
-   a. Stat file: get size, modification time, permissions
+From this, Syncthing builds a FileInfo structure containing the file name, total size, modification timestamp, permissions, an initial version vector, and the list of block hashes. A 2 MB file produces 16 blocks of 128 KiB each.
 
-   b. Open file for reading
+All FileInfo entries are stored in a local key-value database, keyed by folder ID and filename, with the FileInfo serialized using Protocol Buffers. This database is what gets compared with remote devices to determine what needs syncing.
 
-   c. Read in 128 KiB blocks (default BlockSize):
-      buf := make([]byte, blockSize)  // 131072 bytes
-      for offset := 0; offset < fileSize; offset += n {
-          n, _ = io.ReadFull(file, buf)
-          hash = sha256.Sum256(buf[:n])
-          blocks = append(blocks, BlockInfo{
-              Offset: offset,
-              Size:   n,
-              Hash:   hash[:],   // 32 bytes
-          })
-      }
+Key things:
 
-   d. Build FileInfo:
-      {
-        Name:        "photos/sunset.jpg",
-        Size:        2097152,        // 2 MB
-        ModifiedS:   1716150000,     // Unix timestamp
-        Permissions: 0644,
-        Version:     Vector{{MyID: 1}}, // initial version
-        Blocks: [
-          {Offset: 0,       Size: 131072, Hash: 0xA1B2...},
-          {Offset: 131072,  Size: 131072, Hash: 0xC3D4...},
-          ... (16 blocks for 2 MB file)
-        ],
-      }
+* Walks folder recursively
+* Splits each file into 128 KiB blocks
+* Computes SHA-256 hash per block
+* Builds FileInfo: name, size, time, permissions, version, block list
+* Stores everything in local database
 
-3. Store all FileInfos in local database (lib/db/set.go)
-   db.Set.Update(folderID, []protocol.FileInfo{...})
-   - Key-Value store (LevelDB or Badger, depending on version)
-   - Key:   folderID + filename
-   - Value: serialized FileInfo (protobuf)
+***
 
+#### Index Exchange
 
-STEP 4.2: INDEX EXCHANGE (Sharing Metadata)
--------------------------------------------
-Files: lib/model/model.go: sendIndexes() / receiveIndex()
-       lib/protocol/protocol.go: Index message serialization
+When two devices connect and share a folder, they exchange their local indexes. Each device sends its complete list of FileInfo entries to the other, then receives the remote device's list in return.
 
-When two devices connect and share a folder:
+The index contains only metadata: file names and paths, sizes, modification times, permissions, SHA-256 hashes of every block, and version vectors. It does not contain any actual file data. The block hashes are what allow devices to determine which specific blocks have changed without ever sending the file contents themselves.
 
-Device A (you)                              Device B (friend)
-┌────────────────┐                         ┌────────────────┐
-│ Local Index:   │                         │ Local Index:   │
-│ report.pdf v3  │                         │ report.pdf v2  │
-│ photo.jpg  v1  │                         │ notes.txt  v1  │
-│ notes.txt  v5  │                         │                │
-└────────────────┘                         └────────────────┘
-        │                                          │
-        │  1. Send Index (all FileInfos)           │
-        │─────────────────────────────────────────>│
-        │                                          │
-        │  2. Send Index (all FileInfos)           │
-        │<─────────────────────────────────────────│
-        │                                          │
+Key things:
 
-THE INDEX CONTAINS METADATA ONLY:
-- File names and paths
-- Sizes, modification times, permissions
-- SHA-256 hashes of every block (NOT the block data itself)
-- Version vectors (modification counters)
+* Both devices send their full index on connection
+* Contains metadata only — no file contents
+* Block hashes enable efficient comparison later
 
-THE INDEX DOES NOT CONTAIN:
-- Actual file contents/bytes
-- Any data that could be used without the actual files
+### Comparison & Conflict
 
-
-STEP 4.3: COMPARISON (Determining What to Sync)
------------------------------------------------
-File: lib/model/model.go: diffIndexes(localIndex, remoteIndex)
-
-For each file in the combined set of filenames:
-
-CASE 1: File only exists locally, not remotely
-  Local:  photo.jpg v1
-  Remote: (not present)
-  → ACTION: Mark for PUSH to remote
-
-CASE 2: File only exists remotely, not locally
-  Local:  (not present)
-  Remote: notes.txt v1
-  → ACTION: Mark for PULL from remote
-
-CASE 3: File exists on both, same version vector
-  Local:  photo.jpg v1
-  Remote: photo.jpg v1
-  → VERIFY: Compare block hashes
-  → If all hashes match: IN SYNC (no action)
-  → If hash mismatch: treat as conflict (rare, indicates
-    corruption or hash collision)
-
-CASE 4: One version is strictly newer (higher counter)
-  Local:  report.pdf v3
-  Remote: report.pdf v2
-  → Local is newer → ACTION: PUSH to remote
-
-CASE 5: CONFLICT - Both have changed independently
-  Local:  report.pdf v3{[A]=3}
-  Remote: report.pdf v3{[B]=3}
-  Same version number, but different actors!
-  → CONFLICT DETECTED
-
-
-STEP 4.4: CONFLICT RESOLUTION
------------------------------
-File: lib/model/model.go: resolveConflict()
-
-When both devices modified the same file since last sync:
-
-1. Compare version vectors:
-   Vector comparison is NOT "highest number wins"
-   It's "is one a direct ancestor of the other?"
-
-   Example 1 (No conflict):
-   Local:  {[A]: 5, [B]: 3}
-   Remote: {[A]: 4, [B]: 3}
-   → Local has A=5 while Remote has A=4
-   → Remote's state is an ANCESTOR of Local's state
-   → Local WINS, no conflict
-
-   Example 2 (CONFLICT):
-   Local:  {[A]: 5, [B]: 3}
-   Remote: {[A]: 4, [B]: 5}
-   → Neither is ancestor of the other
-   → TRUE CONFLICT
-
-2. Conflict handling:
-   a. The "winning" side: file with the LARGER version vector
-      (lexicographic comparison if tied)
-      → This file keeps the original filename
-
-   b. The "losing" side: file is RENAMED to:
-      report.sync-conflict-20260519-143052-WXYZ123.txt
-      (original name, "sync-conflict", timestamp, device ID)
-
-   c. BOTH files are synced to BOTH devices
-   d. NO DATA IS LOST
-
-
-STEP 4.5: BLOCK-LEVEL TRANSFER (Pull Logic)
--------------------------------------------
-Files: lib/model/model.go: puller logic (handleFile, pullerIteration)
-       lib/model/requests.go: requestBlock()
-
-For each file marked as PULL:
-
-PHASE A: Determine needed blocks
-
-  IF file doesn't exist locally:
-    → Need ALL blocks from remote index
-
-  IF file exists locally (older version):
-    → Compute SHA-256 of each block of LOCAL file
-    → Compare with REMOTE index block hashes:
-
-      Local blocks:        Remote index:        Action:
-      [0] 0xABC...   ==    [0] 0xABC...   →   REUSE ✓
-      [1] 0xDEF...   !=    [1] 0xXYZ...   →   REQUEST
-      [2] 0xGHI...   ==    [2] 0xGHI...   →   REUSE ✓
-      [3] 0xJKL...   !=    [3] 0xPQR...   →   REQUEST
-
-    → Only request blocks [1] and [3]!
-    → Copy reusable blocks from old file to temp file
-
-PHASE B: Create temporary file
-
-  tempFile = os.CreateTemp(folderPath, ".syncthing.tmp")
-
-  If reusable blocks exist:
-    for each reusable block:
-      oldFile.ReadAt(buf, block.Offset)
-      tempFile.WriteAt(buf, block.Offset)
-
-PHASE C: Request and receive blocks (PARALLEL)
-
-  // Send requests for up to 16 blocks at once
-  inFlight := 0
-  maxInFlight := 16
-  pendingBlocks := map[int]*pending{}
-
-  for _, blockIdx := range neededBlocks {
-      if inFlight >= maxInFlight {
-          waitForOneResponse()
-      }
-      sendRequest(blockIdx)
-      pendingBlocks[blockIdx] = now()
-      inFlight++
-  }
-
-  // Handle responses (out of order is fine!)
-  for response := range responseChannel {
-      // VERIFY HASH IMMEDIATELY
-      expectedHash := blocks[response.Index].Hash
-      actualHash := sha256.Sum256(response.Data)
-
-      if !bytes.Equal(expectedHash, actualHash) {
-          log.Printf("HASH MISMATCH block %d!", idx)
-          sendRequest(idx)  // RE-REQUEST THIS BLOCK ONLY
-          continue
-      }
-
-      // Write to correct offset (out of order is fine!)
-      tempFile.WriteAt(response.Data,
-                        blocks[response.Index].Offset)
-      delete(pendingBlocks, response.Index)
-      inFlight--
-  }
-
-PHASE D: Finalize
-
-  1. All blocks received and verified ✓
-  2. Optional: Full file SHA-256 verification
-  3. Set correct modification time and permissions
-  4. Atomic rename: tempFile → finalFilename
-  5. Update local database with new FileInfo
-  6. Emit "file synced" event to GUI
-
-
-STEP 4.6: CONTINUOUS MONITORING (Steady State)
-----------------------------------------------
-After initial sync, enter continuous mode:
-
-METHOD A: REAL-TIME FILE WATCHING (Primary)
-File: lib/fs/watch.go
-
-1. OS-level file system notifications:
-   - Linux:   inotify
-   - macOS:   FSEvents (or kqueue)
-   - Windows: ReadDirectoryChangesW
-
-2. Event flow:
-   User saves "report.txt"
-        │
-        ▼
-   OS sends: "file modified: /sync/report.txt"
-        │
-        ▼
-   fs/watch.go: receives event
-        │
-        ▼
-   Debounce: wait 500ms for more events
-        │
-        ▼
-   scanner.Walk() → hash just this file
-        │
-        ▼
-   db.Set.Update() → update local index
-        │
-        ▼
-   model.sendIndexUpdate() → push delta to remote
-        │
-        ▼
-   Remote device: receives index, pulls changed blocks
-
-   TOTAL LATENCY: 1-3 seconds
-
-3. Events debounced to handle rapid successive saves:
-   - IDE auto-saves every 2 seconds: only scan once
-   - Large file copy: wait for write to complete
-
-
-METHOD B: PERIODIC FULL RESCAN (Safety Net)
-File: lib/model/model.go: rescanTimer
-
-- Runs at configurable interval (default: 3600 seconds = 1 hour)
-- Purpose: catch changes the file watcher might have missed:
-  • File watcher errors
-  • Changes made while Syncthing was stopped
-  • Files modified by other tools that bypass FS events
-
-Full rescan flow:
-1. scanner.Walk() entire folder
-2. Compare with database
-3. Send delta index for any differences
+```mermaid
+flowchart TD
+    A[Compare local and remote indexes] --> B{File exists where?}
+    B -->|Only local| C[Mark for PUSH]
+    B -->|Only remote| D[Mark for PULL]
+    B -->|Both sides| E{Version vectors}
+    E -->|Same version| F{Block hashes match?}
+    F -->|Yes| G[In sync, no action]
+    F -->|No| H[Conflict: corruption or collision]
+    E -->|One is ancestor| I[Newer version wins, no conflict]
+    E -->|Neither is ancestor| J[TRUE CONFLICT]
+    J --> K[Winner keeps filename]
+    J --> L[Loser renamed: file.sync-conflict-timestamp-DeviceID]
+    K --> M[Both files synced to both devices]
+    L --> M
 ```
+
+#### Comparison
+
+Once both indexes are received, Syncthing compares them to decide what action to take for each file.
+
+If a file only exists locally, it's marked for push to the remote device. If a file only exists remotely, it's marked for pull from the remote device. If a file exists on both sides with the same version vector, Syncthing compares the block hashes if they match, the file is in sync and no action is needed; if they don't match, it's treated as a conflict, which is rare and usually indicates corruption or a hash collision.
+
+If one side has a strictly newer version, the newer one wins and gets pushed to the other device. If both sides changed the same file independently and neither version is a direct ancestor of the other, a true conflict is detected and handed off to conflict resolution.
+
+Key things:
+
+* File only local → push
+* File only remote → pull
+* Same version, matching hashes → in sync
+* One version is ancestor → newer wins
+* Neither is ancestor → conflict
+
+***
+
+#### Conflict Resolution
+
+When both devices modified the same file since their last sync, Syncthing resolves the conflict by comparing version vectors. The comparison isn't "highest counter wins" — it checks whether one version is a direct ancestor of the other. If Remote's state is an ancestor of Local's state, Local wins cleanly with no conflict. If neither side is an ancestor of the other, it's a true conflict.
+
+In a true conflict, the side with the larger version vector keeps the original filename. The losing side gets renamed with the pattern `filename.sync-conflict-timestamp-DeviceID.ext`. Both files are synced to both devices, so no data is ever lost.
+
+Key things:
+
+* Conflict only when neither version is an ancestor of the other
+* Winner keeps original filename
+* Loser renamed with timestamp and device ID
+* Both files synced everywhere, no data lost
+
+### Block Transfer
+
+```mermaid
+flowchart TD
+    A[File marked for PULL] --> B{File exists locally?}
+    B -->|No| C[Need ALL blocks]
+    B -->|Yes, older version| D[Compute SHA-256 of local blocks]
+    D --> E[Compare with remote block hashes]
+    E --> F{Hash matches?}
+    F -->|Yes| G[Reuse block from old file]
+    F -->|No| H[Request block from remote]
+    C --> I[Create temp file]
+    G --> I
+    H --> I
+    I --> J[Request up to 16 blocks in parallel]
+    J --> K[Receive block response]
+    K --> L{Verify SHA-256}
+    L -->|Match| M[Write block to correct offset in temp file]
+    L -->|Mismatch| N[Re-request this block only]
+    N --> J
+    M --> O{All blocks received?}
+    O -->|No| J
+    O -->|Yes| P[Atomic rename: temp file to final filename]
+    P --> Q[Update database]
+```
+
+#### Block Level Transfer
+
+For each file marked for pull, Syncthing determines which blocks it actually needs. If the file doesn't exist locally at all, every block must be requested. If an older version exists locally, Syncthing computes the SHA-256 hash of each local block and compares them against the remote index. Blocks with matching hashes are reused from the old file — only blocks with different hashes are requested from the remote device.
+
+A temporary file is created in the sync folder. Any reusable blocks are copied from the old file into the temp file at their correct offsets. Then Syncthing requests the missing blocks from the remote device, keeping up to 16 requests in flight at once. As each response arrives, the block's SHA-256 hash is verified immediately. If the hash matches, the block is written to the correct offset in the temp file — blocks can arrive in any order and are placed correctly regardless. If the hash doesn't match, only that specific block is re-requested; nothing else is affected.
+
+Once all blocks are received and verified, Syncthing optionally verifies the full file hash, sets the correct modification time and permissions, atomically renames the temp file to the final filename, updates the local database with the new FileInfo, and emits a "file synced" event to the GUI.
+
+Key things:
+
+* Reuses blocks from old local file when hashes match
+* Requests only changed blocks, not the whole file
+* Up to 16 block requests in flight at once
+* Each block verified by SHA-256 on arrival
+* Hash mismatch → re-request only that block
+* Blocks written to correct offset regardless of arrival order
+* Atomic rename from temp file to final filename when complete
+
+### Continous Monitoring
+
+```mermaid
+graph TD
+    subgraph Primary["Real-Time Watching (Primary)"]
+        OS["OS File Watcher<br/>inotify / FSEvents / ReadDirectoryChangesW"]
+        Debounce["Debounce 500ms"]
+        Hash["Hash Changed File Only"]
+        Push["Push Delta Index to Remote Devices"]
+    end
+
+    subgraph Safety["Periodic Full Rescan (Safety Net)"]
+        Timer["Timer: Every 1 Hour"]
+        Walk["Walk Entire Folder"]
+        Compare["Compare with Database"]
+        Delta["Send Delta for Any Differences"]
+    end
+
+    Primary --> Safety
+
+    OS --> Debounce --> Hash --> Push
+    Timer --> Walk --> Compare --> Delta
+```
+
+After the initial sync completes, Syncthing enters a steady state using two complementary methods to detect changes.
+
+**Method A: Real-Time File Watching (Primary)**
+
+Syncthing subscribes to OS-level file system notifications
+
+* notify on Linux
+* FSEvents on macOS
+* ReadDirectoryChangesW on Windows.&#x20;
+
+When a user saves a file, the operating system emits an event. Syncthing receives it, waits 500 milliseconds to debounce rapid successive saves like IDE auto-saves, then hashes only the changed file, updates the local index, and pushes a delta index to connected remote devices. The remote device receives the updated index and pulls only the changed blocks. Total latency from save to sync is typically one to three seconds.
+
+**Method B: Periodic Full Rescan (Safety Net)**
+
+A timer triggers a full folder walk at a configurable interval, defaulting to once per hour. It rescans every file, compares against the database, and sends delta indexes for any differences. This catches changes the file watcher might have missed: watcher errors, modifications made while Syncthing was stopped, or changes by tools that bypass filesystem events.
+
+Key things:
+
+* Primary: OS-level file watcher with 500ms debounce, 1-3 second latency
+* Safety net: full rescan every hour catches anything the watcher missed
+* Both produce delta indexes so remotes only pull what changed
 
 ***
 
