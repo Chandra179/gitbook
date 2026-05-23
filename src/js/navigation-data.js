@@ -32,6 +32,11 @@ const navigationData = [
         standalone: true,
     },
     {
+        name: "Syncthing",
+        slug: "syncthing",
+        standalone: true,
+    },
+    {
         name: "Fundamentals",
         slug: "fundamental",
         pages: [
