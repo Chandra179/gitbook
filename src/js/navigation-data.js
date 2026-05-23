@@ -17,8 +17,18 @@ const navigationData = [
         standalone: true,
     },
     {
+        name: "Psyhco",
+        slug: "psyhco",
+        standalone: true,
+    },
+    {
         name: "Quant",
         slug: "quant",
+        standalone: true,
+    },
+    {
+        name: "Saas Template",
+        slug: "saas-template",
         standalone: true,
     },
     {
@@ -31,6 +41,7 @@ const navigationData = [
             { name: "Consistent Hashing", slug: "consistent-hashing" },
             { name: "Database", slug: "database" },
             { name: "Domain", slug: "domain" },
+            { name: "Event Processing", slug: "event-processing" },
             { name: "ID Generator", slug: "id-generator" },
             { name: "Kafka", slug: "kafka" },
             { name: "Networking", slug: "networking" },
@@ -44,11 +55,8 @@ const navigationData = [
         name: "System Design",
         slug: "system-design",
         pages: [
-            { name: "Design Template", slug: "design-template" },
             { name: "Distributed Cache", slug: "distributed-cache" },
             { name: "Distributed Task Scheduler", slug: "distributed-task-scheduler" },
-            { name: "Event Processing", slug: "event-processing" },
-            { name: "Implementation Template", slug: "implementation-template" },
             { name: "Notification System", slug: "notification-system" },
             { name: "Rate Limit", slug: "rate-limit" },
             { name: "Real Time Chat Discord", slug: "real-time-chat-discord" },
