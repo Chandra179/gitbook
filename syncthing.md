@@ -1,5 +1,7 @@
 # Syncthing
 
+{% embed url="https://github.com/syncthing/syncthing" %}
+
 ## Architecture
 
 ```mermaid
