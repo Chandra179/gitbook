@@ -17,11 +17,6 @@ const navigationData = [
         standalone: true,
     },
     {
-        name: "RAG",
-        slug: "e2e-production-rag",
-        standalone: true,
-    },
-    {
         name: "ML",
         slug: "ml",
         standalone: true,
@@ -29,6 +24,11 @@ const navigationData = [
     {
         name: "Psyhco",
         slug: "psyhco",
+        standalone: true,
+    },
+    {
+        name: "Rag",
+        slug: "rag",
         standalone: true,
     },
     {

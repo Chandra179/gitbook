@@ -43,6 +43,9 @@ Both **servers** and **data keys** (users, files, sessions, etc.) get positions 
 Input: "Server-A"
 Hash: 23
 
+Input: "Server-B"
+Hash: 80
+
 Input: "user_9372"
 Hash: 67
 ```
@@ -53,10 +56,11 @@ That hash value determines the position on the ring. So our ring looks like this
 0 ---- 10 ---- 20 ---- 30 ---- 40 ---- 50 ---- 60 ---- 70 ---- 80 ---- 90 ---- back to 0
 
 Server-A at 23  
-user_9372 at 67
+user_9372 at 67  
+Server-B at 80
 ```
 
-A data key is stored on the first server encountered when moving **clockwise**. So `user_9372` is at position `67`. Walking clockwise, the next server is at position `80`. So the data is stored on that server.
+A data key is stored on the first server encountered when moving **clockwise**. So `user_9372` is at position `67`. Walking clockwise, the next server is `Server-B` at position `80`. So the data is stored on that server.
 
 #### What if no server is ahead?
 
@@ -166,3 +170,11 @@ After Server B dies: (The mapping shows where the traffic shifts to)
 ```
 
 Only the affected ranges are redistributed, and because of replication, the data is instantly accessible.
+
+### References
+
+> **Reference**: [Karger et al., *Consistent Hashing and Random Trees: Distributed Caching Protocols for Relieving Hot Spots on the World Wide Web* (1997)](https://dl.acm.org/doi/10.1145/258533.258660)
+
+> **Reference**: [David Karger & Eric Lehman, *Consistent Hashing in Dynamo-Style Databases* (Amazon Dynamo paper, 2007)](https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf)
+
+> **Reference**: [Wikipedia, *Consistent Hashing*](https://en.wikipedia.org/wiki/Consistent_hashing)

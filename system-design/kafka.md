@@ -13,7 +13,7 @@ A physical server or container within the cluster that stores and manages data.
 
 ### **Topic**
 
-A logical name or "folder" where you send and categorize data (e.g., `user-signups` or `payments`). A topic can have 0 or more partition depends on configuration. Partitions are distributed across different Brokers to allow multiple producers and consumers to work at the same time.
+A logical name or "folder" where you send and categorize data (e.g., `user-signups` or `payments`). A topic must have at least 1 partition (configurable). Partitions are distributed across different Brokers to allow multiple producers and consumers to work at the same time.
 
 ### **Producer**
 

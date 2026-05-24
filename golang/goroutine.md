@@ -2,7 +2,46 @@
 
 ### GPM Scheduler
 
-<figure><img src="https://2576044272-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F4G3qEfKKNTPjJ3BFGqg8%2Fuploads%2F7GttrHbCyk2Cj3tER1Dv%2Fimage.png?alt=media&#x26;token=cab3a4f2-1346-4c3d-aed9-bec9219dcf0e" alt=""><figcaption><p>Go GPM Architecture</p></figcaption></figure>
+```mermaid
+graph TB
+    subgraph Goroutines["Goroutines (G) — The Tasks"]
+        direction LR
+        G1["G1 (running)"]
+        G2["G2"]
+        G3["G3"]
+        G4["G4"]
+        G5["G5"]
+    end
+
+    P1_RUN["P1: Running G1"]
+    P1_LRQ["P1 Local Run Queue<br/>G2 → G3"]
+    P2_RUN["P2: Running G6"]
+    P2_LRQ["P2 Local Run Queue<br/>G4 → G5"]
+
+    subgraph Threads["OS Threads (M) — Chefs"]
+        M1["M1"]
+        M2["M2"]
+    end
+
+    P1_RUN -->|executes on| M1
+    P2_RUN -->|executes on| M2
+    G1 --> P1_RUN
+    G2 --> P1_LRQ
+    G3 --> P1_LRQ
+    G4 --> P2_LRQ
+    G5 --> P2_LRQ
+    P2 -.->|"① Work Stealing<br/>(steal half)"| P1_LRQ
+```
+
+**Syscall handoff flow:**
+
+```mermaid
+graph LR
+    G1["G1 (running)"] -->|blocking syscall| M1["M1 (blocks)"]
+    M1 -.->|"scheduler detaches P1"| P1["P1"]
+    P1 --> M2["M2 (new/idle)"]
+    P1 --> G2["G2 (resumed on M2)"]
+```
 
 * **G (Goroutine)** → The task itself. **Physically, a `g` struct in RAM** (heap). It contains a private stack (starting at \~2KB) and a "Program Counter" (a bookmark of the next line of code).
 * **P (Processor)** → The scheduler’s “cooking station.” A logical resource that holds the context for executing Go code.
@@ -44,7 +83,7 @@ go func() {
 ch <- "apple" // blocks until receiver is ready
 ```
 
-**Buffered:** `make(chan T, n)`. Has a "waiting room" of size `n`. Sends only block when the buffer is full. Leaky buffer: [https://go.dev/doc/effective\_go#leaky\_buffer](https://go.dev/doc/effective_go#leaky_buffer). If channel is full then the new data will be drop.
+**Buffered:** `make(chan T, n)`. Has a "waiting room" of size `n`. Sends only block when the buffer is full. A non-blocking send via `select` + `default` can drop data when the buffer is full — this is the basis of the [leaky buffer pattern](https://go.dev/doc/effective_go#leaky_buffer) for reusing allocations.
 
 ```go
 func main() {
@@ -89,7 +128,19 @@ When a Goroutine (G) hits a blocking operation (e.g., receiving from an empty ch
 3. **RAM Persistence:** The G’s stack and variables stay in RAM. **No extra data is created**; the G is simply "parked" while the CPU moves on to other work.
 4. **Resumption:** When a matching send/receive occurs, the scheduler moves the G pointer back to a **Local Run Queue** to resume.
 
-<figure><img src="https://miro.medium.com/v2/resize:fit:1094/1*sJ9y0EHlDqpmj7gnWrnL3w.png" alt="" height="436" width="700"><figcaption><p>Channel Memory Layout</p></figcaption></figure>
+```mermaid
+graph TB
+    subgraph hchan["hchan (Channel Struct in RAM)"]
+        LOCK["lock<br/>(mutex — thread-safe access)"]
+        BUF["buf<br/>(circular buffer — stores values)"]
+        SENDQ["sendq<br/>(linked list of blocked senders)"]
+        RECVQ["recvq<br/>(linked list of blocked receivers)"]
+    end
+
+    G_SENDER["Goroutine (blocked sender)"] -->|pointer enqueued| SENDQ
+    G_RECEIVER["Goroutine (blocked receiver)"] -->|pointer enqueued| RECVQ
+    BUF -->|"stores"| DATA["buffered values"]
+```
 
 ## Closures <a href="#fec9" id="fec9"></a>
 
@@ -117,7 +168,7 @@ for _, n := range numbers {
 
 **In Go 1.22 and newer**
 
-The Go team changed the language semantics so that the loop variable `n` is instance-per-iteration. Now, each pass through the loop creates a brand new memory address for `n`. Even if the goroutines are delayed in the queue, they each point to a unique "snapshot" of the value.
+The Go team changed the language semantics so that the loop variable `n` is instance-per-iteration. Now, each pass through the loop creates a brand new memory address for `n`. Even if the goroutines are delayed in the queue, they each point to a unique "snapshot" of the value. See [Go 1.22 Release Notes](https://go.dev/doc/go1.22#language).
 
 * Output: `1, 2, 3` (in random order).
 
