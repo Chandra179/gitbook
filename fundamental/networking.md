@@ -87,3 +87,24 @@ This determines how "friendly" a NAT is to Peer-to-Peer connections.
 * **Hairpinning (NAT Loopback):** Allows a device on the internal network to access another internal device using the **public** IP address. Without this, you can't "see" your own local server via its public URL while on the same Wi-Fi.
 * **CGNAT (Carrier-Grade NAT):** Used by mobile ISPs and many home ISPs. Your "Public IP" on your router is actually _another_ private IP (usually `100.64.x.x`). This is "NAT behind a NAT" and makes port forwarding almost impossible without a VPN or Tunnel (Tailscale/Cloudflare).
 * **UPnP / NAT-PMP:** Protocols that allow apps (like gaming consoles) to automatically ask the router to open a port.
+
+### References
+
+- [IETF RFC 2616 — HTTP/1.1](https://datatracker.ietf.org/doc/html/rfc2616)
+- [IETF RFC 7540 — HTTP/2](https://datatracker.ietf.org/doc/html/rfc7540)
+- [IETF RFC 9000 — QUIC & HTTP/3](https://datatracker.ietf.org/doc/html/rfc9000)
+- [IETF RFC 8446 — TLS 1.3](https://datatracker.ietf.org/doc/html/rfc8446)
+- [IETF RFC 7519 — JSON Web Token (JWT)](https://datatracker.ietf.org/doc/html/rfc7519)
+- [IETF RFC 6749 — OAuth 2.0](https://datatracker.ietf.org/doc/html/rfc6749)
+- [IETF RFC 7234 — HTTP Caching (Cache-Control)](https://datatracker.ietf.org/doc/html/rfc7234)
+- [IETF RFC 7232 — HTTP ETag / Conditional Requests](https://datatracker.ietf.org/doc/html/rfc7232)
+- [IETF RFC 6454 — Same-Origin Policy / CORS](https://datatracker.ietf.org/doc/html/rfc6454)
+- [IETF RFC 2663 — NAT Terminology](https://datatracker.ietf.org/doc/html/rfc2663)
+- [IETF RFC 4787 — NAT Behavioral Requirements (Mapping)](https://datatracker.ietf.org/doc/html/rfc4787)
+- [IETF RFC 5382 — NAT Behavioral Requirements (TCP)](https://datatracker.ietf.org/doc/html/rfc5382)
+- [IETF RFC 6598 — Carrier-Grade NAT (100.64.x.x)](https://datatracker.ietf.org/doc/html/rfc6598)
+- [IETF RFC 3489 / 5389 — STUN](https://datatracker.ietf.org/doc/html/rfc5389)
+- [IETF RFC 5766 — TURN](https://datatracker.ietf.org/doc/html/rfc5766)
+- [IETF RFC 8445 — ICE](https://datatracker.ietf.org/doc/html/rfc8445)
+- [RFC 5128 — P2P NAT Traversal](https://datatracker.ietf.org/doc/html/rfc5128)
+- [Cloudflare — What is CGNAT?](https://www.cloudflare.com/learning/network-layer/what-is-cgnat/)

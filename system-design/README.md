@@ -1,6 +1,8 @@
 # System Design
 
-### **Core**
+Building and architecting distributed systems at scale.
+
+### Core
 
 **Scalable**
 
@@ -18,16 +20,22 @@ latency and throughput. how fast your system responds and how much work it can h
 
 retry mechanism, fallback
 
+### Topics
+
+- **Infrastructure**: Kafka, RabbitMQ, event processing
+- **Patterns**: consistent hashing, ID generation, cache stampede, rate limiting
+- **Systems**: distributed cache, distributed task scheduler, notification system, real-time chat
+
 ### Building Blocks
 
-* Load balancers to distribute traffic
-* When to use db SQL & NoSQL
-* When to use caching (redis, memcached)
-* When to use message queue
-* CAP theorem (consistency, availability, partition tolerance)
-* Database sharding (split data accross multiple db)
-* Database replication for redundancy
-* CDNs for serving static content globally
-* Data consistency model (eventual, strong)
-* API design (rest, grpc, ratelimit, versioning, authorize, etc..)
-* Monitioring, logging, metrics, security, etc..
+- Load balancers to distribute traffic
+- When to use db SQL & NoSQL
+- When to use caching (redis, memcached)
+- When to use message queue
+- CAP theorem (consistency, availability, partition tolerance)
+- Database sharding (split data accross multiple db)
+- Database replication for redundancy
+- CDNs for serving static content globally
+- Data consistency model (eventual, strong)
+- API design (rest, grpc, ratelimit, versioning, authorize, etc..)
+- Monitioring, logging, metrics, security, etc..

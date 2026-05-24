@@ -2,7 +2,7 @@
 
 #### **Authorization URL**
 
-Use PKCE (Proof Key for Code Exchange) and `state` and its mandatory for security (prevents CSRF and Code Injection).
+Use PKCE (Proof Key for Code Exchange) to prevent authorization code injection, and `state` to prevent CSRF. Both are mandatory for security.
 
 #### **Callback Handler**
 
@@ -18,7 +18,7 @@ Access Token TTL: Short (e.g., 5-15 minutes)
 
 #### Refresh Token
 
-Check if refresh attempt fails (might be the refresh token is expired. And handle failure gracefully (delete session + force re-login) like logout mechanism
+Check if refresh attempt fails (e.g., the refresh token is expired). Handle failure gracefully: delete the session, force re-login (same as logout mechanism).
 
 #### **Refresh Access token**
 
@@ -41,8 +41,18 @@ How to fix this?
 
 #### **Middleware**
 
-for protected routes, required user to be login first
+For protected routes, require the user to be logged in first.
 
 #### **Logout**
 
 Delete the local session (destroy the session in Redis/Memory and clear the cookie).
+
+### References
+
+- [IETF RFC 6749 — OAuth 2.0 Authorization Framework](https://datatracker.ietf.org/doc/html/rfc6749)
+- [IETF RFC 7636 — PKCE](https://datatracker.ietf.org/doc/html/rfc7636)
+- [IETF RFC 6750 — Bearer Token Usage](https://datatracker.ietf.org/doc/html/rfc6750)
+- [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html)
+- [IETF RFC 6819 — OAuth 2.0 Threat Model](https://datatracker.ietf.org/doc/html/rfc6819)
+- [Auth0 — Refresh Token Rotation](https://auth0.com/docs/secure/tokens/refresh-tokens/refresh-token-rotation)
+- [Auth0 — OAuth 2.0 Best Practices](https://auth0.com/resources/ebooks/best-practices-for-oauth-and-oidc)

@@ -7,6 +7,16 @@ const navigationData = [
         standalone: true,
     },
     {
+        name: "ReactJS",
+        slug: "reactjs",
+        standalone: true,
+    },
+    {
+        name: "AGENTS",
+        slug: "AGENTS",
+        standalone: true,
+    },
+    {
         name: "RAG",
         slug: "e2e-production-rag",
         standalone: true,
@@ -19,11 +29,6 @@ const navigationData = [
     {
         name: "Psyhco",
         slug: "psyhco",
-        standalone: true,
-    },
-    {
-        name: "Quant",
-        slug: "quant",
         standalone: true,
     },
     {
@@ -41,18 +46,10 @@ const navigationData = [
         slug: "fundamental",
         pages: [
             { name: "API Best Practices", slug: "api-design-guidelines" },
-            { name: "Cache Stampede", slug: "cache-stampede" },
             { name: "Computing", slug: "computing" },
-            { name: "Consistent Hashing", slug: "consistent-hashing" },
             { name: "Database", slug: "database" },
-            { name: "Domain", slug: "domain" },
-            { name: "Event Processing", slug: "event-processing" },
-            { name: "ID Generator", slug: "id-generator" },
-            { name: "Kafka", slug: "kafka" },
             { name: "Networking", slug: "networking" },
             { name: "OAuth2 and OIDC", slug: "oauth2-and-oidc" },
-            { name: "Rabbitmq", slug: "rabbitmq" },
-            { name: "Reactjs", slug: "reactjs" },
             { name: "Software Architecture", slug: "software-architecture" },
         ],
     },
@@ -60,9 +57,15 @@ const navigationData = [
         name: "System Design",
         slug: "system-design",
         pages: [
+            { name: "Cache Stampede", slug: "cache-stampede" },
+            { name: "Consistent Hashing", slug: "consistent-hashing" },
             { name: "Distributed Cache", slug: "distributed-cache" },
             { name: "Distributed Task Scheduler", slug: "distributed-task-scheduler" },
+            { name: "Event Processing", slug: "event-processing" },
+            { name: "ID Generator", slug: "id-generator" },
+            { name: "Kafka", slug: "kafka" },
             { name: "Notification System", slug: "notification-system" },
+            { name: "RabbitMQ", slug: "rabbitmq" },
             { name: "Rate Limit", slug: "rate-limit" },
             { name: "Real Time Chat Discord", slug: "real-time-chat-discord" },
         ],

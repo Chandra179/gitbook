@@ -29,6 +29,8 @@ const NAME_OVERRIDES = {
     'e2e-production-rag':          'RAG',
     'golang':                      'Golang',
     'math':                        'Math',  
+    'reactjs':                     'ReactJS',
+    'rabbitmq':                     'RabbitMQ',
     'ml':                          'ML',
     'system-design':               'System Design',
     'web-scraper':                 'Web Scraper',
@@ -55,7 +57,7 @@ const ROOT_PAGE_ORDER = ['README', 'p2p-chat', 'reactjs'];
 
 // Top-level content directories, in order.
 // Directories not listed here but found on disk are appended alphabetically.
-const CATEGORY_ORDER = ['fundamental', 'system-design', 'golang', 'math', 'ml', ];
+const CATEGORY_ORDER = ['fundamental', 'system-design', 'golang', 'math'];
 
 // Directories / files to never include.
 const IGNORE = new Set([

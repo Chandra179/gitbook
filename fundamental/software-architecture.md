@@ -21,6 +21,17 @@
 
 ***
 
+### Domain Taxonomy
+
+Understanding domain scope helps architects frame problems at the right level:
+
+- **Domain (The Field)**: The broadest category — the "industry" or "sector" (_e.g., Science, Business, Arts, Engineering_).
+- **Discipline (The Branch)**: A specific branch of learning with its own rules and methods (_e.g., within Science: Physics, Biology, Chemistry_).
+- **Topic (The Subject)**: A specific area of focus within a discipline (_e.g., within Physics: Quantum Mechanics, Thermodynamics_).
+- **Niche (The Expertise)**: Where professional domain expertise truly lives (_e.g., within Fluid Dynamics: Turbulent Flow in Micro-channels_).
+
+***
+
 ### Modularity and Cohesion
 
 Cohesion refers to the extent to which parts of a module should be contained within the same module.

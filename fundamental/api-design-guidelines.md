@@ -8,18 +8,18 @@
 
 ### Performance & Efficiency
 
-* Dont Base64 encode large files. Use `multipart/form-data` for uploads and binary streaming with correct `Content-Type` headers for downloads.
+ * Don't Base64 encode large files. Use `multipart/form-data` for uploads and binary streaming with correct `Content-Type` headers for downloads.
 * Apply dual-layer limiting. Use Infrastructure-level limiting (e.g., Nginx, API Gateway) to stop DDoS, and Application-level limiting (e.g., Redis Token Bucket) for business rules per user/tenant.
 * Use pagination (cursor-based preferred over offset-based for large datasets), filtering, and sorting on all collection endpoints.
-* All internal APIs must accept and use standard Tracing Headers (e.g., W3C `traceparent` or B3 headers) to ensure we can debug a request across microservices
-* Is it batch/Bulk operations. Is it Atomic Transaction or 'Partial Success'? If partial success is allowed, the response structure must explicitly map individual IDs to their success/error status.
+ * All internal APIs must accept and use standard Tracing Headers (e.g., W3C `traceparent` or B3 headers) to ensure we can debug a request across microservices.
+ * For batch/bulk operations, clarify whether it's an Atomic Transaction or allows 'Partial Success'. If partial success is allowed, the response structure must explicitly map individual IDs to their success/error status.
 * For long running operations do not block the HTTP request. Return `202 Accepted` with a `Location` header pointing to a status polling endpoint, or use Webhooks."
 
 ### Reliability & Safety
 
 * Use idempotency for state-changing operations (POST/PATCH). Cache the response result (200/422) with a TTL; if a client retries with the same key, return the cached response immediately without re-processing.
 * Set endpoint timeouts, Implement Circuit Breakers to fail fast when downstream dependencies are unhealthy.
-* Enforce PII/PCI in logs and traces." In Fintech, logging a raw request body that contains a credit card number or a refresh token is (you get fired), also do Log Sanitization
+ * Redact PII/PCI from logs and traces. In Fintech, logging a raw request body that contains a credit card number or a refresh token can have severe consequences; always apply log sanitization.
 
 ### HTTP Semantics & Status Codes
 
@@ -35,7 +35,7 @@
 ### Lifecycle & Versioning
 
 * Never break a live API. When introducing v2, deploy it alongside v1. Mark v1 as deprecated (via headers), monitor traffic until it hits zero, and then remove.
-* Use explicit versioning in the URL (`/v1/`) or Header (`Accept-Version`). With their own tradeoffs
+ * Use explicit versioning in the URL (`/v1/`) or Header (`Accept-Version`), each with their own tradeoffs.
 * Document the _actual_ behavior, including edge cases and error responses. Use schema-first design (OpenAPI/Swagger) to ensure implementation matches documentation.
 
 ### Request Coalescing
@@ -78,3 +78,17 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf(w, "Result: %v (Shared? %v)", v, shared)
 }
 ```
+
+### References
+
+- [Stripe API Reference — Idempotent Requests](https://stripe.com/docs/api/idempotent_requests)
+- [Stripe API Reference — Pagination (cursor-based)](https://stripe.com/docs/api/pagination)
+- [Google Cloud API Design Guide](https://cloud.google.com/apis/design)
+- [Microsoft REST API Guidelines](https://github.com/microsoft/api-guidelines)
+- [RFC 7807 — Problem Details for HTTP APIs](https://datatracker.ietf.org/doc/html/rfc7807)
+- [W3C Trace Context — traceparent](https://www.w3.org/TR/trace-context/)
+- [Go singleflight package](https://pkg.go.dev/golang.org/x/sync/singleflight)
+- [Zapier Engineering — Request Coalescing](https://zapier.com/engineering/request-coalescing/)
+- [AWS — Timeouts, retries, and backoff](https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/)
+- [Stripe — Designing APIs for humans](https://stripe.com/blog/designing-apis-for-humans)
+- [GitHub API v3 — Conditional requests (caching)](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#conditional-requests)

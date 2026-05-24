@@ -77,7 +77,7 @@ How to Identify & Fix:
 
 **Normalization** (specifically 3rd Normal Form or 3NF) is the standard design strategy for write-heavy applications (OLTP) like banking systems, e-commerce order management, or inventory systems. The primary goal is to reduce data redundancy and ensure data integrity. By breaking data into smaller, related tables, you ensure that every piece of data lives in exactly one place. This eliminates "anomalies"—for example, if you update a customer's address, you only do it in the `Users` table, not in every single `Order` they’ve ever placed. You should use 3NF when your priority is data accuracy and optimizing for fast, consistent writes (INSERT/UPDATE/DELETE).
 
-**Denormalization**, is an optimization technique used for read-heavy workloads or analytics systems (OLAP). It duplicating data across tables to avoid expensive "JOIN" operations during queries. For example, in a high-traffic social media feed, you might store the `username` directly in the `Posts` table rather than just the `user_id`. This means the system can retrieve the post and the author's name in a single lookup without joining the `Users` table. You should use denormalization when your application suffers from slow read performance due to complex joins and you are willing to accept the trade-off of slower, more complex writes (since you now have to update the username in multiple places if it changes).
+**Denormalization** is an optimization technique used for read-heavy workloads or analytics systems (OLAP). It duplicates data across tables to avoid expensive "JOIN" operations during queries. For example, in a high-traffic social media feed, you might store the `username` directly in the `Posts` table rather than just the `user_id`. This means the system can retrieve the post and the author's name in a single lookup without joining the `Users` table. You should use denormalization when your application suffers from slow read performance due to complex joins and you are willing to accept the trade-off of slower, more complex writes (since you now have to update the username in multiple places if it changes).
 
 ***
 
@@ -147,7 +147,7 @@ Isolation levels control how the DB handles locks implicitly, but sometimes you 
 
 * _(updated data is not reads by the transaction but new data can be still read)_
 
-**Serializable** is the strictest level. It effectively forces transactions to run as if they were happening one after another, preventing all concurrency anomalies (dirty reads, non-repeatable reads, and phantoms). However, this comes at a massive performance cost due to heavy locking or frequent transaction retries. You should use this only for critical operations where data integrity is non-negotiable, such as preventing double-booking in a reservation system or processing sensitive banking transfers
+**Serializable** is the strictest level. It effectively forces transactions to run as if they were happening one after another, preventing all concurrency anomalies (dirty reads, non-repeatable reads, and phantoms). However, this comes at a massive performance cost due to heavy locking or frequent transaction retries. You should use this only for critical operations where data integrity is non-negotiable, such as preventing double-booking in a reservation system or processing sensitive banking transfers.
 
 ***
 
@@ -169,7 +169,7 @@ This distinction defines the trade-off between Data Integrity and Performance in
 
 #### **Q**: What is the difference between Vertical Scaling (Scaling Up) and Horizontal Scaling (Scaling Out)?
 
-Vertical Scaling (Scaling Up) means making a single server stronger by adding more CPU, RAM, or faster storage (e.g., upgrading from an AWS `t3.medium` to an `m5.2xlarge`). However, you cannot buy a bigger computer, because it introduces a Single Point of Failure.&#x20;
+Vertical Scaling (Scaling Up) means making a single server stronger by adding more CPU, RAM, or faster storage (e.g., upgrading from an AWS `t3.medium` to an `m5.2xlarge`). However, there is an upper hardware limit, and a single server is a single point of failure.&#x20;
 
 Horizontal Scaling (Scaling Out) means adding _more_ servers (nodes) to handle the load, splitting the data across them (Sharding). This offers infinite scale and high availability (if one node dies, others survive). The trade-off is massive complexity: you lose ACID guarantees across nodes (requiring patterns like Sagas or 2PC) and must manage complex data distribution logic.
 
@@ -194,4 +194,20 @@ Once you move to Sharding or Microservices, you lose the ability to use a single
 The modern standard for high-volume Fintech systems is the Saga Pattern. Instead of a single ACID transaction, a business process is broken down into a sequence of local transactions. Each step updates its own database and publishes an event to trigger the next step. Crucially, Sagas handle failure through Compensating Transactions. If the "Deduct Money" step succeeds but the "Disburse Loan" step fails, the system triggers a "Refund Money" transaction to undo the first step. This embraces "Eventually Consistency" rather than "Strong Consistency," allowing the system to remain highly available and performant even when parts of the network are slow.
 
 ***
+
+### References
+
+- [PostgreSQL Documentation — Transaction Isolation](https://www.postgresql.org/docs/current/transaction-iso.html)
+- [MySQL Documentation — InnoDB Locking and Transaction Model](https://dev.mysql.com/doc/refman/8.0/en/innodb-locking-transaction-model.html)
+- [PostgreSQL Documentation — B-Tree Indexes](https://www.postgresql.org/docs/current/indexes-types.html)
+- [Cassandra Documentation — LSM Tree Storage](https://cassandra.apache.org/doc/latest/cassandra/architecture/storage_engine.html)
+- [Martin Kleppmann — Designing Data-Intensive Applications (B-Tree vs LSM)](https://dataintensive.net/)
+- [PostgreSQL Documentation — WAL](https://www.postgresql.org/docs/current/wal-intro.html)
+- [AWS Database Blog — Optimistic vs Pessimistic Locking](https://aws.amazon.com/blogs/database/managing-concurrency-with-optimistic-locking-in-amazon-rds/)
+- [Microsoft — Saga Pattern (Microservices)](https://learn.microsoft.com/en-us/azure/architecture/patterns/saga)
+- [CockroachDB — Serializable Isolation](https://www.cockroachlabs.com/blog/serializable-sql-isolation/)
+- [Use The Index, Luke! — Composite Indexes and Leftmost Prefix](https://use-the-index-luke.com/sql/where-clause/the-equals-operator/concatenated-keys)
+- [Vlad Mihalcea — N+1 Query Problem](https://vladmihalcea.com/n-plus-1-query-problem/)
+- [Wikipedia — Write-Ahead Logging](https://en.wikipedia.org/wiki/Write-ahead_logging)
+- [Wikipedia — CAP Theorem](https://en.wikipedia.org/wiki/CAP_theorem)
 
