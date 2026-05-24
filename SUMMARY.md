@@ -35,7 +35,6 @@
   * [Real Time Chat (Discord)](system-design/real-time-chat-discord.md)
 * [Machine Learning](ml.md)
 * [RAG](e2e-production-rag.md)
-* [Quant](quant.md)
 * [Psyhco](psyhco.md)
 * [Syncthing](syncthing.md)
 * [SaaS Template](saas-template.md)
