@@ -890,5 +890,3 @@ Key MVCC properties:
 **Two separate repositories.** The raft consensus library (`go.etcd.io/raft/v3`) is a standalone Go module. Historically it was part of etcd but was extracted into its own repo at `github.com/etcd-io/raft`. etcd imports it as a Go module dependency — there is no `raft/` directory inside the etcd repository.
 
 ---
-
-*Part of Phase 1: System Design Deep-Dive.* Next: Raft implementation (~300 lines Go) + ADR extract expansion.

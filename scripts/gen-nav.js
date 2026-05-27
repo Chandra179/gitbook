@@ -63,7 +63,7 @@ const CATEGORY_ORDER = ['fundamental', 'system-design', 'golang', 'math'];
 // Directories / files to never include.
 const IGNORE = new Set([
     'node_modules', 'dist', 'src', 'scripts', '.git', '.gitbook',
-    'CLAUDE.md', 'SUMMARY.md', 'diagrams', 'books.md'
+    'CLAUDE.md', 'SUMMARY.md', 'diagrams', 'books.md', 'ROADMAP.md'
 ]);
 
 function toName(slug) {

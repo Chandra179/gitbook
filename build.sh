@@ -49,9 +49,9 @@ for dir in */; do
     fi
 done
 
-# Copy all root-level markdown files
+# Copy all root-level markdown files (excluding ROADMAP.md)
 for file in *.md; do
-    [ -f "$file" ] && cp "$file" dist/
+    [ -f "$file" ] && [ "$file" != "ROADMAP.md" ] && cp "$file" dist/
 done
 
 echo "Build complete! Content is in ./dist"

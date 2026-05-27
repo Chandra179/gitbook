@@ -17,11 +17,6 @@ const navigationData = [
         standalone: true,
     },
     {
-        name: "ROADMAP",
-        slug: "ROADMAP",
-        standalone: true,
-    },
-    {
         name: "ML",
         slug: "ml",
         standalone: true,

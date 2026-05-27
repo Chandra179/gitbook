@@ -18,7 +18,7 @@ const OUTPUT = path.join(ROOT, 'src', 'search-index.json');
 
 const IGNORE = new Set([
     'node_modules', 'dist', 'src', 'scripts', '.git', '.gitbook',
-    'CLAUDE.md', 'SUMMARY.md', 'diagrams', 'books.md',
+    'CLAUDE.md', 'SUMMARY.md', 'diagrams', 'books.md', 'ROADMAP.md',
 ]);
 
 // Must match utils.js generateSlug exactly so anchor links resolve correctly.
