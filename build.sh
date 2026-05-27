@@ -21,6 +21,9 @@ cp src/robots.txt dist/robots.txt
 
 cp -r src/css dist/css
 
+# Concatenate modular CSS into single file to eliminate @import waterfall (7 serial requests → 1)
+cat src/css/base.css src/css/prose.css src/css/timeline.css src/css/math.css src/css/landing.css src/css/dark.css > dist/css/styles.css
+
 # Generate navigation data and search index from filesystem, then copy JS
 echo "Generating navigation data..."
 node scripts/gen-nav.js

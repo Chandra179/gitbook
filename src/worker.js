@@ -1,20 +1,33 @@
+const CACHE = {
+    DAY: 'public, max-age=86400, stale-while-revalidate=604800',
+    HOUR: 'public, max-age=3600, stale-while-revalidate=86400',
+};
+
 export default {
     async fetch(request, env) {
         const response = await env.ASSETS.fetch(request);
-        const url = new URL(request.url);
-        const path = url.pathname;
 
         if (request.method !== 'GET') return response;
 
-        const headers = new Headers(response.headers);
+        const path = new URL(request.url).pathname;
+        let ttl = null;
 
-        if (path.endsWith('search-index.json')) {
-            headers.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=3600');
-        } else if (path.endsWith('.md')) {
-            headers.set('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+        if (path === '/search-index.json' || path === '/landing-index.json') {
+            ttl = CACHE.DAY;
         } else if (path.endsWith('.js') || path.endsWith('.css')) {
-            headers.set('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+            ttl = CACHE.DAY;
+        } else if (path.endsWith('.md') || path.endsWith('.json')) {
+            ttl = CACHE.DAY;
+        } else if (path.endsWith('.html')) {
+            ttl = CACHE.HOUR;
+        } else if (path.endsWith('.png') || path.endsWith('.svg') || path.endsWith('.jpg') || path.endsWith('.ico') || path.endsWith('.woff2')) {
+            ttl = CACHE.DAY;
         }
+
+        if (!ttl) return response;
+
+        const headers = new Headers(response.headers);
+        headers.set('Cache-Control', ttl);
 
         return new Response(response.body, {
             status: response.status,

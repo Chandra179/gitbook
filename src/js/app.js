@@ -169,29 +169,26 @@ function portfolioApp() {
         },
 
         interceptContentLinks(contentEl) {
-            contentEl.querySelectorAll('a[href]').forEach(link => {
+            contentEl.addEventListener('click', (e) => {
+                const link = e.target.closest('a[href]');
+                if (!link) return;
+
                 const href = link.getAttribute('href');
-                if (!href) return;
+                if (!href || href.startsWith('#') || /^https?:\/\//.test(href) || href.startsWith('mailto:')) return;
 
-                // Skip pure in-page anchors (#section) and external links
-                if (href.startsWith('#') || /^https?:\/\//.test(href) || href.startsWith('mailto:')) return;
-
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    // Resolve the href relative to the current page path
-                    const base = window.location.origin + window.location.pathname;
-                    const resolved = new URL(href, base);
-                    const path = resolved.pathname.replace(/^\//, '');
-                    const anchor = resolved.hash.replace(/^#/, '');
-                    history.pushState(null, '', resolved.pathname + resolved.hash);
-                    this.router.currentPage = path;
-                    const parts = path.split('/');
-                    this.router.currentCategory = parts[0];
-                    this.router.updateBreadcrumb(parts[0], parts.slice(1).join('/') || null);
-                    if (this.router.onRouteChange) {
-                        this.router.onRouteChange(this.router.currentCategory || path, anchor);
-                    }
-                });
+                e.preventDefault();
+                const base = window.location.origin + window.location.pathname;
+                const resolved = new URL(href, base);
+                const path = resolved.pathname.replace(/^\//, '');
+                const anchor = resolved.hash.replace(/^#/, '');
+                history.pushState(null, '', resolved.pathname + resolved.hash);
+                this.router.currentPage = path;
+                const parts = path.split('/');
+                this.router.currentCategory = parts[0];
+                this.router.updateBreadcrumb(parts[0], parts.slice(1).join('/') || null);
+                if (this.router.onRouteChange) {
+                    this.router.onRouteChange(this.router.currentCategory || path, anchor);
+                }
             });
         },
 

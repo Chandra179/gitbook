@@ -44,9 +44,9 @@ class ContentLoader {
         doc.querySelectorAll('a[href]').forEach(link => {
             const href = link.getAttribute('href');
             if (!href || href.startsWith('#') || /^https?:\/\//.test(href) || href.startsWith('mailto:')) return;
-            // Resolve relative to the logical base path of this page
             const resolved = new URL(href, 'https://x' + basePath);
-            link.setAttribute('href', resolved.pathname + resolved.hash);
+            const pathname = resolved.pathname.replace(/\.md$/, '');
+            link.setAttribute('href', pathname + resolved.hash);
         });
         doc.querySelectorAll('img[src]').forEach(img => {
             const src = img.getAttribute('src');

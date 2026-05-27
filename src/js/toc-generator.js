@@ -84,7 +84,10 @@ class TOCGenerator {
                     const activeLink = document.querySelector(
                         `.toc-link[href="#${entry.target.id}"]`
                     );
-                    if (activeLink) activeLink.classList.add('active');
+                    if (activeLink) {
+                        activeLink.classList.add('active');
+                        activeLink.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                    }
                 }
             });
         }, { rootMargin: TOC_CONFIG.ROOT_MARGIN });

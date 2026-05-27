@@ -30,10 +30,9 @@ function renderEmbedCard(url) {
         + `</a>`;
 }
 
+const ESCAPE_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 function escapeHtml(str) {
-    const el = document.createElement('span');
-    el.textContent = str;
-    return el.innerHTML;
+    return str.replace(/[&<>"']/g, m => ESCAPE_MAP[m]);
 }
 
 function initializeMarkedExtensions() {
