@@ -25,12 +25,13 @@ const OUTPUT = path.join(ROOT, 'src/js/navigation-data.js');
 const NAME_OVERRIDES = {
     'README':                      'Introduction',
     'p2p-chat':                    'P2P Chat',
+    'etcd-raft':                   'etcd & Raft',
     'fundamental':                 'Fundamentals',
     'e2e-production-rag':          'RAG',
     'golang':                      'Golang',
-    'math':                        'Math',  
+    'math':                        'Math',
     'reactjs':                     'ReactJS',
-    'rabbitmq':                     'RabbitMQ',
+    'rabbitmq':                    'RabbitMQ',
     'ml':                          'ML',
     'system-design':               'System Design',
     'web-scraper':                 'Web Scraper',
@@ -53,7 +54,7 @@ const NAME_OVERRIDES = {
 
 // Root .md files to expose as standalone pages, in order.
 // Files not listed here but found on disk are appended alphabetically.
-const ROOT_PAGE_ORDER = ['README', 'p2p-chat', 'reactjs'];
+const ROOT_PAGE_ORDER = ['README', 'p2p-chat', 'reactjs', 'etcd-raft'];
 
 // Top-level content directories, in order.
 // Directories not listed here but found on disk are appended alphabetically.

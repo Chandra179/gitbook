@@ -12,8 +12,13 @@ const navigationData = [
         standalone: true,
     },
     {
-        name: "AGENTS",
-        slug: "AGENTS",
+        name: "etcd & Raft",
+        slug: "etcd-raft",
+        standalone: true,
+    },
+    {
+        name: "ROADMAP",
+        slug: "ROADMAP",
         standalone: true,
     },
     {

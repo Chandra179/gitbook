@@ -35,5 +35,6 @@
 * [ReactJS](reactjs.md)
 * [RAG](rag.md)
 * [Psyhco](psyhco.md)
+* [etcd &amp; Raft](etcd-raft.md)
 * [Syncthing](syncthing.md)
 * [SaaS Template](saas-template.md)
