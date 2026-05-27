@@ -868,6 +868,21 @@ Key MVCC properties:
 | 9 | **MVCC enables consistent reads** | Reads see a point-in-time snapshot via revision tracking |
 | 10 | **WAL is the source of truth** | On restart, WAL is replayed; bbolt is rebuilt from it |
 
+## Key Learnings (Cross-System Patterns)
+
+What studying etcd & Raft at source-code depth teaches that generalizes to other systems:
+
+| # | Learning | Why It Matters |
+|---|----------|----------------|
+| 1 | **Separate consensus from application** | Raft is a pure in-memory state machine. It outputs `{Entries, Messages, CommittedEntries}` — the app decides what to persist, send, and apply. Most engineers conflate Raft with storage; the library is just a decision engine. This pattern repeats: a consensus library should never touch disk. |
+| 2 | **Consensus is about ordering, not agreement** | A quorum vote on a value gives you agreement but no ordering. The log index is what makes consensus useful — it guarantees every node applies commands in the same sequence. Without ordering, concurrent writes produce divergent state even with quorum. |
+| 3 | **Decouple I/O from state machine application** | etcd runs two goroutines: the raft loop (Ready → WAL + transport) and the apply loop (committed entries → MVCC). A channel decouples them. This allows durability/replication to proceed independently from state machine application — generalizes to any system with a write-ahead log and a separate state machine. |
+| 4 | **Fatal on persistence failure — no retry** | `r.lg.Fatal()` → `os.Exit(1)` on any WAL write failure. Raft's safety depends on durable persistence. A node that can't persist cannot safely acknowledge entries. The only recovery is external (supervisor restart). This is uncomfortable but correct — graceful degradation is worse than death in consensus. |
+| 5 | **Defense in depth for data integrity** | etcd's WAL uses four independent mechanisms layered together: 8-byte alignment (atomic length fields), 4096-byte page alignment (no cross-page records), CRC-32 chain (bit-rot detection within pages), zero-sector scan (partial write detection). No single mechanism covers all failure modes — the layering is the design. |
+| 6 | **Progress state machine for flow control** | The leader tracks each follower through three states: Probe (one-at-a-time, cautious), Replicate (pipelined, fast), Snapshot (far behind, full state transfer). This state machine prevents a slow follower from degrading the fast path. The backtrack uses two linear scans (leader + follower), not binary search — the follower's hint skips the entire divergent section in one response. |
+| 7 | **Pre-vote prevents a real ops problem** | A partitioned node keeps incrementing its term. When the partition heals, its high term forces the stable leader to abdicate — unnecessary disruption. Pre-vote fixes this by asking hypothetically without incrementing the term. The lesson: protocol features that seem like academic edge cases exist because they cause real outages. |
+| 8 | **The log is the source of truth, not the state machine** | etcd replays the WAL on restart and rebuilds bbolt from it. The state machine (bbolt) is derived data; the log (WAL) is ground truth. This is the fundamental insight of state machine replication — the log is the system, the state machine is just a cache of the latest snapshot of the log. |
+
 ## Source Citations
 
 | Component | Repository | File | Key Functions |

@@ -12,7 +12,35 @@ Use a database-backed job to separate the critical order status update from the 
 
 For the emails, the status is stored in the database as "pending." A scheduled Cron Job then reads these unsent records every few minutes and attempts to send them in batches, updating their status to "success" or "failed". This approach prioritizes at-least-once delivery and system stability; even during high traffic or email provider downtime, the primary order flow remains fast, and side effects eventually catch up without clogging the messaging infrastructure.
 
-<figure><img src="/.gitbook/assets/eventprocess_cronjob.png" alt="" width="563"><figcaption></figcaption></figure>
+```mermaid
+sequenceDiagram
+    participant Client as Client
+    participant OrderSvc as Order Service
+    participant DB as Database
+    participant Cron as Cron Job
+    participant EmailProv as Email Provider
+
+    Client->>OrderSvc: POST /orders (pay, cancel, refund)
+    OrderSvc->>DB: BEGIN TRANSACTION
+    OrderSvc->>DB: Update order status
+    OrderSvc->>DB: INSERT email (status=pending)
+    OrderSvc->>DB: COMMIT
+    OrderSvc-->>Client: 200 OK
+
+    Note over Cron: Runs every 60s
+    Cron->>DB: SELECT * FROM emails WHERE status='pending'
+    DB-->>Cron: [email_1, email_2, ...]
+    loop For each pending email
+        Cron->>EmailProv: Send email
+        alt Success
+            EmailProv-->>Cron: 200 OK
+            Cron->>DB: UPDATE email SET status='success'
+        else Failure
+            EmailProv-->>Cron: 5xx / timeout
+            Cron->>DB: UPDATE email SET status='failed'
+        end
+    end
+```
 
 #### Tradeoff
 
@@ -24,7 +52,30 @@ For the emails, the status is stored in the database as "pending." A scheduled C
 
 The **CDC** approach offers near-instant execution by using a listener (such as Debezium) to monitor the database transaction logs (WAL). A relay then pushes the captured data to a dedicated Email Queue, where a specialized Worker consumes and processes the messages. This approach results in minimal latency between the database update and email delivery, high throughput without additional database IOPS from polling, and a completely decoupled architecture that ensures the main application logic remains lightweight.
 
-<figure><img src="/.gitbook/assets/cdc_messagerelay.png" alt=""><figcaption></figcaption></figure>
+```mermaid
+sequenceDiagram
+    participant Client as Client
+    participant OrderSvc as Order Service
+    participant DB as Database
+    participant CDC as CDC Listener (Debezium)
+    participant Queue as Email Queue
+    participant Worker as Email Worker
+    participant EmailProv as Email Provider
+
+    Client->>OrderSvc: POST /orders (pay, cancel, refund)
+    OrderSvc->>DB: Update order status
+    DB-->>OrderSvc: OK
+    OrderSvc-->>Client: 200 OK
+
+    Note over DB,CDC: Database writes to WAL
+    CDC->>DB: Read transaction log (WAL)
+    DB-->>CDC: "order_updated", "email_pending"
+    CDC->>Queue: Push email event
+    Queue-->>Worker: Deliver message
+    Worker->>Worker: Build email from event
+    Worker->>EmailProv: Send email
+    EmailProv-->>Worker: 200 OK
+```
 
 #### Why this is often better:
 
