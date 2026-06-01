@@ -23,7 +23,7 @@
   * [Rate Limit](system-design/rate-limit.md)
   * [Cache Stampede: Flash Sale](system-design/cache-stampede-flash-sale.md)
   * [Consistent Hashing: Distributed Cache](system-design/consistent-hashing-distributed-cache.md)
-  * [Event Processing](system-design/event-processing.md)
+  * [Event Processing for Order Notifications](system-design/event-processing-order-notifications.md)
   * [Kafka](system-design/kafka.md)
   * [RabbitMQ](system-design/rabbitmq.md)
   * [Snowflake ID](system-design/id-generator.md)

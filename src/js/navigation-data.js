@@ -60,7 +60,7 @@ const navigationData = [
             { name: "Cache Stampede Flash Sale", slug: "cache-stampede-flash-sale" },
             { name: "Consistent Hashing Distributed Cache", slug: "consistent-hashing-distributed-cache" },
             { name: "Distributed Cache Live Streaming Chat", slug: "distributed-cache-live-streaming-chat" },
-            { name: "Distributed Task Scheduler", slug: "distributed-task-scheduler" },
+            { name: "Distributed Task Scheduler Batch Job Processing", slug: "distributed-task-scheduler-batch-job-processing" },
             { name: "Event Processing", slug: "event-processing" },
             { name: "ID Generator", slug: "id-generator" },
             { name: "Kafka", slug: "kafka" },
