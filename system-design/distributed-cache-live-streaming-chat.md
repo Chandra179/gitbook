@@ -28,47 +28,73 @@ A distributed in‑memory cache cluster that serves a large‑scale live‑strea
 
 <table data-header-hidden><thead><tr><th width="67.08120727539062"></th><th width="164.5999755859375"></th><th></th><th></th></tr></thead><tbody><tr><td></td><td>Decision</td><td>Chosen Approach</td><td>Rejected Alternatives &#x26; Why</td></tr><tr><td>1</td><td>Storage medium</td><td><strong>In‑memory</strong> hash maps &#x26; sorted sets</td><td>Disk: seek time (0.1–1 ms) alone violates sub‑ms read SLO. Database: optimized for durability, not 10 M RPS.</td></tr><tr><td>2</td><td>Routing</td><td><strong>Client‑side consistent hashing</strong></td><td>Proxy: adds a network hop and becomes a bottleneck. Simple modulo: all keys remap when shard count changes, causing a complete cache flush.</td></tr><tr><td>3</td><td>Replication</td><td><strong>Async leader‑follower</strong></td><td>Synchronous: violates write‑ack latency SLO. Multi‑leader: requires conflict resolution (CRDTs), adding complexity and latency for message ordering.</td></tr><tr><td>4</td><td>Shard key</td><td><strong><code>chat_room_id</code></strong></td><td><code>user_id</code>: scatter‑gather across all shards to read a room’s messages would destroy latency and throughput.</td></tr><tr><td>5</td><td>Read‑your‑own‑writes</td><td><strong>Sticky leader</strong> (500 ms pin after write)</td><td>Sync replication: violates write latency. Global sequence numbers: coordination bottleneck. Optimistic UI alone: cache must still return correct data on refresh/rejoin.</td></tr><tr><td>6</td><td>Eviction</td><td><strong>Per‑room time‑based</strong> (trim on write)</td><td>Global LRU: could evict new messages from a slow room while keeping old ones from a busy room. Chat messages decay by time, not access frequency.</td></tr><tr><td>7</td><td>Hot‑key reads</td><td><strong>SDK L1 cache + dynamic replication</strong></td><td>Remote cache only: a celebrity room with 500k viewers overwhelms a single shard’s throughput limit (~50k–100k RPS).</td></tr><tr><td>8</td><td>Cache miss storms</td><td><strong>Singleflight coalescing</strong></td><td>No protection: 10k concurrent misses hit the database simultaneously (thundering herd). Per‑request locking: adds latency to every miss, even when there’s no contention.</td></tr></tbody></table>
 
-### Diagram
+### Diagrams
+
+#### Architecture
 
 ```mermaid
 flowchart TB
-    Client["Client SDK<br/>(cached ring, L1 cache,<br/>sticky-leader per room)"]
+    ClientSDK["Client SDK<br/>(cached ring + L1 cache)"]
     Config["Configuration Service<br/>(etcd/ZooKeeper)"]
     Manager["Manager Service<br/>(health & hot-key detection)"]
 
-    subgraph Shard_A ["Shard for room:stream_123"]
-        Leader_A["Leader<br/>(seq. num generator)"]
-        Follower_A1["Follower"]
-        Follower_A2["Follower"]
+    subgraph Shard["Shard per room"]
+        direction LR
+        L["Leader"]
+        F1["Follower"]
+        F2["Follower"]
     end
 
-    subgraph Shard_B ["Shard for room:stream_456"]
-        Leader_B["Leader"]
-        Follower_B1["Follower"]
-        Follower_B2["Follower"]
+    subgraph HotKey["Hot-Key Replicas"]
+        H1["Dedicated Cache Node"]
+        H2["Dedicated Cache Node"]
     end
 
-    subgraph Replicated_Hot_Key ["Global Hot-Key Replicas"]
-        HotReplica1["Hot-Key Cache Node"]
-        HotReplica2["Hot-Key Cache Node"]
-    end
+    ClientSDK -->|pulls ring| Config
+    ClientSDK -->|writes| L
+    ClientSDK -->|reads| F1
+    ClientSDK -->|reads| F2
+    ClientSDK -->|reads hot| H1
+    ClientSDK -->|reads hot| H2
+    L -.->|async replication| F1
+    L -.->|async replication| F2
+    Manager -->|heartbeat| L
+    Manager -->|promotion| F1
+    Manager -->|hot-key detected| H1
+    Manager -->|hot-key detected| H2
+```
 
-    Client -->|pulls ring + watches| Config
-    Client -->|writes PUT msg| Leader_A
-    Client -->|writes PUT msg| Leader_B
-    Client -->|reads GET recent msgs| Follower_A1
-    Client -->|reads GET recent msgs| Follower_B2
-    Client -->|reads hot room msgs| HotReplica1
+#### Data flow
 
-    Leader_A -.->|async replication + seq. num| Follower_A1
-    Leader_A -.->|async replication + seq. num| Follower_A2
-    Leader_B -.->|async replication| Follower_B1
-    Leader_B -.->|async replication| Follower_B2
+```mermaid
+sequenceDiagram
+    participant SDK as Client SDK
+    participant Config as Config Service
+    participant Leader as Shard Leader
+    participant Follower as Shard Follower
+    participant Hot as Hot-Key Replica
+    participant Manager as Manager
 
-    Manager -->|heartbeats| Leader_A
-    Manager -->|heartbeats| Leader_B
-    Manager -->|triggers promotion| Follower_A1
-    Manager -->|marks room hot, pushes to all nodes| HotReplica1
+    Note over SDK,Manager: Init: fetch ring
+    SDK->>Config: download hash ring
+    Config-->>SDK: ring topology
+    SDK->>SDK: cache ring locally
+
+    Note over SDK,Manager: Write path
+    SDK->>SDK: hash(room_id) → find leader
+    SDK->>Leader: PUT message
+    Leader->>Follower: async replicate
+    Leader-->>SDK: ack
+
+    Note over SDK,Manager: Read path (normal room)
+    SDK->>Follower: GET recent msgs
+    Follower-->>SDK: sorted batch
+
+    Note over SDK,Manager: Read path (hot room)
+    Manager->>Manager: detect hot key
+    Manager->>Hot: replicate room data
+    SDK->>Hot: GET recent msgs
+    Hot-->>SDK: sorted batch
 ```
 
 ### Core flow
@@ -123,6 +149,86 @@ flowchart TB
 * **In‑memory hash map** for other key‑value data (e.g., session tokens) with per‑shard LRU eviction.
 * **Consistent hashing with virtual nodes** distributes rooms evenly across shards. Chosen over simple modulo because it minimizes key movement (only \~K/N keys remap) when shards are added or removed.
 
+### Data Schema & Protocol
+
+#### In-memory sorted set (per room)
+
+```
+Room "stream:123": ZSET
+  Score (sequence)  |  Value (message)
+  1748764800001     |  {"author":"user_1","content":"hello"}
+  1748764800002     |  {"author":"user_2","content":"hi"}
+  1748764800003     |  {"author":"user_1","content":"lol"}
+```
+
+- Key: `room:{chat_room_id}:messages`
+- Score: 64-bit monotonic sequence number (microsecond timestamp + shard-local counter)
+- Value: JSON-encoded message payload (~250-550 bytes)
+- Trimmed on write: `ZREMRANGEBYSCORE` keeps only the last 5 minutes
+
+#### Session token hash map
+
+- Key: `session:{session_id}`
+- Value: `{user_id, room_id, joined_at, last_heartbeat}`
+- Eviction: per-shard LRU with max capacity
+
+#### Protocol (SDK ↔ Cache Node)
+
+Request/response over TCP within datacenter:
+
+```
+Request:
+  opcode:  uint8     // 0x01=PUT, 0x02=GET, 0x03=GET_RANGE
+  key:     string    // room_id or session_id
+  payload: bytes     // JSON-encoded message or query params
+
+Response:
+  status:  uint8     // 0x00=OK, 0x01=NOT_FOUND, 0x02=REDIRECT
+  payload: bytes     // JSON-encoded result
+```
+
+#### Hash ring entry (SDK local cache)
+
+```
+struct VNode {
+    hash:    uint32    // position on the ring (0 to 2^32-1)
+    shard:   uint16    // shard ID
+    address: string    // "10.0.1.5:9000"
+}
+```
+
+Sorted array of VNodes, binary-searched on each request. Updated on config change notification.
+
+```go
+type VNode struct {
+    Hash    uint32
+    ShardID uint16
+    Address string
+}
+
+type Ring struct {
+    vnodes []VNode // sorted by Hash, rebuilt on config change
+    mu     sync.RWMutex
+}
+
+func (r *Ring) Resolve(key string) (string, error) {
+    h := crc32.ChecksumIEEE([]byte(key))
+
+    r.mu.RLock()
+    defer r.mu.RUnlock()
+
+    idx := sort.Search(len(r.vnodes), func(i int) bool {
+        return r.vnodes[i].Hash >= h
+    })
+
+    if idx == len(r.vnodes) {
+        idx = 0 // wrap around
+    }
+
+    return r.vnodes[idx].Address, nil
+}
+```
+
 ### The hard part & how we solve it
 
 _Bottleneck:_ Sustaining 10 M RPS with sub‑millisecond latency while serving a 2‑million‑viewer live stream, ensuring that messages appear in order, and preventing a single hot room from melting a shard.
@@ -136,7 +242,49 @@ _Fix:_
 * **Singleflight coalescing** prevents thundering herds when a room’s cache expires.
 * **Per‑room sorted sets with time‑based eviction** keep memory bound and avoid LRU thrashing for streaming workloads.
 
-***
+### Failure Modes
+
+| Failure | Effect | Mitigation |
+|---|---|---|
+| Shard leader crash | Writes to that shard fail; followers stop receiving replication | Manager detects missing heartbeat (1s) → promotes follower to leader → updates config service → SDK ring refreshes. During promotion (1-3s), SDK queues writes and retries with backoff. |
+| Follower replication lag | Reads return stale data beyond 500ms window | SDK sticky leader pins reads after write. Monitor follower lag via replication offset. If lag > threshold, remove follower from read pool until it catches up. |
+| Config service down | SDK can't refresh ring on topology changes | SDK caches ring locally and continues routing with stale topology. Promotions and hot-key events are queued until recovery. |
+| Network partition | SDK can't reach a shard; writes time out | SDK retries with backoff (100ms, 200ms, 400ms, max 5s). If permanent, treat as node failure → trigger promotion. Reads fall back to L1 cache or stale local data. |
+| Hot-key replica flooded | Celebrity room saturates even dedicated nodes | SDK L1 cache absorbs ~99% of reads. If L1 + hot replicas saturated, serve stale L1 data without retrying remote. |
+| Memory exhaustion | OOM kill, all rooms on that shard lost | Per-shard memory limit with per-room TTL (5min sliding window). Evict oldest room when limit reached. Alert at 80%, aggressive eviction at 90%. |
+
+### Infrastructure & Deployment
+
+#### Network topology
+
+```
+Viewer → CDN (static assets)
+       → Client SDK → [consistent hash ring] → Cache shards (in-memory)
+                                              → Config service (ring topology)
+       Manager Service monitors all shards via heartbeat
+```
+
+#### Compute
+
+- **Cache nodes**: Dedicated high-memory instances (e.g., 64-core, 512GB RAM). In-memory data set is 500GB–1TB across ~200 shards, each shard on a separate node. Replication factor 3 → ~600 nodes total.
+- **Config service**: 3–5 etcd or ZooKeeper nodes (small, 2–4 cores, 8GB RAM) for ring topology and leader election.
+- **Manager service**: Stateless, 2–4 cores, runs as a K8s deployment with leader election for hot-key detection and failover orchestration.
+
+#### Networking
+
+- All nodes in the same datacenter for sub-ms latency.
+- 10GbE or 25GbE NICs between cache nodes.
+- Client SDK communicates directly with cache nodes — no proxy hop.
+
+#### Observability
+
+| Signal | Tool | What to watch |
+|---|---|---|
+| Shard health | Manager heartbeats | Per-shard leader status, follower lag, memory usage |
+| Latency | SDK metrics (histogram) | p50/p99 read/write latency per shard, hot vs cold rooms |
+| Hot-key detection | Manager QPS monitor | Per-room read rate, L1 cache hit rate, hot replica load |
+| Memory | Node exporter + Prometheus | Per-node RSS, eviction rate, room count |
+| Failover events | Manager logs + alert | Leader promotion count, duration, data gaps |
 
 ### Tradeoffs
 

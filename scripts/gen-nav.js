@@ -63,7 +63,9 @@ const CATEGORY_ORDER = ['fundamental', 'system-design', 'golang', 'math'];
 // Directories / files to never include.
 const IGNORE = new Set([
     'node_modules', 'dist', 'src', 'scripts', '.git', '.gitbook',
-    'CLAUDE.md', 'SUMMARY.md', 'diagrams', 'books.md', 'ROADMAP.md'
+    'CLAUDE.md', 'SUMMARY.md', 'diagrams', 'books.md', 'ROADMAP.md',
+    'rate-limit.md', 'real-time-chat-discord.md',
+    'notification-system.md', 'distributed-cache.md'
 ]);
 
 function toName(slug) {
@@ -84,7 +86,7 @@ function scanDir(dirPath, depth = 0) {
     const pages = [];
 
     const files = entries
-        .filter(e => e.isFile() && e.name.endsWith('.md') && e.name !== 'README.md')
+        .filter(e => e.isFile() && e.name.endsWith('.md') && e.name !== 'README.md' && !IGNORE.has(e.name))
         .map(e => slugFromFile(e.name))
         .sort();
 

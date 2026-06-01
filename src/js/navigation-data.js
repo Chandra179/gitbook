@@ -59,15 +59,11 @@ const navigationData = [
         pages: [
             { name: "Cache Stampede", slug: "cache-stampede" },
             { name: "Consistent Hashing", slug: "consistent-hashing" },
-            { name: "Distributed Cache", slug: "distributed-cache" },
             { name: "Distributed Task Scheduler", slug: "distributed-task-scheduler" },
             { name: "Event Processing", slug: "event-processing" },
             { name: "ID Generator", slug: "id-generator" },
             { name: "Kafka", slug: "kafka" },
-            { name: "Notification System", slug: "notification-system" },
             { name: "RabbitMQ", slug: "rabbitmq" },
-            { name: "Rate Limit", slug: "rate-limit" },
-            { name: "Real Time Chat Discord", slug: "real-time-chat-discord" },
         ],
     },
     {
