@@ -61,7 +61,7 @@ const navigationData = [
             { name: "Consistent Hashing Distributed Cache", slug: "consistent-hashing-distributed-cache" },
             { name: "Distributed Cache Live Streaming Chat", slug: "distributed-cache-live-streaming-chat" },
             { name: "Distributed Task Scheduler Batch Job Processing", slug: "distributed-task-scheduler-batch-job-processing" },
-            { name: "Event Processing", slug: "event-processing" },
+            { name: "Event Processing Order Notifications", slug: "event-processing-order-notifications" },
             { name: "ID Generator", slug: "id-generator" },
             { name: "Kafka", slug: "kafka" },
             { name: "RabbitMQ", slug: "rabbitmq" },
