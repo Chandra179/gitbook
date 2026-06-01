@@ -57,8 +57,9 @@ const navigationData = [
         name: "System Design",
         slug: "system-design",
         pages: [
-            { name: "Cache Stampede", slug: "cache-stampede" },
-            { name: "Consistent Hashing", slug: "consistent-hashing" },
+            { name: "Cache Stampede Flash Sale", slug: "cache-stampede-flash-sale" },
+            { name: "Consistent Hashing Distributed Cache", slug: "consistent-hashing-distributed-cache" },
+            { name: "Distributed Cache Live Streaming Chat", slug: "distributed-cache-live-streaming-chat" },
             { name: "Distributed Task Scheduler", slug: "distributed-task-scheduler" },
             { name: "Event Processing", slug: "event-processing" },
             { name: "ID Generator", slug: "id-generator" },

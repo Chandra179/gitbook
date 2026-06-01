@@ -1,4 +1,4 @@
-# Distributed Task Scheduler
+# Distributed Task Scheduler for Batch Job Processing
 
 ### Goal
 
@@ -18,6 +18,19 @@ A scalable, durable, exactly-once task scheduler that decouples timing from exec
 * **Latency target:** 99.9% of tasks enqueued within 5 seconds of `scheduled_time`; exactly-once execution guarantee
 * **Scheduler nodes:** Horizontally scaled to N instances; no single coordinator bottleneck
 * **Tenants:** Multi-tenant with isolation guarantees per tenant
+
+### Key Design Decisions
+
+| Decision | Rationale | Rejected Alternative |
+|---|---|---|
+| Decoupled scheduler-broker-worker | Tasks survive worker outages; natural backpressure and priority queuing | Direct synchronous invocation (fragile, no retry buffer) |
+| PostgreSQL `FOR UPDATE SKIP LOCKED` + version column | Atomic claim without extra infrastructure; defense-in-depth against double execution | Pure ZooKeeper (operational complexity) or pure Redis (data loss risk) |
+| Time-based range partitioning (monthly) | Poll queries naturally hit recent partitions; old ones detached and archived automatically | Hash partitioning at DB level (complicates time-range archival) |
+| Hash-partitioned poll keys for scheduler nodes | Linear horizontal scaling; zero lock contention across nodes | Single shared poll queue (contention at 50+ nodes) |
+| Visibility timeout + singleton cleanup leader | Recovers crashed worker/scheduler tasks without per-task heartbeats | Per-task heartbeat (N× traffic overhead, false positives on transient network glitches) |
+| At-least-once execution by default; exactly-once via worker idempotency | Scheduler stays simple and fast; exactly-once is a system property, not single-component | Guaranteeing exactly-once in the scheduler (impossible without 2PC across worker and scheduler) |
+| Priority queues with aging + weighted fair queuing | Low-priority tasks always make progress; starvation impossible | Strict priority (low-priority starves indefinitely) or pure FIFO (no urgency differentiation) |
+| `pg_partman` for automatic partition management | No manual DDL; predictable retention; online detach/archive | Manual partition scripts (error-prone, requires scheduled operator intervention) |
 
 ### Architecture Diagram
 
@@ -42,6 +55,52 @@ flowchart TB
     Workers -- "max retries exceeded" --> Broker
     Scheduler --> Monitor
     Workers --> Monitor
+```
+
+### Data Flow
+
+```mermaid
+sequenceDiagram
+    participant P as Producer
+    participant S as Scheduler
+    participant DB as PostgreSQL
+    participant B as Broker
+    participant W as Worker
+
+    P->>S: POST /tasks {type, payload, scheduled_at}
+    S->>DB: INSERT INTO tasks
+    S-->>P: 202 Accepted {task_id}
+
+    loop Poll (200ms-2s with jitter)
+        S->>DB: SELECT ... FOR UPDATE SKIP LOCKED (batch=50)
+        DB-->>S: [pending tasks]
+        loop Each claimed task
+            S->>DB: UPDATE tasks SET status=IN_PROGRESS, version=version+1
+            alt Claim succeeded
+                S->>B: Publish(task, priority, jitter)
+            else Another scheduler claimed it
+                S->>S: Skip
+            end
+        end
+    end
+
+    B->>W: Deliver(task)
+    W->>DB: INSERT INTO processed_tasks (dedup)
+    alt First attempt
+        W->>W: Execute business logic
+        W->>DB: UPDATE tasks SET status=COMPLETED
+        W->>B: ACK
+    else Duplicate (idempotent skip)
+        W->>B: ACK
+    else Execution fails
+        W->>DB: UPDATE tasks SET status=FAILED, retry_count++
+        W->>B: NACK (requeue with backoff)
+    end
+
+    loop Cleanup (every 30s, singleton)
+        S->>DB: SELECT where IN_PROGRESS past visibility timeout
+        S->>DB: UPDATE tasks SET status=PENDING, claimed_by=NULL
+    end
 ```
 
 ### Database Schema
@@ -123,10 +182,9 @@ The cleanup singleton uses advisory locks to ensure only one node runs the visib
 
 ***
 
-\
-Poll and Claim Loop
+### Poll & Claim Loop
 
-**The flow (no code):**
+**Conceptual flow:**
 
 1. Scheduler queries for `PENDING` tasks where `scheduled_at <= now()`, ordered by `priority DESC, scheduled_at ASC`, limited to a batch size (e.g., 50 rows).
 2. The query uses `FOR UPDATE SKIP LOCKED` to:
@@ -139,7 +197,57 @@ Poll and Claim Loop
 6. If no tasks are returned, back off with exponential delay (with jitter) before polling again.
 7. The broker dispatch adds a random 1–5 second jitter to smooth thundering herds.
 
-***
+**Go implementation (scheduler hot path):**
+
+```go
+func (s *Scheduler) pollAndClaim(ctx context.Context) error {
+    rows, err := s.db.QueryContext(ctx, `
+        SELECT id, task_type, tenant_id, payload, priority, max_retries, version
+        FROM tasks
+        WHERE partition_key = ANY($1)
+          AND status = 'PENDING' AND scheduled_at <= NOW()
+        ORDER BY priority DESC, scheduled_at ASC
+        LIMIT $2
+        FOR UPDATE SKIP LOCKED
+    `, pq.Array(s.partitions), s.batchSize)
+    if err != nil {
+        return fmt.Errorf("poll: %w", err)
+    }
+    defer rows.Close()
+
+    for rows.Next() {
+        var t Task
+        if err := rows.Scan(&t.ID, &t.Type, &t.TenantID, &t.Payload, &t.Priority, &t.MaxRetries, &t.Version); err != nil {
+            s.metrics.PollErrors.Inc()
+            continue
+        }
+
+        result, err := s.db.ExecContext(ctx, `
+            UPDATE tasks
+            SET status = 'IN_PROGRESS', version = version + 1,
+                claimed_by = $1, claimed_at = NOW()
+            WHERE id = $2 AND version = $3 AND status = 'PENDING'
+        `, s.instanceID, t.ID, t.Version)
+        if err != nil {
+            continue
+        }
+
+        n, _ := result.RowsAffected()
+        if n == 0 {
+            s.metrics.ClaimConflicts.Inc()
+            continue
+        }
+
+        s.metrics.ClaimsSucceeded.Inc()
+        if err := s.broker.Publish(ctx, t); err != nil {
+            s.broker.Nack(ctx, t.ID)
+        }
+    }
+    return rows.Err()
+}
+```
+
+---
 
 ### Coordination Using Queues (Redis / ZooKeeper / Other)
 
@@ -280,7 +388,48 @@ For tables with billions of rows:
 | **Online schema changes**                | Use `pgroll` or `gh-ost` for non-blocking migrations. Adding a column with a default value is instant in PostgreSQL 11+. Adding an index uses `CREATE INDEX CONCURRENTLY`.                  |
 | **Archiving**                            | Detach old partitions and move to cold storage (S3 with `pg_tier` extension or manual export). Detached partitions are queryable if reattached but don't consume active database resources. |
 
-***
+### Failure Modes
+
+| Failure | Probability | Impact | Mitigation |
+|---|---|---|---|
+| Scheduler node crashes mid-claim (tasks stuck IN_PROGRESS) | Low–Medium | Medium: tasks invisible until cleanup | Visibility timeout singleton resets stuck tasks; ≤30s recovery window |
+| Worker crashes before ACK | Medium | Low: task re-delivered to another worker | Broker redelivers; idempotency key prevents double execution |
+| PostgreSQL primary fails | Low | High: entire scheduler stalls | Streaming replicas + automated failover (Patroni); pgbouncer for connection resilience |
+| Broker node failure | Low | Medium: no task dispatch until recovery | Quorum queues (RabbitMQ 3.8+) across 3-node cluster |
+| Partition hotspot (uneven task distribution) | Medium | Medium: some nodes idle, others overloaded | Monitor per-partition task count; trigger rebalance or dynamic reassignment |
+| Database connection pool exhaustion | Low–Medium | High: poll loop stalls, zero task progress | pgbouncer connection pooling; circuit breaker on poll loop; alert on connection wait time |
+| Redis coordination data loss (if using Redis) | Low | Medium: pending tasks absent from PostgreSQL | PostgreSQL is source of truth; Redis is ephemeral augmentation; orphaned tasks recovered by cleanup leader |
+
+### Infrastructure & Deployment
+
+#### Topology
+
+| Component | Count | Role |
+|---|---|---|
+| Scheduler nodes | 3–50 (horizontally scaled) | Poll, claim, dispatch |
+| PostgreSQL cluster | 1 primary + 2 replicas | Task storage, coordination, leader election |
+| RabbitMQ cluster | 3 nodes (quorum queues) | Message brokering, priority queuing |
+| Worker pools | Per-tenant, auto-scaled | Task execution |
+
+#### Compute
+
+Scheduler nodes are lightweight (2 vCPU, 4 GB RAM). The poll-claim-dispatch loop is CPU-bound (serialization, DB queries), not memory-bound. Workers are sized per tenant workload—CPU-intensive tasks get proportionally larger instances.
+
+#### Networking
+
+- All inter-service communication over private VPC (no public endpoints)
+- mTLS between scheduler, broker, and workers
+- Producers hit the scheduler API via API Gateway with tenant-level rate limiting
+
+#### Observability
+
+- **Metrics:** Prometheus (poll latency, claim success rate, dispatch rate, queue depth, cleanup recovery count, per-tenant QPS/latency/error rate)
+- **Dashboards:** Grafana with per-tenant segmentation
+- **Logging:** Structured JSON logs shipped to ELK; every state transition logged with `task_id`, `tenant_id`, `scheduler_instance`, `correlation_id`
+- **Tracing:** OpenTelemetry spans across scheduler → broker → worker; `correlation_id` propagated through message headers
+- **Alerts:** Defined in Operational Readiness section below
+
+---
 
 ### Operational Readiness (Architecture-Ready)
 
@@ -321,7 +470,7 @@ When a scheduler node receives SIGTERM:
 | Layer                          | Mechanism                                                                                                                                                            |
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Task ingestion**             | `tenant_id` on every task. Rate limit per tenant at the API gateway.                                                                                                 |
-| **Worker pools**               | Separate worker pools per tenant (or per tenant tier). Tenant A's buggy infinite-loop task doesn't consume Tenant B's worker capacity.                               |
+| **Worker pools**               | Separate worker pools per tenant (or per tenant tier). Tenant A's infinite-loop task doesn't consume Tenant B's worker capacity.                               |
 | **Circuit breaker per tenant** | If a tenant's tasks are failing at > 90% rate for 5 minutes, stop dispatching tasks for that tenant. Resume gradually (one task per minute) to test recovery.        |
 | **Database queries**           | Every query includes `tenant_id` filter. Composite indexes include `tenant_id`. Partition-based isolation is possible for very large tenants (dedicated partitions). |
 | **Operational visibility**     | Dashboards segmented by tenant. Per-tenant QPS, latency, error rate, and backlog depth.                                                                              |
@@ -378,7 +527,16 @@ Benefit: The scheduler remains simple and fast. Exactly-once is a system propert
 Cost: Partition assignment and rebalancing add complexity. Uneven partition assignment can create hotspots.\
 Benefit: Linear horizontal scaling of scheduler nodes without lock contention. Required for billions of tasks.
 
-***
+### Where It's Used
+
+- **Temporal / Cadence:** The canonical distributed task scheduler with workflow orchestration. Uses a similar poll-claim-dispatch architecture backed by MySQL/Cassandra for persistence.
+- **Google Cloud Tasks:** Managed task queue with exactly-once delivery, scheduling, and retry policies. Uses internal Spanner for coordination.
+- **Amazon SQS Delay Queues:** Delayed message delivery (up to 15 minutes). Simpler model—no explicit claiming, just delay + visibility timeout.
+- **Celery:** Python distributed task queue. Defaults to Redis/RabbitMQ as broker. Database-backed result backend.
+- **Sidekiq:** Ruby background job processor backed by Redis. Redis serves as both broker and coordination layer.
+- **Bull / BullMQ:** Node.js queue library on Redis. Supports delayed jobs, priorities, concurrency, and parent-child job relationships.
+
+---
 
 ### What This Design Doesn't Cover (Deferred to Implementation)
 

@@ -27,7 +27,7 @@
   * [Kafka](system-design/kafka.md)
   * [RabbitMQ](system-design/rabbitmq.md)
   * [Snowflake ID](system-design/id-generator.md)
-  * [Distributed Exactly-Once Task Queue with Scheduling](system-design/distributed-task-scheduler.md)
+  * [Distributed Task Scheduler for Batch Job Processing](system-design/distributed-task-scheduler-batch-job-processing.md)
   * [Distributed Cache for Live‑Streaming Chat](system-design/distributed-cache-live-streaming-chat.md)
   * [Notification System](system-design/notification-system.md)
   * [Real Time Chat (Discord)](system-design/real-time-chat-discord.md)
