@@ -65,6 +65,7 @@ const navigationData = [
             { name: "Event Processing Order Notifications", slug: "event-processing-order-notifications" },
             { name: "ID Generator", slug: "id-generator" },
             { name: "Order Notification System", slug: "order-notification-system" },
+            { name: "Public Api Rate Limiter", slug: "public-api-rate-limiter" },
             { name: "RabbitMQ", slug: "rabbitmq" },
         ],
     },

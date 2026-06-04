@@ -35,6 +35,7 @@ retry mechanism, fallback
 - CAP theorem (consistency, availability, partition tolerance)
 - Database sharding (split data accross multiple db)
 - Database replication for redundancy
+- DNS for routing, load balancing, and service discovery
 - CDNs for serving static content globally
 - Data consistency model (eventual, strong)
 - API design (rest, grpc, ratelimit, versioning, authorize, etc..)
