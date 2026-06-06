@@ -96,4 +96,13 @@ const navigationData = [
             },
         ],
     },
+    {
+        name: "Stale Reports",
+        slug: "stale-reports",
+        pages: [
+            { name: "Database 2026 06 01", slug: "database-2026-06-01" },
+            { name: "Oauth2 And Oidc 2026 06 01", slug: "oauth2-and-oidc-2026-06-01" },
+            { name: "Rag 2026 06 01", slug: "rag-2026-06-01" },
+        ],
+    },
 ];
