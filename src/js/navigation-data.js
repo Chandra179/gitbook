@@ -47,7 +47,6 @@ const navigationData = [
         pages: [
             { name: "API Best Practices", slug: "api-design-guidelines" },
             { name: "Computing", slug: "computing" },
-            { name: "Database", slug: "database" },
             { name: "Kafka", slug: "kafka" },
             { name: "Networking", slug: "networking" },
             { name: "OAuth2 and OIDC", slug: "oauth2-and-oidc" },
@@ -97,12 +96,16 @@ const navigationData = [
         ],
     },
     {
-        name: "Stale Reports",
-        slug: "stale-reports",
+        name: "Database",
+        slug: "database",
         pages: [
-            { name: "Database 2026 06 01", slug: "database-2026-06-01" },
-            { name: "Oauth2 And Oidc 2026 06 01", slug: "oauth2-and-oidc-2026-06-01" },
-            { name: "Rag 2026 06 01", slug: "rag-2026-06-01" },
+            { name: "Algorithms", slug: "algorithms" },
+            { name: "Concurrency And Scaling", slug: "concurrency-and-scaling" },
+            { name: "Operations And Patterns", slug: "operations-and-patterns" },
+            { name: "Query And Optimization", slug: "query-and-optimization" },
+            { name: "Specialized Databases", slug: "specialized-databases" },
+            { name: "Storage Engines", slug: "storage-engines" },
+            { name: "Taxonomy And Indexing", slug: "taxonomy-and-indexing" },
         ],
     },
 ];

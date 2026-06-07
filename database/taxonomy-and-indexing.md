@@ -230,14 +230,14 @@ This is critical for index design: order columns by selectivity (most selective 
 
 ```mermaid
 graph TD
-    Root[Root Page<br/>key: 50] --> I1[Internal Page<br/>10 | 30]
-    Root --> I2[Internal Page<br/>70 | 90]
-    I1 --> L1[Leaf: 1,5,8 → ptr]
-    I1 --> L2[Leaf: 12,18,25 → ptr]
-    I1 --> L3[Leaf: 32,40,48 → ptr]
-    I2 --> L4[Leaf: 55,62,68 → ptr]
-    I2 --> L5[Leaf: 72,80,88 → ptr]
-    I2 --> L6[Leaf: 95,99 → ptr]
+    Root["Root Page<br/>key: 50"] --> I1["Internal Page<br/>10 | 30"]
+    Root --> I2["Internal Page<br/>70 | 90"]
+    I1 --> L1["Leaf: 1,5,8 → ptr"]
+    I1 --> L2["Leaf: 12,18,25 → ptr"]
+    I1 --> L3["Leaf: 32,40,48 → ptr"]
+    I2 --> L4["Leaf: 55,62,68 → ptr"]
+    I2 --> L5["Leaf: 72,80,88 → ptr"]
+    I2 --> L6["Leaf: 95,99 → ptr"]
     L1 -.-> L2 -.-> L3 -.-> L4 -.-> L5 -.-> L6
 ```
 
@@ -252,13 +252,13 @@ The B+Tree is the dominant index structure in relational databases:
 
 ```mermaid
 graph LR
-    subgraph PK[B+Tree Clustered<br/>Primary Key]
-        PKL[Leaf: id=1,<br/>row data...]
-        PKL2[Leaf: id=25,<br/>row data...]
+    subgraph PK["B+Tree Clustered<br/>Primary Key"]
+        PKL["Leaf: id=1,<br/>row data..."]
+        PKL2["Leaf: id=25,<br/>row data..."]
     end
-    subgraph SK[B+Tree Non-Clustered<br/>Secondary Index (email)]
-        SKL[Leaf: email@ → id=25]
-        SKL2[Leaf: user@ → id=1]
+    subgraph SK["B+Tree Non-Clustered<br/>Secondary Index (email)"]
+        SKL["Leaf: email@ → id=25"]
+        SKL2["Leaf: user@ → id=1"]
     end
     SKL --> PKL2
     SKL2 --> PKL
@@ -268,14 +268,14 @@ graph LR
 
 ```mermaid
 graph TD
-    Index[B-Tree Index<br/>key → CTID] --> I1[Internal: 1-100]
-    Index --> I2[Internal: 101-200]
-    I1 --> L1[Leaf: a@ → (0,1)]
-    I1 --> L2[Leaf: b@ → (1,2)]
-    L1 --> Heap[Heap Page 0<br/>---]
-    L2 --> Heap2[Heap Page 1<br/>---]
-    Heap --> T1[Tuple 1<br/>xmin=100, xmax=null]
-    Heap --> T2[Tuple 2<br/>xmin=101, xmax=200<br/>dead?]
+    Index["B-Tree Index<br/>key → CTID"] --> I1["Internal: 1-100"]
+    Index --> I2["Internal: 101-200"]
+    I1 --> L1["Leaf: a@ → (0,1)"]
+    I1 --> L2["Leaf: b@ → (1,2)"]
+    L1 --> Heap["Heap Page 0<br/>---"]
+    L2 --> Heap2["Heap Page 1<br/>---"]
+    Heap --> T1["Tuple 1<br/>xmin=100, xmax=null"]
+    Heap --> T2["Tuple 2<br/>xmin=101, xmax=200<br/>dead?"]
 ```
 
 **SQL Server**: Supports both clustered and non-clustered indexes. In a clustered index, the leaf level is the data page. In a non-clustered index, the leaf contains either the clustered key (if the table has a clustered index) or a Row ID (RID, if the table is a heap). SQL Server also supports **included columns** — non-key columns stored at the leaf level to cover queries without touching the table.

@@ -7,8 +7,9 @@ Comprehensive reference on database internals: taxonomy, indexing, storage engin
 ### Overview
 
 - [taxonomy-and-indexing.md](./taxonomy-and-indexing.md) — Database types (SQL, NoSQL, Wide-Column, Document, Key-Value, Graph, Object, Time-Series, NewSQL) and per-DB indexing mechanisms (B+Tree, LSM, Hash, Inverted, GiST, GIN, BRIN, Bloom Filters)
-- [storage-and-algorithms.md](./storage-and-algorithms.md) — Storage engines (InnoDB, PostgreSQL Heap, SQL Server, WiredTiger, RocksDB) and core algorithms (B+Tree, LSM-Tree, MVCC, WAL, Consensus, Gossip, Consistent Hashing, Merkle Trees, Bloom Filters)
-- [concurrency-and-scaling.md](./concurrency-and-scaling.md) — Transactions, isolation, locking, performance, replication, scaling, distributed transactions
+- [storage-engines.md](./storage-engines.md) — Per-engine internals: InnoDB, PostgreSQL Heap, SQL Server, WiredTiger, RocksDB, and on-disk file layout
+- [algorithms.md](./algorithms.md) — Core data structures and algorithms: B+Tree, LSM-Tree, MVCC, WAL, Merkle Trees, Bloom Filters (with pseudocode)
+- [concurrency-and-scaling.md](./concurrency-and-scaling.md) — Transactions, isolation, locking, replication, scaling, distributed transactions, distributed consensus (Raft, Paxos, VSR), gossip protocol, consistent hashing
 - [query-and-optimization.md](./query-and-optimization.md) — Query pipeline, scan methods, join algorithms, parallel execution, cost estimation
 - [specialized-databases.md](./specialized-databases.md) — Vector databases (pgvector, Pinecone, Milvus), Search engines (Elasticsearch), Embedded (SQLite, DuckDB), Streaming, Time-Series internals
 - [operations-and-patterns.md](./operations-and-patterns.md) — Caching strategies, backup & recovery, data warehousing, migration patterns, connection pooling
@@ -20,4 +21,3 @@ Comprehensive reference on database internals: taxonomy, indexing, storage engin
 - [deep-dives/redis.md](./deep-dives/redis.md) — Data structures & encodings, persistence, replication, cluster, eviction, transactions
 - [deep-dives/cassandra.md](./deep-dives/cassandra.md) — SSTable structure, compaction, bloom filters, read/write paths, gossip, repair, LWTs
 - [deep-dives/spanner.md](./deep-dives/spanner.md) — TrueTime, Paxos per shard, directory-based sharding, interleaved tables, 2PC, F1 SQL
-- [deep-dives.md](./deep-dives.md) — CockroachDB, TigerBeetle (additional distributed databases)

@@ -163,3 +163,72 @@ Partitioning data across multiple database instances by a shard key:
 - **Directory-based**: A lookup service maps key to shard. Flexible but adds a hop.
 
 Sharding challenges: cross-shard transactions (require 2PC/Saga), resharding (rebalancing data when adding nodes), and the need for a distributed query engine for global queries.
+
+***
+
+## Distributed Consensus
+
+### Consensus Protocols (Paxos, Raft, VSR)
+
+Distributed consensus ensures multiple nodes agree on a single value, even when some fail. This is the foundation for fault-tolerant replicated state machines in distributed databases.
+
+**Raft** (CockroachDB, TiDB, etcd): Designed for understandability.
+
+```mermaid
+flowchart LR
+    subgraph Cluster
+        L[Leader] --> F1[Follower 1]
+        L --> F2[Follower 2]
+        L --> F3[Follower 3]
+    end
+    Client -->|Propose| L
+    L -->|AppendEntries<br/>log entry| F1
+    L -->|AppendEntries| F2
+    L -->|AppendEntries| F3
+    F1 -->|log ok| L
+    F2 -->|log ok| L
+    L -->|commit| Client
+```
+
+- One leader per term, elected by majority vote.
+- Leader replicates log entries to followers.
+- An entry is committed when the leader receives acknowledgments from a majority.
+- Term = epoch. Timeout-based leader election (150-300ms random).
+- Safety: At most one leader per term. A candidate only wins if it has the most up-to-date log.
+
+**Paxos** (Spanner, Cassandra): More complex but proven in production. Multi-Paxos optimizes the basic protocol by pre-electing a leader (similar to Raft's stable leader). Spanner uses Paxos for replica group consensus.
+
+**VSR** (TigerBeetle): Virtual Synchrony Replication. Combines view change protocol with synchronous replication. Has only 3 types of messages, making it simpler to reason about and test deterministically.
+
+### Gossip Protocol
+
+Nodes periodically exchange membership and state information with a small set of peers. Used by Cassandra, Consul, and Redis Cluster:
+
+- Each node tracks heartbeats for all other nodes.
+- A node gossips with 1-3 random peers every second.
+- After a configurable timeout, a node is marked as suspicious (and later dead) if no heartbeat received.
+- Propagation is exponential — a membership change spreads to all nodes in O(log n) rounds.
+
+### Consistent Hashing
+
+```mermaid
+graph TD
+    subgraph Ring[Consistent Hashing Ring]
+        N1[Node A<br/>range: 1-25]
+        N2[Node B<br/>range: 26-50]
+        N3[Node C<br/>range: 51-75]
+        N4[Node D<br/>range: 76-100]
+        N1 <--> N2
+        N2 <--> N3
+        N3 <--> N4
+        N4 <--> N1
+    end
+    KeyA[Key user:42] -->|hash=42| N2
+    KeyB[Key order:55] -->|hash=55| N3
+    New[New Node E] -->|joins at 40| N2
+    New -->|takes range 26-40| N2
+```
+
+Distributes keys across nodes so that adding or removing a node only affects a fraction of the keys (1/n). Used by Cassandra, DynamoDB, and consistent cache rings.
+
+**Virtual nodes (vnodes)**: Each physical node is represented by 100+ virtual nodes on the ring. This improves load distribution and speeds up recovery — a failed node's load is spread across all other nodes, not just its successor.

@@ -65,7 +65,7 @@ const IGNORE = new Set([
     'node_modules', 'dist', 'src', 'scripts', '.git', '.gitbook',
     'CLAUDE.md', 'SUMMARY.md', 'diagrams', 'books.md', 'ROADMAP.md',
     'rate-limit.md', 'real-time-chat-discord.md',
-    'notification-system.md', 'distributed-cache.md'
+    'notification-system.md', 'distributed-cache.md', 'stale-reports'
 ]);
 
 function toName(slug) {
