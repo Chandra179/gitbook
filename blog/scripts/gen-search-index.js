@@ -1,51 +1,19 @@
 #!/usr/bin/env node
-/**
- * Pre-builds the full-text search index at build time.
- *
- * Walks the same content tree as gen-nav.js, reads every markdown file,
- * splits it by headings into sections, strips markdown syntax, and writes
- * src/search-index.json.
- *
- * At runtime, search.js fetches this single JSON file instead of fetching
- * every markdown file individually — N requests → 1 request.
- */
 
-const fs   = require('fs');
+const fs = require('fs');
 const path = require('path');
+const { ROOT, SRC } = require('./lib/paths');
+const { loadNavData } = require('./lib/nav-loader');
+const { generateSlug, stripMarkdown } = require('./lib/markdown');
 
-const ROOT   = path.resolve(__dirname, '..');
-const OUTPUT = path.join(ROOT, 'src', 'search-index.json');
-
-const IGNORE = new Set([
-    'node_modules', 'dist', 'src', 'scripts', '.git', '.gitbook',
-    'CLAUDE.md', 'SUMMARY.md', 'diagrams', 'books.md', 'ROADMAP.md',
-]);
-
-// Must match utils.js generateSlug exactly so anchor links resolve correctly.
-function generateSlug(text) {
-    if (!text || typeof text !== 'string') return '';
-    return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-}
-
-function stripMarkdown(markdown) {
-    return markdown
-        .replace(/^#+\s+/gm, '')
-        .replace(/(\*\*|__)(.*?)\1/g, '$2')
-        .replace(/(\*|_)(.*?)\1/g, '$2')
-        .replace(/`([^`]+)`/g, '$1')
-        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-        .replace(/!\[([^\]]*)\]\([^)]+\)/g, '')
-        .replace(/>\s+/gm, '')
-        .replace(/```[\s\S]*?```/g, '')
-        .replace(/\n/g, ' ');
-}
+const OUTPUT = path.join(SRC, 'search-index.json');
 
 function indexFile(index, filePath, pageName, pageLink, categoryName) {
     let text;
     try {
         text = fs.readFileSync(filePath, 'utf8');
     } catch {
-        return; // file doesn't exist or unreadable — skip
+        return;
     }
 
     const lines = text.split('\n');
@@ -96,20 +64,6 @@ function indexPages(index, pages, categorySlug, categoryName, pathPrefix = '') {
             );
         }
     }
-}
-
-// Load the already-generated navigation data to reuse its structure.
-// Avoids duplicating the filesystem-walking logic.
-function loadNavData() {
-    const navFile = path.join(ROOT, 'src', 'js', 'navigation-data.js');
-    const src = fs.readFileSync(navFile, 'utf8');
-    // Strip the const assignment so we can eval just the array literal
-    const json = src
-        .replace(/^\/\/.*$/gm, '')           // remove comments
-        .replace(/const navigationData\s*=/, '')
-        .replace(/;?\s*$/, '');
-    // eslint-disable-next-line no-eval
-    return eval(`(${json.trim()})`);
 }
 
 function build() {

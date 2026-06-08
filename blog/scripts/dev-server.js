@@ -5,8 +5,9 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 const ROOT = path.resolve(__dirname, '..');
+const CONTENT_ROOT = path.resolve(__dirname, '..', '..');
 const SRC = path.join(ROOT, 'src');
 
 const MIME = {
@@ -59,7 +60,7 @@ const server = http.createServer((req, res) => {
   }
 
   // 3. Try repo root (markdown content: /math/trig.md, /.gitbook/assets/img.png, etc.)
-  const rootPath = path.join(ROOT, urlPath);
+  const rootPath = path.join(CONTENT_ROOT, urlPath);
   if (fs.existsSync(rootPath) && fs.statSync(rootPath).isFile()) {
     return serveFile(res, rootPath);
   }
@@ -71,5 +72,5 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, () => {
   console.log(`Dev server running at http://localhost:${PORT}`);
   console.log(`Serving assets from: ${SRC}`);
-  console.log(`Serving content from: ${ROOT}`);
+  console.log(`Serving content from: ${CONTENT_ROOT}`);
 });

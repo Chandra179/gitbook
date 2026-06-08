@@ -1,72 +1,12 @@
 #!/usr/bin/env node
-/**
- * Generates src/js/navigation-data.js by scanning content directories.
- *
- * Rules:
- *   - Root .md files (excluding README, SUMMARY, CLAUDE) become standalone pages.
- *   - Top-level directories with a README.md become categories.
- *   - Sub-directories inside a category become folder pages (isFolder: true).
- *   - .md files inside a category (or sub-folder) become regular pages.
- *   - README.md files inside directories are skipped as pages (they're loaded implicitly).
- *
- * Display names are derived from slugs:
- *   "api-design-guidelines" -> "Api Design Guidelines"
- * Override names in NAME_OVERRIDES below if needed.
- */
 
 const fs = require('fs');
 const path = require('path');
+const { ROOT, SRC } = require('./lib/paths');
+const { IGNORE, NAME_OVERRIDES, ROOT_PAGE_ORDER, CATEGORY_ORDER } = require('./lib/config');
 
-const ROOT = path.resolve(__dirname, '..');
-const OUTPUT = path.join(ROOT, 'src/js/navigation-data.js');
-
-// Slug -> display name overrides. Add entries here to customise a name
-// without renaming the file/directory.
-const NAME_OVERRIDES = {
-    'README':                      'Introduction',
-    'p2p-chat':                    'P2P Chat',
-    'etcd-raft':                   'etcd & Raft',
-    'fundamental':                 'Fundamentals',
-    'e2e-production-rag':          'RAG',
-    'golang':                      'Golang',
-    'math':                        'Math',
-    'reactjs':                     'ReactJS',
-    'rabbitmq':                    'RabbitMQ',
-    'ml':                          'ML',
-    'system-design':               'System Design',
-    'web-scraper':                 'Web Scraper',
-    'precalculus':                 'Precalculus',
-    'cpu':                         'CPU',
-    'api-design-guidelines':       'API Best Practices',
-    'oauth2-and-oidc':             'OAuth2 and OIDC',
-    'sequence-series-limit':       'Sequence, Series, Limit',
-    'linear-algebra':              'Linear Algebra',
-    'clock-skew-and-time-sync':    'Clock Skew and Time Sync',
-    'consistent-hashing':          'Consistent Hashing',
-    'id-generator':                'ID Generator',
-    'rate-limit':                  'Rate Limit',
-    'distributed-task-scheduler':  'Distributed Task Scheduler',
-    'distributed-cache':           'Distributed Cache',
-    'notification-system':         'Notification System',
-    'chunking-and-embedding':      'Chunking and Embedding',
-    'garbage-collector':           'Garbage Collector',
-};
-
-// Root .md files to expose as standalone pages, in order.
-// Files not listed here but found on disk are appended alphabetically.
-const ROOT_PAGE_ORDER = ['README', 'p2p-chat', 'reactjs', 'etcd-raft'];
-
-// Top-level content directories, in order.
-// Directories not listed here but found on disk are appended alphabetically.
-const CATEGORY_ORDER = ['fundamental', 'system-design', 'golang', 'math'];
-
-// Directories / files to never include.
-const IGNORE = new Set([
-    'node_modules', 'dist', 'src', 'scripts', '.git', '.gitbook',
-    'CLAUDE.md', 'SUMMARY.md', 'diagrams', 'books.md', 'ROADMAP.md',
-    'rate-limit.md', 'real-time-chat-discord.md',
-    'notification-system.md', 'distributed-cache.md', 'stale-reports'
-]);
+const OUTPUT_JS = path.join(SRC, 'js/navigation-data.js');
+const OUTPUT_JSON = path.join(SRC, 'js/navigation-data.json');
 
 function toName(slug) {
     if (NAME_OVERRIDES[slug]) return NAME_OVERRIDES[slug];
@@ -80,7 +20,6 @@ function slugFromFile(filename) {
     return filename.replace(/\.md$/, '');
 }
 
-/** Scan a directory and return sorted page entries (files then sub-folders). */
 function scanDir(dirPath, depth = 0) {
     const entries = fs.readdirSync(dirPath, { withFileTypes: true });
     const pages = [];
@@ -102,7 +41,7 @@ function scanDir(dirPath, depth = 0) {
     for (const slug of dirs) {
         const subPath = path.join(dirPath, slug);
         const hasReadme = fs.existsSync(path.join(subPath, 'README.md'));
-        if (!hasReadme) continue; // skip dirs without README
+        if (!hasReadme) continue;
 
         if (depth === 0) {
             const subPages = scanDir(subPath, depth + 1);
@@ -110,7 +49,6 @@ function scanDir(dirPath, depth = 0) {
             if (subPages.length > 0) entry.pages = subPages;
             pages.push(entry);
         }
-        // deeper nesting not needed for now
     }
 
     return pages;
@@ -119,7 +57,6 @@ function scanDir(dirPath, depth = 0) {
 function buildNav() {
     const nav = [];
 
-    // --- Standalone root pages ---
     const rootMdFiles = fs.readdirSync(ROOT, { withFileTypes: true })
         .filter(e => e.isFile() && e.name.endsWith('.md') && !IGNORE.has(e.name))
         .map(e => slugFromFile(e.name));
@@ -133,7 +70,6 @@ function buildNav() {
         nav.push({ name: toName(slug), slug, standalone: true });
     }
 
-    // --- Category directories ---
     const rootDirs = fs.readdirSync(ROOT, { withFileTypes: true })
         .filter(e => e.isDirectory() && !IGNORE.has(e.name) && !e.name.startsWith('.'))
         .map(e => e.name);
@@ -202,5 +138,6 @@ function serializePage(lines, page, indent) {
 
 const nav = buildNav();
 const output = serialize(nav);
-fs.writeFileSync(OUTPUT, output, 'utf8');
+fs.writeFileSync(OUTPUT_JS, output, 'utf8');
+fs.writeFileSync(OUTPUT_JSON, JSON.stringify(nav, null, 2), 'utf8');
 console.log(`navigation-data.js written (${nav.length} top-level entries)`);

@@ -16,7 +16,7 @@ export default {
             ttl = CACHE.DAY;
         } else if (path.endsWith('.js') || path.endsWith('.css')) {
             ttl = CACHE.DAY;
-        } else if (path.endsWith('.md') || path.endsWith('.json')) {
+        } else if (path.endsWith('.md') || path.endsWith('.json') || path.endsWith('.xml')) {
             ttl = CACHE.DAY;
         } else if (path.endsWith('.html')) {
             ttl = CACHE.HOUR;

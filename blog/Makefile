@@ -6,7 +6,7 @@ dev:
 	@[ -d node_modules ] || npm install
 	@echo "Building CSS..."
 	@npm run build:css
-	@echo "Starting dev server at http://localhost:3000 ..."
+	@echo "Starting dev server at http://localhost:8080 ..."
 	@npm run dev
 
 deploy:
