@@ -82,16 +82,42 @@ class ContentLoader {
                 const response = await fetch(filePath);
                 let markdown;
                 if (!response.ok) {
-                    if (!page && !standaloneItem) {
+                    markdown = null;
+                } else {
+                    markdown = await response.text();
+                    // SPA fallback: Cloudflare serves index.html for missing files
+                    if (/^\s*<!DOCTYPE html/i.test(markdown) || /^\s*<html/i.test(markdown)) {
+                        markdown = null;
+                    }
+                }
+
+                if (markdown === null) {
+                    if (page && !standaloneItem) {
+                        // Folder or page not found — redirect to first child page if folder
+                        const parts = page.split('/');
+                        let currentPages = this.navigationData.find(cat => cat.slug === category)?.pages;
+                        let folder = null;
+                        for (const part of parts) {
+                            folder = currentPages?.find(p => p.slug === part);
+                            currentPages = folder?.pages;
+                        }
+                        if (folder?.pages?.length) {
+                            const firstSlug = folder.pages[0].slug;
+                            const newPath = `/${category}/${page}/${firstSlug}`;
+                            history.replaceState(null, '', newPath);
+                            return this.loadContent(category, `${page}/${firstSlug}`, anchor);
+                        }
+                        markdown = `# Page Not Found\n\nThe file \`${filePath}\` could not be loaded.`;
+                    } else if (!page && !standaloneItem) {
                         const categoryData = this.navigationData.find(cat => cat.slug === category);
                         const categoryName = categoryData ? categoryData.name : category;
                         markdown = `# ${categoryName}\n\nREADME file not found for this category.`;
                     } else {
                         markdown = `# Page Not Found\n\nThe file \`${filePath}\` could not be loaded.`;
                     }
-                } else {
-                    markdown = await response.text();
                 }
+
+                const contentOk = response.ok && markdown !== null;
                 // Parse markdown and rewrite links
                 html = this.rewriteLinks(marked.parse(markdown), category, page);
 
@@ -102,7 +128,7 @@ class ContentLoader {
                     (_, spanHtml) => `<div class="katex-display">${spanHtml}</div>`
                 );
 
-                if (response.ok) {
+                if (contentOk) {
                     this.cache.set(filePath, html);
                 }
             }

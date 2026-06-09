@@ -40,14 +40,17 @@ function build() {
             for (const page of section.pages) {
                 if (page.isFolder && page.pages) {
                     const folderFile = path.join(ROOT, section.slug, page.slug, 'README.md');
-                    cards.push({
-                        title:        page.name,
-                        path:         `${section.slug}/${page.slug}`,
-                        standalone:   false,
-                        category:     section.name,
-                        categorySlug: section.slug,
-                        description:  extractDescription(readMarkdown(folderFile, fs)),
-                    });
+                    const hasReadme = fs.existsSync(folderFile);
+                    if (hasReadme) {
+                        cards.push({
+                            title:        page.name,
+                            path:         `${section.slug}/${page.slug}`,
+                            standalone:   false,
+                            category:     section.name,
+                            categorySlug: section.slug,
+                            description:  extractDescription(readMarkdown(folderFile, fs)),
+                        });
+                    }
 
                     for (const subpage of page.pages) {
                         const subFile = path.join(ROOT, section.slug, page.slug, subpage.slug + '.md');

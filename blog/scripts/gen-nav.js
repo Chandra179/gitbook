@@ -39,16 +39,15 @@ function scanDir(dirPath, depth = 0) {
     }
 
     for (const slug of dirs) {
-        const subPath = path.join(dirPath, slug);
-        const hasReadme = fs.existsSync(path.join(subPath, 'README.md'));
-        if (!hasReadme) continue;
+        if (depth !== 0) continue;
 
-        if (depth === 0) {
-            const subPages = scanDir(subPath, depth + 1);
-            const entry = { name: toName(slug), slug, isFolder: true };
-            if (subPages.length > 0) entry.pages = subPages;
-            pages.push(entry);
-        }
+        const subPath = path.join(dirPath, slug);
+        const subPages = scanDir(subPath, depth + 1);
+        if (subPages.length === 0) continue;
+
+        const entry = { name: toName(slug), slug, isFolder: true };
+        entry.pages = subPages;
+        pages.push(entry);
     }
 
     return pages;
