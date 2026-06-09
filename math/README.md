@@ -1,6 +1,6 @@
 # Math
 
-* **Algebra**: Solving for $$x$$, factoring polynomials, exponents, logarithms, and understanding functions ($$f(x)$$). Richard Rusczyk
+* **Algebra**: Solving for $x$, factoring polynomials, exponents, logarithms, and understanding functions ($f(x)$). Richard Rusczyk
 * **Geometry & Trigonometry**: Shapes, spatial logic, the unit circle, and sine/cosine functions.
 * **Pre-Calculus**: Combining algebra and trig to handle limits and prepare for the study of change.
 * **Calculus 1 (Differential)**: Understanding the derivative (the slope of a curve).

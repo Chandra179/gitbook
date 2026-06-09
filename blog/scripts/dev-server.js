@@ -59,7 +59,7 @@ const server = http.createServer((req, res) => {
     return serveFile(res, srcPath);
   }
 
-  // 3. Try repo root (markdown content: /math/trig.md, /.gitbook/assets/img.png, etc.)
+  // 3. Try repo root (markdown content: /math/trig.md, /assets/img.png, etc.)
   const rootPath = path.join(CONTENT_ROOT, urlPath);
   if (fs.existsSync(rootPath) && fs.statSync(rootPath).isFile()) {
     return serveFile(res, rootPath);

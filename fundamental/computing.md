@@ -1,6 +1,6 @@
 # Computing
 
-<figure><img src="../.gitbook/assets/cpu.png" alt=""><figcaption></figcaption></figure>
+![](../assets/cpu.png)
 
 ### Physical Hardware
 

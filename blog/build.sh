@@ -38,15 +38,8 @@ cp src/worker.js dist/worker.js
 cp src/search-index.json dist/search-index.json
 cp src/landing-index.json dist/landing-index.json
 
-# Copy .gitbook assets (images)
-mkdir -p dist/.gitbook
-# Only copy if assets exist to prevent error
-if [ -d "../.gitbook/assets" ]; then
-    cp -r ../.gitbook/assets dist/.gitbook/assets
-fi
-
 # Copy all content directories (any top-level dir that isn't infrastructure)
-SKIP_DIRS="node_modules dist src scripts .git .gitbook .claude .wrangler blog"
+SKIP_DIRS="node_modules dist src scripts .git .claude .wrangler blog"
 for dir in ../*/; do
     dir="${dir%/}"
     dir="${dir#../}"
