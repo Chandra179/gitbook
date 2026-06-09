@@ -181,6 +181,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://blog.chan179.workers.dev/assets</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://blog.chan179.workers.dev/database</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
