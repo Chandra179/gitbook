@@ -144,7 +144,7 @@ The only fix: **lock yourself in** before temptation arrives.
 
 Same \$50 loss. Same net result (you're down \$50 plus pay \$50 for the ticket either way). But one feels like "entertainment budget already spent" and the other feels like "extra cash."
 
-**Standard economics**: money is fungible. \$1 = \$1. Brains don't work that way.
+**Standard economics**: money is fungible. \$1 = \$1. Brains don't work that way
 
 ### Real-world examples
 
