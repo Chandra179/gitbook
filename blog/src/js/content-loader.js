@@ -121,11 +121,11 @@ class ContentLoader {
                 // Parse markdown and rewrite links
                 html = this.rewriteLinks(marked.parse(markdown), category, page);
 
-                // Magic Step: If a <p> exclusively contains a double-dollar math span, turn it into a centered block.
-                // This will ignore math inside lists or math next to text!
+                // Magic Step: If a <p> exclusively contains display math, lift it out of the paragraph.
+                // The library renders inline $$ as <span class="katex-display"> which already has display:block.
                 html = html.replace(
-                    /<p>\s*(<span class="math-double">[\s\S]+?<\/span>)\s*<\/p>/g, 
-                    (_, spanHtml) => `<div class="katex-display">${spanHtml}</div>`
+                    /<p>\s*(<span class="katex-display">[\s\S]+?<\/span>)\s*<\/p>/g,
+                    (_, spanHtml) => spanHtml
                 );
 
                 if (contentOk) {

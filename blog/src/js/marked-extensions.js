@@ -36,39 +36,63 @@ function escapeHtml(str) {
 }
 
 function initializeMarkedExtensions() {
-    const gitbookMath = {
-        name: 'gitbookMath',
-        level: 'inline', // CRITICAL: Parsing as inline protects your <ul> lists
-        start(src) { return src.indexOf('$'); },
+    // Math rendering rules (adapted from marked-katex-extension v5.1.8)
+    // Non-standard mode: match $ anywhere (like Obsidian)
+    const inlineRule = /^(\${1,2})(?!\$)((?:\\.|[^\\\n\$])*?(?:\\.|[^\\\n\$]))\1/;
+    const blockRule = /^(\${1,2})\n((?:\\[^]|[^\\\$])+?)\n\1(?:\n|$)/;
+
+    // Renderers reference window.katex lazily — safe with deferred KaTeX
+    function katexRender(token, newlineAfter) {
+        if (typeof katex === 'undefined') return token.raw;
+        try {
+            return katex.renderToString(token.text, {
+                throwOnError: false,
+                displayMode: token.displayMode
+            }) + (newlineAfter ? '\n' : '');
+        } catch (_) {
+            return token.raw;
+        }
+    }
+
+    const inlineKatex = {
+        name: 'inlineKatex',
+        level: 'inline',
+        start(src) {
+            const idx = src.indexOf('$');
+            return idx === -1 ? undefined : idx;
+        },
         tokenizer(src) {
-            // Matches both $$...$$ and $...$
-            const match = /^(?:\$\$([\s\S]+?)\$\$|\$(?!\d)([\s\S]+?)\$)/.exec(src);
+            const match = src.match(inlineRule);
             if (match) {
                 return {
-                    type: 'gitbookMath',
+                    type: 'inlineKatex',
                     raw: match[0],
-                    text: match[1] || match[2],
-                    isDouble: !!match[1] // Tracks if it used $$
+                    text: match[2].trim(),
+                    displayMode: match[1].length === 2
                 };
             }
         },
-        renderer(token) {
-            try {
-                // GitBook uses \displaystyle to keep inline math large and legible.
-                const text = token.isDouble ? `\\displaystyle {${token.text}}` : token.text;
-                
-                const html = katex.renderToString(text, {
-                    displayMode: false, // Keeps equations like $$a$$ = $$b$$ on one line
-                    throwOnError: false
-                });
-
-                // Tag it so we can style block math later
-                return `<span class="math-${token.isDouble ? 'double' : 'single'}">${html}</span>`;
-            } catch (e) {
-                return token.raw;
-            }
-        }
+        renderer(token) { return katexRender(token, false); }
     };
+
+    const blockKatex = {
+        name: 'blockKatex',
+        level: 'block',
+        tokenizer(src) {
+            const match = src.match(blockRule);
+            if (match) {
+                return {
+                    type: 'blockKatex',
+                    raw: match[0],
+                    text: match[2].trim(),
+                    displayMode: match[1].length === 2
+                };
+            }
+        },
+        renderer(token) { return katexRender(token, true); }
+    };
+
+    marked.use({ extensions: [inlineKatex, blockKatex] });
 
     const gitbookEmbed = {
         name: 'gitbookEmbed',
@@ -88,5 +112,5 @@ function initializeMarkedExtensions() {
         }
     };
 
-    marked.use({ extensions: [gitbookMath, gitbookEmbed] });
+    marked.use({ extensions: [gitbookEmbed] });
 }
