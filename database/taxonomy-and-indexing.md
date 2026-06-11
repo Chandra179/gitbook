@@ -10,7 +10,7 @@
 
 **Consistency**: ACID transactions, strong consistency by default. Isolation levels can be relaxed for performance.
 
-**Use Case**: Banking, ERP, CRM, order management — any system where data integrity and complex relationships matter.
+**Use Case**: Banking, ERP, CRM, order management any system where data integrity and complex relationships matter.
 
 | Database | Engine | Default Isolation | Key Strength |
 |---|---|---|---|
@@ -198,8 +198,6 @@ graph TD
 
 ## Indexing Mechanisms
 
----
-
 ### Index Fundamentals
 
 **Cardinality** refers to the number of unique values in a column relative to the total row count. It is the primary metric the query optimizer uses to decide whether to use an index.
@@ -226,7 +224,7 @@ This is critical for index design: order columns by selectivity (most selective 
 
 ---
 
-### B+Tree Index (MySQL, PostgreSQL, SQL Server)
+### B+Tree Index
 
 ```mermaid
 graph TD
@@ -248,20 +246,53 @@ The B+Tree is the dominant index structure in relational databases:
 - **Leaf nodes are linked** — a linked list connects them left-to-right, enabling efficient range scans (`BETWEEN`, `>`).
 - **Height is typically 3-4** for billions of rows. Every lookup is 3-4 I/O operations.
 
-**MySQL (InnoDB)**: Primary key is a clustered B+Tree — the leaf pages store the entire row. Secondary indexes store the PK value as the pointer (not a physical address). This means a secondary index lookup requires two B+Tree traversals: first the secondary index, then the PK (clustered) index. This is called a "double lookup" or "bookmark lookup."
+**Concrete example — 1M rows with an index on an INT column (PostgreSQL, 8KB pages):**
+
+PostgreSQL uses 8KB (8,192 bytes) per page. Some space is reserved for headers and metadata:
+
+- Page header: 24 bytes
+- Line pointer array: 4 bytes per entry
+- Special space (B-Tree specific): 16 bytes
+
+Available for data: ~8,128 bytes. An index entry has:
+
+| Level | Entry contents | Size per entry | Max entries per page |
+|---|---|---|---|
+| Leaf | INT key (4B) + CTID (6B) + tuple header (~8B) + line pointer (4B) = ~22B | 22 bytes | 8,128 / 22 ≈ **370** |
+| Internal | INT key (4B) + child page pointer (4B) + tuple header (~8B) + line pointer (4B) = ~20B | 20 bytes | 8,128 / 20 ≈ **400** |
+
+The actual usable count is slightly lower due to alignment and fillfactor (default 90%, leaves room for inserts without immediate page splits). So realistic **fan-out ≈ 300 for leaves, ≈ 300-350 for internal pages**.
+
+Building a B+Tree for 1M rows:
+
+| Level    | Fan-out           | Pages needed for 1M rows      |
+| -------- | ----------------- | ----------------------------- |
+| Leaf     | 300 entries/page  | 1,000,000 / 300 = 3,334 pages |
+| Internal | 300 pointers/page | 3,334 / 300 ≈ 12 pages        |
+| Root     | 300 pointers/page | 12 / 300 ≈ 1 page             |
+
+Total tree height = **3**. Every `WHERE id = ?` lookup reads exactly 3 pages — root, internal, leaf — regardless of which row is queried.
+
+With larger keys (TEXT, UUID) the entries are bigger, fan-out drops, and the tree may need an extra level at the same row count. For example, a UUID (16 bytes) roughly halves the fan-out.
 
 ```mermaid
-graph LR
-    subgraph PK["B+Tree Clustered<br/>Primary Key"]
-        PKL["Leaf: id=1,<br/>row data..."]
-        PKL2["Leaf: id=25,<br/>row data..."]
+graph TD
+    Q["Query: WHERE id = 42"] --> Dec{Index on id?}
+    Dec -->|No| FS["Full Heap Scan"]
+    Dec -->|Yes| IX["B+Tree Index Lookup"]
+
+    FS --> P1["Page 1<br/>skip..."]
+    P1 --> P2["Page 2<br/>skip..."]
+    P2 --> P3["⋯"]
+    P3 --> P5000["Page 5000<br/>found! row data"]
+
+    subgraph BTree["B+Tree (3 page reads)"]
+        IX --> R["Root<br/>42 ≥ 30 → go right"]
+        R --> I["Internal<br/>42 < 70 → go left"]
+        I --> L["Leaf: id=42<br/>→ CTID (0,42)"]
     end
-    subgraph SK["B+Tree Non-Clustered<br/>Secondary Index (email)"]
-        SKL["Leaf: email@ → id=25"]
-        SKL2["Leaf: user@ → id=1"]
-    end
-    SKL --> PKL2
-    SKL2 --> PKL
+
+    L --> Heap["Heap Page 0<br/>row data"]
 ```
 
 **PostgreSQL**: Uses a heap-based storage model. The B-Tree index stores `(key, CTID)` where `CTID = (page_number, tuple_index)` points directly to the heap tuple. No double lookup — the index directly locates the row. However, MVCC means older row versions exist in the heap, and the index may point to a dead tuple, requiring a visibility check.
