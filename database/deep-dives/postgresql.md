@@ -27,6 +27,55 @@ graph TD
 
 **TOAST** (The Oversized-Attribute Storage Technique): Values > 2KB are compressed and stored in a separate TOAST table. The main tuple holds a pointer to the TOAST chunk. Values > 32KB are stored without compression (too expensive to compress).
 
+### Heap File Layout
+
+The heap file is a flat array of 8KB blocks. Each block is a page containing tuples:
+
+```
+Heap file (8KB blocks)
+
+Index  Contents
+────── ────────────────────────────────────────────
+[0]    CTID(0,1): id=1, name=Alice,  email=a@x.com
+       CTID(0,2): id=2, name=Bob,    email=b@x.com
+       CTID(0,3): id=3, name=Charlie ...
+[1]    CTID(1,1): id=11, name=Diana ...
+       CTID(1,2): id=12, name=Eve ...
+[2]    CTID(2,1): id=21, name=Frank ...
+[3]    ...
+```
+
+When the heap file reaches 1GB, PostgreSQL closes it and creates a new segment:
+
+```
+Directory listing for a large table:
+  base/16384/16767     → segment 0 (0-1GB)
+  base/16384/16767.1   → segment 1 (1-2GB)
+  base/16384/16767.2   → segment 2 (2-3GB)
+```
+
+**CTIDs don't link rows together.** Each tuple has a `t_ctid` field, but it only tracks versions of the **same logical row** (HOT updates). Independent rows like Alice and Bob have no pointer between them:
+
+```
+After INSERT:   Tuple for id=1 → t_ctid=(0,1)  (points to itself)
+                Tuple for id=2 → t_ctid=(0,2)  (points to itself)
+
+After UPDATE id=1 SET name='Alice2':
+                Old tuple 1 → t_ctid=(3,5)     (points to new version)
+                New tuple   → t_ctid=(3,5)     (points to itself)
+```
+
+The only "links" in a heap are `t_ctid` chains for the same row. The heap itself is just a bag of tuples — no ordering, no cross-row pointers.
+
+**Multiple segment files don't point to each other.** PG tracks the segment list in `pg_class` metadata, not in the files themselves. When it needs block 150,000:
+
+1. Look up segment list: `[16767, 16767.1, 16767.2, ...]`
+2. 150,000 × 8KB = 1.17GB → past the 1GB boundary
+3. Open `16767.1` (second segment)
+4. Read at offset `(150,000 - 131,072) × 8KB` within that segment
+
+CTIDs are absolute within the relation. The file switch is invisible to queries — a CTID of `(150000, 5)` keeps working even after the relation spans 3 segment files. The 1GB limit is a historical 32-bit filesystem constraint.
+
 ### MVCC (Multi-Version Concurrency Control)
 
 PostgreSQL implements MVCC by keeping multiple row versions (tuples) in the heap. Each tuple has hidden system columns:

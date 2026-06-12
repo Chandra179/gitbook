@@ -6,9 +6,10 @@ Comprehensive reference on database internals: taxonomy, indexing, storage engin
 
 ### Overview
 
-- [taxonomy-and-indexing.md](./taxonomy-and-indexing.md) — Database types (SQL, NoSQL, Wide-Column, Document, Key-Value, Graph, Object, Time-Series, NewSQL) and per-DB indexing mechanisms (B+Tree, LSM, Hash, Inverted, GiST, GIN, BRIN, Bloom Filters)
-- [storage-engines.md](./storage-engines.md) — Per-engine internals: InnoDB, PostgreSQL Heap, SQL Server, WiredTiger, RocksDB, and on-disk file layout
-- [algorithms.md](./algorithms.md) — Core data structures and algorithms: B+Tree, LSM-Tree, MVCC, WAL, Merkle Trees, Bloom Filters (with pseudocode)
+- [taxonomy.md](./taxonomy.md) — Database type classification: SQL, NoSQL, Document, Key-Value, Wide-Column, Graph, Object, Time-Series, NewSQL
+- [indexing.md](./indexing.md) — Index fundamentals, B+Tree structure, composite index rules, per-engine indexing (PostgreSQL, SQL Server, MongoDB, Cassandra, Redis)
+- [storage-engines.md](./storage-engines.md) — B-Tree, LSM-Tree, and Heap storage structures with comparison table, anatomy, search/insert algorithms, and on-disk file layout
+- [algorithms.md](./algorithms.md) — Cross-cutting algorithms: MVCC, Write-Ahead Log, Merkle Trees, Bloom Filters (with pseudocode)
 - [concurrency-and-scaling.md](./concurrency-and-scaling.md) — Transactions, isolation, locking, replication, scaling, distributed transactions, distributed consensus (Raft, Paxos, VSR), gossip protocol, consistent hashing
 - [query-and-optimization.md](./query-and-optimization.md) — Query pipeline, scan methods, join algorithms, parallel execution, cost estimation
 - [specialized-databases.md](./specialized-databases.md) — Vector databases (pgvector, Pinecone, Milvus), Search engines (Elasticsearch), Embedded (SQLite, DuckDB), Streaming, Time-Series internals

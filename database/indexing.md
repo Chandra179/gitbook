@@ -1,204 +1,6 @@
-# Database Taxonomy & Indexing
+# Indexing
 
-## Database Taxonomy
-
-### Relational (SQL)
-
-**Model**: Tables with rows and columns, strict schema, relationships via foreign keys. Data is normalized to reduce redundancy.
-
-**Query Language**: SQL (Structured Query Language) — `SELECT`, `JOIN`, `GROUP BY`, transactions.
-
-**Consistency**: ACID transactions, strong consistency by default. Isolation levels can be relaxed for performance.
-
-**Use Case**: Banking, ERP, CRM, order management any system where data integrity and complex relationships matter.
-
-| Database | Engine | Default Isolation | Key Strength |
-|---|---|---|---|
-| MySQL | InnoDB (B+Tree clustered) | Repeatable Read | Read-heavy OLTP, wide ecosystem |
-| PostgreSQL | Heap + B-Tree | Read Committed | Extensibility, advanced indexing, standards compliance |
-| SQL Server | B+Tree (clustered/non-clustered) | Read Committed | Enterprise features, SQL Server Agent, SSIS |
-| Oracle | B+Tree + undo segments | Read Committed | High-end enterprise, RAC clustering |
-
-> **Deep Dive**: [PostgreSQL Internals](./deep-dives/postgresql.md)
-
----
-
-### Document
-
-**Model**: Semi-structured JSON/BSON documents with nested objects and arrays. Schema is flexible — different documents in the same collection can have different fields.
-
-**Query Language**: JSON-based queries, optional SQL-like (MongoDB Aggregation, Couchbase N1QL).
-
-**Consistency**: Tunable — MongoDB defaults to strong consistency per document (primary reads), Couchbase offers eventual consistency.
-
-**Use Case**: Content management, catalogs, gaming, rapid prototyping.
-
-**Indexing**: MongoDB uses WiredTiger (B-Tree or LSM). Supports compound, multikey, text, geospatial, and TTL indexes.
-
-> **Deep Dive**: [MongoDB Internals](./deep-dives/mongodb.md)
-
----
-
-### Key-Value
-
-**Model**: Opaque blob stored by a unique key. No schema, no relationships. The simplest data model possible.
-
-**Query Language**: `GET`, `SET`, `DEL` — often via simple binary protocol or REST.
-
-**Consistency**: Varies — Redis is strongly consistent (single-threaded), DynamoDB is eventually consistent by default with optional strong consistency.
-
-**Use Case**: Caching, session store, real-time leaderboards, shopping carts.
-
-**Indexing**: Primary key only (hash table or tree). Secondary indexes are not native — DynamoDB offers Global Secondary Indexes (GSI) as separate tables maintained asynchronously. Redis sorted sets use a skip list for range queries.
-
-> **Deep Dive**: [Redis Internals](./deep-dives/redis.md)
-
----
-
-### Wide-Column
-
-**Model**: Rows with a dynamic set of columns grouped into column families. Schema is flexible within a family. Each row can have millions of columns.
-
-**Query Language**: CQL (Cassandra Query Language) — SQL-like but limited to partition-key-based queries.
-
-**Consistency**: Tunable — Cassandra defaults to eventual consistency with configurable consistency levels (`ONE`, `QUORUM`, `ALL`).
-
-**Use Case**: Time-series data, IoT, recommendation engines, messaging systems.
-
-**Example**:
-```mermaid
-flowchart LR
-    subgraph "Column Family: UserData"
-        R1["Row: user_1<br/>name: Alice | age: 30 | city: NYC"]
-        R2["Row: user_2<br/>name: Bob | email: bob@x.com"]
-        R3["Row: user_3<br/>name: Carol | city: LA | phone: 555-0100"]
-    end
-```
-
-**Indexing**: Primary index is the partition key (hash). Clustering columns sort within a partition. Secondary indexes exist but are discouraged (use materialized views). SSTable offset maps + Bloom filters for fast lookup.
-
-> **Deep Dive**: [Cassandra Internals](./deep-dives/cassandra.md)
-
----
-
-### Graph
-
-**Model**: Nodes (entities) and edges (relationships). Both nodes and edges can have properties. Relationships are first-class citizens.
-
-**Query Language**: Cypher (Neo4j), Gremlin (JanusGraph), SPARQL (RDF).
-
-**Consistency**: Typically ACID per transaction (Neo4j is fully ACID).
-
-**Use Case**: Social networks, recommendation engines, fraud detection, knowledge graphs.
-
-**Example**:
-```mermaid
-graph LR
-    Alice["Alice<br/>age: 30"] -- FRIENDS_WITH --> Bob["Bob<br/>age: 25"]
-    Alice -- LIKES --> Post["Post: 'Hello!'"]
-    Bob -- LIKES --> Post
-    Alice -- WORKS_AT --> Acme["Acme Corp<br/>industry: Tech"]
-```
-
-**Indexing**: B-Tree on node labels and properties (Neo4j uses Lucene-based indexes). Relationship traversal is pointer-based — no index needed for traversing edges.
-
----
-
-### Object
-
-**Model**: Objects stored and retrieved directly, closely mapping to programming language constructs. Supports inheritance, polymorphism, and complex object graphs.
-
-**Query Language**: Object-oriented query APIs — often language-native (e.g., Java `Query` API for db4o, C# LINQ for Versant).
-
-**Consistency**: ACID per database. Often used in embedded mode.
-
-**Use Case**: CAD/CAM systems, telecommunications, embedded systems — niche usage.
-
-**Example**:
-```mermaid
-classDiagram
-    class Vehicle {
-        +String make
-        +String model
-        +start()
-    }
-    class Car {
-        +int doors
-        +honk()
-    }
-    class Motorcycle {
-        +bool hasSidecar
-    }
-    Vehicle <|-- Car
-    Vehicle <|-- Motorcycle
-```
-
----
-
-### Time-Series
-
-**Model**: Data points indexed by timestamp. Optimized for append-heavy workloads and range scans over time windows.
-
-**Query Language**: Custom query languages (InfluxQL, Flux) or SQL with time functions (TimescaleDB).
-
-**Consistency**: Varies — InfluxDB is eventually consistent in clustered mode; TimescaleDB inherits PostgreSQL's ACID guarantees.
-
-**Use Case**: Monitoring, observability, IoT sensor data, financial tick data.
-
-**Example**:
-```
-Measurement: cpu_usage
-Tags: host=server01, region=us-east
-┌─────────────────────┬───────┐
-│ Timestamp           │ Value │
-├─────────────────────┼───────┤
-│ 2024-01-01T00:00:00 │ 45.2  │
-│ 2024-01-01T00:01:00 │ 47.8  │
-│ 2024-01-01T00:02:00 │ 52.1  │
-└─────────────────────┴───────┘
-```
-
----
-
-### NewSQL / Distributed SQL
-
-**Model**: SQL interface with ACID transactions distributed across multiple nodes. Combines the horizontal scalability of NoSQL with the consistency of relational databases.
-
-**Query Language**: SQL — standard SQL with distributed execution.
-
-**Consistency**: ACID with strong consistency (Serializable or external consistency).
-
-**Use Case**: Global-scale applications that need ACID: banking, booking systems, multi-region deployments.
-
-**Example**:
-```mermaid
-graph TD
-    Client --> GW[SQL Gateway]
-    GW --> C[Coordinator]
-    C --> R1[Range 1<br/>Raft: A-leader, B]
-    C --> R2[Range 2<br/>Raft: B-leader, C]
-    C --> R3[Range 3<br/>Raft: C-leader, A]
-    R1 --> A[Node A]
-    R1 --> B[Node B]
-    R2 --> B
-    R2 --> C[Node C]
-    R3 --> C
-    R3 --> A
-```
-
-| Database | Consensus | Sharding | Clock |
-|---|---|---|---|
-| CockroachDB | Raft per range | Range-based (auto-split) | HLC (Hybrid Logical Clock) |
-| Spanner | Paxos per shard | Directory-based | TrueTime (GPS + atomic clocks) |
-| TiDB | Raft (multi-raft) | Range-based (region) | PD timestamp oracle |
-
-> **Deep Dive**: [Google Spanner Internals](./deep-dives/spanner.md)
-
-***
-
-## Indexing Mechanisms
-
-### Index Fundamentals
+## Index Fundamentals
 
 **Cardinality** refers to the number of unique values in a column relative to the total row count. It is the primary metric the query optimizer uses to decide whether to use an index.
 
@@ -209,7 +11,7 @@ graph TD
 
 ---
 
-### Composite Index & Leftmost Prefix Rule
+## Composite Index & Leftmost Prefix Rule
 
 A Composite Index is a single index on multiple columns, ordered by the definition sequence (e.g., `CREATE INDEX idx ON T (A, B, C)`). The database sorts by A first, then by B within equal A values, then by C within equal A+B.
 
@@ -224,7 +26,7 @@ This is critical for index design: order columns by selectivity (most selective 
 
 ---
 
-### B+Tree Index
+## B+Tree Index
 
 ```mermaid
 graph TD
@@ -311,9 +113,69 @@ graph TD
 
 **SQL Server**: Supports both clustered and non-clustered indexes. In a clustered index, the leaf level is the data page. In a non-clustered index, the leaf contains either the clustered key (if the table has a clustered index) or a Row ID (RID, if the table is a heap). SQL Server also supports **included columns** — non-key columns stored at the leaf level to cover queries without touching the table.
 
+### B-Tree Index File Layout
+
+An index is stored as its own file on disk — a flat array of fixed-size blocks. The logical tree structure is encoded through block indices (page numbers):
+
+```
+PostgreSQL B-Tree index file (8KB blocks)
+
+Index  Type       Contents
+────── ─────────  ─────────────────────────────────
+[0]    Meta       Page 0 (metadata)
+[1]    Root       sep=50 → children [2, 3]
+[2]    Internal   sep=[10, 30] → children [4, 5]
+[3]    Internal   sep=[70, 90] → children [6, 7]
+[4]    Leaf       (1, (0,1)), (2, (0,2)), (3, (0,3)), ...
+[5]    Leaf       (11, (1,1)), (12, (1,2)), ...
+[6]    Leaf       (51, (2,1)), (52, (2,2)), ...
+[7]    Leaf       (71, (3,1)), (72, (3,2)), ...
+```
+
+Each leaf stores `(key, CTID)` where `CTID = (heap_page, tuple_offset)` — the physical location of the row in the heap file.
+
+**Logical tree:**
+
+```
+                    [1] Root (sep=50)
+                   /                \
+            [2] Internal(10,30) [3] Internal(70,90)
+            /         \          /         \
+         [4]Leaf    [5]Leaf    [6]Leaf    [7]Leaf
+      (keys 1-9) (keys 11-29) (51-69)   (71-99)
+```
+
+**Trace: read key=25**: Tree: `[1]` → sep 50 > 25 → go to `[2]` → sep 30 > 25 → go to `[5]` → scan leaf for key=25 → get CTID `(1,1)` → read heap file at page 1, slot 1. File offset for any block: `offset = index × page_size` (`block [5]` = `5 × 8192` = 40960).
+
+A single index page has three zones — header at top, slot array growing down, row data growing up:
+
+```
+PG index leaf page (8KB):
+
+ 0x0000 │ PageHeaderData (24 bytes) ─────────────────────────────
+        │  pd_lsn       (8B)   ← when this page was last modified
+        │  pd_checksum  (4B)   ← integrity check
+        │  pd_flags     (2B)   ← page type: leaf or internal
+        │  pd_lower     (2B)   ← offset where slot array starts
+        │  pd_upper     (2B)   ← offset where free space ends
+        │  pd_special   (2B)   ← offset to B-Tree specific data
+        │  pd_pagesize_version (2B)
+        │  pd_prune_xid (4B)
+ 0x0018 │ Slot array ────────── (offset, length) pairs, grows down
+        │  [0]: off=0x1FF0 len=12  → key=1 + CTID=(0,1)
+        │  [1]: off=0x1FE0 len=12  → key=11 + CTID=(1,1)
+ 0x1F90 │ Free space ────────── between slot array and row data
+ 0x1FE0 │ Row data ──────────── grows up
+        │  key=11 (4B) + CTID (6B) + padding
+        │  key=1  (4B) + CTID (6B) + padding
+ 0x1FFF └────────────────────── end of page
+```
+
+The slot array is a compact, fixed-width `(offset, length)` table — the engine walks it with binary search without parsing row data. Compare with a heap page (which stores full rows with MVCC headers) — an index page stores only `(key, pointer)` pairs.
+
 ---
 
-### PostgreSQL Specialized Indexes
+## PostgreSQL Specialized Indexes
 
 Beyond B-Tree, PostgreSQL offers advanced index types:
 
@@ -325,7 +187,7 @@ Beyond B-Tree, PostgreSQL offers advanced index types:
 
 ---
 
-### SQL Server Specialized Indexes
+## SQL Server Specialized Indexes
 
 - **Filtered Index**: `CREATE INDEX ... WHERE status = 'active'` — indexes only a subset of rows. Smaller and faster than a full-table index.
 - **Columnstore Index**: Stores data column-wise instead of row-wise. Used for analytics/data warehousing. High compression and vectorized execution.
@@ -333,7 +195,7 @@ Beyond B-Tree, PostgreSQL offers advanced index types:
 
 ---
 
-### MongoDB Indexing
+## MongoDB Indexing
 
 MongoDB uses **WiredTiger** as the default storage engine:
 
@@ -347,7 +209,7 @@ MongoDB uses **WiredTiger** as the default storage engine:
 
 ---
 
-### Cassandra Indexing
+## Cassandra Indexing
 
 Cassandra uses a **partitioned row store** with a distributed hash table:
 
@@ -373,7 +235,7 @@ flowchart LR
 
 ---
 
-### Redis Indexing
+## Redis Indexing
 
 Redis is an in-memory data structure store. Its "indexes" are the data structures themselves:
 
