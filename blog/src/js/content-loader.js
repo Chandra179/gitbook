@@ -85,6 +85,7 @@ class ContentLoader {
                     markdown = null;
                 } else {
                     markdown = await response.text();
+                    markdown = markdown.replace(/^---[\s\S]*?---\s*\n*/, '');
                     // SPA fallback: Cloudflare serves index.html for missing files
                     if (/^\s*<!DOCTYPE html/i.test(markdown) || /^\s*<html/i.test(markdown)) {
                         markdown = null;

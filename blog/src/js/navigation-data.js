@@ -96,10 +96,6 @@ const navigationData = [
         ],
     },
     {
-        name: "Assets",
-        slug: "assets",
-    },
-    {
         name: "Database",
         slug: "database",
         pages: [

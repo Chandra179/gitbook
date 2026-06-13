@@ -4,14 +4,14 @@ const fs = require('fs');
 const path = require('path');
 const { ROOT, SRC } = require('./lib/paths');
 const { loadNavData } = require('./lib/nav-loader');
-const { generateSlug, stripMarkdown } = require('./lib/markdown');
+const { generateSlug, stripMarkdown, stripFrontmatter } = require('./lib/markdown');
 
 const OUTPUT = path.join(SRC, 'search-index.json');
 
 function indexFile(index, filePath, pageName, pageLink, categoryName) {
     let text;
     try {
-        text = fs.readFileSync(filePath, 'utf8');
+        text = stripFrontmatter(fs.readFileSync(filePath, 'utf8'));
     } catch {
         return;
     }

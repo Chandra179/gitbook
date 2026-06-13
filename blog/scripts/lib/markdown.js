@@ -5,6 +5,10 @@ function generateSlug(text) {
     return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
 
+function stripFrontmatter(markdown) {
+    return markdown.replace(/^---[\s\S]*?---\s*\n*/, '');
+}
+
 function stripMarkdown(markdown) {
     return markdown
         .replace(/^#+\s+/gm, '')
@@ -19,6 +23,7 @@ function stripMarkdown(markdown) {
 }
 
 function extractDescription(markdown) {
+    markdown = stripFrontmatter(markdown);
     if (!markdown) return '';
 
     const lines = markdown.split('\n');
@@ -59,10 +64,10 @@ function extractDescription(markdown) {
 
 function readMarkdown(filePath, fs) {
     try {
-        return fs.readFileSync(filePath, 'utf8');
+        return stripFrontmatter(fs.readFileSync(filePath, 'utf8'));
     } catch {
         return '';
     }
 }
 
-module.exports = { generateSlug, stripMarkdown, extractDescription, readMarkdown };
+module.exports = { generateSlug, stripMarkdown, stripFrontmatter, extractDescription, readMarkdown };
