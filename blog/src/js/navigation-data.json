@@ -183,10 +183,6 @@
         "slug": "indexing"
       },
       {
-        "name": "Operations And Patterns",
-        "slug": "operations-and-patterns"
-      },
-      {
         "name": "Query And Optimization",
         "slug": "query-and-optimization"
       },
@@ -226,10 +222,6 @@
           {
             "name": "Redis",
             "slug": "redis"
-          },
-          {
-            "name": "Rocksdb",
-            "slug": "rocksdb"
           },
           {
             "name": "Spanner",
