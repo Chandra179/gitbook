@@ -25,35 +25,19 @@ Each row has hidden metadata:
 - **xmax**: Transaction ID that deleted/updated this version (or null if live).
 - A transaction sees a row version if `xmin ≤ tx_id` and `xmax > tx_id OR xmax = null`.
 
-```pseudocode
-function IsVisible(tuple, snapshot)
-    // snapshot bounds: the reading transaction's xmin..xmax window
-    if not IsCommitted(tuple.xmin)
-        return false                                    // creator never committed
-    if tuple.xmin > snapshot.xmax
-        return false                                    // created after reader's snapshot
-
-    if tuple.xmax = null
-        return true                                     // no deleter
-
-    if not IsCommitted(tuple.xmax)
-        return true                                     // deleter not yet committed
-
-    if tuple.xmax ≤ snapshot.xmax
-        return false                                    // deleted before reader
-
-    return true
-```
-
 **PostgreSQL**: Versions stored in heap (same page). Dead tuples are cleaned by `VACUUM`. Hot Standby uses a snapshot conflict mechanism.
 
 **MySQL (InnoDB)**: Versions stored in the undo log. The current version is in the clustered index; older versions are reconstructed from undo records. Purge thread cleans obsolete undo entries.
 
 **Cassandra**: Uses `tombstones` for deletes and a timestamp per cell. Compaction reconciles versions — the highest timestamp wins. No VACUUM needed; compaction handles cleanup.
 
+---
+
 ## Write-Ahead Log (WAL)
 
 The WAL is an append-only file where every change is recorded *before* it reaches the data files. This guarantees durability without flushing data pages on every transaction:
+
+The WAL is not special hardware — it's a regular file. Its durability comes from calling `fsync()` before acknowledging `COMMIT`. The `write()` call itself goes to the kernel page cache, same as any other file write; only the fsync forces it to disk.
 
 ```mermaid
 flowchart LR
@@ -78,18 +62,18 @@ function RecoverFromCrash()
 
     for record in records
         if record.tx ∈ committed
-            Redo(record)                                // re-apply the change
+            Redo(record)                              // re-apply the change
         else
-            Undo(record)                                // revert the change
+            Undo(record)                              // revert the change
 
-    BuildNewCheckpoint()                                // new consistent state
+    BuildNewCheckpoint()                              // new consistent state
 ```
 
 - **MySQL (InnoDB)**: Redo log (`ib_logfile`). Circular, fixed-size. Handles redo (replay). Undo log handles rollback and MVCC.
 - **PostgreSQL**: WAL in `pg_wal/`. Supports full recovery, point-in-time recovery (PITR), and replication streaming.
 - **SQL Server**: Transaction log (`.ldf`). Log records contain the logical operation. Supports point-in-time restore and log shipping.
 
-## Crash Safety & Write Integrity
+### Crash Safety & Write Integrity
 
 The WAL guarantees durability in theory. In practice, getting a write safely to disk and detecting corruption on read involves several more layers.
 
@@ -107,6 +91,18 @@ fsync(fd);                     // slow — waits for disk acknowledgment
 ```
 
 Engines batch fsync calls for performance. A `COMMIT` forces an fsync of the WAL. Normal data page writes batch their fsync at checkpoint time.
+
+All page writes — WAL, data pages, and the double-write buffer — go through the same stack:
+
+```
+Application (buffer pool)
+  ↓ write()
+Kernel page cache         ← everything lands here first
+  ↓ fsync()
+Disk (512B sectors)       ← torn page risk at this layer
+```
+
+The double-write buffer writes to a reserved area at the start of the data file, but that write follows the exact same path. It protects against torn pages at the disk sector boundary (512B vs 16KB pages), not against kernel cache loss — that's the WAL's job.
 
 ### Torn Page (Partial Write)
 
@@ -148,17 +144,7 @@ The first bytes of a database file are a **magic string** that identifies the fo
 
 If the magic doesn't match — wrong file, corrupted header, garbage — the engine refuses to open the file. This is the last line of defense against silent corruption.
 
-### LSM vs B-Tree — Crash Safety Differences
-
-| | B-Tree (in-place) | LSM-Tree (append-only) |
-|---|---|---|
-| **Write unit** | Modify page in buffer pool, flush to same location | Append to WAL, flush MemTable to new SSTable |
-| **Torn page risk** | High — overwriting a page mid-write creates a torn page | None — writing a new SSTable never overwrites an existing one |
-| **Recovery** | Replay WAL + fix torn pages (doublewrite / full-page images) | Replay WAL to rebuild MemTable. Existing SSTables are always valid |
-| **Checksum scope** | Per page | Per SSTable block + per file |
-
-LSM-Trees have simpler crash safety because they never overwrite: an SSTable is either fully written or not. On crash, the partially-written SSTable is simply deleted and the WAL replays the MemTable flush. B-Trees must actively protect against torn pages because they overwrite data in place.
-
+---
 ## Merkle Trees
 
 Used by Cassandra, DynamoDB, and Git for **anti-entropy** (detecting out-of-sync data between replicas):
@@ -169,6 +155,8 @@ Used by Cassandra, DynamoDB, and Git for **anti-entropy** (detecting out-of-sync
 - If they differ, they recursively compare child hashes to pinpoint the exact range that diverges.
 - Only the divergent sub-range needs to be repaired (incremental repair).
 
+---
+
 ## Bloom Filters
 
 A probabilistic data structure used to answer "has this key been seen before?" with no false negatives and configurable false positive rate:
@@ -178,29 +166,3 @@ A probabilistic data structure used to answer "has this key been seen before?" w
 - On lookup: if any of those bits is 0, the key is definitely not present.
 - If all bits are 1, the key *might* be present (false positive possible).
 - Cassandra stores a Bloom filter per SSTable in memory. Before reading an SSTable, check the Bloom filter — skip it if the key is definitely not present. This avoids unnecessary disk I/O.
-
-```pseudocode
-function BloomFilterNew(m, k)
-    // m = bit array size (in bits), k = number of hash functions
-    bits ← BitArray(m)
-    seeds ← GenerateRandomSeeds(k)
-    return (bits, seeds)
-
-function BloomFilterAdd(filter, key)
-    (bits, seeds) ← filter
-    for each seed in seeds
-        h ← Hash(key, seed) mod len(bits)
-        bits[h] ← 1
-
-function BloomFilterMaybeContains(filter, key) returns boolean
-    (bits, seeds) ← filter
-    for each seed in seeds
-        h ← Hash(key, seed) mod len(bits)
-        if bits[h] = 0
-            return false                                // definitely not present
-    return true                                         // might be present
-
-function OptimalHashCount(bits_per_key)
-    // k = (m/n) × ln(2)
-    return round(bits_per_key × ln(2))
-```

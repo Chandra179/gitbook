@@ -2,7 +2,7 @@
 
 ## Overview
 
-Google Spanner is a **globally distributed, strongly consistent, SQL database** that combines the horizontal scalability of NoSQL with full ACID transactions and SQL semantics. It achieves **external consistency** (linearizability) across data centers using **TrueTime**, a time service backed by GPS receivers and atomic clocks.
+Google Spanner is a **globally distributed, strongly consistent, SQL database** that combines the horizontal scalability of NoSQL with full ACID transactions and SQL semantics. It achieves **external consistency** across data centers using **TrueTime**, a time service backed by GPS receivers and atomic clocks. External consistency is a stronger property than linearizability.
 
 ## TrueTime
 
@@ -12,8 +12,8 @@ TrueTime is the foundation of Spanner's consistency guarantees:
 graph TD
     GPS[GPS Receivers<br/>per data center] --> TM[TimeMaster<br/>machine]
     AC[Atomic Clocks<br/>per data center] --> TM
-    TM -->|TT.now() returns [earliest, latest]| Client
-    Client -->|commit wait: t = TT.now().latest<br/>sleep until t + ε| Commit
+    TM -->|"TT.now() returns [earliest, latest]"| Client
+    Client -->|"commit wait: t = TT.now().latest<br/>sleep until t + ε"| Commit
 ```
 
 **TT.now()** returns an interval `[earliest, latest]`. The actual time is guaranteed to be within this interval. The uncertainty ε is typically 1-7ms.
@@ -25,11 +25,25 @@ Spanner achieves this by:
 2. **Commit wait**: The leader waits until `TT.now().earliest > commit_timestamp` (i.e., waits ε) before making the result visible
 3. This ensures no transaction can observe a commit before its assigned timestamp is in the past
 
-**External consistency**: A read at time `t` sees all transactions that committed before `t` (linearizability).
+**External consistency**: A read at time `t` sees all transactions that committed before `t`. External consistency is a stronger property than linearizability.
+
+## Data Model
+
+Spanner is **relational** with a fixed schema and strong typing, but the data model is designed for global distribution:
+
+| Concept | Detail |
+|---|---|
+| **Tables** | Standard relational tables with rows and columns. GoogleSQL-dialect tables may omit a primary key (limited to one row). Primary key columns in GoogleSQL can be nullable. |
+| **Interleaved tables** | Parent-child tables physically colocated within the same split. Defined via `INTERLEAVE IN PARENT`. Enables single-shard transactions for related data. |
+| **Primary key design** | Critical for performance. Monotonically increasing keys (auto-increment) create hot spots — all writes hit the same tablet. **Hash-based** or **reverse** keys spread writes across tablets. |
+| **Data types** | `INT64`, `FLOAT64`, `BOOL`, `STRING(max_len)`, `BYTES(max_len)`, `DATE`, `TIMESTAMP`, `NUMERIC` (precision 38, scale 9). Arrays of any type. |
+| **Generated columns** | `GENERATED ALWAYS AS (...) STORED`. |
+| **Commit timestamps** | A pseudo-column `spanner.commit_timestamp` stores the TrueTime-based commit timestamp of each row. Useful for ordering, change tracking, and incremental exports. |
+| **NULL handling** | Primary key columns in GoogleSQL can be nullable; NULLs are allowed in keys. |
 
 ## Storage Architecture
 
-### Directory-Based Sharding
+### Split-Based Sharding
 
 ```mermaid
 graph TD
@@ -42,18 +56,18 @@ graph TD
         O2[user_id=1, order_id=101, amount=$30]
         O3[user_id=2, order_id=102, amount=$20]
     end
-    subgraph "Directory"
-        D1[Directory: user_id=1<br/>User 1 + Orders 100, 101]
-        D2[Directory: user_id=2<br/>User 2 + Order 102]
+    subgraph "Split"
+        D1[Split: user_id=1<br/>User 1 + Orders 100, 101]
+        D2[Split: user_id=2<br/>User 2 + Order 102]
     end
     D1 --> P1[Paxos Group 1<br/>Shard]
     D2 --> P2[Paxos Group 2<br/>Shard]
 ```
 
-- **Directory**: A contiguous key range. The unit of data placement and replication.
-- Multiple directories can be colocated in the same **Paxos group** (shard).
-- Directories can be split or merged based on load.
-- Related data (e.g., a user and their orders) is placed in the same directory for single-Paxos transactions.
+- **Split**: A contiguous key range. The fundamental unit of data placement, replication, and distribution.
+- Multiple splits can be colocated in the same **Paxos group** (shard).
+- Splits can be split or merged based on load.
+- Related data (e.g., a user and their orders) is placed in the same split for single-Paxos transactions.
 
 ### Interleaved Tables
 
@@ -78,6 +92,29 @@ Physical layout:
 ```
 
 This eliminates the need for distributed transactions when querying a user with their orders — all data is in the same Paxos group. Local reads and writes are much faster than cross-shard operations.
+
+## Index System
+
+Spanner supports **global secondary indexes** that span across all tablets:
+
+| Index type | Description |
+|---|---|
+| **Standard secondary** | `CREATE INDEX idx ON table(col)`. Stored as a separate table, distributed across Paxos groups. |
+| **Interleaved index** | `CREATE INDEX idx ON table(col) INTERLEAVE IN PARENT table_name`. Colocated with the base table in the same Paxos group. Faster reads, no cross-shard lookups. |
+| **Unique index** | `CREATE UNIQUE INDEX`. Enforced by Spanner across all tablets — checks are serialized. |
+| **NULL-filtered index** | `CREATE INDEX idx ON table(col) WHERE col IS NOT NULL`. Smaller index, skips rows with NULL keys. |
+
+**Index structure**: A secondary index is itself a table with columns `(indexed_key_columns, base_table_primary_key_columns)`. The index's primary key is the indexed columns followed by the base table's primary key columns.
+
+**Index backfill**: Adding an index is **online and non-blocking**. Spanner performs a backfill — reading existing data and building the index incrementally — while continuing to serve reads and writes. Backfill progress is visible in the `spanner_sys` statistics.
+
+**Storing clause** (`STORING`, equivalent to SQL Server's `INCLUDE` or PostgreSQL's `INCLUDE`): Non-key columns stored in the index leaf for covering queries. Avoids a second lookup to the base table.
+
+**Best practices**:
+- Use interleaved indexes for data queried together (reduces cross-shard reads)
+- Use `STORING` for columns frequently fetched with the index key
+- Use NULL-filtered indexes to reduce index size when the filtered column is rarely non-NULL
+- Avoid indexing monotonically increasing columns on high-write tables — creates write hot spots
 
 ## Replication: Paxos Per Shard
 
@@ -117,9 +154,9 @@ graph TD
 |---|---|---|---|---|
 | Read-write | ~10-50ms | External consistency | Yes (leader) | Mutations, linearizable reads |
 | Read-only | ~1-10ms | External consistency | No (any replica) | Fresh reads, no writes |
-| Snapshot read | ~1-5ms | Snapshot isolation | No (any replica) | Historical reads, stale reads |
+| Snapshot read | ~1-5ms | External consistency | No (any replica) | Historical reads, stale reads |
 
-**Read-write transactions** use **Pessimistic locking** and **wound-wait deadlock prevention**. The leader acquires locks on the involved key ranges. If a transaction is waiting too long, older transactions are aborted (wound-wait).
+**Read-write transactions** use **Pessimistic locking** and **wound-wait deadlock prevention**. The leader acquires locks on the involved key ranges. If a transaction is waiting too long, older transactions abort (wound) younger transactions that hold locks they need (wound-wait).
 
 **Read-only transactions** are lock-free. They use the TrueTime timestamp to read from a consistent snapshot. If the replica is not sufficiently up-to-date, it waits until it is.
 
@@ -157,28 +194,17 @@ Spanner supports schema changes **without downtime** through a multi-phase proce
 
 **Non-blocking**: Reads and writes continue during schema changes. Adding a column is instant (metadata only). Adding an index or dropping a column takes longer (data must be written).
 
-## F1 Hybrid SQL Layer
+## Distributed SQL Query Engine
 
-Spanner is paired with **F1**, a distributed SQL query layer:
+Cloud Spanner has its own native, distributed SQL query engine:
 
 - **SQL interface**: Standard SQL with extensions for Spanner
 - **Distributed execution**: Queries are pushed down to Paxos groups for parallel execution
 - **Join strategies**: Broadcast join, hash join, merge join — optimized based on data distribution
 - **Stored procedures**: Not supported directly — use client-side logic
 
-## Performance Characteristics
-
-| Operation | Latency | Notes |
-|---|---|---|
-| Point read (read-only, local) | 1-5ms | Single Paxos group, no Paxos |
-| Point read (read-write) | 5-15ms | Paxos read at leader |
-| Point write (local) | 10-50ms | Paxos write + commit wait |
-| Cross-shard transaction | 20-100ms | 2PC overhead |
-| Schema change (add column) | seconds | Metadata only |
-| Schema change (add secondary index) | hours | Backfill entire table |
-
 **Key factors**:
-- **Commit wait ε**: Adds 1-7ms to every write (the uncertainty of TrueTime)
+- **Commit wait ε**: Typically requires a few milliseconds, but overlaps with Paxos replica communication so its actual latency cost is minimal
 - **Cross-shard**: Minimize cross-shard transactions by designing interleaved tables
 - **Read-only transactions**: Use them when possible to avoid Paxos overhead
 
@@ -189,9 +215,13 @@ Spanner is paired with **F1**, a distributed SQL query layer:
 | Clock | TrueTime (GPS + atomic clocks) | HLC (Hybrid Logical Clock) |
 | Consensus | Paxos per shard | Raft per range |
 | Isolation | Serializable (external consistency) | Serializable Snapshot Isolation |
-| Sharding | Directory-based | Range-based (auto-split) |
+| Sharding | Split-based | Range-based (auto-split) |
 | Storage | Colossus (GFS successor) | Pebble (LSM-tree) |
 | 2PC | Yes (cross-Paxos) | Transaction coordinator |
 | Commit wait | Real-time (ε) | HLC propagation delay |
 | Clock skew tolerance | None (TrueTime guarantees) | 500ms max |
 | Availability | N/A (Google-managed) | Unavailable during clock skew > 500ms |
+
+---
+
+*Last verified against official Google Cloud Spanner documentation: 2026-06-13*

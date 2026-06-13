@@ -2,7 +2,7 @@
 
 ## Architecture
 
-Redis is an **in-memory data structure store** with optional persistence. It uses a **single-threaded event loop** for all command processing, which eliminates concurrency complexity and provides atomicity for individual commands.
+Redis is an **in-memory data structure store** with optional persistence. It uses a **single-threaded event loop** for command execution (all commands execute sequentially on the main thread), which eliminates concurrency complexity and provides atomicity for individual commands. Redis 6.0+ introduced optional multi-threaded I/O (`io-threads`) for networking.
 
 ```
 Client → TCP socket → [read buffer] → command parser → command handler → [write buffer] → Client
@@ -14,7 +14,7 @@ Client → TCP socket → [read buffer] → command parser → command handler �
 - No race conditions on data structures
 - No locking overhead
 - Predictable latency (no context switching)
-- High throughput (O(100K) ops/sec) for simple commands
+- High throughput for simple commands
 
 **I/O multiplexing**: Uses `epoll` (Linux) / `kqueue` (macOS) to handle thousands of concurrent connections in a single thread.
 
@@ -138,7 +138,7 @@ Point-in-time snapshots of the entire dataset:
 
 - `SAVE`: Synchronous, blocks Redis (not used in production)
 - `BGSAVE`: Forks a child process (fork + copy-on-write). The child writes the RDB file while the parent continues serving requests.
-- Configurable interval: `save 900 1` (if 1 key changed in 900s), `save 300 10`, `save 60 10000`
+- Configurable interval: `save 3600 1` (if 1 key changed in 3600s), `save 300 100` (if 100 keys changed in 300s), `save 60 10000` (if 10000 keys changed in 60s)
 
 **RDB file format**: Compact binary format:
 1. Magic string "REDIS"
@@ -160,7 +160,7 @@ flowchart LR
 ```
 
 **fsync policies**:
-- `appendfsync always`: fsync after every command (safest, ~100 ops/sec)
+- `appendfsync always`: fsync after every command (safest, very slow)
 - `appendfsync everysec`: fsync once per second (default, good balance)
 - `appendfsync no`: OS decides when to flush (fastest, may lose 30+ seconds)
 
@@ -215,7 +215,7 @@ graph TD
 
 **ASK redirect**: During resharding, a slot may be in migration. The source node returns `-ASK` to tell the client to query the target node temporarily.
 
-**Failover**: A replica of the failed node is promoted by a majority of master nodes. Uses a Raft-like consensus for failover decisions.
+**Failover**: A replica of the failed node is promoted by a majority of master nodes. Uses a custom failover protocol where masters vote to authorize replica promotion.
 
 **Resharding**: Slots are migrated from one node to another. The slot owner temporarily both owns and migrates the slot. Keys are moved incrementally.
 
@@ -228,8 +228,10 @@ When `maxmemory` is reached, Redis evicts keys based on the configured policy:
 | `noeviction` | Return errors on write |
 | `allkeys-lru` | Evict least-recently-used keys (most common) |
 | `allkeys-lfu` | Evict least-frequently-used keys (Redis 4.0+) |
+| `allkeys-lrm` | Evict least-recently-modified keys (Redis 8.6+) |
 | `volatile-lru` | Evict LRU from keys with TTL set |
 | `volatile-lfu` | Evict LFU from keys with TTL set |
+| `volatile-lrm` | Evict least-recently-modified from keys with TTL (Redis 8.6+) |
 | `allkeys-random` | Evict random keys |
 | `volatile-random` | Evict random keys with TTL |
 | `volatile-ttl` | Evict keys with shortest TTL |
@@ -262,20 +264,14 @@ end
 
 | Data Type | Overhead per key | Notes |
 |---|---|---|
-| String (empty) | ~90 bytes | RedisObject (16) + SDS header + allocator |
+| String (empty) | ~90 bytes | RedisObject (24 on 64-bit) + SDS header + allocator |
 | Hash (small, ziplist) | ~8 bytes per entry | Compact sequential storage |
 | Hash (large, hashtable) | ~64 bytes per entry | dictEntry + RedisObject + key string |
 | Sorted Set (ziplist) | ~16 bytes per element | Just score + member in array |
 | Sorted Set (skiplist) | ~60 bytes per element | Skip list nodes + dict entries |
 
-## Performance Characteristics
+**Note**: Performance depends on hardware, payload size, network, and configuration. Redis provides a built-in benchmark (`redis-benchmark`) for measuring performance on your specific environment.
 
-| Operation | Latency (p99) | Throughput (per core) |
-|---|---|---|
-| `GET` (string, in-memory) | < 1ms | 100K-200K ops/sec |
-| `SET` (string, in-memory) | < 1ms | 100K-200K ops/sec |
-| `LRANGE` (100 elements) | 1-3ms | 50K-100K ops/sec |
-| `ZADD` (sorted set) | 1-3ms | 50K-100K ops/sec |
-| `PUBLISH`/`SUBSCRIBE` | < 1ms | 100K-200K ops/sec |
-| `EVAL` (simple Lua) | 1-5ms | 20K-50K ops/sec |
-| `BGSAVE` (1GB dataset) | ~1 second block (fork) | N/A |
+---
+
+*Last verified against official Redis documentation: 2026-06-13*

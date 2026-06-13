@@ -117,12 +117,6 @@ Connection pooling keeps a set of connections alive. A request "borrows" an exis
 | Availability | Lower (replica failure blocks writes) | Higher (replica failure ignored) |
 | Use case | Financial ledgers, critical data | Social media, analytics |
 
-### Vertical vs Horizontal Scaling
-
-**Vertical Scaling** (Scale Up): Make a single server stronger — more CPU, RAM, faster storage (e.g., `t3.medium` → `m5.2xlarge`). Simple but has an upper hardware limit, and a single server is a single point of failure.
-
-**Horizontal Scaling** (Scale Out): Add more servers to handle load, splitting data across them (Sharding). Offers infinite scale and high availability (node failures are survivable). Trade-off is massive complexity — you lose ACID guarantees across nodes and must manage data distribution, rebalancing, and cross-node queries.
-
 ### Strong vs Eventual Consistency
 
 **Strong Consistency**: Once a write is confirmed, any subsequent read from any node returns the new value. Requires coordination (Paxos/Raft or synchronous replication). Increases latency, reduces scalability. Use for financial ledgers, inventory, password changes.
@@ -142,18 +136,6 @@ When data is sharded or spans multiple services, a single database's ACID proper
 
 Problem: 2PC is a blocking protocol. If the coordinator crashes or the network fails after the Prepare phase, participants hold locks indefinitely — freezing the system.
 
-### Saga Pattern
-
-The modern standard for high-volume distributed systems, especially fintech:
-
-Instead of a single ACID transaction, a business process is broken into a sequence of local transactions. Each step updates its own database and publishes an event to trigger the next step. On failure, **compensating transactions** undo the completed steps (e.g., "Refund Money" if "Disburse Loan" fails after "Deduct Money" succeeds).
-
-Sagas embrace eventual consistency rather than strong consistency, allowing high availability and performance even when parts of the network are slow.
-
-Two choreography styles:
-- **Choreography**: Each service publishes events that trigger the next service. Simple but hard to trace.
-- **Orchestration**: A central coordinator (orchestrator) tells each service what to do. Better observability and control.
-
 ### Sharding
 
 Partitioning data across multiple database instances by a shard key:
@@ -162,7 +144,7 @@ Partitioning data across multiple database instances by a shard key:
 - **Range-based**: Each shard owns a key range (e.g., `users 1-1000` on shard 1, `1001-2000` on shard 2). Good for range scans but may cause hot spots.
 - **Directory-based**: A lookup service maps key to shard. Flexible but adds a hop.
 
-Sharding challenges: cross-shard transactions (require 2PC/Saga), resharding (rebalancing data when adding nodes), and the need for a distributed query engine for global queries.
+Sharding challenges: cross-shard transactions (require 2PC), resharding (rebalancing data when adding nodes), and the need for a distributed query engine for global queries.
 
 ***
 

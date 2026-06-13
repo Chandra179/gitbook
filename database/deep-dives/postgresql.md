@@ -1,5 +1,20 @@
 # PostgreSQL Internals
 
+## Data Model
+
+PostgreSQL is a **relational** (SQL) database with a rich type system and strict schema enforcement.
+
+| Concept | Detail |
+|---|---|
+| **Schema** | Namespaces (`public`, `pg_catalog`, `information_schema`, user-defined). Tables live inside schemas. |
+| **Tables** | Strict schema — every column has a fixed type. Supports constraints: `PRIMARY KEY`, `FOREIGN KEY`, `UNIQUE`, `CHECK`, `NOT NULL`, `EXCLUDE`. |
+| **Data types** | `INTEGER`, `BIGINT`, `NUMERIC(p,s)`, `VARCHAR(n)`, `TEXT`, `BOOLEAN`, `DATE`, `TIMESTAMP`, `TIMESTAMPTZ`, `INTERVAL`, `UUID`, `JSON`, `JSONB`, `ARRAY`, `ENUM`, `RANGE`, `POINT`/geometry, and user-defined types via `CREATE TYPE`. |
+| **Generated columns** | `GENERATED ALWAYS AS (...) STORED` (PG 12+). Virtual generated columns are supported (virtual is the default). |
+| **Default values** | Literals, sequences (`SERIAL`, `IDENTITY`), or any variable-free expression (including volatile functions such as `nextval()`, `random()`, `CURRENT_TIMESTAMP`). |
+| **TOAST** | Values > 2KB are compressed and/or moved to a separate TOAST table transparently. |
+| **NULL handling** | NULLs sort last by default (can be changed with `NULLS FIRST/LAST`). Three-valued logic in comparisons. |
+| **OIDs** | Object Identifiers (32-bit) used internally for system catalog rows. `WITH OIDS` is deprecated. |
+
 ## Storage Engine
 
 ### Heap Storage
@@ -25,7 +40,7 @@ graph TD
 
 **CTID**: Each row has a `CTID = (page_number, tuple_index)` — a direct pointer to its location on disk. This is the fastest way to locate a row.
 
-**TOAST** (The Oversized-Attribute Storage Technique): Values > 2KB are compressed and stored in a separate TOAST table. The main tuple holds a pointer to the TOAST chunk. Values > 32KB are stored without compression (too expensive to compress).
+**TOAST** (The Oversized-Attribute Storage Technique): Values > 2KB are compressed and stored in a separate TOAST table. The main tuple holds a pointer to the TOAST chunk. Out-of-line values are divided into chunks of at most ~2,000 bytes so that four chunks fit on a page. Compression is attempted first for `EXTENDED` storage.
 
 ### Heap File Layout
 
@@ -84,8 +99,7 @@ PostgreSQL implements MVCC by keeping multiple row versions (tuples) in the heap
 |---|---|---|
 | `xmin` | 4 bytes | Transaction ID that created this tuple |
 | `xmax` | 4 bytes | Transaction ID that deleted/updated this tuple (0 if live) |
-| `cmin` | 2 bytes | Command ID within the creating transaction |
-| `cmax` | 2 bytes | Command ID within the deleting transaction |
+| `t_cid` | 4 bytes | Command ID (overlaps with `t_xvac`); used for `cmin`/`cmax` in the logical view |
 | `ctid` | 6 bytes | Pointer to next tuple version (for HOT updates) |
 
 **Tuple visibility**:
@@ -101,7 +115,7 @@ Dead tuples accumulate over time. VACUUM reclaims space and prevents transaction
 - **Concurrent VACUUM**: Runs alongside normal operations. Scans pages, removes dead tuples, updates the Free Space Map and Visibility Map.
 - **Visibility Map**: A bitmap tracking which pages have all-visible tuples. Enables index-only scans (skip heap fetch if page is all-visible) and efficient vacuum (skip all-visible pages).
 - **Free Space Map**: Tracks available space per page for new tuple placement.
-- **Transaction ID Wraparound**: Transaction IDs are 32-bit (~4 billion). After `2^31` transactions, IDs wrap around. `VACUUM FREEZE` marks tuples with a special "frozen" xmin that never needs comparison.
+- **Transaction ID Wraparound**: Transaction IDs are 32-bit (~4 billion). After more than 4 billion transactions, IDs wrap around. `VACUUM FREEZE` marks tuples with a special "frozen" xmin that never needs comparison. The `2^31` figure is the safety margin for required vacuuming, not the wraparound point itself.
 - **Autovacuum**: Background daemon that automatically triggers vacuum based on dead tuple thresholds.
 
 ## Write-Ahead Log (WAL)
@@ -165,11 +179,76 @@ flowchart LR
 2. **Hash Join** — O(n+m). Builds a hash table on the smaller relation, probes with the larger. Best for equi-joins on unsorted data.
 3. **Merge Join** — O(n+m). Sorts both relations on the join key, then merges. Best for sorted data or when ORDER BY matches the join key.
 
-**Cost estimation**: Based on `reltuples` (row count) and `relpages` (page count) from `pg_class`, plus column-level statistics from `ANALYZE` (most common values, histogram bounds, correlation, null fraction).
+### Scan Methods
+
+PostgreSQL offers these scan methods, chosen by the optimizer based on cost:
+
+| Scan Type | Cost Formula | When Used |
+|---|---|---|
+| **Sequential Scan** | `seq_page_cost × num_pages` | No index, large portion of table |
+| **Index Scan** | `(index_height + matching_pages) × random_page_cost` | Highly selective queries |
+| **Index-Only Scan** | Index height + matching index pages | Index covers all needed columns + page is all-visible (Visibility Map) |
+| **Bitmap Scan** | Bitmap creation + heap fetch | Combination of conditions, moderate selectivity |
+| **TID Scan** | Page fetch cost | Direct row access by known CTID |
+
+**Bitmap Scan** works in steps:
+
+```mermaid
+graph TD
+    T[Table] -->|Page 1| BM[Bitmap<br/>bit array of heap pages]
+    I1[Index A: status='active'] -->|Bits for matching rows| BM
+    I2[Index B: created > 2024'] -->|Bits for matching rows| BM
+    BM -->|1, 3, 5, 7| RS[Recheck + Fetch heap tuples]
+```
+
+1. Multiple indexes are scanned independently
+2. Each produces a bitmap of candidate heap pages
+3. Bitmaps are merged (AND/OR) based on the query
+4. Only the needed pages are fetched from the heap
+
+### Cost Estimation
+
+Statistics are stored in `pg_class` and `pg_stats`, populated by `ANALYZE`:
+
+```sql
+SELECT reltuples, relpages FROM pg_class WHERE relname = 'orders';
+-- reltuples = 1,000,000 rows
+-- relpages = 100,000 pages
+
+SELECT * FROM pg_stats WHERE tablename = 'orders' AND attname = 'status';
+-- n_distinct = 3  (active, pending, completed)
+-- most_common_vals = {completed, active, pending}
+-- most_common_freqs = {0.60, 0.30, 0.10}
+```
+
+**Selectivity estimation**:
+- Equality on unique column: `1/reltuples`
+- Equality on low-cardinality column: `most_common_freqs[i]`
+- Range query: Based on histogram bounds
+- `LIKE` / pattern: Based on correlation and string length
+
+**Cost parameters**:
+
+| Parameter | Default | Description |
+|---|---|---|
+| `seq_page_cost` | 1.0 | Cost of reading one page sequentially |
+| `random_page_cost` | 4.0 | Cost of reading one page randomly |
+| `cpu_tuple_cost` | 0.01 | CPU cost per row |
+| `cpu_index_tuple_cost` | 0.005 | CPU cost per index row |
+| `cpu_operator_cost` | 0.0025 | CPU cost per expression evaluation |
+
+### Reading Query Plans
+
+Key signs in `EXPLAIN (ANALYZE, BUFFERS)` output:
+- **Seq Scan on large table + filter**: Missing an index
+- **Nested Loop with many rows**: Wrong join order (should use hash join)
+- **Sort with large memory**: Missing index on ORDER BY column
+- **Bitmap Heap Scan with many rows**: Might be cheaper as a seq scan
+- **Subquery Scan on CTE**: CTE is a materialization fence
 
 **Executor**: Iterates over plan nodes. Each node produces tuples for the parent node (Volcano-style pull model). Supports parallel nodes — Gather/Gather Merge distribute work to parallel workers.
 
-**JIT (Just-In-Time Compilation)**: Using LLVM, PostgreSQL compiles expression evaluation, tuple deforming, and filter functions into machine code. 2-5x faster for CPU-bound queries with complex expressions.
+**JIT (Just-In-Time Compilation)**: Using LLVM, PostgreSQL compiles expression evaluation, tuple deforming, and filter functions into machine code. Can reduce query execution time considerably for CPU-bound queries with complex expressions.
 
 ### Join Strategies
 
@@ -189,7 +268,7 @@ flowchart LR
     P -.->|WAL stream| AR[Async Replica<br/>no ack]
 ```
 
-**Logical Replication**: Publishes changes at the row level (INSERT, UPDATE, DELETE) rather than physical WAL blocks. Supports selective replication (specific tables), cross-version replication, and bidirectional replication.
+**Logical Replication**: Publishes changes at the row level (INSERT, UPDATE, DELETE) rather than physical WAL blocks. Supports selective replication (specific tables) and cross-version replication.
 
 **Hot Standby**: Replicas can serve read queries while receiving WAL. Uses snapshot conflict resolution — if a query conflicts with a WAL replay operation, the query is either cancelled or waits (`max_standby_archive_delay`, `max_standby_streaming_delay`).
 
@@ -201,13 +280,13 @@ flowchart LR
 | `effective_cache_size` | 4GB | OS cache estimate for planner cost |
 | `work_mem` | 4MB | Memory per sort/hash operation |
 | `maintenance_work_mem` | 64MB | Memory for VACUUM, CREATE INDEX |
-| `wal_buffers` | 16MB | WAL buffer before flush |
+| `wal_buffers` | -1 (auto-tunes to ~1/32 of `shared_buffers`, min 64kB, max one WAL segment) | WAL buffer before flush |
 | `max_parallel_workers` | 8 | Max parallel workers for queries |
 | `random_page_cost` | 4.0 | Cost of random I/O vs sequential |
 
 ## Advanced Features
 
-- **CTEs / WITH queries**: Materialized by default (optimization fence) or inline with `NOT MATERIALIZED` (PG12+)
+- **CTEs / WITH queries**: Non-recursive CTEs referenced once are folded into the parent query by default; only materialized by default when referenced more than once. Use `NOT MATERIALIZED` (PG12+) to force inline.
 - **Window functions**: `ROW_NUMBER()`, `RANK()`, `LAG()`, `LEAD()` — evaluated after joins, before ORDER BY
 - **Recursive CTEs**: `WITH RECURSIVE` for graph traversal, tree queries
 - **Triggers**: `BEFORE/AFTER/INSTEAD OF`, row-level or statement-level, `FOR EACH ROW/STATEMENT`
@@ -226,5 +305,7 @@ flowchart LR
 | B-Tree internal page | 8 KB (hundreds of keys) |
 | WAL segment | 16 MB |
 | Transaction ID | 32-bit (4 billion wrap limit) |
-| Max row size | 1.6 TB (with TOAST) |
-| Max table size | 32 TB |
+
+---
+
+*Last verified against official PostgreSQL documentation: 2026-06-13*

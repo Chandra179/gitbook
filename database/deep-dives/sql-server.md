@@ -18,12 +18,6 @@ graph TD
     end
 ```
 
-**Extent types**:
-| Type | Description |
-|---|---|
-| **Uniform** | Owned entirely by one object (table or index) |
-| **Mixed** | Shared by up to 8 objects — used for small tables (< 8 pages) |
-
 ### Page Layout
 
 ```
@@ -99,7 +93,32 @@ A separate B-Tree with leaf pages storing index keys plus the row locator:
 
 - **Covering index**: Include non-key columns in the leaf (`INCLUDE` clause) to avoid key lookups.
 - **Filtered index**: `CREATE INDEX ... WHERE condition` — smaller index for subset of rows.
-- **Columnstore index**: Column-oriented storage for analytics (not B-Tree, but stored in page extents).
+- **Columnstore index**: Column-oriented storage as rowgroups and column segments (plus a delta rowgroup using B-trees). Not traditional 8KB page extents.
+
+## Index System
+
+| Index type | Description |
+|---|---|
+| **Clustered** | Data rows stored in B-Tree leaf pages. One per table. |
+| **Non-clustered** | Separate B-Tree with index keys + row locator. Up to 999 per table. |
+| **Columnstore** | Column-oriented, compressed batch-mode storage. For analytics / DSS workloads. |
+| **Filtered** | `CREATE INDEX ... WHERE condition`. Smaller subset of rows. |
+| **Full-text** | Inverted index for text search (word-level). |
+| **Spatial** | B-tree index with hierarchical grid decomposition (tessellation) for geometry/geography data. |
+| **XML** | Index on XML column for XPath/XQuery. |
+| **Memory-optimized** | Non-clustered hash + range indexes for in-memory OLTP (Hekaton). |
+
+**B-Tree structure**: Root → intermediate → leaf. Non-leaf pages store key values + page pointers. Leaf pages store key values + row locator (clustering key or RID). Pages are linked at the leaf level in a doubly-linked list for range scans.
+
+**Fill factor**: Percentage of each leaf page filled on index build/rebuild. Default 0 (100% full). Lower fill factor (70-80%) reduces page splits for tables with random inserts.
+
+**Index statistics**: Histogram on the leading column + density on all column combinations. Stored as blob in `sys.stats`. Updated manually via `UPDATE STATISTICS` or automatically via `auto_update_stats`.
+
+**Index maintenance**:
+- **Rebuild**: Drops and recreates the index. Offline (blocking) or online (mostly non-blocking, but acquires a brief schema-modification (Sch-M) lock at the end for clustered index rebuilds, Enterprise edition).
+- **Reorganize**: Defragments leaf pages by reordering. Online, but less effective than rebuild.
+
+**Key lookup (bookmark lookup)**: When a non-clustered index does not cover the query, SQL Server must fetch the full row from the clustered index or heap using the row locator. For many rows, this becomes expensive — a scan may be cheaper than many individual lookups.
 
 ## Transaction Log (.ldf)
 
@@ -145,17 +164,60 @@ flowchart LR
 
 **TempDB contention**: High concurrency on system pages (PFS, GAM, SGAM) can cause latch contention. Mitigations:
 
-- Add multiple TempDB data files (one per CPU core, equal size)
+- Add multiple TempDB data files: if logical processors ≤ 8, use the same number; if > 8, use 8 files (increase by multiples of 4 only if contention persists)
 - Use `SET TF 1118` (uniform extent allocation)
 - Memory-optimized TempDB metadata (SQL Server 2019+)
 
 ## Buffer Pool
 
 - Stores 8KB data pages in memory.
-- **Clock algorithm** (not pure LRU) for page eviction.
+- Uses a standard algorithm for page eviction (not documented as pure LRU or clock).
 - **Lazy writer**: Background process that frees buffer pages based on memory pressure.
 - **Read-ahead**: Extent-level prefetch for sequential scans.
 - **Buffer Pool Extension**: Allows SSD to be used as a second-level cache (SQL Server 2014+).
+
+## Query Execution
+
+SQL Server uses a **cost-based optimizer** with a four-stage pipeline:
+
+```mermaid
+flowchart LR
+    SQL[SQL Query] --> Parser
+    Parser -->|Parse Tree| Algebrizer[Algebrizer<br/>Binding]
+    Algebrizer -->|Query Processor Tree| Optimizer
+    Optimizer -->|Execution Plan| Executor
+    Executor --> Result
+```
+
+**Parser**: Converts SQL text to a parse tree. Validates syntax, tokenizes identifiers.
+
+**Algebrizer (Binding)**: Resolves names, validates types, checks permissions, builds a **query processor tree** (a logical representation of the query). This is where view expansion and CTE binding happen.
+
+**Optimizer**: Cost-based, explores plan alternatives using transformation rules:
+- **Trivial plan optimization**: If the query is simple enough (single-table, trivial predicates), the optimizer returns immediately without cost-based search.
+- **Full optimization**: Explores join orders, index choices, and parallelization. Uses a top-down search with pruning.
+- **Parallel optimization**: Considers exchange operators (Distribute Streams, Repartition Streams, Gather Streams).
+
+**Access methods**:
+
+| Access method | Description |
+|---|---|
+| **Index Seek** | B-Tree traversal to a specific key range. Most efficient for selective queries. |
+| **Index Scan** | Full or partial scan of index leaf pages. |
+| **Table Scan** | Scan all pages of a heap or clustered index. |
+| **Key Lookup** | Fetch full row from clustered index using a non-clustered index row locator. |
+| **RID Lookup** | Fetch full row from a heap using the RID from a non-clustered index. |
+
+**Join strategies**: Nested Loop (small outer, indexed inner), Hash Match (medium tables, equi-join), Merge Join (sorted inputs, large tables). The optimizer uses a **memo-based search** with cost estimates from index statistics.
+
+**Execution modes**:
+- **Row mode**: Traditional — one row at a time through the query plan. Used for B-Tree indexes, most OLTP queries.
+- **Batch mode**: Processes multiple rows together. Used for columnstore indexes. Drastically reduces CPU for analytic queries.
+- **Batch mode on rowstore** (SQL Server 2019+): Batch mode can be applied to queries that reference only B-Tree indexes, extending benefits to analytic queries on rowstore tables.
+
+**Query plan caching**: Plans are cached in memory and reused. Parameter-sensitive plans (parameter sniffing) can be problematic — a plan optimized for one parameter value may be suboptimal for another. Mitigations: `OPTIMIZE FOR`, `RECOMPILE`, Query Store.
+
+**Query Store** (SQL Server 2016+): Persists query plans and runtime statistics. Enables plan forcing, regression detection, and A/B comparison of plan variants.
 
 ## Locking and Versioning
 
@@ -167,7 +229,7 @@ flowchart LR
 | Table-level | Entire table |
 | Database-level | Entire database |
 
-**Lock escalation**: From row → page → table (when > 5000 locks on a single query or > 5000 locks total).
+**Lock escalation**: Escalation happens when a single statement acquires > 5,000 locks on a single reference of a table. The instance-level threshold is based on memory pressure (24% of Database Engine memory when `locks` is at its default of 0). Escalation can go directly to table/HoBT and does not require a mandatory row → page → table progression.
 
 **Lock modes**: Shared (S), Update (U), Exclusive (X), Intention-Shared (IS), Intention-Exclusive (IX), Shared-Intention-Exclusive (SIX), Schema, Bulk Update (BU).
 
@@ -175,22 +237,44 @@ flowchart LR
 
 | Isolation level | Implementation |
 |---|---|
-| READ COMMITTED (default) | No row versioning — readers block writers |
+| READ COMMITTED (default) | On on-premises SQL Server and Azure SQL Managed Instance: no row versioning (readers block writers). On Azure SQL Database: uses row versioning by default (`READ_COMMITTED_SNAPSHOT` defaults to `ON`). |
 | READ COMMITTED SNAPSHOT (RCSI) | Statement-level consistent read using version store |
 | SNAPSHOT | Transaction-level consistent read using version store |
 
-## Performance Characteristics
+## Replication
 
-| Operation | Latency | Notes |
+SQL Server offers multiple replication technologies:
+
+| Technology | Description | Use case |
 |---|---|---|
-| Point lookup (clustered, cached) | 10-200μs | B-Tree traversal in buffer pool |
-| Point lookup (non-clustered + key lookup) | 50-500μs | Two B-Tree traversals |
-| Range scan | 100μs-10ms | Sequential per extent |
-| Write (single row, SIMPLE) | 100μs-1ms | Log buffer + page in buffer pool |
-| Write (FULL recovery) | 1-10ms | Log flush on commit |
-| Index rebuild (online) | minutes-hours | Non-blocking with row versioning |
+| **Snapshot replication** | Point-in-time copy of entire publication. Simple, high overhead. | Reporting, reference data. |
+| **Transactional replication** | Log reader agent reads transaction log and applies changes to subscribers. Near real-time. | Scale-out reads, data warehouse staging. |
+| **Merge replication** | Both publisher and subscribers can make changes. Conflict resolution built-in. | Disconnected/mobile scenarios. |
+
+**Always On Availability Groups** (SQL Server 2012+): The primary HA/DR technology. Maintains one or more **readable secondary replicas** via **synchronous** (commit waits for secondary, RPO=0) or **asynchronous** (no wait, RPO>0) log transport.
+
+```mermaid
+graph LR
+    P[Primary Replica] -->|Log block stream| S1[Synchronous<br/>Secondary]
+    P -.->|Log block stream| S2[Asynchronous<br/>Secondary]
+    S1 -->|Ack| P
+    P -->|Commit| Client
+```
+
+- **Failover**: Automatic (synchronous with cluster quorum) or manual (any mode).
+- **Readable secondaries**: Secondary replicas can serve read-only queries, backup, and DBCC operations.
+- **Listener**: Virtual network name that routes connections to the current primary.
+- **Distributed Availability Group**: Span across datacenters — primary AG replicates to a secondary AG.
+
+**Log Shipping**: Periodic transaction log backup → copy → restore to a standby server. Simpler than AG, supports limited read-only access to secondary databases when restored with `STANDBY`, manual failover.
+
+**Database Mirroring** (legacy, deprecated in SQL Server 2022): Single secondary with witness for automatic failover. Replaced by Always On AG.
 
 **Key factors**:
 - **Page split rates**: High fragmentation = wasted space + more I/O. Keep fill factor appropriate.
 - **Wait stats**: Primary diagnostic tool — `PAGEIOLATCH_SH` (disk I/O), `LCK_M_X` (blocking), `PAGELATCH_UP` (page contention).
 - **MAXDOP**: Degree of parallelism for queries. High values can cause CXPACKET waits.
+
+---
+
+*Last verified against official Microsoft SQL Server documentation: 2026-06-13*

@@ -30,27 +30,33 @@ In this example:
 
 ### SSTable Structure
 
-Cassandra stores data in **SSTables** (Sorted String Tables) — immutable, sorted files on disk:
+Cassandra stores data in **SSTables** (Sorted String Tables) — immutable, sorted files on disk. Cassandra 5.0 uses the **BTI format** by default:
 
 ```mermaid
 flowchart LR
-    subgraph "SSTable"
+    subgraph "SSTable (BTI format)"
         D[Data.db<br/>sorted rows]
-        I[Index.db<br/>key → offset]
+        P[Partitions.db<br/>partition index]
+        R[Rows.db<br/>row index]
         BF[Filter.db<br/>bloom filter]
         S[Summary.db<br/>index sampling]
         C[CompressionInfo.db<br/>compression offsets]
         T[TOC.txt<br/>table of contents]
+        ST[Statistics.db<br/>metadata]
+        DG[Digest.crc32<br/>checksum]
     end
 ```
 
 | Component | Description | Size |
 |---|---|---|
 | `Data.db` | Sorted rows with clustering order | Primary data |
-| `Index.db` | Partition key → offset in Data.db | ~0.1-1% of data |
+| `Partitions.db` | Partition key → offset (BTI format) | ~0.1-1% of data |
+| `Rows.db` | Row index within partitions (BTI format) | ~0.1-1% of data |
 | `Filter.db` | Bloom filter for "does key exist?" | ~1-2% of data |
 | `Summary.db` | Sampled index (every N entries) | ~0.01% of data |
 | `CompressionInfo.db` | Chunk offsets for decompression | ~0.01% of data |
+| `Statistics.db` | SSTable metadata and statistics | Small |
+| `Digest.crc32` | Checksum for integrity verification | Small |
 
 **Write path**:
 1. Write to **Commit Log** (sequential append, durable)
@@ -86,7 +92,7 @@ A **probabilistic** data structure stored in RAM per SSTable. Answers "does this
 - **False positives possible**: May say "yes" when the key doesn't exist (unnecessary I/O)
 - **False negatives impossible**: If it says "no", the key is definitely not in that SSTable
 
-**Configuration**: `bloom_filter_fp_chance` (default 0.01 = 1% false positive rate). Lower = more memory, less I/O. Higher = less memory, more I/O.
+**Configuration**: `bloom_filter_fp_chance` (default 0.01 for STCS/TWCS, 0.1 for LCS). Lower = more memory, less I/O. Higher = less memory, more I/O.
 
 ## Read Path
 
@@ -122,7 +128,7 @@ Cassandra provides **tunable consistency** — the application chooses the consi
 | `SERIAL` | Quorum + Paxos for linearizability | Lightweight transactions |
 | `LOCAL_SERIAL` | LOCAL_QUORUM + Paxos | Same as SERIAL, local DC |
 
-**Write consistency**: `ONE` = write to one replica, `QUORUM` = write to quorum replicas.
+**Write consistency**: `ONE` = coordinator waits for one replica acknowledgment (writes are sent to all replicas regardless of CL). `QUORUM` = waits for quorum acknowledgments.
 **Read consistency**: `ONE` = read from one replica (may get stale data), `QUORUM` = read from quorum (most recent).
 **CL = QUORUM for both reads and writes**: Ensures read-your-writes consistency (strong consistency).
 
@@ -134,7 +140,7 @@ If a replica is down when a write arrives, the coordinator stores a **hint** (th
 
 ### Read Repair
 
-On a read with CL > ONE, the coordinator compares responses from replicas. If they differ, the stale replica is updated in the background. Probability-based read repair can be tuned.
+On a read with CL > ONE, the coordinator compares responses from replicas. If they differ, the stale replica is updated before the response is returned to the client (blocking read repair). Since Cassandra 4.0, background read repair (`read_repair_chance`) was removed.
 
 ### Anti-Entropy (Merkle Trees)
 
@@ -163,7 +169,7 @@ graph TD
     B2 -.->|repair partition 2 only| A2
 ```
 
-If root hashes differ, recursively compare children to find the exact partitions that diverged. Only those partitions need repair (incremental repair).
+If root hashes differ, recursively compare children to find the exact partitions that diverged. Only those partitions need repair (sub-range/full repair). Incremental repair tracks repaired/unrepaired SSTable markers and repairs only data written since the last incremental repair.
 
 ## Gossip Protocol
 
@@ -188,11 +194,11 @@ Used for `INSERT ... IF NOT EXISTS` or `UPDATE ... IF condition`. LWT is 4-5x sl
 
 | Type | Description | Use Case |
 |---|---|---|
-| SASI (deprecated) | SSTable-attached index | Low-cardinality columns |
+| SASI | SSTable-attached index | Low-cardinality columns |
 | SAI (Storage Attached Indexing) | Newer, better performance | High-cardinality columns |
 | Materialized View | Automatic denormalization | When you know the query patterns |
 
-**SAI**: Index data stored in separate files alongside SSTables. Supports full-text search, prefix queries, and numeric range queries. Better performance than SASI.
+**SAI**: Index data stored in separate files alongside SSTables. Supports prefix queries and numeric range queries. Better performance than SASI. Note: SAI is a filtering engine, not a full-text search replacement.
 
 **Best practice**: Secondary indexes in Cassandra are limited. Design tables around the query patterns (one table per query pattern) rather than relying on secondary indexes. Use materialized views or denormalization when possible.
 
@@ -218,19 +224,12 @@ graph TD
 - **Replication strategy**: `NetworkTopologyStrategy` defines how many replicas per DC
 - **Consistent hashing**: Data is distributed using the Murmur3 hash of the partition key. Equivalent to random partitioning.
 
-## Performance Characteristics
-
-| Operation | Latency (p99) | Throughput (per node) |
-|---|---|---|
-| Write CL=ONE | 1-5ms | 10K-50K ops/sec |
-| Write CL=QUORUM | 3-10ms | 5K-20K ops/sec |
-| Read CL=ONE (point lookup) | 2-8ms | 5K-30K ops/sec |
-| Read CL=QUORUM (point lookup) | 5-15ms | 3K-15K ops/sec |
-| Read CL=QUORUM (range within partition) | 10-50ms | 1K-10K ops/sec |
-| LWT (lightweight transaction) | 10-50ms | 1K-5K ops/sec |
-
 **Key performance factors**:
-- **Partition size**: Keep partitions under 100MB (ideally < 10MB). Large partitions degrade performance.
+- **Partition size**: Large partitions degrade performance. Monitor and keep partitions reasonably sized for your workload.
 - **Compaction**: STCS causes write amplification spikes during compaction. LCS causes more constant write amplification.
-- **GC pressure**: Cassandra is JVM-based. Large heaps (>16GB) cause GC pauses. Tune heap and GC settings carefully.
-- **Bloom filter memory**: Allocate enough memory for bloom filters. 1GB per TB of data is typical.
+- **GC pressure**: Cassandra is JVM-based. Tune heap and GC settings carefully; official docs recommend 16GB heaps with specific GC tuning.
+- **Bloom filter memory**: Allocate enough memory for bloom filters. Monitor memory usage and adjust `bloom_filter_fp_chance` accordingly.
+
+---
+
+*Last verified against official Apache Cassandra documentation: 2026-06-13*

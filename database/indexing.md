@@ -54,24 +54,24 @@ PostgreSQL uses 8KB (8,192 bytes) per page. Some space is reserved for headers a
 
 - Page header: 24 bytes
 - Line pointer array: 4 bytes per entry
-- Special space (B-Tree specific): 16 bytes
+- Special space (B-Tree specific): 20 bytes
 
-Available for data: ~8,128 bytes. An index entry has:
+Available for data: ~8,148 bytes. An index entry has:
 
 | Level | Entry contents | Size per entry | Max entries per page |
-|---|---|---|---|
-| Leaf | INT key (4B) + CTID (6B) + tuple header (~8B) + line pointer (4B) = ~22B | 22 bytes | 8,128 / 22 ≈ **370** |
-| Internal | INT key (4B) + child page pointer (4B) + tuple header (~8B) + line pointer (4B) = ~20B | 20 bytes | 8,128 / 20 ≈ **400** |
+|---|---|---|---|---|
+| Leaf | IndexTupleData (8B, incl. CTID) + INT key (4B) + line pointer (4B) = 20B | 20 bytes | 8,148 / 20 ≈ **407** |
+| Internal | IndexTupleData (8B, incl. child ptr) + INT key (4B) + line pointer (4B) = 20B | 20 bytes | 8,148 / 20 ≈ **407** |
 
-The actual usable count is slightly lower due to alignment and fillfactor (default 90%, leaves room for inserts without immediate page splits). So realistic **fan-out ≈ 300 for leaves, ≈ 300-350 for internal pages**.
+The actual usable count is slightly lower due to alignment and fillfactor (default 90%, leaves room for inserts without immediate page splits). So realistic **fan-out ≈ 366 for both leaves and internal pages**.
 
 Building a B+Tree for 1M rows:
 
 | Level    | Fan-out           | Pages needed for 1M rows      |
 | -------- | ----------------- | ----------------------------- |
-| Leaf     | 300 entries/page  | 1,000,000 / 300 = 3,334 pages |
-| Internal | 300 pointers/page | 3,334 / 300 ≈ 12 pages        |
-| Root     | 300 pointers/page | 12 / 300 ≈ 1 page             |
+| Leaf     | 366 entries/page  | 1,000,000 / 366 = 2,732 pages |
+| Internal | 366 pointers/page | 2,732 / 366 ≈ 8 pages         |
+| Root     | 366 pointers/page | 8 / 366 ≈ 1 page              |
 
 Total tree height = **3**. Every `WHERE id = ?` lookup reads exactly 3 pages — root, internal, leaf — regardless of which row is queried.
 
@@ -95,20 +95,6 @@ graph TD
     end
 
     L --> Heap["Heap Page 0<br/>row data"]
-```
-
-**PostgreSQL**: Uses a heap-based storage model. The B-Tree index stores `(key, CTID)` where `CTID = (page_number, tuple_index)` points directly to the heap tuple. No double lookup — the index directly locates the row. However, MVCC means older row versions exist in the heap, and the index may point to a dead tuple, requiring a visibility check.
-
-```mermaid
-graph TD
-    Index["B-Tree Index<br/>key → CTID"] --> I1["Internal: 1-100"]
-    Index --> I2["Internal: 101-200"]
-    I1 --> L1["Leaf: a@ → (0,1)"]
-    I1 --> L2["Leaf: b@ → (1,2)"]
-    L1 --> Heap["Heap Page 0<br/>---"]
-    L2 --> Heap2["Heap Page 1<br/>---"]
-    Heap --> T1["Tuple 1<br/>xmin=100, xmax=null"]
-    Heap --> T2["Tuple 2<br/>xmin=101, xmax=200<br/>dead?"]
 ```
 
 **SQL Server**: Supports both clustered and non-clustered indexes. In a clustered index, the leaf level is the data page. In a non-clustered index, the leaf contains either the clustered key (if the table has a clustered index) or a Row ID (RID, if the table is a heap). SQL Server also supports **included columns** — non-key columns stored at the leaf level to cover queries without touching the table.
@@ -147,31 +133,7 @@ Each leaf stores `(key, CTID)` where `CTID = (heap_page, tuple_offset)` — the 
 
 **Trace: read key=25**: Tree: `[1]` → sep 50 > 25 → go to `[2]` → sep 30 > 25 → go to `[5]` → scan leaf for key=25 → get CTID `(1,1)` → read heap file at page 1, slot 1. File offset for any block: `offset = index × page_size` (`block [5]` = `5 × 8192` = 40960).
 
-A single index page has three zones — header at top, slot array growing down, row data growing up:
-
-```
-PG index leaf page (8KB):
-
- 0x0000 │ PageHeaderData (24 bytes) ─────────────────────────────
-        │  pd_lsn       (8B)   ← when this page was last modified
-        │  pd_checksum  (4B)   ← integrity check
-        │  pd_flags     (2B)   ← page type: leaf or internal
-        │  pd_lower     (2B)   ← offset where slot array starts
-        │  pd_upper     (2B)   ← offset where free space ends
-        │  pd_special   (2B)   ← offset to B-Tree specific data
-        │  pd_pagesize_version (2B)
-        │  pd_prune_xid (4B)
- 0x0018 │ Slot array ────────── (offset, length) pairs, grows down
-        │  [0]: off=0x1FF0 len=12  → key=1 + CTID=(0,1)
-        │  [1]: off=0x1FE0 len=12  → key=11 + CTID=(1,1)
- 0x1F90 │ Free space ────────── between slot array and row data
- 0x1FE0 │ Row data ──────────── grows up
-        │  key=11 (4B) + CTID (6B) + padding
-        │  key=1  (4B) + CTID (6B) + padding
- 0x1FFF └────────────────────── end of page
-```
-
-The slot array is a compact, fixed-width `(offset, length)` table — the engine walks it with binary search without parsing row data. Compare with a heap page (which stores full rows with MVCC headers) — an index page stores only `(key, pointer)` pairs.
+The per-page layout (header, slot array, row data) is identical to the B-Tree page format described in [storage-engines.md](./storage-engines.md#1-pages-how-data-is-organized-on-disk).
 
 ---
 

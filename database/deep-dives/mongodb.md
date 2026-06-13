@@ -2,30 +2,20 @@
 
 ## Storage Engine: WiredTiger
 
-MongoDB uses **WiredTiger** as the default storage engine (since MongoDB 3.2). It supports two access patterns:
+MongoDB uses **WiredTiger** as the default storage engine (since MongoDB 3.2). WiredTiger uses B-Trees for data and index storage.
 
 | Mode | Default | Use Case |
 |---|---|---|
 | B-Tree | Yes | General purpose, read-heavy, mixed workloads |
-| LSM | No (configurable per collection) | Write-heavy, time-series, high-ingestion |
 
 ### B-Tree Mode
 
-Data and indexes are stored in B-Trees with 4KB-32KB pages (configurable). Key characteristics:
+Data and indexes are stored in B-Trees. Key characteristics:
 
 - **Page-level compression**: Snappy (default), Zlib, or Zstd. Pages decompressed into cache, compressed on disk.
 - **Cache**: WiredTiger maintains an internal cache (default: 50% of (RAM - 1GB) or 256MB). All reads and writes go through this cache.
 - **Checkpoints**: Every 60 seconds, WiredTiger takes a consistent snapshot of the database — flushes all dirty pages to disk. On crash, replays the journal (WAL) since the last checkpoint.
 - **Eviction**: When the cache is full, WiredTiger evicts clean pages and writes dirty pages to disk using an LRU-approximation algorithm.
-
-### LSM Mode
-
-Optimized for write-heavy workloads. New data goes to:
-1. MemTable (in-memory, sorted)
-2. Flushed to Level 0 SSTable (immutable, overlapping ranges)
-3. Compaction merges into deeper levels (non-overlapping)
-
-Uses bloom filters per SSTable for fast point lookups.
 
 ### Journal (WAL)
 
@@ -39,8 +29,8 @@ flowchart LR
     WT -->|4. Checkpoint| DF[(Data Files)]
 ```
 
-- Default: `j:true` — journal is flushed before acknowledging the write (durable).
-- `j:false`: Faster but risk data loss on crash (the last 60 seconds of writes may be lost).
+- Default write concern for most deployments is `w: "majority"` with `writeConcernMajorityJournalDefault: true` (journaling behavior depends on deployment configuration).
+- `j:false`: Faster but risk data loss on crash. The journal is flushed every 100ms by default; the 60-second interval refers to checkpoints.
 - Journal files are 100MB per file, automatically pruned after checkpoints.
 
 ## Document Model
@@ -75,7 +65,7 @@ The aggregation pipeline processes documents through a sequence of stages. Each 
 |---|---|---|
 | `$match` | Filter documents | Pipeline |
 | `$project` | Reshape documents | Pipeline |
-| `$group` | Group by key, accumulate | Up to 100MB per group |
+| `$group` | Group by key, accumulate | Up to 100MB per stage |
 | `$sort` | Order documents | Up to 100MB |
 | `$lookup` | Left outer join with another collection | Up to 100MB |
 | `$unwind` | Deconstruct array into multiple docs | Pipeline |
@@ -134,9 +124,9 @@ graph TD
 
 **Oplog** (operations log): A capped collection (`local.oplog.rs`) that records all write operations. Secondaries replay the oplog asynchronously.
 
-**Election**: When the primary becomes unreachable, secondaries hold an election. The node with the highest priority and most up-to-date oplog wins. Elections use a Raft-like protocol.
+**Election**: When the primary becomes unreachable, secondaries hold an election. The node with the highest priority and most up-to-date oplog wins. Elections use protocol version 1 (pv1).
 
-**Rollback**: If a secondary becomes primary before receiving all oplog entries from the old primary, the old primary must roll back uncommitted writes on reconnection (up to 300MB by default).
+**Rollback**: If a secondary becomes primary before receiving all oplog entries from the old primary, the old primary must roll back uncommitted writes on reconnection. Since MongoDB 5.0, the default "Recover to a Timestamp" algorithm does not limit the amount of data that can be rolled back.
 
 **Read preferences**:
 - `primary`: Read from primary (strong consistency)
@@ -161,7 +151,7 @@ graph TD
 - **Ranged shard key**: Range queries are efficient, risk of hot spots
 - **Zone sharding**: Pin specific ranges to specific shards (geo-distribution)
 
-**Chunks**: Contiguous ranges of the shard key (default 64MB). Chunks split when they exceed the chunk size. The balancer migrates chunks between shards to maintain balance.
+**Chunks**: Contiguous ranges of the shard key (default 128MB). Chunks split when they exceed the chunk size. The balancer migrates chunks between shards to maintain balance.
 
 **Balancer**: Background process that distributes chunks evenly across shards. Migration involves copying data and updating the config server metadata.
 
@@ -180,17 +170,11 @@ An API for real-time change notifications. Uses the oplog to stream inserts, upd
 - **Secondary reads**: Eventual consistency (replication lag)
 - **Causal consistency sessions**: Guarantee causal ordering across reads and writes
 
-**Write concern**: `w: 1` (ack from primary), `w: 'majority'` (ack from majority), `w: 'all'` (ack from all)
-**Read concern**: `local` (uncommitted data), `available` (no guarantee), `majority` (committed data), `linearizable` (most recent data)
-
-## Performance Characteristics
-
-| Operation | Latency (p99) | Throughput |
-|---|---|---|
-| Point read (indexed) | 1-5ms | 10K-100K ops/sec per node |
-| Range scan (indexed) | 5-20ms | 5K-50K ops/sec |
-| Write with `w:1, j:false` | 1-3ms | 20K-100K ops/sec |
-| Write with `w:majority, j:true` | 5-15ms | 5K-20K ops/sec |
-| Aggregation (memory) | 10-100ms | 1K-10K ops/sec |
+**Write concern**: `w: 1` (ack from primary), `w: 'majority'` (ack from majority), or custom write concern names.
+**Read concern**: `local` (uncommitted data), `available` (can return orphaned documents on sharded clusters), `majority` (committed data), `linearizable` (most recent data)
 
 **Working set**: MongoDB performs best when the working set fits in RAM. The WiredTiger cache should be large enough to hold frequently accessed data and indexes.
+
+---
+
+*Last verified against official MongoDB documentation: 2026-06-13*

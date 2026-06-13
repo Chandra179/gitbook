@@ -27,7 +27,7 @@ A database stores data in **pages** (aka blocks), typically 8KB–16KB. Every pa
 ├──────────────────────────────┤
 │ Cell Data                    │  grows upward; keys + values or child refs
 ├──────────────────────────────┤
-│ Special Area (8–16 bytes)    │  rightmost child (internal) or next-leaf ptr
+│ Special Area (8–20 bytes)    │  rightmost child (internal) or next-leaf ptr
 └──────────────────────────────┘
 ```
 
@@ -174,9 +174,9 @@ An SSTable (Sorted String Table) is an immutable, sorted file on disk. Once writ
 ├──────────────────────────────┤
 │ Meta Block (Bloom filter)    │  ← optional, one per file
 ├──────────────────────────────┤
-│ Metaindex Block              │  ← offset + size of each meta block
-├──────────────────────────────┤
 │ Index Block                  │  ← (last_key, offset) per data block
+├──────────────────────────────┤
+│ Metaindex Block              │  ← offset + size of each meta block
 ├──────────────────────────────┤
 │ Footer                       │  ← pointer to index + metaindex blocks
 └──────────────────────────────┘
@@ -329,3 +329,24 @@ Dead tuples accumulate until garbage collection reclaims them:
 (InnoDB avoids heap bloat differently: its undo log stores old versions separately, and the clustered index page is compacted during normal B-Tree operations.)
 
 **Used by**: PostgreSQL (always heap, indexes are separate B-Trees), SQL Server (optionally, when no clustered index is defined).
+
+---
+
+## Columnar Storage
+
+Instead of storing all columns of a row together, columnar DBs store each column separately:
+
+| Row Store | Column Store |
+|---|---|
+| `[1, Alice, NY, 100]` | `id: [1, 2, 3]` |
+| `[2, Bob, LA, 200]` | `name: [Alice, Bob, Carol]` |
+| `[3, Carol, SF, 150]` | `city: [NY, LA, SF]` |
+| | `amount: [100, 200, 150]` |
+
+**Advantages for analytics**:
+- Only read columns needed by the query (skip irrelevant columns)
+- Better compression (same data type per column) — run-length encoding, dictionary, bit packing
+- Vectorized / SIMD processing on column batches
+- **Late materialization**: Defer row reconstruction until necessary
+
+**Examples**: DuckDB, ClickHouse, Redshift, Snowflake, BigQuery.

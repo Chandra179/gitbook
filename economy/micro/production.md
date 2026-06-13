@@ -1,9 +1,8 @@
 # Costs of Production
 
-* Total Revenue (TR): The amount a firm receives for the sale of its output $$TR = \text{Price} \times \text{Quantity}$$.
+* Total Revenue (TR): The amount a firm receives for the sale of its output $$TR = \text{Price} \times \text{Quantity}$$
 * Total Cost (TC): The market value of the inputs a firm uses in production.
-* Profit: Total revenue minus total cost ($$Profit = TR - TC$$).
-
+* Profit: Total revenue minus total cost $$Profit = TR - TC$$
 **Explicit Costs**: Input costs that require an outlay of money by the firm (e.g., paying wages, buying raw materials, paying rent).
 
 **Implicit Costs**: Input costs that do not require an outlay of money (e.g., the value of the owner's time, the interest income foregone by using personal savings to start the business).
@@ -14,7 +13,7 @@
 
 **Marginal Product**: This is the increase in output that arises from an additional unit of input.
 
-* $$Marginal\ Product = \frac{\Delta\ Output}{\Delta\ Input}$$
+*$$Marginal\ Product = \frac{\Delta\ Output}{\Delta\ Input}$$
 
 **Diminishing Marginal Product**: This is the property whereby the marginal product of an input declines as the quantity of the input increases.
 
