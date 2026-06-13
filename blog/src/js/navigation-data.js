@@ -105,11 +105,12 @@ const navigationData = [
         pages: [
             { name: "Algorithms", slug: "algorithms" },
             { name: "Concurrency And Scaling", slug: "concurrency-and-scaling" },
+            { name: "Indexing", slug: "indexing" },
             { name: "Operations And Patterns", slug: "operations-and-patterns" },
             { name: "Query And Optimization", slug: "query-and-optimization" },
             { name: "Specialized Databases", slug: "specialized-databases" },
             { name: "Storage Engines", slug: "storage-engines" },
-            { name: "Taxonomy And Indexing", slug: "taxonomy-and-indexing" },
+            { name: "Taxonomy", slug: "taxonomy" },
             {
                 name: "Deep Dives",
                 slug: "deep-dives",
@@ -117,9 +118,13 @@ const navigationData = [
                 pages: [
                     { name: "Cassandra", slug: "cassandra" },
                     { name: "Mongodb", slug: "mongodb" },
+                    { name: "Mysql Innodb", slug: "mysql-innodb" },
                     { name: "Postgresql", slug: "postgresql" },
                     { name: "Redis", slug: "redis" },
+                    { name: "Rocksdb", slug: "rocksdb" },
                     { name: "Spanner", slug: "spanner" },
+                    { name: "Sql Server", slug: "sql-server" },
+                    { name: "Sqlite", slug: "sqlite" },
                 ],
             },
         ],

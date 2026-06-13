@@ -89,6 +89,76 @@ function RecoverFromCrash()
 - **PostgreSQL**: WAL in `pg_wal/`. Supports full recovery, point-in-time recovery (PITR), and replication streaming.
 - **SQL Server**: Transaction log (`.ldf`). Log records contain the logical operation. Supports point-in-time restore and log shipping.
 
+## Crash Safety & Write Integrity
+
+The WAL guarantees durability in theory. In practice, getting a write safely to disk and detecting corruption on read involves several more layers.
+
+### write() vs fsync() — The OS Buffer
+
+`write(fd, buf, 4096)` doesn't write to disk — it copies bytes to the kernel's page cache. The kernel flushes dirty pages to disk whenever it feels like it (seconds to minutes later). If the power dies before that flush, the "committed" write is gone.
+
+`fsync(fd)` forces the kernel to submit all dirty pages for that file to the disk and waits for the disk to confirm. Only after `fsync` returns is the write durable.
+
+This is why:
+
+```
+write(fd, buf, 4096);          // fast — copies to kernel buffer
+fsync(fd);                     // slow — waits for disk acknowledgment
+```
+
+Engines batch fsync calls for performance. A `COMMIT` forces an fsync of the WAL. Normal data page writes batch their fsync at checkpoint time.
+
+### Torn Page (Partial Write)
+
+A database page is typically 8KB–16KB. Disks write in 512-byte sectors. If the power dies halfway through writing a 16KB page, only some sectors made it:
+
+```
+Before:  [ AAAA AAAA AAAA AAAA ]   (16KB page, consistent)
+After:   [ AAAA AAAA GARB GARB ]   (power loss at sector boundary)
+```
+
+The resulting page is **neither the old version nor the new version** — it's corrupt garbage. The WAL replay can't help because the page header might look valid (type flag, cell count are intact) while the data within is wrong. This is called a **torn page** or **partial page write**.
+
+**Two solutions:**
+
+- **Double-write buffer** (InnoDB): Before writing a page to its real location, write it to a scratch area (the doublewrite buffer). If power fails mid-write, the engine finds the clean copy in the doublewrite buffer on recovery, writes it to the real location, and replays the WAL from there.
+- **Full-page writes** (PostgreSQL): At every checkpoint, PG writes the entire page image (not just the changed bytes) to the WAL. If a page is torn, recovery finds the full-page image in the WAL and overwrites the corrupt page before replaying incremental changes.
+
+### Page Checksums
+
+Every page header stores a checksum (CRC32, XXHASH, etc.) computed over the page contents when written. On read, the engine recomputes:
+
+```
+checksum_on_disk = page[0..3]
+checksum_computed = CRC32(page[4..PAGE_SIZE])
+if checksum_on_disk != checksum_computed:
+    → page is corrupt → retry from WAL, replica, or report
+```
+
+Even without torn pages, checksums catch: media decay, RAM bit flips, kernel bugs, faulty disk controllers. All major engines have them (PG: `pd_checksum`, InnoDB: `FIL_PAGE_SPACE_OR_CHKSUM`, SQLite: `HEADER_CRC`).
+
+### Magic Bytes — Rejecting Garbage
+
+The first bytes of a database file are a **magic string** that identifies the format. On open, the engine checks it:
+
+- SQLite: `"SQLite format 3\0"` at offset 0
+- PostgreSQL: file header starts with a page whose `pd_pagesize_version` field encodes the PG major version
+- InnoDB: `FIL_PAGE_TYPE` in the first page's header
+- RocksDB SSTable: footer contains a magic number (`0x0000000000000088` or similar)
+
+If the magic doesn't match — wrong file, corrupted header, garbage — the engine refuses to open the file. This is the last line of defense against silent corruption.
+
+### LSM vs B-Tree — Crash Safety Differences
+
+| | B-Tree (in-place) | LSM-Tree (append-only) |
+|---|---|---|
+| **Write unit** | Modify page in buffer pool, flush to same location | Append to WAL, flush MemTable to new SSTable |
+| **Torn page risk** | High — overwriting a page mid-write creates a torn page | None — writing a new SSTable never overwrites an existing one |
+| **Recovery** | Replay WAL + fix torn pages (doublewrite / full-page images) | Replay WAL to rebuild MemTable. Existing SSTables are always valid |
+| **Checksum scope** | Per page | Per SSTable block + per file |
+
+LSM-Trees have simpler crash safety because they never overwrite: an SSTable is either fully written or not. On crash, the partially-written SSTable is simply deleted and the WAL replays the MemTable flush. B-Trees must actively protect against torn pages because they overwrite data in place.
+
 ## Merkle Trees
 
 Used by Cassandra, DynamoDB, and Git for **anti-entropy** (detecting out-of-sync data between replicas):

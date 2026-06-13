@@ -179,6 +179,10 @@
         "slug": "concurrency-and-scaling"
       },
       {
+        "name": "Indexing",
+        "slug": "indexing"
+      },
+      {
         "name": "Operations And Patterns",
         "slug": "operations-and-patterns"
       },
@@ -195,8 +199,8 @@
         "slug": "storage-engines"
       },
       {
-        "name": "Taxonomy And Indexing",
-        "slug": "taxonomy-and-indexing"
+        "name": "Taxonomy",
+        "slug": "taxonomy"
       },
       {
         "name": "Deep Dives",
@@ -212,6 +216,10 @@
             "slug": "mongodb"
           },
           {
+            "name": "Mysql Innodb",
+            "slug": "mysql-innodb"
+          },
+          {
             "name": "Postgresql",
             "slug": "postgresql"
           },
@@ -220,8 +228,20 @@
             "slug": "redis"
           },
           {
+            "name": "Rocksdb",
+            "slug": "rocksdb"
+          },
+          {
             "name": "Spanner",
             "slug": "spanner"
+          },
+          {
+            "name": "Sql Server",
+            "slug": "sql-server"
+          },
+          {
+            "name": "Sqlite",
+            "slug": "sqlite"
           }
         ]
       }
