@@ -1,3 +1,10 @@
+---
+title: "etcd & Raft"
+aliases: []
+tags: [distributed-systems, distributed-systems/raft]
+created: "2026-06-13"
+---
+
 # etcd & Raft
 
 {% embed url="https://github.com/etcd-io/etcd" %}

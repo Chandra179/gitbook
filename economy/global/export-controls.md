@@ -1,3 +1,10 @@
+---
+title: "Export Controls"
+aliases: []
+tags: [economy/global]
+created: "2026-06-13"
+---
+
 # Export Controls
 
 Export controls physically **block** what you can buy or sell — unlike tariffs (which raise the price) and sanctions (which freeze financial assets).

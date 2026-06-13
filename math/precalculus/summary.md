@@ -1,3 +1,10 @@
+---
+title: "Summary"
+aliases: []
+tags: [math/precalculus]
+created: "2026-06-13"
+---
+
 # Summary
 
 ### **Global Analytical Properties**

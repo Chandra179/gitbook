@@ -1,3 +1,10 @@
+---
+title: "Externalities & Public Goods"
+aliases: []
+tags: [economy/micro]
+created: "2026-06-13"
+---
+
 # Externalities & Public Goods
 
 ## Externalities and Market Inefficiency

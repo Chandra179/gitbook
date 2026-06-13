@@ -1,3 +1,10 @@
+---
+title: "Shadow Banking"
+aliases: []
+tags: [economy/global]
+created: "2026-06-13"
+---
+
 # Shadow Banking
 
 ## What Is Shadow Banking?

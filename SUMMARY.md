@@ -1,40 +1,53 @@
-# Table of contents
+# Table of Contents
 
 * [Experience](README.md)
-* [Fundamental](fundamental/README.md)
-  * [Computing](fundamental/computing.md)
-  * [Networking](fundamental/networking.md)
-  * [Database](fundamental/database.md)
-  * [API Best Practices](fundamental/api-design-guidelines.md)
-  * [Oauth2 & Oidc](fundamental/oauth2-and-oidc.md)
-  * [Software Architecture](fundamental/software-architecture.md)
-  * [Kafka](fundamental/kafka.md)
-* [Golang](golang/README.md)
-  * [Goroutine](golang/goroutine.md)
-  * [Strings](golang/strings.md)
-* [Math](math/README.md)
-  * [Summary](math/summary.md)
-  * [Precalculus](math/precalculus/README.md)
-    * [Summary](math/precalculus/summary.md)
-  * [Trigonometry](math/trigonometry.md)
-  * [Linear Algebra](math/linear-algebra.md)
-  * [Sequence, Series, Limit](math/sequence-series-limit.md)
-  * [Calculus](math/calculus.md)
-* [System Design](system-design/README.md)
-  * [Rate Limit](system-design/rate-limit.md)
-  * [Cache Stampede: Flash Sale](system-design/cache-stampede-flash-sale.md)
-  * [Consistent Hashing: Distributed Cache](system-design/consistent-hashing-distributed-cache.md)
-  * [Event Processing for Order Notifications](system-design/event-processing-order-notifications.md)
-  * [RabbitMQ](system-design/rabbitmq.md)
-  * [Snowflake ID](system-design/id-generator.md)
-  * [Distributed Task Scheduler for Batch Job Processing](system-design/distributed-task-scheduler-batch-job-processing.md)
-  * [Distributed Cache for Live‑Streaming Chat](system-design/distributed-cache-live-streaming-chat.md)
-  * [Notification System](system-design/notification-system.md)
-  * [Real Time Chat (Discord)](system-design/real-time-chat-discord.md)
-* [Machine Learning](ml.md)
-* [ReactJS](reactjs.md)
-* [RAG](rag.md)
-* [Psyhco](psyhco.md)
-* [etcd &amp; Raft](etcd-raft.md)
-* [Syncthing](syncthing.md)
-* [SaaS Template](saas-template.md)
+
+## Computer Science
+```dataview
+LIST FROM #cs SORT file.path ASC
+```
+
+## Database
+```dataview
+LIST FROM #database SORT file.path ASC
+```
+
+## Golang
+```dataview
+LIST FROM #golang SORT file.path ASC
+```
+
+## Math
+```dataview
+LIST FROM #math SORT file.path ASC
+```
+
+## System Design
+```dataview
+LIST FROM #system-design SORT file.path ASC
+```
+
+## Economy
+```dataview
+LIST FROM #economy SORT file.path ASC
+```
+
+## AI & Machine Learning
+```dataview
+LIST FROM #ml OR #rag SORT file.path ASC
+```
+
+## Frontend
+```dataview
+LIST FROM #reactjs SORT file.path ASC
+```
+
+## Distributed Systems
+```dataview
+LIST FROM #distributed-systems SORT file.path ASC
+```
+
+## Psychology
+```dataview
+LIST FROM #psychology SORT file.path ASC
+```

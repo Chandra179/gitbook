@@ -1,3 +1,10 @@
+---
+title: "Redis Internals"
+aliases: []
+tags: [database/deep-dive]
+created: "2026-06-13"
+---
+
 # Redis Internals
 
 ## Architecture

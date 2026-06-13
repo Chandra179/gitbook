@@ -1,3 +1,10 @@
+---
+title: "Labor Markets & Inequality"
+aliases: []
+tags: [economy/micro]
+created: "2026-06-13"
+---
+
 # Labor Markets & Inequality
 
 ## The Marginal Product of Labor

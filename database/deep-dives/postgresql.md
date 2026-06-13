@@ -1,3 +1,10 @@
+---
+title: "PostgreSQL Internals"
+aliases: []
+tags: [database/deep-dive]
+created: "2026-06-13"
+---
+
 # PostgreSQL Internals
 
 ## Data Model

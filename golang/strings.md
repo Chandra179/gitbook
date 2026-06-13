@@ -1,3 +1,10 @@
+---
+title: "Strings"
+aliases: []
+tags: [golang]
+created: "2026-06-13"
+---
+
 # Strings
 
 Using `+=` for string concatenation is **inefficient approach** especially when working with large or numerous strings. Here’s why:

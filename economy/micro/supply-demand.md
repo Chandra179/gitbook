@@ -1,3 +1,10 @@
+---
+title: "Supply & Demand"
+aliases: []
+tags: [economy/micro]
+created: "2026-06-13"
+---
+
 # Supply & Demand
 
 ## The Demand Curve

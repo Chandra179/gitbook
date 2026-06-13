@@ -1,3 +1,10 @@
+---
+title: "Unemployment"
+aliases: []
+tags: [economy/macro]
+created: "2026-06-13"
+---
+
 # Unemployment
 
 ## Measuring Unemployment

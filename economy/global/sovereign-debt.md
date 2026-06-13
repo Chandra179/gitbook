@@ -1,3 +1,10 @@
+---
+title: "Sovereign Debt & IMF Bailouts"
+aliases: []
+tags: [economy/global]
+created: "2026-06-13"
+---
+
 # Sovereign Debt & IMF Bailouts
 
 ## How Countries Borrow

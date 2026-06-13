@@ -1,3 +1,10 @@
+---
+title: "Summary"
+aliases: []
+tags: [math]
+created: "2026-06-13"
+---
+
 # Summary
 
 ## Trigonometry

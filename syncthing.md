@@ -1,3 +1,10 @@
+---
+title: "Syncthing"
+aliases: []
+tags: [distributed-systems, distributed-systems/syncthing]
+created: "2026-06-13"
+---
+
   # Syncthing
 
 {% embed url="https://github.com/syncthing/syncthing" %}

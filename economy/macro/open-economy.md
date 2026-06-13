@@ -1,3 +1,10 @@
+---
+title: "Open Economy"
+aliases: []
+tags: [economy/macro]
+created: "2026-06-13"
+---
+
 # Open Economy
 
 ## Basic Concepts

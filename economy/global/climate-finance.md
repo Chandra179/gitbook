@@ -1,3 +1,10 @@
+---
+title: "Climate Finance & Carbon Markets"
+aliases: []
+tags: [economy/global]
+created: "2026-06-13"
+---
+
 # Climate Finance & Carbon Markets
 
 ## Carbon Markets (Cap & Trade)

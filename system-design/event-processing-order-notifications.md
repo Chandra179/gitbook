@@ -1,3 +1,10 @@
+---
+title: "Event Processing for Order Notifications"
+aliases: []
+tags: [system-design, system-design/messaging]
+created: "2026-06-13"
+---
+
 # Event Processing for Order Notifications
 
 ### Goal

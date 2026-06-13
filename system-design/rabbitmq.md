@@ -1,3 +1,10 @@
+---
+title: "RabbitMQ"
+aliases: []
+tags: [system-design, system-design/messaging]
+created: "2026-06-13"
+---
+
 # RabbitMQ
 
 This document describes the core building blocks of our RabbitMQ / AMQP 0-9-1 client library. The implementation offers robust message delivery with automatic recovery, publisher confirms, and efficient resource management.

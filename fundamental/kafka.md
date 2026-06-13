@@ -1,3 +1,10 @@
+---
+title: "Kafka"
+aliases: []
+tags: [cs, cs/kafka]
+created: "2026-06-13"
+---
+
 # Kafka
 
 ### **Cluster**

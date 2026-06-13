@@ -1,3 +1,9 @@
+---
+title: "SaaS Template"
+aliases: []
+created: "2026-06-13"
+---
+
 # SaaS Template
 
 ## Goal

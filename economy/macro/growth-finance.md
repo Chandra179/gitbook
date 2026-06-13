@@ -1,3 +1,10 @@
+---
+title: "Growth & Finance"
+aliases: []
+tags: [economy/macro]
+created: "2026-06-13"
+---
+
 # Growth & Finance
 
 ## Production and Growth

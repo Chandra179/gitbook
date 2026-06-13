@@ -1,3 +1,10 @@
+---
+title: "Database Taxonomy"
+aliases: []
+tags: [database, database/taxonomy]
+created: "2026-06-13"
+---
+
 # Database Taxonomy
 
 ## Relational (SQL)

@@ -1,3 +1,10 @@
+---
+title: "Sequence, Series, Limit"
+aliases: []
+tags: [math, math/sequences]
+created: "2026-06-13"
+---
+
 # Sequence, Series, Limit
 
 ### Arithmetic

@@ -1,3 +1,10 @@
+---
+title: "Geopolitics of Energy"
+aliases: []
+tags: [economy/global]
+created: "2026-06-13"
+---
+
 # Geopolitics of Energy
 
 Energy is the original global supply chain — every country needs it, few have it, and it's priced in dollars.

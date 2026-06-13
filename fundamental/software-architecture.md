@@ -1,3 +1,10 @@
+---
+title: "Software Architecture"
+aliases: []
+tags: [cs, cs/architecture]
+created: "2026-06-13"
+---
+
 # Software Architecture
 
 ### Core Definitions

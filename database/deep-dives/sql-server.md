@@ -1,3 +1,10 @@
+---
+title: "SQL Server Storage Engine"
+aliases: []
+tags: [database/deep-dive]
+created: "2026-06-13"
+---
+
 # SQL Server Storage Engine
 
 ## Page and Extent Architecture

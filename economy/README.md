@@ -1,3 +1,10 @@
+---
+title: "Economist"
+aliases: []
+tags: [economy]
+created: "2026-06-13"
+---
+
 # Economist
 
 Study notes on economics — microeconomics, macroeconomics, global finance, and behavioral economics. Plus a live data dashboard for exchange rates, Fed rates, and reserves.

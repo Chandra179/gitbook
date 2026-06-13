@@ -1,3 +1,10 @@
+---
+title: "Frontiers of Microeconomics"
+aliases: []
+tags: [economy/micro]
+created: "2026-06-13"
+---
+
 # Frontiers of Microeconomics
 
 #### Asymmetric Information

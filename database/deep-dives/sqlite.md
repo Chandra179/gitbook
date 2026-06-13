@@ -1,3 +1,10 @@
+---
+title: "SQLite Internals"
+aliases: []
+tags: [database/deep-dive]
+created: "2026-06-13"
+---
+
 # SQLite Internals
 
 ## Data Model

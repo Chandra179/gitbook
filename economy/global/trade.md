@@ -1,3 +1,10 @@
+---
+title: "Trade & Tariffs"
+aliases: []
+tags: [economy/global]
+created: "2026-06-13"
+---
+
 # Trade & Tariffs
 
 ## Comparative Advantage

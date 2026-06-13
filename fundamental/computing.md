@@ -1,3 +1,10 @@
+---
+title: "Computing"
+aliases: []
+tags: [cs, cs/computing]
+created: "2026-06-13"
+---
+
 # Computing
 
 ![](../assets/cpu.png)

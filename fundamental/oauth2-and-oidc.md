@@ -1,3 +1,10 @@
+---
+title: "Oauth2 & Oidc"
+aliases: []
+tags: [cs, cs/oauth]
+created: "2026-06-13"
+---
+
 # Oauth2 & Oidc
 
 #### **Authorization URL**

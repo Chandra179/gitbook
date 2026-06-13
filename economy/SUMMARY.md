@@ -1,36 +1,26 @@
-# Table of contents
+# Table of Contents
 
-* [Overview](overview.md)
-* [Behavioral Economics](behavioral/behavioral-economics.md)
-* [Microeconomics](micro/supply-demand.md)
-  * [Supply & Demand](micro/supply-demand.md)
-  * [Market Intervention](micro/market-intervention.md)
-  * [Welfare & Efficiency](micro/welfare-efficiency.md)
-  * [Externalities & Public Goods](micro/externalities.md)
-  * [Costs of Production](micro/production.md)
-  * [Market Structures](micro/market-structures.md)
-  * [Game Theory](micro/game-theory.md)
-  * [Labor Markets & Inequality](micro/labor-markets.md)
-  * [Frontiers of Microeconomics](micro/frontiers.md)
-* [Macroeconomics](macro/gdp-cpi.md)
-  * [GDP & Cost of Living](macro/gdp-cpi.md)
-  * [Growth & Finance](macro/growth-finance.md)
-  * [Solow Growth Model](macro/solow-growth.md)
-  * [Unemployment](macro/unemployment.md)
-  * [Monetary System & Inflation](macro/monetary.md)
-  * [Open Economy](macro/open-economy.md)
-  * [Aggregate Demand & Supply](macro/ad-as.md)
-  * [Inflation & Unemployment](macro/phillips-curve.md)
-* [Global Finance](global/exchange-rates.md)
-  * [Exchange Rates](global/exchange-rates.md)
-  * [Trade & Tariffs](global/trade.md)
-  * [Financial Crises](global/financial-crises.md)
-  * [Capital Flows & Crises](global/capital-flows.md)
-  * [Sovereign Debt & IMF](global/sovereign-debt.md)
-  * [Energy Geopolitics](global/energy-geopolitics.md)
-  * [Digital Currencies](global/digital-currency.md)
-  * [Climate Finance](global/climate-finance.md)
-  * [Export Controls](global/export-controls.md)
-  * [Supply Chain Advantages](global/supply-chain.md)
-  * [Shadow Banking](global/shadow-banking.md)
-  * [The Dollar System](global/dollar-system.md)
+## Overview
+```dataview
+LIST FROM #economy WHERE file.folder = "economy" SORT file.path ASC
+```
+
+## Microeconomics
+```dataview
+LIST FROM #economy/micro SORT file.path ASC
+```
+
+## Macroeconomics
+```dataview
+LIST FROM #economy/macro SORT file.path ASC
+```
+
+## Global Finance
+```dataview
+LIST FROM #economy/global SORT file.path ASC
+```
+
+## Behavioral Economics
+```dataview
+LIST FROM #economy/behavioral SORT file.path ASC
+```

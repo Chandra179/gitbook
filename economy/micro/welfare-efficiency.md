@@ -1,3 +1,10 @@
+---
+title: "Welfare & Efficiency"
+aliases: []
+tags: [economy/micro]
+created: "2026-06-13"
+---
+
 # Welfare & Efficiency
 
 ## Consumer and Producer Surplus

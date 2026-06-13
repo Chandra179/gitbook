@@ -1,3 +1,10 @@
+---
+title: "Exchange Rates"
+aliases: []
+tags: [economy/global]
+created: "2026-06-13"
+---
+
 # Exchange Rates
 
 ## Exchange Rate Regimes

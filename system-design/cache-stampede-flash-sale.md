@@ -1,3 +1,10 @@
+---
+title: "Cache Stampede: Flash Sale Use Case"
+aliases: []
+tags: [system-design, system-design/caching]
+created: "2026-06-13"
+---
+
 # Cache Stampede: Flash Sale Use Case
 
 Also known as: **thundering herd problem**, **dog-piling**, **cache miss storm**.

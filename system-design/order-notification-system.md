@@ -1,3 +1,10 @@
+---
+title: "Order Notification System (E-Commerce)"
+aliases: []
+tags: [system-design, system-design/notification]
+created: "2026-06-13"
+---
+
 # Order Notification System (E-Commerce)
 
 ### Goal

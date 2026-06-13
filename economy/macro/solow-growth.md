@@ -1,3 +1,10 @@
+---
+title: "Solow Growth Model"
+aliases: []
+tags: [economy/macro]
+created: "2026-06-13"
+---
+
 # Solow Growth Model
 
 ## Aggregate Production Function

@@ -1,3 +1,10 @@
+---
+title: "Fundamentals"
+aliases: []
+tags: [cs]
+created: "2026-06-13"
+---
+
 # Fundamentals
 
 Core computer science and backend engineering concepts every software engineer should know.

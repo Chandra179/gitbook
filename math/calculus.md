@@ -1,3 +1,10 @@
+---
+title: "Calculus"
+aliases: []
+tags: [math, math/calculus]
+created: "2026-06-13"
+---
+
 # Calculus
 
 ## Derivative

@@ -1,3 +1,10 @@
+---
+title: "Costs of Production"
+aliases: []
+tags: [economy/micro]
+created: "2026-06-13"
+---
+
 # Costs of Production
 
 * Total Revenue (TR): The amount a firm receives for the sale of its output $$TR = \text{Price} \times \text{Quantity}$$

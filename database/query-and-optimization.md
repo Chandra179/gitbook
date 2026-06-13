@@ -1,3 +1,10 @@
+---
+title: "Query Execution & Optimization"
+aliases: []
+tags: [database, database/query]
+created: "2026-06-13"
+---
+
 # Query Execution & Optimization
 
 ## Query Pipeline

@@ -1,3 +1,10 @@
+---
+title: "GDP & Cost of Living"
+aliases: []
+tags: [economy/macro]
+created: "2026-06-13"
+---
+
 # GDP & Cost of Living
 
 ## Measuring a Nation's Income

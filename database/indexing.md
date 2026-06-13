@@ -1,3 +1,10 @@
+---
+title: "Indexing"
+aliases: []
+tags: [database, database/indexing]
+created: "2026-06-13"
+---
+
 # Indexing
 
 ## Index Fundamentals

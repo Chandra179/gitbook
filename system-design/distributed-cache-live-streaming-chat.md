@@ -1,3 +1,10 @@
+---
+title: "Distributed Cache for Live‑Streaming Chat"
+aliases: []
+tags: [system-design, system-design/caching]
+created: "2026-06-13"
+---
+
 # Distributed Cache for Live‑Streaming Chat
 
 ### Goal

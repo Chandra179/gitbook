@@ -1,3 +1,10 @@
+---
+title: "Market Intervention"
+aliases: []
+tags: [economy/micro]
+created: "2026-06-13"
+---
+
 # Market Intervention
 
 ## Control on prices

@@ -1,3 +1,10 @@
+---
+title: "Capital Flows & Currency Crises"
+aliases: []
+tags: [economy/global]
+created: "2026-06-13"
+---
+
 # Capital Flows & Currency Crises
 
 ## What Is Hot Money?

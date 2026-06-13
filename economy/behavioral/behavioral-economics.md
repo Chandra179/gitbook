@@ -1,3 +1,10 @@
+---
+title: "Behavioral Economics"
+aliases: []
+tags: [economy/behavioral]
+created: "2026-06-13"
+---
+
 # Behavioral Economics
 
 Challenges the rational-agent assumption in standard economics. People aren't Econs (rational, patient, consistent) — they're Humans (emotional, impatient, easily influenced).

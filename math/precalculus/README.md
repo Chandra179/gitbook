@@ -1,3 +1,10 @@
+---
+title: "Precalculus"
+aliases: []
+tags: [math/precalculus]
+created: "2026-06-13"
+---
+
 # Precalculus
 
 **Fundamental**

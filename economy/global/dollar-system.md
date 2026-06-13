@@ -1,3 +1,10 @@
+---
+title: "The Dollar System"
+aliases: []
+tags: [economy/global]
+created: "2026-06-13"
+---
+
 # The Dollar System
 
 ## The Global Anchor (Oil, Gold, and the Dollar)

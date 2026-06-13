@@ -1,3 +1,10 @@
+---
+title: "Supply Chain Advantages"
+aliases: []
+tags: [economy/global]
+created: "2026-06-13"
+---
+
 # Supply Chain Advantages
 
 ## Resource Management

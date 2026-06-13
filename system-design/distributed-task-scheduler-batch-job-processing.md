@@ -1,3 +1,10 @@
+---
+title: "Distributed Task Scheduler for Batch Job Processing"
+aliases: []
+tags: [system-design, system-design/scheduler]
+created: "2026-06-13"
+---
+
 # Distributed Task Scheduler for Batch Job Processing
 
 ### Goal

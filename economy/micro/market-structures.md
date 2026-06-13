@@ -1,3 +1,10 @@
+---
+title: "Market Structures"
+aliases: []
+tags: [economy/micro]
+created: "2026-06-13"
+---
+
 # Market Structures
 
 ## Firms in Competitive Markets

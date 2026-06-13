@@ -1,3 +1,10 @@
+---
+title: "System Design"
+aliases: []
+tags: [system-design]
+created: "2026-06-13"
+---
+
 # System Design
 
 Building and architecting distributed systems at scale.

@@ -1,3 +1,10 @@
+---
+title: "Financial Crises"
+aliases: []
+tags: [economy/global]
+created: "2026-06-13"
+---
+
 # Financial Crises
 
 ```mermaid

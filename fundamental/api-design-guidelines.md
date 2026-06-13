@@ -1,3 +1,10 @@
+---
+title: "API Design Guidelines"
+aliases: []
+tags: [cs, cs/api]
+created: "2026-06-13"
+---
+
 # API Design Guidelines
 
 ### Data Integrity & Types

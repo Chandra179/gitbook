@@ -1,3 +1,10 @@
+---
+title: "Database"
+aliases: []
+tags: [database]
+created: "2026-06-13"
+---
+
 # Database
 
 Comprehensive reference on database internals: taxonomy, indexing, storage engines, core algorithms, transaction concurrency, scaling, and deep dives into distributed databases.

@@ -1,3 +1,10 @@
+---
+title: "Math"
+aliases: []
+tags: [math]
+created: "2026-06-13"
+---
+
 # Math
 
 * **Algebra**: Solving for $x$, factoring polynomials, exponents, logarithms, and understanding functions ($f(x)$). Richard Rusczyk

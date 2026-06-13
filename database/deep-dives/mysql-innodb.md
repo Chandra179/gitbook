@@ -1,4 +1,11 @@
-# MySQL InnoDB Internals
+---
+title: "MySQL InnoDB Internals"
+aliases: []
+tags: [database/deep-dive]
+created: "2026-06-13"
+---
+
+# MySQL Internals
 
 ## Storage Engine: Clustered B+Tree
 

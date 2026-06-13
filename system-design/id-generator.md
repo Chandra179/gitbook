@@ -1,3 +1,10 @@
+---
+title: "Snowflake ID"
+aliases: []
+tags: [system-design, system-design/id]
+created: "2026-06-13"
+---
+
 # Snowflake ID
 
 ## Introduction

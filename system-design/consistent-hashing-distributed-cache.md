@@ -1,3 +1,10 @@
+---
+title: "Consistent Hashing: Distributed Cache Use Case"
+aliases: []
+tags: [system-design, system-design/hashing]
+created: "2026-06-13"
+---
+
 # Consistent Hashing: Distributed Cache Use Case
 
 ### Goal

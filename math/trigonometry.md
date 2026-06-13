@@ -1,3 +1,10 @@
+---
+title: "Trigonometry"
+aliases: []
+tags: [math, math/trigonometry]
+created: "2026-06-13"
+---
+
 # Trigonometry
 
 ![](../assets/trigonometry.png)

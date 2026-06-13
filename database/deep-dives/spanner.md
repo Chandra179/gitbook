@@ -1,3 +1,10 @@
+---
+title: "Google Spanner Internals"
+aliases: []
+tags: [database/deep-dive]
+created: "2026-06-13"
+---
+
 # Google Spanner Internals
 
 ## Overview

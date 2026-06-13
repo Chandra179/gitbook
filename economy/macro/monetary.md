@@ -1,3 +1,10 @@
+---
+title: "Monetary System & Inflation"
+aliases: []
+tags: [economy/macro]
+created: "2026-06-13"
+---
+
 # Monetary System & Inflation
 
 ## The Monetary System

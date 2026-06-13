@@ -1,3 +1,10 @@
+---
+title: "Goroutine"
+aliases: []
+tags: [golang, golang/goroutine]
+created: "2026-06-13"
+---
+
 # Goroutine
 
 ### GPM Scheduler

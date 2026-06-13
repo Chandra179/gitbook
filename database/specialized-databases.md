@@ -1,3 +1,10 @@
+---
+title: "Specialized Databases"
+aliases: []
+tags: [database, database/specialized]
+created: "2026-06-13"
+---
+
 # Specialized Databases
 
 ## Vector Databases

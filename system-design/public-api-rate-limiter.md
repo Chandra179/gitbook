@@ -1,3 +1,10 @@
+---
+title: "Public API Rate Limiter"
+aliases: []
+tags: [system-design, system-design/rate-limit]
+created: "2026-06-13"
+---
+
 # Public API Rate Limiter
 
 ### Goal

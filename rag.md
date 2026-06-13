@@ -1,3 +1,10 @@
+---
+title: "RAG"
+aliases: []
+tags: [rag]
+created: "2026-06-13"
+---
+
 # RAG
 
 End to end rag system from data ingestion -> chunking -> embed -> retrieval -> generation -> evaluation -> testing -> monitoring

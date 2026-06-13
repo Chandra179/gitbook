@@ -1,3 +1,10 @@
+---
+title: "Aggregate Demand & Supply"
+aliases: []
+tags: [economy/macro]
+created: "2026-06-13"
+---
+
 # Aggregate Demand & Supply
 
 ## The IS-LM Model

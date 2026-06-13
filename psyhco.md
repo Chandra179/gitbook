@@ -1,3 +1,10 @@
+---
+title: "Psyhco"
+aliases: []
+tags: [psychology]
+created: "2026-06-13"
+---
+
 # Psyhco
 
 ### Goal

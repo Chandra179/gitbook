@@ -1,3 +1,10 @@
+---
+title: "Linear Algebra"
+aliases: []
+tags: [math, math/linear-algebra]
+created: "2026-06-13"
+---
+
 # Linear Algebra
 
 1D Vector: A single value (a scalar).

@@ -1,3 +1,10 @@
+---
+title: "Game Theory"
+aliases: []
+tags: [economy/micro]
+created: "2026-06-13"
+---
+
 # Game Theory
 
 ## Prisoners' Dilemma
