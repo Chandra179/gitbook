@@ -311,7 +311,7 @@ Contrast with a **clustered index** where the index leaf IS the row data (InnoDB
 
 #### 3. Dead Tuples & Bloat
 
-Heap storage interacts with MVCC in a specific way. An UPDATE doesn't modify the row in place — it marks the old tuple as **dead** and inserts a **new** tuple:
+Heap storage interacts with MVCC in a specific way. An UPDATE doesn't modify the row in place  it marks the old tuple as **dead** and inserts a **new** tuple:
 
 ```
 Before:  Page 3: [Alice, age=30] (live)
@@ -329,5 +329,3 @@ Dead tuples accumulate until garbage collection reclaims them:
 (InnoDB avoids heap bloat differently: its undo log stores old versions separately, and the clustered index page is compacted during normal B-Tree operations.)
 
 **Used by**: PostgreSQL (always heap, indexes are separate B-Trees), SQL Server (optionally, when no clustered index is defined).
-
-**File layout note**: the page structure described for B-Trees (header → cell pointers → free space → cell data → special area) is the same pattern used by heap pages. LSM-Tree SSTables use a different format (data blocks → index → bloom filter → footer) — see the SSTable section above. Each engine varies page size, checksum algorithm, and compression — see deep-dives for engine-specific layouts.
