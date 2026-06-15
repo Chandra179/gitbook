@@ -96,6 +96,10 @@ const navigationData = [
         ],
     },
     {
+        name: "Ai",
+        slug: "ai",
+    },
+    {
         name: "Database",
         slug: "database",
         pages: [
