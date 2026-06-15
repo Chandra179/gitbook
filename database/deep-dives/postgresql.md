@@ -115,7 +115,7 @@ func main() {
 	rows[0][1].CTIDSpot = 3
 	rows[0][3] = Spot{Plate: "ABC123", Owner: "Alice"}
 	rowStatus[0] = false
-	//   B-Tree:  {"ABC123" => (0,1)}        ← unchanged (plate = key didn't change)
+	//   B-Tree:  {"ABC123" => (0,1)} ← unchanged (plate = key didn't change)
 	//   Heap:    Row 0, Spot 1 = {dead, t_ctid → (0,3)}
 	//            Row 0, Spot 3 = {ABC123, Alice}
 	//   VM:      Row 0 = dirty (dead spot)
@@ -126,7 +126,7 @@ func main() {
 	rows[0][3].Dead = true
 	rows[2][0] = Spot{Plate: "ABC123", Owner: "Alice"}
 	rowStatus[0] = false
-	//   B-Tree:  {"ABC123" => (2,0)}        ← entry rewritten (plate = key changed)
+	//   B-Tree:  {"ABC123" => (2,0)} ← entry rewritten (plate = key changed)
 	//   Heap:    Row 0, Spot 3 = {dead}
 	//            Row 2, Spot 0 = {ABC123, Alice}
 	//   VM:      Row 0 = dirty, Row 2 = clean

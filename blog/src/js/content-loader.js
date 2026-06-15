@@ -38,7 +38,9 @@ class ContentLoader {
     // Rewrite relative <a href> and <img src> values in rendered HTML to clean root-relative paths.
     // e.g. href="summary#algebra" on page /math/ becomes href="/math/summary#algebra"
     rewriteLinks(html, category, page) {
-        const basePath = page ? `/${category}/${page}/` : `/${category}/`;
+        const basePath = page
+            ? `/${category}/${page.substring(0, page.lastIndexOf('/') + 1)}`
+            : `/${category}/`;
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
         doc.querySelectorAll('a[href]').forEach(link => {

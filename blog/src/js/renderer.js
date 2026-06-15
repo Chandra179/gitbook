@@ -31,7 +31,7 @@ class Renderer {
         if (!content) return;
 
         try {
-            content.querySelectorAll('pre code').forEach(block => {
+            content.querySelectorAll('pre code:not(.language-mermaid)').forEach(block => {
                 hljs.highlightElement(block);
 
                 const pre = block.parentElement;
@@ -146,61 +146,39 @@ class Renderer {
                 svgContainer.className = 'mermaid-svg-container';
                 svgContainer.innerHTML = svg;
 
-                let scale = 1;
-                let tx = 0, ty = 0;
-                let dragging = false;
-                let dragStartX, dragStartY, dragStartTX, dragStartTY;
+                const svgEl = svgContainer.querySelector('svg');
+                // viewBox is the canonical source for natural size; fall back to width/height attributes
+                const naturalWidth = svgEl.viewBox.baseVal.width
+                    || parseFloat(svgEl.getAttribute('width'))
+                    || svgEl.clientWidth;
+                const naturalHeight = svgEl.viewBox.baseVal.height
+                    || parseFloat(svgEl.getAttribute('height'))
+                    || svgEl.clientHeight;
 
-                function applyTransform() {
-                    svgContainer.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+                // Mermaid ships SVG with `max-width:100%` inline which would clamp our zoom
+                svgEl.removeAttribute('width');
+                svgEl.removeAttribute('height');
+                svgEl.style.maxWidth = 'none';
+                svgEl.style.display = 'block';
+
+                let scale = 1;
+
+                function applyZoom() {
+                    svgEl.style.width = (naturalWidth * scale) + 'px';
+                    svgEl.style.height = (naturalHeight * scale) + 'px';
                 }
 
-                svgContainer.style.transformOrigin = '0 0';
-                svgContainer.style.cursor = 'grab';
-                applyTransform();
+                applyZoom();
 
                 // Wheel / pinch → zoom (only on ctrlKey or two-finger pinch)
                 // Normal scroll → let container scroll naturally
                 wrapper.addEventListener('wheel', (e) => {
                     if (!e.ctrlKey && !e.metaKey) return;
                     e.preventDefault();
-                    const rect = svgContainer.getBoundingClientRect();
-                    const mx = e.clientX - rect.left;
-                    const my = e.clientY - rect.top;
-
                     const factor = e.deltaY < 0 ? 1.1 : 0.9;
-                    const newScale = Math.min(Math.max(scale * factor, 0.25), 5);
-
-                    tx = mx - (mx - tx) * (newScale / scale);
-                    ty = my - (my - ty) * (newScale / scale);
-                    scale = newScale;
-                    applyTransform();
+                    scale = Math.min(Math.max(scale * factor, 0.25), 5);
+                    applyZoom();
                 }, { passive: false });
-
-                // Pan via drag
-                svgContainer.addEventListener('pointerdown', (e) => {
-                    dragging = true;
-                    svgContainer.style.cursor = 'grabbing';
-                    svgContainer.setPointerCapture(e.pointerId);
-                    dragStartX = e.clientX;
-                    dragStartY = e.clientY;
-                    dragStartTX = tx;
-                    dragStartTY = ty;
-                });
-
-                svgContainer.addEventListener('pointermove', (e) => {
-                    if (!dragging) return;
-                    tx = dragStartTX + (e.clientX - dragStartX);
-                    ty = dragStartTY + (e.clientY - dragStartY);
-                    applyTransform();
-                });
-
-                const stopDrag = () => {
-                    dragging = false;
-                    svgContainer.style.cursor = 'grab';
-                };
-                svgContainer.addEventListener('pointerup', stopDrag);
-                svgContainer.addEventListener('pointerleave', stopDrag);
 
                 // Zoom buttons
                 const controls = document.createElement('div');
@@ -217,8 +195,8 @@ class Renderer {
                         const action = btn.dataset.action;
                         if (action === 'in') scale = Math.min(scale * 1.25, 5);
                         else if (action === 'out') scale = Math.max(scale / 1.25, 0.25);
-                        else { scale = 1; tx = 0; ty = 0; }
-                        applyTransform();
+                        else { scale = 1; }
+                        applyZoom();
                     });
                 });
 
